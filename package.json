@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-native-community/async-storage": "1.11.0",
     "@react-native-community/masked-view": "0.1.10",
+    "@storybook/react-native": "^5.3.19",
     "moment": "2.27.0",
     "prop-types": "15.7.2",
     "react": "16.13.1",
@@ -19,7 +20,10 @@
     "react-native-gesture-handler": "1.6.1",
     "react-native-localize": "1.4.0",
     "react-native-reanimated": "1.9.0",
-    "react-native-safe-area-context": "3.1.1"
+    "react-native-safe-area-context": "3.1.1",
+    "react-native-screens": "2.9.0",
+    "react-redux": "^7.2.0",
+    "redux": "^4.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
