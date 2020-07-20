@@ -22,6 +22,7 @@ module.exports = {
     'operator-linebreak': 'off',
     'global-require': 'off',
     'object-curly-newline': 'off',
+    'react/react-in-jsx-scope': 'off',
   },
   globals: {
     fetch: false,

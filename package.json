@@ -1,13 +1,17 @@
 {
   "name": "cce",
   "version": "0.0.1",
+  "description": "Cold chain temperature monitoring",
+  "author": "mSupply Foundation",
+  "main": "index.js",
+  "license": "GPL-3.0-or-later",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "storybook": "(adb reverse tcp:7007 tcp:7007 || true) && start-storybook",
+    "clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* &&  rm -rf node_modules/ && npm cache verify && npm install && npm start --reset-cache"
   },
   "dependencies": {
     "@react-native-community/async-storage": "1.11.0",
@@ -50,6 +54,7 @@
     "lint-staged": "^10.2.11",
     "metro-react-native-babel-preset": "^0.59.0",
     "prettier": "^2.0.5",
+    "react-require": "^1.0.1",
     "react-test-renderer": "16.13.1"
   },
   "jest": {
