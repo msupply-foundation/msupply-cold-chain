@@ -1,0 +1,6 @@
+{
+  "~hooks": "./src/view/hooks",
+  "~storybook": "./src/view/storybook",
+  "~constants": "./src/shared/constants",
+  "~translations": "./src/shared/translations"
+}

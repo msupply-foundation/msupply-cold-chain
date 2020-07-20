@@ -1,6 +1,13 @@
 module.exports = {
-  extends: ['airbnb', 'prettier'],
+  extends: ['airbnb', 'prettier', 'plugin:import/errors', 'plugin:import/warnings'],
   parser: 'babel-eslint',
+  settings: {
+    'import/resolver': {
+      'babel-module': {
+        alias: require('./paths.json'),
+      },
+    },
+  },
   env: {
     jest: true,
   },
