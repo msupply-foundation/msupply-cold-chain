@@ -7,9 +7,7 @@ module.exports = {
       {
         extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
         root: ['.'],
-        alias: {
-          '~storybook': './src/view/storybook',
-        },
+        alias: require('./paths.json'),
       },
     ],
   ],
