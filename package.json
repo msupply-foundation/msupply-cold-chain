@@ -7,10 +7,10 @@
   "license": "GPL-3.0-or-later",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
-    "start": "react-native start",
+    "start": "react-native run-android",
     "test": "jest",
     "storybook": "(adb reverse tcp:7007 tcp:7007 || true) && start-storybook",
+    "prepare": "patch-package",
     "clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* &&  rm -rf node_modules/ && npm cache verify && npm install && npm start --reset-cache"
   },
   "dependencies": {
@@ -28,20 +28,25 @@
     "react-native-reanimated": "1.9.0",
     "react-native-safe-area-context": "3.1.1",
     "react-native-screens": "2.9.0",
+    "react-native-sqlite-storage": "^5.0.0",
     "react-redux": "^7.2.0",
-    "redux": "^4.0.5"
+    "redux": "^4.0.5",
+    "typeorm": "^0.2.25"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
+    "@babel/plugin-proposal-decorators": "^7.10.5",
     "@babel/runtime": "^7.8.4",
     "@react-native-community/eslint-config": "^1.1.0",
     "@storybook/addon-storyshots": "^5.3.19",
     "@storybook/react-native-server": "^5.3.19",
+    "@types/node": "^14.0.24",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^25.1.0",
     "babel-loader": "^8.1.0",
     "babel-plugin-module-resolver": "^4.0.0",
     "babel-plugin-react-require": "^3.1.3",
+    "babel-plugin-transform-typescript-metadata": "^0.3.0",
     "eslint": "^6.5.1",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-config-prettier": "^6.11.0",
@@ -53,6 +58,8 @@
     "jest": "^25.1.0",
     "lint-staged": "^10.2.11",
     "metro-react-native-babel-preset": "^0.59.0",
+    "patch-package": "^6.2.2",
+    "postinstall-prepare": "^1.0.1",
     "prettier": "^2.0.5",
     "react-require": "^1.0.1",
     "react-test-renderer": "16.13.1"
