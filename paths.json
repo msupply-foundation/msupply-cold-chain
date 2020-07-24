@@ -1,6 +1,11 @@
 {
   "~hooks": "./src/ui/hooks",
   "~storybook": "./src/ui/storybook",
+
   "~constants": "./src/shared/constants",
-  "~translations": "./src/shared/translations"
+  "~translations": "./src/shared/translations",
+
+  "~services": "./src/services",
+  "~database": "./src/services/database",
+  "~entities": "./src/services/database/entities"
 }
