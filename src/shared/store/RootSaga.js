@@ -1,4 +1,5 @@
-import { spawn, createSagaMiddleware } from 'redux-saga';
+import createSagaMiddleware from 'redux-saga';
+import { spawn } from 'redux-saga/effects';
 
 import { BluetoothServiceSaga } from '~bluetooth';
 

@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 
+import { SagaMiddleware, RootSaga } from './RootSaga';
 import RootReducer from './RootReducer';
 
 import { enhancers } from './enhancers';
@@ -11,6 +12,8 @@ const store = configureStore({
   middleware,
   enhancers,
 });
+
+SagaMiddleware.run(RootSaga);
 
 // Sets up hot module reloading for reducers.
 if (__DEV__ && module.hot) {

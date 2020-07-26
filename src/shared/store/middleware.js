@@ -1,5 +1,6 @@
 import { getDefaultMiddleware } from '@reduxjs/toolkit';
 import { createLogger } from 'redux-logger';
+import { SagaMiddleware } from './RootSaga';
 
 /**
  * Redux middleware config
@@ -20,6 +21,12 @@ const defaultMiddlewareOptions = {
   thunk: false,
 };
 middleware.concat(getDefaultMiddleware(defaultMiddlewareOptions));
+
+/**
+ * Redux Saga
+ * https://redux-saga.js.org/
+ */
+middleware.push(SagaMiddleware);
 
 /**
  * Dev environment middleware
