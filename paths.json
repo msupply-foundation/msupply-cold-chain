@@ -7,5 +7,9 @@
 
   "~services": "./src/services",
   "~database": "./src/services/database",
-  "~entities": "./src/services/database/entities"
+  "~entities": "./src/services/database/entities",
+
+  "~bluetooth": "./src/services/bluetooth",
+
+  "~shared": "./src/shared"
 }
