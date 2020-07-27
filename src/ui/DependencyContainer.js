@@ -1,16 +1,13 @@
-import { useEffect, useState, createContext } from 'react';
-import { useDispatch } from 'react-redux';
-import { Database, DatabaseService } from '~database';
-import { BluetoothService } from '~bluetooth/BluetoothService';
+import { useEffect, createContext } from 'react';
 
-const DatabaseServiceContext = createContext({});
-const BluetoothServiceContext = createContext({});
+import { Database, DatabaseService } from '~database';
+import { BluetoothService } from '~bluetooth';
+import { registerService, getService } from '~services';
+import { SERVICES } from '~constants';
+
+const ServiceLocatorContext = createContext(null);
 
 export const DependencyContainer = props => {
-  const [databaseService, setDatabaseService] = useState({});
-  const [bluetoothService, setBluetoothService] = useState({});
-  const dispatch = useDispatch();
-
   // When mounting, set up the app dependencies. This is ...
   // ... where all dependencies should be instantiated   ...
   // ... and imported. If you require some dependency    ...
@@ -21,20 +18,13 @@ export const DependencyContainer = props => {
     const dbService = new DatabaseService(db);
     const btService = new BluetoothService();
 
-    setBluetoothService(btService);
-    setDatabaseService(dbService);
-
-    dispatch({ type: 'setBluetoothService', payload: { bluetoothService: btService } });
-    dispatch({ type: 'setDatabaseService', payload: { bluetoothService: dbService } });
+    registerService(SERVICES.BLUETOOTH, btService);
+    registerService(SERVICES.DATABASE, dbService);
   }, []);
 
   const { children } = props;
 
   return (
-    <BluetoothServiceContext.Provider value={bluetoothService}>
-      <DatabaseServiceContext.Provider value={databaseService}>
-        {children}
-      </DatabaseServiceContext.Provider>
-    </BluetoothServiceContext.Provider>
+    <ServiceLocatorContext.Provider value={getService}>{children}</ServiceLocatorContext.Provider>
   );
 };
