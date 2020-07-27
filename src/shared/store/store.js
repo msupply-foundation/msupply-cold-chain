@@ -1,8 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-
 import { SagaMiddleware, RootSaga } from './RootSaga';
-import RootReducer from './RootReducer';
-
+import { RootReducer } from './RootReducer';
 import { enhancers } from './enhancers';
 import { middleware } from './middleware';
 
@@ -21,7 +19,6 @@ if (__DEV__ && module.hot) {
     () => './RootReducer',
     () => {
       const nextReducer = require('./RootReducer').default;
-
       store.replaceReducer(nextReducer);
     }
   );

@@ -1,10 +1,17 @@
 import createSagaMiddleware from 'redux-saga';
-import { spawn } from 'redux-saga/effects';
+import { fork } from 'redux-saga/effects';
 
-import { BluetoothServiceSaga } from '~bluetooth';
+import { BluetoothServiceWatcher } from '~bluetooth';
+import { getService } from '~services';
 
-export function* RootSaga() {
-  yield spawn(BluetoothServiceSaga);
+export function* X() {
+  yield fork(BluetoothServiceWatcher);
 }
 
-export const SagaMiddleware = createSagaMiddleware();
+export function* RootSaga() {
+  yield fork(BluetoothServiceWatcher);
+}
+
+export const SagaMiddleware = createSagaMiddleware({
+  context: { getService },
+});

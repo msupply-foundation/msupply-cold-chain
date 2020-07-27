@@ -1,6 +1,4 @@
-import { createReducer } from '@reduxjs/toolkit';
+import { combineReducers } from 'redux';
 import { BluetoothReducer } from '~bluetooth/bluetoothSlice';
 
-console.log(BluetoothReducer);
-
-export default createReducer({}, { bluetooth: BluetoothReducer });
+export const RootReducer = combineReducers({ bluetooth: BluetoothReducer });
