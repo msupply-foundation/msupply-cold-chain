@@ -1,4 +1,4 @@
-package com.msupplymobile;
+package com.cce;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;

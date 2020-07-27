@@ -1,4 +1,4 @@
-package com.msupplymobile;
+package com.cce;
 
 public enum ErrorCode{
     E_PARSING_FAILED("Problem parsing, decode failed"),

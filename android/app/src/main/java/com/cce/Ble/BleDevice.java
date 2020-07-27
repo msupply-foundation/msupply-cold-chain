@@ -1,4 +1,4 @@
-package com.msupplymobile;
+package com.cce;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanResult;

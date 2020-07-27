@@ -1,4 +1,4 @@
-package com.msupplymobile;
+package com.cce;
 import com.facebook.react.bridge.WritableArray;
 import java.util.Map;
 import com.facebook.react.bridge.WritableMap;

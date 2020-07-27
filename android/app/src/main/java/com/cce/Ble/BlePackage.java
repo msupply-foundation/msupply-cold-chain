@@ -1,8 +1,8 @@
-package com.msupplymobile;
+package com.cce;
 
 import android.app.Activity;
 
-import com.msupplymobile.BleManager;
+import com.cce.BleManager;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
