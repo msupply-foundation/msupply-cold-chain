@@ -1,3 +1,3 @@
-export { BluetoothActions, BluetoothReducer } from './bluetoothSlice';
+export { BluetoothReducer, PassiveBluetoothActions, BluetoothStateActions } from './bluetoothSlice';
 export { BluetoothService } from './BluetoothService';
-export { BluetoothServiceSaga } from './bluetoothSagas';
+export { BluetoothServiceWatcher } from './bluetoothSagas';
