@@ -3,13 +3,14 @@ import { JoinColumn, ManyToOne, Entity, Column, OneToMany } from 'typeorm/browse
 import { Base } from './Base';
 import { TemperatureLog } from './TemperatureLog';
 import { TemperatureBreachConfiguration } from './TemperatureBreachConfiguration';
+import { Sensor } from './Sensor';
 
 @Entity('TemperatureBreach')
 class TemperatureBreach extends Base {
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ type: 'integer', nullable: true })
   endTimestamp;
 
-  @Column({ type: 'double', nullable: false })
+  @Column({ type: 'integer', nullable: false })
   startTimestamp;
 
   @Column({ type: 'varchar', nullable: false })
@@ -19,13 +20,22 @@ class TemperatureBreach extends Base {
     cascade: ['insert', 'update'],
     eager: true,
   })
-  @JoinColumn({ name: 'temperatureBreachConfigId' })
+  @JoinColumn({ name: 'temperatureBreachConfigurationId' })
   temperatureBreachConfiguration;
 
   @OneToMany(() => TemperatureLog, temperatureLog => temperatureLog.temperatureBreach, {
     cascade: ['insert', 'update'],
   })
   temperatureLogs;
+
+  @Column({ type: 'varchar', nullable: false })
+  sensorId;
+
+  @ManyToOne(() => Sensor, sensor => sensor.temperatureBreaches, {
+    cascade: ['insert', 'update'],
+  })
+  @JoinColumn({ name: 'sensorId' })
+  sensor;
 }
 
 export { TemperatureBreach };

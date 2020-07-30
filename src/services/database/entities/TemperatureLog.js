@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { ManyToOne, Entity, Column, JoinColumn } from 'typeorm/browser';
+import { ManyToOne, Entity, Column, JoinColumn, Index } from 'typeorm/browser';
 import { Base } from './Base';
 import { TemperatureBreach } from './TemperatureBreach';
 import { Sensor } from './Sensor';
@@ -9,7 +9,7 @@ class TemperatureLog extends Base {
   @Column({ type: 'double' })
   temperature;
 
-  @Column({ type: 'datetime' })
+  @Column({ type: 'integer' })
   timestamp;
 
   @Column({ type: 'varchar', nullable: true })
@@ -25,12 +25,13 @@ class TemperatureLog extends Base {
   @Column({ type: 'varchar', nullable: true })
   sensorId;
 
+  @Index()
   @JoinColumn({ name: 'sensorId' })
   @ManyToOne(() => Sensor, temperatureBreach => temperatureBreach.temperatureLogs, {
     cascade: ['insert', 'update'],
     eager: true,
   })
-  temperatureBreach;
+  sensor;
 }
 
 export { TemperatureLog };

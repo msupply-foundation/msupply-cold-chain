@@ -1,4 +1,4 @@
-import { Database } from './Database';
-import { DatabaseService } from './DatabaseService';
-
-export { Database, DatabaseService };
+export { Database } from './Database';
+export { DatabaseService } from './DatabaseService';
+export { WatchDatabaseActions } from './DatabaseSagas';
+export { DatabaseReducer } from './DatabaseSlice';
