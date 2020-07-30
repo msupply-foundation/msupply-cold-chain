@@ -52,6 +52,10 @@ export class DatabaseService {
     return (await connection.getRepository(entityName)).createQueryBuilder(alias);
   };
 
+  getSensors = async () => {
+    return this.getAll(ENTITIES.SENSOR);
+  };
+
   saveSensors = async sensors => {
     const macAddresses = sensors.map(({ macAddress }) => ({ macAddress }));
     const sensorEntities = await this.queryWith(ENTITIES.SENSOR, macAddresses);
@@ -90,7 +94,7 @@ export class DatabaseService {
   };
 
   saveSensorLogs = async (dataToSave, macAddress) => {
-    const [sensorEntity] = await this.queryWith('Sensor', { macAddress });
+    const [sensorEntity] = await this.queryWith(ENTITIES.SENSOR, { macAddress });
 
     const { id, logInterval } = sensorEntity;
 
@@ -118,7 +122,10 @@ export class DatabaseService {
   };
 
   createTemperatureLogs = async macAddress => {
-    const [sensor] = await this.queryWith('Sensor', { macAddress, relations: ['sensorLogs'] });
+    const [sensor] = await this.queryWith(ENTITIES.SENSOR, {
+      macAddress,
+      relations: ['sensorLogs'],
+    });
     const { logInterval, sensorLogs, id: sensorId } = sensor;
 
     const numberOfIntervalsPerTemp = Math.ceil(
@@ -136,18 +143,18 @@ export class DatabaseService {
 
     const createdLogs = await this.upsert(ENTITIES.TEMPERATURE_LOG, mapped);
 
-    chunked.forEach(chunk => this.delete('SensorLog', chunk));
+    chunked.forEach(chunk => this.delete(ENTITIES.SENSOR_LOG, chunk));
 
     return createdLogs;
   };
 
   getTemperatureLogs = async (sensor, fromDate = new Date(null), toDate = new Date()) => {
     const { id: sensorId } = sensor;
-    return this.queryWith('TemperatureLog', {
+    return this.queryWith(ENTITIES.TEMPERATURE_LOG, {
       where: [
         { sensorId: Equal(sensorId) },
-        { timestamp: MoreThanOrEqual(moment(fromDate).format('YYYY-MM-DD HH:mm:ss.SSS')) },
-        { timestamp: LessThanOrEqual(moment(toDate).format('YYYY-MM-DD HH:mm:ss.SSS')) },
+        { timestamp: MoreThanOrEqual(fromDate.getTime()) },
+        { timestamp: LessThanOrEqual(toDate.getTime()) },
       ],
       order: {
         timestamp: 'ASC',
@@ -161,6 +168,9 @@ export class DatabaseService {
 
   createBreaches = async macAddress => {
     const [sensor] = await this.getSensor(macAddress);
+
+    const breachesCreated = [];
+    const breachesEnded = [];
 
     const { id: sensorId } = sensor;
 
@@ -177,7 +187,7 @@ export class DatabaseService {
 
     for (let i = 0; i < temperatureLogs.length; i += 1) {
       const [mostRecentSensorBreach] = (
-        await (await this.getQueryBuilder('TemperatureBreach', 'tb'))
+        await (await this.getQueryBuilder(ENTITIES.TEMPERATURE_BREACH, 'tb'))
           .leftJoinAndSelect('tb.temperatureBreachConfiguration', 'config')
           .where('endTimestamp IS NULL AND sensorId = :sensorId', { sensorId })
           .execute()
@@ -200,18 +210,19 @@ export class DatabaseService {
           temperature >= minimumTemperature && temperature <= maximumTemperature;
 
         if (willContinueBreach) {
-          await this.upsert('TemperatureLog', {
+          await this.upsert(ENTITIES.TEMPERATURE_LOG, {
             id: temperatureLogs[i].id,
             temperatureBreachId,
           });
         } else {
-          await this.upsert('TemperatureBreach', {
+          const breach = await this.upsert(ENTITIES.TEMPERATURE_BREACH, {
             ...mostRecentSensorBreach,
             endTimestamp: timestamp,
           });
+          breachesEnded.push(breach);
         }
       } else {
-        const configs = await this.getAll('TemperatureBreachConfiguration');
+        const configs = await this.getAll(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION);
 
         for (let j = 0; j < configs.length; j += 1) {
           const { timestamp } = temperatureLogs[i];
@@ -220,7 +231,7 @@ export class DatabaseService {
           const lookback = timestamp - duration;
 
           const logs = (
-            await (await this.getQueryBuilder('TemperatureLog', 'tl'))
+            await (await this.getQueryBuilder(ENTITIES.TEMPERATURE_LOG, 'tl'))
               .where('tl.timestamp >= :lookback AND tl.timestamp <= :timestamp', {
                 maximumTemperature,
                 minimumTemperature,
@@ -249,18 +260,24 @@ export class DatabaseService {
             const endTimestamp = logs[logs.length - 1].timestamp;
 
             if (endTimestamp - startTimestamp >= duration) {
-              const result = await this.upsert('TemperatureBreach', {
+              const result = await this.upsert(ENTITIES.TEMPERATURE_BREACH, {
                 startTimestamp,
                 temperatureBreachConfigurationId: id,
                 sensorId,
               });
               for (let k = 0; k < logs.length; k += 1) {
-                await this.upsert('TemperatureLog', { ...logs[k], temperatureBreachId: result.id });
+                await this.upsert(ENTITIES.TEMPERATURE_LOG, {
+                  ...logs[k],
+                  temperatureBreachId: result.id,
+                });
               }
+              breachesCreated.push(result);
             }
           }
         }
       }
     }
+
+    return { breachesCreated, breachesEnded };
   };
 }

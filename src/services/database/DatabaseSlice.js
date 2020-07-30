@@ -57,6 +57,12 @@ export const { actions: TemperatureLogActions, reducer: TemperatureLogReducer } 
       prepare: macAddress => ({ payload: { macAddress } }),
       reducer: () => {},
     },
+    savedBreaches: {
+      prepare: (createdBreaches, endedBreaches) => ({
+        payload: { createdBreaches, endedBreaches },
+      }),
+      reducer: () => {},
+    },
   },
 });
 
