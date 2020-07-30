@@ -13,7 +13,11 @@ import { PassiveBluetoothActions, BluetoothStateActions } from './bluetoothSlice
 import { SERVICES } from '~constants';
 import { TemperatureLogActions, SensorsActions } from '~database/DatabaseSlice';
 
-function* downloadTemperatures(action) {
+/**
+ * Initiates a specific scan for a sensor to download all
+ * logs.
+ */
+function* downloadTemperaturesForSensor(action) {
   const { payload } = action;
   const { macAddress } = payload;
 
@@ -25,12 +29,29 @@ function* downloadTemperatures(action) {
   yield put(TemperatureLogActions.saveSensorLogs(logs, macAddress));
 }
 
+/**
+ * Starts a long running process of downloading temperatures from all ...
+ * ... sensors which are saved in the database.
+ *
+ */
+function* downloadTemperatures() {
+  const getService = yield getContext('getService');
+  const dbService = yield call(getService, SERVICES.DATABASE);
+
+  const sensors = yield dbService.getSensors();
+
+  yield* sensors.map(({ macAddress }) => put(downloadTemperaturesForSensor, macAddress));
+}
+
+/**
+ * Initiates a scan for sensors, returning their advertisement packets.
+ */
 function* scanForSensors() {
   const getService = yield getContext('getService');
   const btService = getService(SERVICES.BLUETOOTH);
 
   const result = yield call(btService.scanForDevices);
-  console.log(result);
+
   yield put(SensorsActions.saveSensors(result));
 }
 
@@ -50,6 +71,9 @@ function* startBluetooth(action) {
   yield put(BluetoothStateActions.complete());
 }
 
+/**
+ * Starts a timer counting down until the next passive download.
+ */
 function* passiveDownloadingTimer() {
   yield put(PassiveBluetoothActions.startTimer());
   while (true) {
