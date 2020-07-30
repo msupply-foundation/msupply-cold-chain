@@ -2,6 +2,7 @@
 import { OneToMany, Entity, Column, PrimaryGeneratedColumn } from 'typeorm/browser';
 import { SensorLog } from './SensorLog';
 import { TemperatureLog } from './TemperatureLog';
+import { TemperatureBreach } from './TemperatureBreach';
 
 @Entity('Sensor')
 class Sensor {
@@ -17,7 +18,7 @@ class Sensor {
   @Column({ nullable: true, type: 'varchar', length: 100 })
   name;
 
-  @OneToMany(() => SensorLog, sensorLog => sensorLog.temperatureBreach, {
+  @OneToMany(() => SensorLog, sensorLog => sensorLog.sensor, {
     cascade: ['insert', 'update'],
   })
   sensorLogs;
@@ -26,6 +27,11 @@ class Sensor {
     cascade: ['insert', 'update'],
   })
   temperatureLogs;
+
+  @OneToMany(() => TemperatureBreach, temperatureBreach => temperatureBreach.sensor, {
+    cascade: ['insert', 'update'],
+  })
+  temperatureBreaches;
 }
 
 export { Sensor };
