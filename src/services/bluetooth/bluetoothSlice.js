@@ -17,7 +17,10 @@ export const { actions: BluetoothStateActions, reducer: BluetoothStateReducer } 
   name: REDUCER_SHAPE.BLUETOOTH_STATE,
   initialState: { state: TEMPERATURE_SYNC_STATE.ENABLED },
   reducers: {
-    downloadTemperatures: () => {},
+    downloadTemperatures: {
+      reducer: () => {},
+      prepare: macAddress => ({ payload: { macAddress } }),
+    },
     startTemperatureSync: () => {},
     scanForSensors: () => {},
     complete: () => ({ state: TEMPERATURE_SYNC_STATE.ENABLED }),

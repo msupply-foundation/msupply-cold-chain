@@ -14,7 +14,7 @@ export class BluetoothService {
   }
 
   scanForDevices = async () => {
-    const { success, data, error } = await this.manager.getDevices(this.manufacturerId);
+    const { success, data, error } = await this.manager.getDevices(this.manufacturerId, '');
 
     if (success) return data;
     throw error;

@@ -10,18 +10,28 @@ import {
   getContext,
 } from 'redux-saga/effects';
 import { PassiveBluetoothActions, BluetoothStateActions } from './bluetoothSlice';
-import { SERVICES } from '../../shared/constants';
+import { SERVICES } from '~constants';
+import { TemperatureLogActions, SensorsActions } from '~database/DatabaseSlice';
 
-function* downloadTemperatures() {
+function* downloadTemperatures(action) {
+  const { payload } = action;
+  const { macAddress } = payload;
+
   const getService = yield getContext('getService');
-  const btService = getService(SERVICES.BLUETOOTH);
+  const btService = yield call(getService, SERVICES.BLUETOOTH);
 
-  yield call(btService.scanForDevices);
-  yield delay(10000);
+  const logs = yield call(btService.downloadLogs, 'DB:56:07:61:C7:13');
+
+  yield put(TemperatureLogActions.saveSensorLogs(logs, macAddress));
 }
 
 function* scanForSensors() {
-  yield delay(10000);
+  const getService = yield getContext('getService');
+  const btService = getService(SERVICES.BLUETOOTH);
+
+  const result = yield call(btService.scanForDevices);
+  console.log(result);
+  yield put(SensorsActions.saveSensors(result));
 }
 
 /**
@@ -34,7 +44,7 @@ function* startBluetooth(action) {
   const { type } = BluetoothStateActions.downloadTemperatures();
   const { type: thisActionType } = action;
 
-  if (type === thisActionType) yield call(downloadTemperatures);
+  if (type === thisActionType) yield call(downloadTemperatures, action);
   else yield call(scanForSensors);
 
   yield put(BluetoothStateActions.complete());
