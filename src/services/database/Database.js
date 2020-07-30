@@ -1,4 +1,4 @@
-import { createConnection, getRepository, getConnection } from 'typeorm/browser';
+import { createConnection } from 'typeorm/browser';
 import {
   SensorLog,
   TemperatureBreach,
@@ -9,7 +9,7 @@ import {
 
 const DEFAULT_DATABASE_CONFIG = {
   type: 'react-native',
-  database: 'test4',
+  database: 'test21',
   location: 'default',
   logging: ['error', 'query', 'schema'],
   synchronize: true,
@@ -28,17 +28,20 @@ const DEFAULT_DATABASE_CONFIG = {
 export class Database {
   constructor(config = DEFAULT_DATABASE_CONFIG) {
     this.config = config;
+    this.connection = null;
   }
 
-  getConnection = async () => {
-    try {
-      return getConnection('default');
-    } catch {
-      return createConnection(this.config);
-    }
+  createConnection = async () => {
+    this.connection = await createConnection(this.config);
+    return this.connection;
   };
 
-  getRepository = async repository => {
-    return getRepository(repository);
+  getConnection = async () => {
+    if (!this.connection) await this.createConnection();
+    return this.connection;
+  };
+
+  getRepository = async repo => {
+    return (await this.getConnection()).getRepository(repo);
   };
 }
