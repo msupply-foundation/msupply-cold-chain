@@ -12,44 +12,29 @@ export class DatabaseService {
   }
 
   delete = async (entityName, entities) => {
-    const connection = await this.database.getConnection();
-
-    const repository = await connection.getRepository(entityName);
-
+    const repository = await this.database.getRepository(entityName);
     return repository.remove(entities);
   };
 
   getAll = async entityName => {
     const connection = await this.database.getConnection();
-
     const repository = await connection.getRepository(entityName);
-
     return repository.find();
-  };
-
-  create = async (entityName, data) => {
-    const repository = await this.database.getRepository(entityName);
-
-    return repository.insert(data);
   };
 
   upsert = async (entityName, object) => {
     const repository = await this.database.getRepository(entityName);
-    const options = { chunk: 50 };
-
-    return repository.save(object, options);
+    return repository.save(object);
   };
 
   queryWith = async (entityName, queryObject) => {
     const repository = await this.database.getRepository(entityName);
-
     return repository.find(queryObject);
   };
 
   getQueryBuilder = async (entityName, alias) => {
-    const connection = await this.database.getConnection();
-
-    return (await connection.getRepository(entityName)).createQueryBuilder(alias);
+    const repository = await this.database.getRepository(entityName);
+    return repository.createQueryBuilder(alias);
   };
 
   getSensors = async () => {
@@ -226,7 +211,7 @@ export class DatabaseService {
 
         for (let j = 0; j < configs.length; j += 1) {
           const { timestamp } = temperatureLogs[i];
-          const { maximumTemperature, minimumTemperature, duration, id } = configs[j];
+          const { maximumTemperature, minimumTemperature, duration, id: configId } = configs[j];
 
           const lookback = timestamp - duration;
 
@@ -260,17 +245,7 @@ export class DatabaseService {
             const endTimestamp = logs[logs.length - 1].timestamp;
 
             if (endTimestamp - startTimestamp >= duration) {
-              const result = await this.upsert(ENTITIES.TEMPERATURE_BREACH, {
-                startTimestamp,
-                temperatureBreachConfigurationId: id,
-                sensorId,
-              });
-              for (let k = 0; k < logs.length; k += 1) {
-                await this.upsert(ENTITIES.TEMPERATURE_LOG, {
-                  ...logs[k],
-                  temperatureBreachId: result.id,
-                });
-              }
+              const result = await this.createBreach(startTimestamp, sensorId, configId, logs);
               breachesCreated.push(result);
             }
           }
@@ -279,5 +254,15 @@ export class DatabaseService {
     }
 
     return { breachesCreated, breachesEnded };
+  };
+
+  createBreach = async (startTimestamp, sensorId, temperatureBreachConfigurationId, logs) => {
+    const newBreach = { startTimestamp, sensorId, temperatureBreachConfigurationId };
+    const newBreachRecord = await this.upsert(ENTITIES.TEMPERATURE_BREACH, newBreach);
+
+    const { id: temperatureBreachId } = newBreachRecord;
+    const mappedLogs = logs.map(log => ({ ...log, temperatureBreachId }));
+
+    return this.upsert(ENTITIES.TEMPERATURE_LOG, mappedLogs);
   };
 }
