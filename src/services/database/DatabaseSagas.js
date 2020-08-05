@@ -2,7 +2,7 @@ import { put, call, getContext, takeLeading } from 'redux-saga/effects';
 import { SERVICES } from '~constants';
 import { SensorsActions, TemperatureLogActions } from './DatabaseSlice';
 
-function* createBreaches(action) {
+export function* createBreaches(action) {
   const { payload } = action;
   const { macAddress } = payload;
 
@@ -14,7 +14,7 @@ function* createBreaches(action) {
   yield put(TemperatureLogActions.savedBreaches(createdBreaches, endedBreaches));
 }
 
-function* createTemperatureLogs(action) {
+export function* createTemperatureLogs(action) {
   const { payload } = action;
   const { macAddress } = payload;
 
@@ -27,7 +27,7 @@ function* createTemperatureLogs(action) {
   yield put(TemperatureLogActions.createBreaches(macAddress));
 }
 
-function* saveSensors(action) {
+export function* saveSensors(action) {
   const { payload } = action;
   const { sensors } = payload;
 
@@ -35,10 +35,11 @@ function* saveSensors(action) {
   const dbService = yield call(getService, SERVICES.DATABASE);
 
   const savedSensors = yield call(dbService.saveSensors, sensors);
+
   yield put(SensorsActions.setSensors(savedSensors));
 }
 
-function* saveSensorLogs(action) {
+export function* saveSensorLogs(action) {
   const { payload } = action;
   const { data, macAddress } = payload;
 
