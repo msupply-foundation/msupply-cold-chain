@@ -4,3 +4,9 @@ export const TEMPERATURE_SYNC_STATE = {
   IN_PROGRESS: 'in_progress',
   ERROR: 'error',
 };
+
+export const PASSIVE_TEMPERATURE_SYNC_STATE = {
+  WAITING: 'waiting',
+  STOPPED: 'stopped',
+  IN_PROGRESS: 'in_progress',
+};
