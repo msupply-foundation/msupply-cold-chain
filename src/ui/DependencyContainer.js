@@ -15,15 +15,13 @@ export const DependencyContainer = props => {
   // ... elsewhere, then you should instantiate it here  ...
   // ... and drill it down or pass within some context.
   useEffect(() => {
-    (async () => {
-      const db = new Database();
-      const dbService = new DatabaseService(db);
-      const btService = new BluetoothService();
-      const deviceService = new DeviceService();
-      registerService(SERVICES.DEVICE, deviceService);
-      registerService(SERVICES.BLUETOOTH, btService);
-      registerService(SERVICES.DATABASE, dbService);
-    })();
+    const db = new Database();
+    const dbService = new DatabaseService(db);
+    const btService = new BluetoothService();
+    const deviceService = new DeviceService();
+    registerService(SERVICES.DEVICE, deviceService);
+    registerService(SERVICES.BLUETOOTH, btService);
+    registerService(SERVICES.DATABASE, dbService);
   }, []);
 
   const { children } = props;
