@@ -23,6 +23,7 @@ module.exports = {
     'global-require': 'off',
     'object-curly-newline': 'off',
     'react/react-in-jsx-scope': 'off',
+    'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['draftState'] }],
   },
   globals: {
     fetch: false,
