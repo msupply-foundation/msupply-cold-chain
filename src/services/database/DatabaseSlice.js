@@ -6,19 +6,19 @@ export const { actions: SensorsActions, reducer: SensorsReducer } = createSlice(
   initialState: { sensorIds: [], byId: {} },
   reducers: {
     setSensors: {
-      reducer: (_, action) => {
+      reducer: (draftState, action) => {
         const { payload } = action;
         const { sensors } = payload;
 
         const byId = sensors.reduce((acc, sensor) => {
           const { id } = sensor;
-          acc[id] = sensor;
-          return acc;
+          return { ...acc, [id]: sensor };
         }, {});
 
         const sensorIds = sensors.map(({ id }) => id);
 
-        return { byId, sensorIds };
+        draftState.byId = byId;
+        draftState.sensorIds = sensorIds;
       },
       prepare: sensors => ({ payload: { sensors } }),
     },

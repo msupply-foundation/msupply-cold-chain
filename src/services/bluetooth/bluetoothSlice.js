@@ -1,15 +1,34 @@
 import { createSlice, combineReducers } from '@reduxjs/toolkit';
-import { MILLISECONDS, REDUCER_SHAPE, TEMPERATURE_SYNC_STATE } from '~constants';
+import {
+  BLUETOOTH_SERVICE,
+  REDUCER_SHAPE,
+  TEMPERATURE_SYNC_STATE,
+  PASSIVE_TEMPERATURE_SYNC_STATE,
+} from '~constants';
 
 export const { actions: PassiveBluetoothActions, reducer: PassiveBluetoothReducer } = createSlice({
   name: REDUCER_SHAPE.PASSIVE_BLUETOOTH,
   initialState: { timer: null, state: null },
   reducers: {
-    startTimer: () => ({ timer: MILLISECONDS.TEN_MINUTES }),
-    decrementTimer: state => ({ timer: state.timer - MILLISECONDS.ONE_SECOND }),
-    completeTimer: () => ({ timer: null }),
-    start: () => {},
-    stop: () => ({ timer: null }),
+    startTimer: draftState => {
+      draftState.timer = BLUETOOTH_SERVICE.DEFAULT_PASSIVE_DOWNLOAD_DELAY;
+    },
+    decrementTimer: draftState => {
+      draftState.timer -= BLUETOOTH_SERVICE.DEFAULT_TIMER_DELAY;
+    },
+    completeTimer: draftState => {
+      draftState.timer = null;
+    },
+    start: draftState => {
+      draftState.state = PASSIVE_TEMPERATURE_SYNC_STATE.IN_PROGRESS;
+    },
+    stop: () => {},
+    stopped: draftState => {
+      draftState.state = PASSIVE_TEMPERATURE_SYNC_STATE.STOPPED;
+    },
+    complete: draftState => {
+      draftState.state = PASSIVE_TEMPERATURE_SYNC_STATE.WAITING;
+    },
   },
 });
 
@@ -24,10 +43,18 @@ export const { actions: BluetoothStateActions, reducer: BluetoothStateReducer } 
     },
     startTemperatureSync: () => {},
     scanForSensors: () => {},
-    complete: () => ({ state: TEMPERATURE_SYNC_STATE.ENABLED }),
-    start: () => ({ state: TEMPERATURE_SYNC_STATE.IN_PROGRESS }),
-    disable: () => ({ state: TEMPERATURE_SYNC_STATE.DISABLED }),
-    error: () => ({ state: TEMPERATURE_SYNC_STATE.ERROR }),
+    complete: draftState => {
+      draftState.state = TEMPERATURE_SYNC_STATE.ENABLED;
+    },
+    start: draftState => {
+      draftState.state = TEMPERATURE_SYNC_STATE.IN_PROGRESS;
+    },
+    disable: draftState => {
+      draftState.state = TEMPERATURE_SYNC_STATE.DISABLED;
+    },
+    error: draftState => {
+      draftState.state = TEMPERATURE_SYNC_STATE.ERROR;
+    },
     setService: {
       reducer: () => {},
       prepare: bluetoothService => ({ payload: { bluetoothService } }),
