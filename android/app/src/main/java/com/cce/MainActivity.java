@@ -1,5 +1,12 @@
 package com.cce;
 
+// Used for overriding onCreate
+import android.os.Bundle;
+
+// Used to create the splash screen on start up.
+import expo.modules.splashscreen.SplashScreen;
+import expo.modules.splashscreen.SplashScreenImageResizeMode;
+
 import com.facebook.react.ReactActivity;
 
 public class MainActivity extends ReactActivity {
@@ -12,4 +19,14 @@ public class MainActivity extends ReactActivity {
   protected String getMainComponentName() {
     return "cce";
   }
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    
+    // SplashScreen.show(...) has to be called after super.onCreate(...)
+    SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, false);
+  }
+
+
 }
