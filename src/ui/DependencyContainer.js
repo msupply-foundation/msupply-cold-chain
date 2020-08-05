@@ -1,8 +1,9 @@
 import { useEffect, createContext } from 'react';
-
 import { Database, DatabaseService } from '~database';
 import { BluetoothService } from '~bluetooth';
+import { DeviceService } from '~services/device/DeviceService';
 import { registerService, getService } from '~services';
+
 import { SERVICES } from '~constants';
 
 const ServiceLocatorContext = createContext(null);
@@ -14,12 +15,15 @@ export const DependencyContainer = props => {
   // ... elsewhere, then you should instantiate it here  ...
   // ... and drill it down or pass within some context.
   useEffect(() => {
-    const db = new Database();
-    const dbService = new DatabaseService(db);
-    const btService = new BluetoothService();
-
-    registerService(SERVICES.BLUETOOTH, btService);
-    registerService(SERVICES.DATABASE, dbService);
+    (async () => {
+      const db = new Database();
+      const dbService = new DatabaseService(db);
+      const btService = new BluetoothService();
+      const deviceService = new DeviceService();
+      registerService(SERVICES.DEVICE, deviceService);
+      registerService(SERVICES.BLUETOOTH, btService);
+      registerService(SERVICES.DATABASE, dbService);
+    })();
   }, []);
 
   const { children } = props;
