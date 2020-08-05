@@ -8,16 +8,17 @@ import {
   race,
   cancel,
   getContext,
+  takeEvery,
 } from 'redux-saga/effects';
 import { PassiveBluetoothActions, BluetoothStateActions } from './bluetoothSlice';
-import { SERVICES } from '~constants';
+import { SERVICES, BLUETOOTH_SERVICE } from '~constants';
 import { TemperatureLogActions, SensorsActions } from '~database/DatabaseSlice';
 
 /**
  * Initiates a specific scan for a sensor to download all
  * logs.
  */
-function* downloadTemperaturesForSensor(action) {
+export function* downloadTemperaturesForSensor(action) {
   const { payload } = action;
   const { macAddress } = payload;
 
@@ -34,21 +35,22 @@ function* downloadTemperaturesForSensor(action) {
  * ... sensors which are saved in the database.
  *
  */
-function* downloadTemperatures() {
+export function* downloadTemperatures() {
   const getService = yield getContext('getService');
   const dbService = yield call(getService, SERVICES.DATABASE);
+  const sensors = yield call(dbService.getSensors);
 
-  const sensors = yield dbService.getSensors();
-
-  yield* sensors.map(({ macAddress }) => put(downloadTemperaturesForSensor, macAddress));
+  yield* sensors.map(({ macAddress }) =>
+    put(BluetoothStateActions.downloadTemperaturesForSensor(macAddress))
+  );
 }
 
 /**
  * Initiates a scan for sensors, returning their advertisement packets.
  */
-function* scanForSensors() {
+export function* scanForSensors() {
   const getService = yield getContext('getService');
-  const btService = getService(SERVICES.BLUETOOTH);
+  const btService = yield call(getService, SERVICES.BLUETOOTH);
 
   const result = yield call(btService.scanForDevices);
 
@@ -59,7 +61,7 @@ function* scanForSensors() {
  * Starts some bluetooth action - download temperatures or scanning   ...
  * ... for sensors. Blocks during one of these process'
  */
-function* startBluetooth(action) {
+export function* startBluetooth(action) {
   yield put(BluetoothStateActions.start());
 
   const { type } = BluetoothStateActions.downloadTemperatures();
@@ -74,38 +76,45 @@ function* startBluetooth(action) {
 /**
  * Starts a timer counting down until the next passive download.
  */
-function* passiveDownloadingTimer() {
+export function* passiveDownloadingTimer() {
   yield put(PassiveBluetoothActions.startTimer());
   while (true) {
     yield put(PassiveBluetoothActions.decrementTimer());
-    yield put(BluetoothStateActions.downloadTemperatures());
-    yield delay(5000);
+    yield delay(BLUETOOTH_SERVICE.DEFAULT_TIMER_DELAY);
   }
 }
 
 /**
  * When a passive download starts,
  */
-function* passiveDownloading() {
+export function* startPassiveDownloading() {
+  yield put(PassiveBluetoothActions.start());
   while (true) {
     yield put(BluetoothStateActions.downloadTemperatures());
     const timerFork = yield fork(passiveDownloadingTimer);
-    yield delay(10000);
+    yield delay(BLUETOOTH_SERVICE.DEFAULT_PASSIVE_DOWNLOAD_DELAY);
     yield cancel(timerFork);
     yield put(PassiveBluetoothActions.completeTimer());
   }
 }
 
+export function* stopPassiveDownloading() {
+  yield take(PassiveBluetoothActions.stop);
+  yield put(BluetoothStateActions.complete());
+  yield put(PassiveBluetoothActions.completeTimer());
+  yield put(PassiveBluetoothActions.stopped());
+}
+
 /**
- * Watches, forever passive downloading starting/stopping. Blocks until...
+ * Watches, forever, passive downloading starting/stopping. Blocks until...
  * a first start action, then sets a race between starting a passive   ...
  * ... sync which never finishes and taking the first stop action,     ...
  * ... which completes instantly.
  */
-function* watchPassiveDownloading() {
+export function* watchPassiveDownloading() {
   while (true) {
     yield take(PassiveBluetoothActions.start);
-    yield race([call(passiveDownloading), take(PassiveBluetoothActions.stop)]);
+    yield race({ start: call(startPassiveDownloading), stop: call(stopPassiveDownloading) });
   }
 }
 
@@ -120,5 +129,9 @@ export function* BluetoothServiceWatcher() {
   yield takeLeading(
     [BluetoothStateActions.downloadTemperatures, BluetoothStateActions.scanForSensors],
     startBluetooth
+  );
+  yield takeEvery(
+    BluetoothStateActions.downloadTemperaturesForSensor,
+    downloadTemperaturesForSensor
   );
 }
