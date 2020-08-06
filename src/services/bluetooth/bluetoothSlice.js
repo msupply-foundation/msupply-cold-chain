@@ -55,10 +55,6 @@ export const { actions: BluetoothStateActions, reducer: BluetoothStateReducer } 
     error: draftState => {
       draftState.state = TEMPERATURE_SYNC_STATE.ERROR;
     },
-    setService: {
-      reducer: () => {},
-      prepare: bluetoothService => ({ payload: { bluetoothService } }),
-    },
   },
 });
 
