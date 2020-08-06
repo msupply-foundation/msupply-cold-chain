@@ -1,8 +1,26 @@
-import { expectSaga } from 'redux-saga-test-plan';
+import { testSaga, expectSaga } from 'redux-saga-test-plan';
 import * as DatabaseSagas from '~database/DatabaseSagas';
-import { DatabaseReducer } from './DatabaseSlice';
+import { DatabaseReducer, SensorsActions, TemperatureLogActions } from './DatabaseSlice';
 
 const macAddress = 'DB:56:07:61:C7:13';
+
+describe('Database Sagas: WatchDatabaseActions - unit test', () => {
+  testSaga(DatabaseSagas.WatchDatabaseActions)
+    .next()
+    .takeLeading(SensorsActions.saveSensors, DatabaseSagas.saveSensors)
+
+    .next()
+    .takeLeading(TemperatureLogActions.saveSensorLogs, DatabaseSagas.saveSensorLogs)
+
+    .next()
+    .takeLeading(TemperatureLogActions.createTemperatureLogs, DatabaseSagas.createTemperatureLogs)
+
+    .next()
+    .takeLeading(TemperatureLogActions.createBreaches, DatabaseSagas.createBreaches)
+
+    .next()
+    .isDone();
+});
 
 describe('Database Sagas: createBreaches', () => {
   it('correctly manipulates the store', () => {
