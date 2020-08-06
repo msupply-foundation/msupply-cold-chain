@@ -54,6 +54,10 @@ export class DatabaseService {
     return this.upsert(ENTITIES.SENSOR, updatedEntities);
   };
 
+  getSensor = async macAddress => {
+    return this.queryWith(ENTITIES.SENSOR, { macAddress });
+  };
+
   mostRecentTimestamp = async sensor => {
     const { id } = sensor;
     const sensorQueryBuilder = await this.getQueryBuilder(ENTITIES.SENSOR, 's');
@@ -78,32 +82,8 @@ export class DatabaseService {
       : mostRecentTemperatureLogTimestamp;
   };
 
-  saveSensorLogs = async (dataToSave, macAddress) => {
-    const [sensorEntity] = await this.queryWith(ENTITIES.SENSOR, { macAddress });
-
-    const { id, logInterval } = sensorEntity;
-
-    const numberOfLogsToSave = dataToSave.length;
-
-    const mostRecentStamp = await this.mostRecentTimestamp(sensorEntity);
-    const timeNow = moment(new Date());
-
-    const numberOfSecondsSinceLastDownload = timeNow.diff(moment(mostRecentStamp), 'seconds', true);
-    const numberOfLogsToLookback =
-      Math.floor(numberOfSecondsSinceLastDownload / logInterval) || numberOfLogsToSave;
-    const sliceIndex = numberOfLogsToSave - numberOfLogsToLookback;
-    const logsToSave = sliceIndex >= 0 ? dataToSave.slice(sliceIndex) : [];
-
-    const initialTimestamp = moment(mostRecentStamp ?? timeNow);
-    initialTimestamp.subtract(logsToSave.length * logInterval, 'seconds');
-
-    const toSave = logsToSave.map(({ temperature }, i) => {
-      const timestampOffset = (i + 1) * logInterval;
-      const timestamp = moment(initialTimestamp).add(timestampOffset, 'seconds').format('x');
-      return { temperature, sensorId: id, timestamp };
-    });
-
-    return this.upsert(ENTITIES.SENSOR_LOG, toSave);
+  saveSensorLogs = async logsToSave => {
+    return this.upsert(ENTITIES.SENSOR_LOG, logsToSave);
   };
 
   createTemperatureLogs = async macAddress => {
@@ -145,10 +125,6 @@ export class DatabaseService {
         timestamp: 'ASC',
       },
     });
-  };
-
-  getSensor = async macAddress => {
-    return this.queryWith(ENTITIES.SENSOR, { macAddress });
   };
 
   createBreaches = async macAddress => {

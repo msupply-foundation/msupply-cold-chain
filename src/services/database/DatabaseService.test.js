@@ -1,8 +1,9 @@
+import { ENTITIES } from '~constants';
 import { DatabaseService } from './DatabaseService';
 
 const remove = jest.fn(async () => {});
 const find = jest.fn(async () => {});
-const save = jest.fn(async () => {});
+const save = jest.fn(async arg => arg);
 const createQueryBuilder = jest.fn(async () => {});
 const getRepository = jest.fn(async () => ({ remove, find, save, createQueryBuilder }));
 const getConnection = jest.fn(async () => ({ getRepository }));
@@ -185,5 +186,44 @@ describe('DB Service: getQueryBuilder', () => {
 
     expect(createQueryBuilder.mock.calls[0].length).toBe(1);
     expect(createQueryBuilder.mock.calls[0][0]).toBe(alias);
+  });
+});
+
+describe('DatabaseService: saveLogs', () => {
+  it('Saves and returns logs passed', async () => {
+    const dbService = new DatabaseService(new MockDatabase());
+
+    const sensorId = '1';
+    const id = '1';
+
+    const logsToSave = [
+      { sensorId, id, temperature: 1, timestamp: 0 },
+      { sensorId, id, temperature: 1, timestamp: 0 },
+    ];
+
+    const result = await dbService.saveSensorLogs(logsToSave);
+
+    expect(result).toEqual(logsToSave);
+  });
+  it('calls the underlying database interface with the correct calls', async () => {
+    const dbService = new DatabaseService(new MockDatabase());
+
+    const sensorId = '1';
+    const id = '1';
+
+    const logsToSave = [
+      { sensorId, id, temperature: 1, timestamp: 0 },
+      { sensorId, id, temperature: 1, timestamp: 0 },
+    ];
+
+    await dbService.saveSensorLogs(logsToSave);
+
+    expect(save.mock.calls.length).toEqual(1);
+    expect(save.mock.calls[0].length).toEqual(1);
+    expect(save.mock.calls[0][0]).toEqual(logsToSave);
+
+    expect(getRepository.mock.calls.length).toEqual(1);
+    expect(getRepository.mock.calls[0].length).toEqual(1);
+    expect(getRepository.mock.calls[0][0]).toEqual(ENTITIES.SENSOR_LOG);
   });
 });
