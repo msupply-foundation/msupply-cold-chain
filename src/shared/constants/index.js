@@ -9,4 +9,4 @@ export {
   PERMISSION,
   PERMISSION_STATE,
 } from './NativeDevice';
-export { BLUETOOTH_SERVICE_ERROR } from './Error';
+export { DATABASE_UTIL_ERROR, BLUETOOTH_SERVICE_ERROR, SERVICE_LOCATOR_ERROR } from './Error';

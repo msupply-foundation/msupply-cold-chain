@@ -1,6 +1,8 @@
 export const SERVICES = {
   BLUETOOTH: 'bluetooth',
   DATABASE: 'database',
+  DEVICE: 'device',
+  DATABASE_UTILS: 'databaseUtils',
 };
 
 export const BLUETOOTH_SERVICE = {
