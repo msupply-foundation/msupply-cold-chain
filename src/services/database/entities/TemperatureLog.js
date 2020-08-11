@@ -1,11 +1,13 @@
 /* eslint-disable import/no-cycle */
-import { ManyToOne, Entity, Column, JoinColumn, Index } from 'typeorm/browser';
-import { Base } from './Base';
+import { PrimaryColumn, ManyToOne, Entity, Column, JoinColumn, Index } from 'typeorm/browser';
 import { TemperatureBreach } from './TemperatureBreach';
 import { Sensor } from './Sensor';
 
 @Entity('TemperatureLog')
-class TemperatureLog extends Base {
+class TemperatureLog {
+  @PrimaryColumn({ type: 'varchar', nullable: false })
+  id;
+
   @Column({ type: 'double' })
   temperature;
 
@@ -17,7 +19,7 @@ class TemperatureLog extends Base {
 
   @ManyToOne(() => TemperatureBreach, temperatureBreach => temperatureBreach.temperatureLogs, {
     cascade: ['insert', 'update'],
-    eager: true,
+    eager: false,
   })
   @JoinColumn({ name: 'temperatureBreachId' })
   temperatureBreach;
