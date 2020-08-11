@@ -1,3 +1,3 @@
-export const uuid = {
+export default {
   v1: () => '1',
 };
