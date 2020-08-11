@@ -2,7 +2,8 @@
 /* eslint-disable no-await-in-loop */
 import moment from 'moment';
 import _ from 'lodash';
-import { MoreThanOrEqual, LessThanOrEqual, Equal } from 'typeorm/browser';
+import { Equal, IsNull, Not, Between } from 'typeorm/browser';
+import { uuid } from '../utilities';
 
 import { MILLISECONDS, ENTITIES } from '~constants';
 
@@ -41,6 +42,10 @@ export class DatabaseService {
     return this.getAll(ENTITIES.SENSOR);
   };
 
+  getSensor = async macAddress => {
+    return this.queryWith(ENTITIES.SENSOR, { macAddress });
+  };
+
   saveSensors = async sensors => {
     const macAddresses = sensors.map(({ macAddress }) => ({ macAddress }));
     const sensorEntities = await this.queryWith(ENTITIES.SENSOR, macAddresses);
@@ -52,10 +57,6 @@ export class DatabaseService {
     });
 
     return this.upsert(ENTITIES.SENSOR, updatedEntities);
-  };
-
-  getSensor = async macAddress => {
-    return this.queryWith(ENTITIES.SENSOR, { macAddress });
   };
 
   mostRecentTimestamp = async sensor => {
@@ -83,7 +84,13 @@ export class DatabaseService {
   };
 
   saveSensorLogs = async logsToSave => {
-    return this.upsert(ENTITIES.SENSOR_LOG, logsToSave);
+    const chunks = _.chunk(logsToSave, 100);
+    const promises = chunks.map(
+      chunk => new Promise(resolve => resolve(this.upsert(ENTITIES.SENSOR_LOG, chunk)))
+    );
+
+    const savedLogs = await Promise.all(promises);
+    return savedLogs.reduce((acc, value) => [...acc, ...value], []);
   };
 
   createTemperatureLogs = async macAddress => {
@@ -103,7 +110,7 @@ export class DatabaseService {
       const temperature = Math.max(...groupedSensorLogs.map(({ temperature: temp }) => temp));
       const { timestamp } = groupedSensorLogs[Math.floor(groupedSensorLogs.length / 2)];
 
-      return { temperature, timestamp, sensorId };
+      return { temperature, timestamp, sensorId, id: uuid() };
     });
 
     const createdLogs = await this.upsert(ENTITIES.TEMPERATURE_LOG, mapped);
@@ -117,14 +124,46 @@ export class DatabaseService {
     const { id: sensorId } = sensor;
     return this.queryWith(ENTITIES.TEMPERATURE_LOG, {
       where: [
-        { sensorId: Equal(sensorId) },
-        { timestamp: MoreThanOrEqual(fromDate.getTime()) },
-        { timestamp: LessThanOrEqual(toDate.getTime()) },
+        { sensorId: Equal(sensorId), timestamp: Between(fromDate.getTime(), toDate.getTime()) },
+        // { timestamp: MoreThanOrEqual(fromDate.getTime()) },
+        // { timestamp: LessThanOrEqual(toDate.getTime()) },
       ],
       order: {
         timestamp: 'ASC',
       },
     });
+  };
+
+  getMostRecentBreachedLog = async sensor => {
+    const { id: sensorId } = sensor;
+    const temperatureLogs = await this.queryWith(ENTITIES.TEMPERATURE_LOG, {
+      where: [{ temperatureBreachId: Not(IsNull()), sensorId }],
+      order: { timestamp: 'DESC' },
+    });
+
+    if (temperatureLogs.length) {
+      const { timestamp } = temperatureLogs[0];
+
+      return timestamp;
+    }
+
+    return new Date(null).getTime();
+  };
+
+  getMostRecentBreach = async sensor => {
+    const { id: sensorId } = sensor;
+
+    const b = this.queryWith(ENTITIES.TEMPERATURE_BREACH, {
+      sensorId,
+      order: { startTimestamp: 'desc' },
+      take: 1,
+    });
+
+    return b?.[0] ?? null;
+  };
+
+  getConfigs = async () => {
+    return this.getAll(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION);
   };
 
   createBreaches = async macAddress => {
@@ -240,5 +279,22 @@ export class DatabaseService {
     const mappedLogs = logs.map(log => ({ ...log, temperatureBreachId }));
 
     return this.upsert(ENTITIES.TEMPERATURE_LOG, mappedLogs);
+  };
+
+  updateBreaches = async (breaches, temperatureLogs) => {
+    // eslint-disable-next-line no-param-reassign
+    breaches.forEach(p => delete p.temperatureBreachConfiguration);
+    const updatedBreaches = await this.upsert(ENTITIES.TEMPERATURE_BREACH, breaches);
+
+    const l = temperatureLogs.map(poi => ({
+      id: poi.id,
+      temperature: poi.temperature,
+      timestamp: poi.timestamp,
+    }));
+
+    await this.upsert(ENTITIES.TEMPERATURE_LOG, l);
+    const logs2 = await this.upsert(ENTITIES.TEMPERATURE_LOG, temperatureLogs);
+
+    return [updatedBreaches, logs2];
   };
 }
