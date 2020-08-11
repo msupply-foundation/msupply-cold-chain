@@ -16,7 +16,7 @@ describe('Database Sagas: WatchDatabaseActions - unit test', () => {
     .takeLeading(TemperatureLogActions.createTemperatureLogs, DatabaseSagas.createTemperatureLogs)
 
     .next()
-    .takeLeading(TemperatureLogActions.createBreaches, DatabaseSagas.createBreaches)
+    .takeLeading(TemperatureLogActions.createBreaches, DatabaseSagas.cBreaches)
 
     .next()
     .isDone();
