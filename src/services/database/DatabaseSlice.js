@@ -44,6 +44,7 @@ export const { actions: TemperatureLogActions, reducer: TemperatureLogReducer } 
     },
     setTemperatureLogs: {
       prepare: temperatureLogs => ({ payload: { temperatureLogs } }),
+      reducer: () => {},
     },
     createTemperatureLogs: {
       prepare: macAddress => ({ payload: { macAddress } }),
