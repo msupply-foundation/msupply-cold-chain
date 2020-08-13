@@ -203,7 +203,7 @@ public class BlueMaestroDevice extends BleDevice{
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             if(packetsSent<numberOfPackets){
-            characteristic.setValue(packets[packetInteration]);
+            characteristic.setValue(packets[packetsSent]);
             gatt.writeCharacteristic(characteristic);
             packetsSent++;
             }
@@ -222,14 +222,8 @@ public class BlueMaestroDevice extends BleDevice{
                 output.write(response);
             } catch(Exception exception){
                 notifyListener(new MsupplyException(ErrorCode.E_DOWNLOADING_LOGS, exception));
-                
             }
             commandResult = output.toByteArray();
-        }
-
-        @Override
-        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            // Not Used
         }
     };
 
