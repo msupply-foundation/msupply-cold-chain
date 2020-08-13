@@ -39,9 +39,11 @@ public class BlueMaestroDevice extends BleDevice{
     private String command;
     private boolean connected;
     private int retryCount;
-    
+    private int packetsSent;
+    private int numberOfPackets;
+    private byte[][] packets;
     private byte[] commandResult;
-    
+
     public BlueMaestroDevice(ScanResult scanResult, ReactContext reactContext){
         super(scanResult);
         command = "";
@@ -81,29 +83,13 @@ public class BlueMaestroDevice extends BleDevice{
     @Override
     public WritableMap toObject(){
         
-        if (Debug.LOG){
-            try{
-                Uri uri = Uri.parse("file://" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "/ble");
-                OutputStream stream;
-                stream = reactContext.getContentResolver().openOutputStream(uri,  "wa");
-                byte[] bytes = this.getAdvertisementBytes();
-                stream.write(bytes);
-                if (this.commandResult != null){
-                    stream.write(this.commandResult);
-                }
-                stream.close();
-            }catch(Throwable ignore){
-                if (Debug.LOG) Log.i(Debug.TAG, "Error writing:" + ignore.toString());
-            }
-        }
-        
-        
-
         WritableMap asObject = this.parseAdvertisement();
         asObject.putString("name", getName());
         asObject.putString("macAddress", getAddress());
         asObject.putInt("rssi", getRssi());
-        if (command.equals("*logall")){
+        if (Debug.LOG) Log.i(Debug.TAG, "toObject: " + command);
+        
+        if (command.contains("*logall")){
             asObject.putArray("logs", this.parseLogs());
         }
         return asObject;
@@ -117,6 +103,7 @@ public class BlueMaestroDevice extends BleDevice{
     public void sendCommand(String command){
         if (Debug.LOG) Log.i(Debug.TAG, "BleDevice: Sending command");
         this.command = command;
+        this.prepareCommand(command.getBytes());
         connectGattWithTimeout();
     }
 
@@ -141,6 +128,22 @@ public class BlueMaestroDevice extends BleDevice{
         }
     }
 
+
+    public void prepareCommand(byte [] data){
+        int chunkSize = 20;
+        numberOfPackets = (int) Math.ceil( data.length / (double)chunkSize);
+
+        packets = new byte[numberOfPackets][chunkSize];
+        
+        Integer start = 0;
+        
+        for(int i = 0; i < packets.length; i++) {
+            int end = start+chunkSize;
+            if(end > data.length) {end = data.length;}
+            packets[i] = Arrays.copyOfRange(data,start, end);
+            start += chunkSize;
+        }
+    }
     /**
      * Callback for the GATT connection.
      */
@@ -189,12 +192,23 @@ public class BlueMaestroDevice extends BleDevice{
             if (descriptor.getUuid().equals(IN_DESCRIPTOR)) {
                 BluetoothGattCharacteristic outCharacteristic = gatt.getService(GATT_SERVICE)
                                                                     .getCharacteristic(OUT_CHARASTERISTIC);
-                outCharacteristic.setValue(command);
+                outCharacteristic.setValue(packets[0]);
+                packetsSent = 1;
+
                 boolean writeResult = gatt.writeCharacteristic(outCharacteristic);
                 if (!writeResult) notifyListener(new MsupplyException(ErrorCode.E_OUT_CHAR_WRITE));
             }
         }
 
+        @Override
+        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            if(packetsSent<numberOfPackets){
+            characteristic.setValue(packets[packetInteration]);
+            gatt.writeCharacteristic(characteristic);
+            packetsSent++;
+            }
+        }
+        
         /**
          * On writing to the RX characteristic, continually receive a stream of data from the device
          * until the connection closes. Store a flattened array of bytes for this stream.

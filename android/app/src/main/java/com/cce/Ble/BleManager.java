@@ -51,11 +51,12 @@ public class BleManager extends ReactContextBaseJavaModule implements BleScanLis
     @Override
     public void BleCallback(boolean result){
         if (Debug.LOG) Log.i(Debug.TAG, "BleManager: Device callback");
-        if (result){
-            this.handleEvent();    
-        } else{
-            this.returnException(new MsupplyException(ErrorCode.E_COMMAND_FAILED));
-        }
+        // if (result){
+            this.handleEvent();
+        // } 
+        // else{
+        //     this.returnException(new MsupplyException(ErrorCode.E_COMMAND_FAILED));
+        // }
     }
 
     /** 
