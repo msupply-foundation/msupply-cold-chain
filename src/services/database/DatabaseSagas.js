@@ -8,18 +8,6 @@ export function* createBreaches(action) {
 
   const getService = yield getContext('getService');
   const dbService = yield call(getService, SERVICES.DATABASE);
-
-  const { createdBreaches, endedBreaches } = yield call(dbService.createBreaches, macAddress);
-
-  yield put(TemperatureLogActions.savedBreaches(createdBreaches, endedBreaches));
-}
-
-export function* cBreaches(action) {
-  const { payload } = action;
-  const { macAddress } = payload;
-
-  const getService = yield getContext('getService');
-  const dbService = yield call(getService, SERVICES.DATABASE);
   const dbUtils = yield call(getService, SERVICES.DATABASE_UTILS);
 
   const x = yield call(dbService.getSensor, macAddress);
@@ -91,5 +79,5 @@ export function* WatchDatabaseActions() {
   yield takeLeading(SensorsActions.saveSensors, saveSensors);
   yield takeLeading(TemperatureLogActions.saveSensorLogs, saveSensorLogs);
   yield takeLeading(TemperatureLogActions.createTemperatureLogs, createTemperatureLogs);
-  yield takeLeading(TemperatureLogActions.createBreaches, cBreaches);
+  yield takeLeading(TemperatureLogActions.createBreaches, createBreaches);
 }
