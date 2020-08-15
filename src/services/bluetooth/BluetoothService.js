@@ -30,6 +30,16 @@ export class BluetoothService {
     throw error;
   };
 
+  sendRepeaterCommand = async () => {
+    const cmd = JSON.stringify({
+      type: 'do_command',
+      options: '*logall',
+      matchPeripheral: { id: 'c3cb2a140cc3' },
+    });
+
+    return this.sendCommand('DC:A6:32:B6:BE:0C', cmd);
+  };
+
   sendCommand = async (macAddress, command) => {
     if (!(macAddress && typeof macAddress === 'string')) {
       throw new Error(BLUETOOTH_SERVICE_ERROR.NO_MAC_ADDRESS);

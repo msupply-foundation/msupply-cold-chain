@@ -9,7 +9,7 @@ import {
 
 const DEFAULT_DATABASE_CONFIG = {
   type: 'react-native',
-  database: 'test21',
+  database: 'test34',
   location: 'default',
   logging: ['error', 'query', 'schema'],
   synchronize: true,

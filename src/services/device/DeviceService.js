@@ -1,6 +1,6 @@
 import { getBatteryLevel, isBatteryCharging } from 'react-native-device-info';
 import { check, request } from 'react-native-permissions';
-import BluetoothStateManager from 'react-native-bluetooth-state-manager';
+import { BluetoothStatus } from 'react-native-bluetooth-status';
 
 import { PERMISSION, PERMISSION_STATE, BLUETOOTH_STATE, DANGEROUS_BATTERY_LEVEL } from '~constants';
 
@@ -20,7 +20,7 @@ export class DeviceService {
 
   isCharging = async () => isBatteryCharging();
 
-  getBluetoothState = async () => BluetoothStateManager.getState();
+  getBluetoothState = async () => BluetoothStatus.getState();
 
   isBluetoothEnabled = async () => {
     const bluetoothState = await this.getBluetoothState();
