@@ -1,9 +1,10 @@
+import path from 'path';
 import initStoryshots from '@storybook/addon-storyshots';
 
-// initStoryshots({
-//   configPath: './src/view/storybook/stories',
-// });
-
-it('', () => {
-  expect(true);
+initStoryshots({
+  configPath: path.resolve(__dirname, '../'),
 });
+
+// it('', () => {
+//   expect(true);
+// });

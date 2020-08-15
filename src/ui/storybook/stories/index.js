@@ -2,6 +2,8 @@ import React from 'react';
 import { storiesOf } from '@storybook/react-native';
 import { View, Text } from 'react-native';
 
+import './LargeHeader';
+
 const style = {
   flex: 1,
   justifyContent: 'center',
