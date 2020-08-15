@@ -43,3 +43,7 @@ export const DATABASE_UTIL_ERROR = {
   ADD_LOG_TO_BREACH_LOG_ALREADY_BREACHED:
     'The log passed to add to a temperature breach, has already been added to one previously.',
 };
+
+export const UI_ASSERTIONS = {
+  LARGE_HEADER: 'Children of LargeHeader can only be a single string',
+};

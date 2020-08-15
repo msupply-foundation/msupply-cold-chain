@@ -9,4 +9,12 @@ export {
   PERMISSION,
   PERMISSION_STATE,
 } from './NativeDevice';
-export { DATABASE_UTIL_ERROR, BLUETOOTH_SERVICE_ERROR, SERVICE_LOCATOR_ERROR } from './Error';
+export {
+  DATABASE_UTIL_ERROR,
+  BLUETOOTH_SERVICE_ERROR,
+  SERVICE_LOCATOR_ERROR,
+  UI_ASSERTIONS,
+} from './Error';
+
+export { COLOUR } from './Colour';
+export { FONT } from './Font';
