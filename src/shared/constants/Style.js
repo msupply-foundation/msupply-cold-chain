@@ -26,6 +26,7 @@ export const STYLE = {
     HALF_CIRCLE: 60,
     LARGE_RECTANGLE: 60,
     NORMAL_CHART: 225,
+    SENSOR_ROW: 250,
     SETTINGS_ITEM: 100,
     SUB_TEXT: 10,
     SETTINGS_EDIT_MODAL: 500,
@@ -35,6 +36,7 @@ export const STYLE = {
   },
   PADDING: {
     HORIZONTAL: 50,
+    VERTICAL: 50,
   },
   ICON: {
     SIZE: {
