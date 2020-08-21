@@ -1,66 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Storyshots CenteredView default view 1`] = `
-<View
-  style={
-    Object {
-      "alignItems": "center",
-      "backgroundColor": "#F5FCFF",
-      "flex": 1,
-      "justifyContent": "center",
-    }
-  }
->
-  <Text>
-    Hello Storybook
-  </Text>
-</View>
-`;
-
-exports[`Storyshots LargeHeader basic 1`] = `
+exports[`Storyshots BoldText basic 1`] = `
 <Text
   style={
     Object {
       "color": "#22C7FC",
       "fontFamily": "Roboto-Bold",
-      "fontSize": 70,
-    }
-  }
-  theme={
-    Object {
-      "colors": Object {
-        "disabled": "hsl(208, 8%, 90%)",
-        "divider": "#bcbbc1",
-        "error": "#ff190c",
-        "grey0": "#393e42",
-        "grey1": "#43484d",
-        "grey2": "#5e6977",
-        "grey3": "#86939e",
-        "grey4": "#bdc6cf",
-        "grey5": "#e1e8ee",
-        "greyOutline": "#bbb",
-        "platform": Object {
-          "android": Object {
-            "error": "#f44336",
-            "primary": "#2196f3",
-            "secondary": "#9C27B0",
-            "success": "#4caf50",
-            "warning": "#ffeb3b",
-          },
-          "ios": Object {
-            "error": "#ff3b30",
-            "primary": "#007aff",
-            "secondary": "#5856d6",
-            "success": "#4cd964",
-            "warning": "#ffcc00",
-          },
-        },
-        "primary": "#2089dc",
-        "searchBg": "#303337",
-        "secondary": "#8F0CE8",
-        "success": "#52c41a",
-        "warning": "#faad14",
-      },
+      "fontSize": 18,
     }
   }
 >
@@ -68,50 +14,13 @@ exports[`Storyshots LargeHeader basic 1`] = `
 </Text>
 `;
 
-exports[`Storyshots LargeHeader long text 1`] = `
+exports[`Storyshots BoldText long text 1`] = `
 <Text
   style={
     Object {
       "color": "#22C7FC",
       "fontFamily": "Roboto-Bold",
-      "fontSize": 70,
-    }
-  }
-  theme={
-    Object {
-      "colors": Object {
-        "disabled": "hsl(208, 8%, 90%)",
-        "divider": "#bcbbc1",
-        "error": "#ff190c",
-        "grey0": "#393e42",
-        "grey1": "#43484d",
-        "grey2": "#5e6977",
-        "grey3": "#86939e",
-        "grey4": "#bdc6cf",
-        "grey5": "#e1e8ee",
-        "greyOutline": "#bbb",
-        "platform": Object {
-          "android": Object {
-            "error": "#f44336",
-            "primary": "#2196f3",
-            "secondary": "#9C27B0",
-            "success": "#4caf50",
-            "warning": "#ffeb3b",
-          },
-          "ios": Object {
-            "error": "#ff3b30",
-            "primary": "#007aff",
-            "secondary": "#5856d6",
-            "success": "#4cd964",
-            "warning": "#ffcc00",
-          },
-        },
-        "primary": "#2089dc",
-        "searchBg": "#303337",
-        "secondary": "#8F0CE8",
-        "success": "#52c41a",
-        "warning": "#faad14",
-      },
+      "fontSize": 18,
     }
   }
 >
@@ -119,7 +28,100 @@ exports[`Storyshots LargeHeader long text 1`] = `
 </Text>
 `;
 
-exports[`Storyshots LargeHeader temperature 1`] = `
+exports[`Storyshots BoldText with white 1`] = `
+<View
+  style={
+    Object {
+      "backgroundColor": "black",
+    }
+  }
+>
+  <Text
+    style={
+      Object {
+        "color": "#FFFFFF",
+        "fontFamily": "Roboto-Bold",
+        "fontSize": 18,
+      }
+    }
+  >
+    3.2c
+  </Text>
+</View>
+`;
+
+exports[`Storyshots Button basic 1`] = `
+<View
+  style={
+    Object {
+      "height": "100%",
+      "marginTop": 50,
+      "width": "50%",
+    }
+  }
+>
+  <RNGestureHandlerButton
+    activeOpacity={0.3}
+    borderless={true}
+    collapsable={false}
+    onActiveStateChange={[Function]}
+    onGestureEvent={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    onHandlerStateChange={[Function]}
+    style={
+      Array [
+        Object {
+          "overflow": "hidden",
+        },
+        Object {
+          "opacity": 1,
+        },
+      ]
+    }
+  >
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "borderColor": "rgba(255,255,255,0.4)",
+          "borderRadius": 37.5,
+          "borderWidth": 2,
+          "height": 60,
+          "justifyContent": "center",
+          "width": 200,
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "color": "rgba(255,255,255,0.4)",
+            "fontFamily": "Roboto-Bold",
+            "fontSize": 18,
+          }
+        }
+      >
+        Press Me
+      </Text>
+    </View>
+  </RNGestureHandlerButton>
+</View>
+`;
+
+exports[`Storyshots Divider basic 1`] = `
+<View
+  style={
+    Object {
+      "backgroundColor": "#313B4C",
+      "height": 1,
+      "width": "100%",
+    }
+  }
+/>
+`;
+
+exports[`Storyshots Header basic 1`] = `
 <Text
   style={
     Object {
@@ -128,44 +130,235 @@ exports[`Storyshots LargeHeader temperature 1`] = `
       "fontSize": 70,
     }
   }
-  theme={
+>
+  Hello Storybook
+</Text>
+`;
+
+exports[`Storyshots Header long text 1`] = `
+<Text
+  style={
     Object {
-      "colors": Object {
-        "disabled": "hsl(208, 8%, 90%)",
-        "divider": "#bcbbc1",
-        "error": "#ff190c",
-        "grey0": "#393e42",
-        "grey1": "#43484d",
-        "grey2": "#5e6977",
-        "grey3": "#86939e",
-        "grey4": "#bdc6cf",
-        "grey5": "#e1e8ee",
-        "greyOutline": "#bbb",
-        "platform": Object {
-          "android": Object {
-            "error": "#f44336",
-            "primary": "#2196f3",
-            "secondary": "#9C27B0",
-            "success": "#4caf50",
-            "warning": "#ffeb3b",
-          },
-          "ios": Object {
-            "error": "#ff3b30",
-            "primary": "#007aff",
-            "secondary": "#5856d6",
-            "success": "#4cd964",
-            "warning": "#ffcc00",
-          },
-        },
-        "primary": "#2089dc",
-        "searchBg": "#303337",
-        "secondary": "#8F0CE8",
-        "success": "#52c41a",
-        "warning": "#faad14",
-      },
+      "color": "#22C7FC",
+      "fontFamily": "Roboto-Bold",
+      "fontSize": 70,
+    }
+  }
+>
+  Hello Storybookkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+</Text>
+`;
+
+exports[`Storyshots Header temperature 1`] = `
+<Text
+  style={
+    Object {
+      "color": "#22C7FC",
+      "fontFamily": "Roboto-Bold",
+      "fontSize": 70,
     }
   }
 >
   3.2c
 </Text>
+`;
+
+exports[`Storyshots LargeText basic 1`] = `
+<Text
+  style={
+    Object {
+      "color": "#22C7FC",
+      "fontFamily": "Roboto-Regular",
+      "fontSize": 40,
+    }
+  }
+>
+  Hello Storybook
+</Text>
+`;
+
+exports[`Storyshots LargeText long text 1`] = `
+<Text
+  style={
+    Object {
+      "color": "#22C7FC",
+      "fontFamily": "Roboto-Regular",
+      "fontSize": 40,
+    }
+  }
+>
+  Hello Storybookkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+</Text>
+`;
+
+exports[`Storyshots LargeText with white 1`] = `
+<View
+  style={
+    Object {
+      "backgroundColor": "black",
+    }
+  }
+>
+  <Text
+    style={
+      Object {
+        "color": "#FFFFFF",
+        "fontFamily": "Roboto-Regular",
+        "fontSize": 40,
+      }
+    }
+  >
+    3.2c
+  </Text>
+</View>
+`;
+
+exports[`Storyshots MediumText basic 1`] = `
+<Text
+  style={
+    Object {
+      "color": "#22C7FC",
+      "fontFamily": "Roboto-Regular",
+      "fontSize": 26,
+    }
+  }
+>
+  Hello Storybook
+</Text>
+`;
+
+exports[`Storyshots MediumText long text 1`] = `
+<Text
+  style={
+    Object {
+      "color": "#22C7FC",
+      "fontFamily": "Roboto-Regular",
+      "fontSize": 26,
+    }
+  }
+>
+  Hello Storybookkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+</Text>
+`;
+
+exports[`Storyshots MediumText with white 1`] = `
+<View
+  style={
+    Object {
+      "backgroundColor": "black",
+    }
+  }
+>
+  <Text
+    style={
+      Object {
+        "color": "#FFFFFF",
+        "fontFamily": "Roboto-Regular",
+        "fontSize": 26,
+      }
+    }
+  >
+    3.2c
+  </Text>
+</View>
+`;
+
+exports[`Storyshots NormalWhite basic 1`] = `
+<Text
+  style={
+    Object {
+      "color": "#22C7FC",
+      "fontFamily": "Roboto-Regular",
+      "fontSize": 18,
+    }
+  }
+>
+  Hello Storybook
+</Text>
+`;
+
+exports[`Storyshots NormalWhite long text 1`] = `
+<Text
+  style={
+    Object {
+      "color": "#22C7FC",
+      "fontFamily": "Roboto-Regular",
+      "fontSize": 18,
+    }
+  }
+>
+  Hello Storybookkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+</Text>
+`;
+
+exports[`Storyshots NormalWhite with white 1`] = `
+<View
+  style={
+    Object {
+      "backgroundColor": "black",
+    }
+  }
+>
+  <Text
+    style={
+      Object {
+        "color": "#FFFFFF",
+        "fontFamily": "Roboto-Regular",
+        "fontSize": 18,
+      }
+    }
+  >
+    3.2c
+  </Text>
+</View>
+`;
+
+exports[`Storyshots SmallText basic 1`] = `
+<Text
+  style={
+    Object {
+      "color": "#22C7FC",
+      "fontFamily": "Roboto-Regular",
+      "fontSize": 12,
+    }
+  }
+>
+  Hello Storybook
+</Text>
+`;
+
+exports[`Storyshots SmallText long text 1`] = `
+<Text
+  style={
+    Object {
+      "color": "#22C7FC",
+      "fontFamily": "Roboto-Regular",
+      "fontSize": 12,
+    }
+  }
+>
+  Hello Storybookkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+</Text>
+`;
+
+exports[`Storyshots SmallText with white 1`] = `
+<View
+  style={
+    Object {
+      "backgroundColor": "black",
+    }
+  }
+>
+  <Text
+    style={
+      Object {
+        "color": "#FFFFFF",
+        "fontFamily": "Roboto-Regular",
+        "fontSize": 12,
+      }
+    }
+  >
+    3.2c
+  </Text>
+</View>
 `;
