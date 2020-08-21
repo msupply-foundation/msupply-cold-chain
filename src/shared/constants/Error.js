@@ -45,5 +45,18 @@ export const DATABASE_UTIL_ERROR = {
 };
 
 export const UI_ASSERTIONS = {
-  LARGE_HEADER: 'Children of LargeHeader can only be a single string',
+  HEADER: 'Children of HEADER can only be a single string or number',
+  NORMAL_TEXT: 'Children of NormalText must be a string or a number.',
+  NORMAL_TEXT_COLOUR: 'NormalText must have one of its allowed colours',
+  SMALL_TEXT: 'Children of SmallText must be a string or a number.',
+  SMALL_TEXT_COLOUR: 'SmallText must have one of its allowed colours',
+  BOLD_TEXT: 'Children of BoldText must be a string or a number.',
+  BOLD_TEXT_COLOUR: 'BoldText must have one of its allowed colours',
+  LARGE_TEXT: 'Children of LargeText must be a string or a number.',
+  LARGE_TEXT_COLOUR: 'LargeText must have one of its allowed colours',
+  MEDIUM_TEXT: 'Children of MediumText must be a string or a number.',
+  MEDIUM_TEXT_COLOUR: 'MediumText must have one of its allowed colours',
+  ICON_CHEVRON_DIRECTION: 'Chevron icon must have a direction left or right',
+  HALF_CIRCLE_DIRECTION: 'Half circle must have a direction left or right.',
+  BREACH_TEMPERATURE: 'Breach icon must have a temperature of hot or cold.',
 };

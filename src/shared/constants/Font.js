@@ -7,7 +7,8 @@ export const FONT = {
   SIZE: {
     XL: 70,
     L: 40,
-    M: 18,
+    M: 26,
+    MS: 18,
     S: 12,
   },
   ALIGN: {

@@ -18,3 +18,8 @@ export {
 
 export { COLOUR } from './Colour';
 export { FONT } from './Font';
+export { STYLE } from './Style';
+export { ICON } from './Icon';
+export { FORMAT } from './Format';
+export { CHART } from './Chart';
+export { NAVIGATION } from './Navigation';
