@@ -2,10 +2,11 @@ import { useState, useCallback } from 'react';
 
 export const useDatePicker = onChangeDate => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+
   const onChange = useCallback(
-    date => {
-      if (date) onChangeDate(date);
+    ({ nativeEvent: { timestamp } }) => {
       setIsDatePickerOpen(false);
+      if (timestamp) onChangeDate(new Date(timestamp));
     },
     [onChangeDate, setIsDatePickerOpen]
   );
