@@ -7,4 +7,5 @@ export const REDUCER_SHAPE = {
   SENSOR: 'sensor',
   SETTING: 'setting',
   BREACH_CONFIGURATION: 'breach_configuration',
+  TEMPERATURE_LOG: 'temperature_log',
 };

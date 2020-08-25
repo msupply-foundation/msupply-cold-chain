@@ -6,6 +6,7 @@ import { SettingSaga } from '~setting';
 import { WatchDatabaseActions } from '~database';
 import { BluetoothServiceWatcher } from '~bluetooth';
 import { getService, getServices } from '~services';
+import { TemperatureLogSaga } from '~temperatureLog';
 
 export function* RootSaga() {
   yield fork(BluetoothServiceWatcher);
@@ -13,6 +14,7 @@ export function* RootSaga() {
   yield fork(SensorSaga.watchSensorActions);
   yield fork(SettingSaga.watchSettingActions);
   yield fork(BreachConfigurationSaga.watchBreachConfigurationActions);
+  yield fork(TemperatureLogSaga.watchTemperatureLogActions);
 }
 
 export const SagaMiddleware = createSagaMiddleware({
