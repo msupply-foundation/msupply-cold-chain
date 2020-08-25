@@ -9,4 +9,5 @@ export const ICON = {
   MAP: 'map',
   SENSORS: 'line-chart',
   PENCIL: 'pencil',
+  CLOSE: 'close',
 };

@@ -4,4 +4,5 @@ export const ENTITIES = {
   TEMPERATURE_BREACH: 'TemperatureBreach',
   TEMPERATURE_BREACH_CONFIGURATION: 'TemperatureBreachConfiguration',
   SENSOR_LOG: 'SensorLog',
+  SETTING: 'Setting',
 };

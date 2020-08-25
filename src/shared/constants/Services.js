@@ -3,6 +3,9 @@ export const SERVICES = {
   DATABASE: 'database',
   DEVICE: 'device',
   DATABASE_UTILS: 'databaseUtils',
+  SENSOR_MANAGER: 'sensorManager',
+  SETTING_MANAGER: 'settingManager',
+  BREACH_CONFIGURATION_MANAGER: 'breachConfigurationManager',
 };
 
 export const BLUETOOTH_SERVICE = {

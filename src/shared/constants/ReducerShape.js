@@ -4,4 +4,7 @@ export const REDUCER_SHAPE = {
   BLUETOOTH_STATE: 'bluetooth_state',
   SENSORS: 'sensors',
   TEMPERATURE_LOGS: 'temperature_logs',
+  SENSOR: 'sensor',
+  SETTING: 'setting',
+  BREACH_CONFIGURATION: 'breach_configuration',
 };

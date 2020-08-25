@@ -23,3 +23,5 @@ export { ICON } from './Icon';
 export { FORMAT } from './Format';
 export { CHART } from './Chart';
 export { NAVIGATION } from './Navigation';
+export { BLUETOOTH } from './Bluetooth';
+export { SETTING } from './Setting';
