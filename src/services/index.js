@@ -1,1 +1,1 @@
-export { getService, registerService } from './ServiceLocator';
+export { getService, getServices, registerService } from './ServiceLocator';

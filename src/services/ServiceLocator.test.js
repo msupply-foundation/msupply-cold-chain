@@ -39,12 +39,28 @@ describe('ServiceLocator: getService', () => {
   });
 });
 
-describe('ServiceLocator: getService', () => {
-  it('gets a service previously set', () => {
+describe('ServiceLocator: deleteServices', () => {
+  it('Throws an error if trying to delete services without being in dev environment', () => {
     __DEV__ = false;
     expect(() => ServiceLocator.deleteServices()).toThrow(
       SERVICE_LOCATOR_ERROR.CANT_DELETE_SERVICES
     );
     __DEV__ = true;
+  });
+});
+
+describe('ServiceLocator: getServices', () => {
+  it('gets the services set', () => {
+    const serviceOne = {};
+    const serviceTwo = {};
+
+    ServiceLocator.registerService(SERVICES.BLUETOOTH, serviceOne);
+    ServiceLocator.registerService(SERVICES.DATABASE, serviceTwo);
+
+    const result = ServiceLocator.getServices([SERVICES.BLUETOOTH, SERVICES.DATABASE]);
+
+    const shouldBe = [serviceOne, serviceTwo];
+
+    expect(result).toEqual(shouldBe);
   });
 });

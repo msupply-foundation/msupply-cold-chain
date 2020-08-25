@@ -14,6 +14,10 @@ export const getService = key => {
   return service;
 };
 
+export const getServices = keys => {
+  return keys.map(key => getService(key));
+};
+
 export const registerService = (key, service) => {
   if (!(typeof key === 'string' && key)) {
     throw new Error(SERVICE_LOCATOR_ERROR.MUST_REGISTER_A_KEY);
