@@ -22,21 +22,21 @@ export class BreachConfigurationManager {
     this.defaultConfigs = defaultConfigs;
   }
 
-  async upsert(objectOrObjects) {
+  upsert = async objectOrObjects => {
     this.databaseService.upsert(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION, objectOrObjects);
-  }
+  };
 
-  async getAll() {
+  getAll = async () => {
     return this.databaseService.getAll(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION);
-  }
+  };
 
-  async updateField(id, key, value) {
+  updateField = async (id, key, value) => {
     return this.upsert({ id, [key]: value });
-  }
+  };
 
-  async init() {
+  init = async () => {
     const configs = await this.getAll();
     if (configs.length >= 2) return configs;
     return this.upsert(this.defaultConfigs);
-  }
+  };
 }
