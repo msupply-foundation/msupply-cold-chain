@@ -5,15 +5,23 @@ import {
   TemperatureBreachConfiguration,
   TemperatureLog,
   Sensor,
-} from '~entities';
+  Setting,
+} from './entities';
 
 const DEFAULT_DATABASE_CONFIG = {
   type: 'react-native',
-  database: 'test34',
+  database: 'test47',
   location: 'default',
   logging: ['error', 'query', 'schema'],
   synchronize: true,
-  entities: [Sensor, SensorLog, TemperatureLog, TemperatureBreach, TemperatureBreachConfiguration],
+  entities: [
+    Sensor,
+    SensorLog,
+    TemperatureLog,
+    TemperatureBreach,
+    TemperatureBreachConfiguration,
+    Setting,
+  ],
 };
 
 /**
@@ -33,6 +41,7 @@ export class Database {
 
   createConnection = async () => {
     this.connection = await createConnection(this.config);
+
     return this.connection;
   };
 
