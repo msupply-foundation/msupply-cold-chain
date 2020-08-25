@@ -7,3 +7,5 @@ export { Map } from './Map';
 export { Sensors } from './Sensors';
 export { Calendar } from './Calendar';
 export { Pencil } from './Pencil';
+export { Tick } from './Tick';
+export { Close } from './Close';
