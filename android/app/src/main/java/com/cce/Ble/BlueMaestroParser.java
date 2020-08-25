@@ -27,6 +27,11 @@ public class BlueMaestroParser extends BleParser{
         WritableMap advertisement = Arguments.createMap();
         int bufferLength = advertisementBytes.length - ADVERTISEMENT_OFFSET;
         ByteBuffer byteBuffer = ByteBuffer.wrap(advertisementBytes,ADVERTISEMENT_OFFSET,bufferLength).asReadOnlyBuffer();
+
+        for (int index = 0; index < advertisementBytes.length; index++){
+            Log.i("com.cce", String.format("0x%20x", advertisementBytes[index]));
+           }
+
         // Get Index: 7
         advertisement.putInt(VERSION_NUMBER, (int)byteBuffer.get());
         // Get Index: 8
@@ -85,7 +90,7 @@ public class BlueMaestroParser extends BleParser{
                                             .asReadOnlyBuffer();
         WritableArray result = Arguments.createArray();
         short shortValue = shortBuffer.get();
-        while (shortValue != DELIMITER_VALUE){
+        while (shortValue != DELIMITER_VALUE && shortValue != 11776){
             WritableMap sensorLog = Arguments.createMap();
             sensorLog.putDouble("temperature", shortValue / 10.0 );
             result.pushMap(sensorLog);
