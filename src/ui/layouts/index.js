@@ -11,3 +11,4 @@ export { SettingsEditModalLayout } from './SettingsEditModalLayout';
 export { SettingsEditButtonGroup } from './SettingsEditButtonGroup';
 export { FullScreenModal } from './FullScreenModal';
 export { Gradient } from './Gradient';
+export { LoadingModalLayout } from './LoadingModalLayout';

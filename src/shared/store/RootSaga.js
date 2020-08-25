@@ -11,7 +11,7 @@ export function* RootSaga() {
   yield fork(BluetoothServiceWatcher);
   yield fork(WatchDatabaseActions);
   yield fork(SensorSaga.watchSensorActions);
-  yield fork(SettingSaga.WatchSettingActions);
+  yield fork(SettingSaga.watchSettingActions);
   yield fork(BreachConfigurationSaga.watchBreachConfigurationActions);
 }
 

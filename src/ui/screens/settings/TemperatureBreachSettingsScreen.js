@@ -15,6 +15,7 @@ export const TemperatureBreachSettingsScreen = ({ navigation }) => {
     <SettingsList>
       {configs.map(({ id, description }) => (
         <SettingsNavigationRow
+          key={id}
           label={description}
           onPress={() =>
             navigation.navigate(NAVIGATION.SCREENS.SETTINGS_STACK.TEMPERATURE_BREACH_DETAIL, { id })}

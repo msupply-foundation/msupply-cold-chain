@@ -16,14 +16,7 @@ export const FullScreenModal = ({ isOpen, onClose, children, style }) => {
   const internalStyle = { ...styles.container, ...style };
 
   return (
-    <Modal
-      animationInTiming={1}
-      isVisible={isOpen}
-      coverScreen
-      style={{ flex: 1, margin: 0 }}
-      useNativeDriver
-      hasBackdrop={false}
-    >
+    <Modal isVisible={isOpen} coverScreen style={{ margin: 0 }} useNativeDriver>
       <Pressable style={internalStyle} onPress={onClose}>
         {children}
       </Pressable>
