@@ -44,7 +44,7 @@ function* updatedBreachConfiguration({ payload: { id, key, value } }) {
   const breachConfigurationManager = yield call(getService, SERVICES.BREACH_CONFIGURATION_MANAGER);
 
   try {
-    yield call([breachConfigurationManager, 'updateField'], id, key, value);
+    yield call(breachConfigurationManager.updateField, id, key, value);
     yield put(BreachConfigurationAction.updateSuccessful(id, key, value));
   } catch (error) {
     yield put(BreachConfigurationAction.updateFailed(error));
@@ -56,7 +56,7 @@ function* initSaga() {
   const breachConfigurationManager = yield call(getService, SERVICES.BREACH_CONFIGURATION_MANAGER);
 
   try {
-    const result = yield call([breachConfigurationManager, 'init']);
+    const result = yield call(breachConfigurationManager.init);
     yield put(BreachConfigurationAction.initSucceeded(result));
   } catch (error) {
     yield put(BreachConfigurationAction.initFailed());
