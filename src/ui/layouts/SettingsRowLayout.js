@@ -13,7 +13,6 @@ const style = {
   row: {
     height: STYLE.HEIGHT.SETTINGS_ITEM,
     backgroundColor: COLOUR.WHITE,
-    paddingLeft: STYLE.PADDING.HORIZONTAL,
   },
   iconContainer: { paddingRight: STYLE.PADDING.HORIZONTAL },
   subtext: { height: STYLE.HEIGHT.SUB_TEXT },
