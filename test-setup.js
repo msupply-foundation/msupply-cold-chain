@@ -12,3 +12,9 @@ jest.doMock('react-native', () => {
     ReactNative
   );
 });
+
+jest.mock('react-native-reanimated', () =>
+  jest.requireActual('./node_modules/react-native-reanimated/mock')
+);
+
+jest.mock('react-native/Libraries/Animated/src/NativeAnimatedHelper');
