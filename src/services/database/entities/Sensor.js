@@ -18,6 +18,9 @@ class Sensor {
   @Column({ nullable: true, type: 'varchar', length: 100 })
   name;
 
+  @Column({ nullable: true, type: 'int' })
+  logDelay;
+
   @OneToMany(() => SensorLog, sensorLog => sensorLog.sensor, {
     cascade: ['insert', 'update'],
   })
