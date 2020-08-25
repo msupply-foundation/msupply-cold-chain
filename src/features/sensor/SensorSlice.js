@@ -1,4 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { getContext, call, put, takeEvery } from 'redux-saga/effects';
+
+import { SERVICES } from '~constants';
 
 const initialState = {
   byId: {},
@@ -64,7 +67,52 @@ const reducers = {
   },
 };
 
-export const SensorSelector = {
+const { actions: SensorAction, reducer: SensorReducer } = createSlice({
+  name: 'sensor',
+  initialState,
+  reducers,
+});
+
+function* hydrate() {
+  const getService = yield getContext('getService');
+  const sensorManager = yield call(getService, SERVICES.SENSOR_MANAGER);
+  try {
+    const sensors = yield call(sensorManager.getSensors);
+    yield put(SensorAction.hydrateSuccessful(sensors));
+  } catch (error) {
+    yield put(SensorAction.hydrateFailed(error));
+  }
+}
+
+function* update({ payload: { id, key, value } }) {
+  const getService = yield getContext('getService');
+  const manager = yield call(getService, SERVICES.SENSOR_MANAGER);
+  try {
+    yield call(manager.updateField, id, key, value);
+    yield put(SensorAction.updateSuccessful(id, key, value));
+  } catch (e) {
+    yield put(SensorAction.updateFailed());
+  }
+}
+
+function* addNewSensor({ payload: { macAddress, logInterval } }) {
+  const getService = yield getContext('getService');
+  const sensorManager = yield call(getService, SERVICES.SENSOR_MANAGER);
+  try {
+    const newlyAddedSensor = yield call(sensorManager.addNewSensor, macAddress, logInterval);
+    yield put(SensorAction.addNewSensorSuccessful(newlyAddedSensor));
+  } catch (error) {
+    yield put(SensorAction.addNewSensorFailed(error));
+  }
+}
+
+function* watchSensorActions() {
+  yield takeEvery(SensorAction.hydrate, hydrate);
+  yield takeEvery(SensorAction.addNewSensor, addNewSensor);
+  yield takeEvery(SensorAction.update, update);
+}
+
+const SensorSelector = {
   availableSensorsList: ({ sensor }) => {
     const { byId, ids } = sensor;
     return ids.map(id => ({ id, name: byId[id].name ?? byId[id].macAddress }));
@@ -79,8 +127,11 @@ export const SensorSelector = {
   },
 };
 
-export const { actions: SensorAction, reducer: SensorReducer } = createSlice({
-  name: 'sensor',
-  initialState,
-  reducers,
-});
+const SensorSaga = {
+  watchSensorActions,
+  addNewSensor,
+  update,
+  hydrate,
+};
+
+export { SensorSaga, SensorSelector, SensorReducer, SensorAction };
