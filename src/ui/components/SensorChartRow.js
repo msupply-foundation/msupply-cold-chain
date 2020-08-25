@@ -4,7 +4,11 @@ import { MediumText } from '~presentation/typography';
 
 import { SensorStatus } from './SensorStatus';
 
-export const SensorChartRow = ({ sensor, logs, direction = 'right' }) => {
+export const SensorChartRow = ({
+  sensor = { name: ':)', temperature: 3.4 },
+  logs,
+  direction = 'right',
+}) => {
   return (
     <SensorRowLayout
       Chart={<Chart data={logs} />}

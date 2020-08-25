@@ -125,6 +125,10 @@ const SensorSelector = {
     const { byId } = sensor;
     return byId;
   },
+  sensorsList: ({ sensor }) => {
+    const { byId, ids } = sensor;
+    return ids.map(id => byId[id]);
+  },
 };
 
 const SensorSaga = {
