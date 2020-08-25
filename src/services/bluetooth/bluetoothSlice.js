@@ -32,9 +32,46 @@ export const { actions: PassiveBluetoothActions, reducer: PassiveBluetoothReduce
   },
 });
 
+export const { actions: UpdateSensorAction, reducer: UpdateSensorReducer } = createSlice({
+  name: 'updateSensor',
+  initialState: {
+    lastAttempt: true,
+    updating: true,
+  },
+  reducers: {
+    tryUpdateLogInterval: {
+      reducer: draftState => {
+        draftState.updatingSensor = true;
+      },
+      prepare: (id, macAddress, logInterval) => ({ payload: { macAddress, logInterval, id } }),
+    },
+    updateSensorSucceeded: draftState => {
+      draftState.updatingSensor = false;
+      draftState.lastAttempt = true;
+    },
+    updateSensorFailed: draftState => {
+      draftState.updatingSensor = false;
+      draftState.lastAttempt = false;
+    },
+
+    tryConnectWithNewSensor: {
+      reducer: draftState => {
+        draftState.updatingSensor = true;
+      },
+      prepare: macAddress => ({ payload: { macAddress } }),
+    },
+  },
+});
+
 export const { actions: BluetoothStateActions, reducer: BluetoothStateReducer } = createSlice({
   name: REDUCER_SHAPE.BLUETOOTH_STATE,
-  initialState: { state: TEMPERATURE_SYNC_STATE.ENABLED },
+  initialState: {
+    state: TEMPERATURE_SYNC_STATE.ENABLED,
+    updatingSensor: false,
+    blinkingSensor: false,
+    blinkWasSuccessful: true,
+    findingSensors: false,
+  },
   reducers: {
     downloadTemperatures: () => {},
     downloadTemperaturesForSensor: {
@@ -42,7 +79,7 @@ export const { actions: BluetoothStateActions, reducer: BluetoothStateReducer } 
       prepare: macAddress => ({ payload: { macAddress } }),
     },
     startTemperatureSync: () => {},
-    scanForSensors: () => {},
+
     complete: draftState => {
       draftState.state = TEMPERATURE_SYNC_STATE.ENABLED;
     },
@@ -55,10 +92,80 @@ export const { actions: BluetoothStateActions, reducer: BluetoothStateReducer } 
     error: draftState => {
       draftState.state = TEMPERATURE_SYNC_STATE.ERROR;
     },
+
+    findSensors: () => {},
+    findSensorsFailed: draftState => {
+      draftState.state = TEMPERATURE_SYNC_STATE.ERROR;
+    },
+
+    startScanning: draftState => {
+      draftState.state = TEMPERATURE_SYNC_STATE.IN_PROGRESS;
+      draftState.findingSensors = true;
+    },
+    startScanningFailed: draftState => {
+      draftState.state = TEMPERATURE_SYNC_STATE.ERROR;
+      draftState.findingSensors = false;
+    },
+
+    stopScanning: draftState => {
+      draftState.state = TEMPERATURE_SYNC_STATE.ENABLED;
+      draftState.findingSensors = false;
+    },
+    stopScanningSucceeded: draftState => {
+      draftState.state = TEMPERATURE_SYNC_STATE.ENABLED;
+    },
+    stopScanningFailed: draftState => {
+      draftState.state = TEMPERATURE_SYNC_STATE.ERROR;
+    },
+
+    tryUpdateLogInterval: {
+      reducer: draftState => {
+        draftState.updatingSensor = true;
+        draftState.state = TEMPERATURE_SYNC_STATE.IN_PROGRESS;
+      },
+      prepare: (id, macAddress, logInterval) => ({ payload: { macAddress, logInterval, id } }),
+    },
+    updateSensorSucceeded: draftState => {
+      draftState.updatingSensor = false;
+      draftState.state = TEMPERATURE_SYNC_STATE.ENABLED;
+    },
+    updateSensorFailed: draftState => {
+      draftState.updatingSensor = false;
+      draftState.state = TEMPERATURE_SYNC_STATE.ERROR;
+    },
+
+    scanForSensors: () => {},
+
+    tryConnectWithNewSensor: {
+      reducer: draftState => {
+        draftState.updatingSensor = true;
+        draftState.state = TEMPERATURE_SYNC_STATE.IN_PROGRESS;
+      },
+      prepare: macAddress => ({ payload: { macAddress } }),
+    },
+
+    tryBlinkSensor: {
+      reducer: draftState => {
+        draftState.blinkingSensor = true;
+        draftState.state = TEMPERATURE_SYNC_STATE.IN_PROGRESS;
+      },
+      prepare: macAddress => ({ payload: { macAddress } }),
+    },
+    blinkSensorSucceeded: draftState => {
+      draftState.blinkingSensor = false;
+      draftState.state = TEMPERATURE_SYNC_STATE.ENABLED;
+      draftState.blinkWasSuccessful = true;
+    },
+    blinkSensorFailed: draftState => {
+      draftState.blinkingSensor = false;
+      draftState.state = TEMPERATURE_SYNC_STATE.ERROR;
+      draftState.blinkWasSuccessful = false;
+    },
   },
 });
 
 export const BluetoothReducer = combineReducers({
   bluetooth: BluetoothStateReducer,
   passiveDownload: PassiveBluetoothReducer,
+  updateSensor: UpdateSensorReducer,
 });

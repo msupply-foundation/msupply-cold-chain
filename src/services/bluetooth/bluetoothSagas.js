@@ -1,3 +1,5 @@
+import { ToastAndroid } from 'react-native';
+import { eventChannel } from 'redux-saga';
 import {
   take,
   call,
@@ -9,10 +11,17 @@ import {
   cancel,
   getContext,
   takeEvery,
+  cancelled,
 } from 'redux-saga/effects';
-import { PassiveBluetoothActions, BluetoothStateActions } from './bluetoothSlice';
-import { SERVICES, BLUETOOTH_SERVICE } from '~constants';
-import { TemperatureLogActions, SensorsActions } from '~database/DatabaseSlice';
+import {
+  PassiveBluetoothActions,
+  BluetoothStateActions,
+  UpdateSensorAction,
+} from './bluetoothSlice';
+import { t } from '~translations';
+import { SensorAction } from '~sensor';
+import { SETTING, SERVICES, BLUETOOTH_SERVICE } from '~constants';
+import { TemperatureLogActions } from '~database/DatabaseSlice';
 
 /**
  * Initiates a specific scan for a sensor to download all
@@ -54,7 +63,7 @@ export function* scanForSensors() {
 
   const result = yield call(btService.scanForDevices);
 
-  yield put(SensorsActions.saveSensors(result));
+  yield put(SensorAction.saveSensors(result));
 }
 
 /**
@@ -118,6 +127,110 @@ export function* watchPassiveDownloading() {
   }
 }
 
+export function* stopScanning() {
+  take(BluetoothStateActions.stopScanning);
+
+  const getService = yield getContext('getService');
+  const btService = yield call(getService, SERVICES.BLUETOOTH);
+
+  try {
+    yield call(btService.stopScan);
+    yield put(BluetoothStateActions.stopScanningSucceeded());
+    yield put(SensorAction.clearFoundSensors());
+  } catch (error) {
+    yield put(BluetoothStateActions.stopScanningFailed());
+  }
+}
+
+export function callback(btService) {
+  return eventChannel(emitter => {
+    btService.scanForSensors(device => {
+      emitter(device);
+    });
+    return () => {};
+  });
+}
+
+export function* findSensors() {
+  const getService = yield getContext('getService');
+  const btService = yield call(getService, SERVICES.BLUETOOTH);
+
+  yield put(BluetoothStateActions.startScanning());
+
+  const channel = yield call(callback, btService);
+
+  try {
+    while (true) {
+      const device = yield take(channel);
+      yield put(SensorAction.foundSensor(device?.id));
+    }
+  } catch (e) {
+    yield put(BluetoothStateActions.startScanningFailed());
+  } finally {
+    if (yield cancelled()) {
+      btService.stopScan();
+    }
+  }
+}
+
+export function* stopOrStart() {
+  yield race({ start: call(findSensors), end: take(BluetoothStateActions.stopScanning) });
+}
+
+export function* watchScanning() {
+  yield fork(stopOrStart);
+}
+
+export function* updateSensorLogInterval({ payload: { id, logInterval, macAddress } }) {
+  const getService = yield getContext('getService');
+  const btService = yield call(getService, SERVICES.BLUETOOTH);
+
+  try {
+    yield call(btService.updateLogInterval, macAddress, logInterval);
+    yield put(UpdateSensorAction.updateSensorSucceeded());
+    yield put(SensorAction.update(id, 'logInterval', logInterval));
+  } catch (e) {
+    yield put(UpdateSensorAction.updateSensorFailed());
+  }
+}
+
+export function* connectWithNewSensor({ payload: { macAddress } }) {
+  try {
+    const getServices = yield getContext('getServices');
+    const [btService, settingManager] = yield call(getServices, [
+      SERVICES.BLUETOOTH,
+      SERVICES.SETTING_MANAGER,
+    ]);
+
+    const { value: logInterval } = yield call(
+      settingManager.getSetting,
+      SETTING.INT.DEFAULT_LOG_INTERVAL
+    );
+    yield put(BluetoothStateActions.stopScanning());
+    yield call(btService.updateLogInterval, macAddress, logInterval);
+    yield put(UpdateSensorAction.updateSensorSucceeded());
+    yield put(SensorAction.addNewSensor(macAddress, logInterval));
+    yield put(BluetoothStateActions.findSensors());
+  } catch (e) {
+    yield put(UpdateSensorAction.updateSensorFailed());
+  }
+}
+
+export function* blinkSensor({ payload: { macAddress } }) {
+  const getService = yield getContext('getService');
+  const btService = yield call(getService, SERVICES.BLUETOOTH);
+
+  try {
+    yield put(BluetoothStateActions.stopScanning());
+    yield call(btService.blink, macAddress);
+    yield put(BluetoothStateActions.blinkSensorSucceeded());
+    ToastAndroid.show(t('BLINKED_SENSOR_SUCCESS'), ToastAndroid.SHORT);
+  } catch (error) {
+    yield put(BluetoothStateActions.blinkSensorFailed(error));
+    ToastAndroid.show(t('BLINKED_SENSOR_FAILED'), ToastAndroid.SHORT);
+  }
+}
+
 /**
  * Root saga for the BluetoothService. Watching for all bluetooth actions.
  * Forks: a watcher for passive downloading start/stopping.
@@ -126,6 +239,7 @@ export function* watchPassiveDownloading() {
  */
 export function* BluetoothServiceWatcher() {
   yield fork(watchPassiveDownloading);
+  yield takeLeading(BluetoothStateActions.findSensors, watchScanning);
   yield takeLeading(
     [BluetoothStateActions.downloadTemperatures, BluetoothStateActions.scanForSensors],
     startBluetooth
@@ -134,4 +248,8 @@ export function* BluetoothServiceWatcher() {
     BluetoothStateActions.downloadTemperaturesForSensor,
     downloadTemperaturesForSensor
   );
+  yield takeEvery(UpdateSensorAction.tryUpdateLogInterval, updateSensorLogInterval);
+  yield takeEvery(UpdateSensorAction.tryConnectWithNewSensor, connectWithNewSensor);
+  yield takeEvery(BluetoothStateActions.tryBlinkSensor, blinkSensor);
+  // yield takeLeading(BluetoothStateActions.findSensors, findSensors);
 }
