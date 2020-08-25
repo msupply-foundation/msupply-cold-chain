@@ -16,5 +16,12 @@
   "~services": "./src/services",
   "~database": "./src/services/database",
   "~entities": "./src/services/database/entities",
-  "~bluetooth": "./src/services/bluetooth"
+  "~bluetooth": "./src/services/bluetooth",
+
+  "~features": "./src/features",
+  "~sensor": "./src/features/sensor",
+  "~log": "./src/features/log",
+  "~breach": "./src/features/breach",
+  "~setting": "./src/features/setting",
+  "~breachConfiguration": "./src/features/breachConfiguration"
 }
