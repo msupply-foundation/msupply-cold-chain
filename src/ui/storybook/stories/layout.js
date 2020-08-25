@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
 
 import {
@@ -8,11 +8,13 @@ import {
   Column,
   LargeRectangle,
   SettingsRowLayout,
-} from '~layouts';
-import { MediumText } from '~presentation/typography';
+  LoadingModalLayout,
+ FullScreenModal } from '~layouts';
+import { MediumText , NormalText, LargeText } from '~presentation/typography';
 import { COLOUR } from '../../../shared/constants';
-import { NormalText } from '../../presentation/typography';
+
 import { Chevron } from '../../presentation/icons';
+
 
 const A = ({ i }) => {
   return (
@@ -249,4 +251,21 @@ const SettingsListStories = {
 
 Object.entries(SettingsListStories).forEach(([key, value]) => {
   storiesOf('SettingsList', module).add(key, value);
+});
+
+const MockContent = <LargeText>Loading</LargeText>;
+const MockLoadingIndicator = <ActivityIndicator size="large" color={COLOUR.PRIMARY} />;
+
+const LoadingModalLayoutStories = {
+  basic: () => {
+    return (
+      <FullScreenModal isOpen>
+        <LoadingModalLayout content={MockContent} LoadingIndicator={MockLoadingIndicator} />
+      </FullScreenModal>
+    );
+  },
+};
+
+Object.entries(LoadingModalLayoutStories).forEach(([key, value]) => {
+  storiesOf('LoadingModalLayout', module).add(key, value);
 });

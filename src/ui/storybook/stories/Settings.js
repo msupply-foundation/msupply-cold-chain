@@ -1,12 +1,15 @@
 import { storiesOf } from '@storybook/react-native';
+import { Provider } from 'react-redux';
 import * as Yup from 'yup';
 import { MainSettingsScreen } from '~screens/settings';
 import {
   SettingsNumberInputModal,
   SettingsEditModal,
   SettingsTextEditModal,
-} from '~components/settings';
+ SettingsAddSensorModal } from '~components/settings';
 import { Slider } from '~presentation';
+import { store } from '~shared/store/store';
+
 
 const MainSettingsScreenStories = {
   basic: () => <MainSettingsScreen />,
@@ -17,7 +20,9 @@ Object.entries(MainSettingsScreenStories).forEach(([key, value]) => {
 });
 
 const SettingsEditModalStories = {
-  basic: () => <SettingsEditModal title="Title here" Content={<Slider style={{ width: 600 }} />} />,
+  basic: () => (
+    <SettingsEditModal isOpen title="Title here" Content={<Slider style={{ width: 600 }} />} />
+  ),
 };
 
 Object.entries(SettingsEditModalStories).forEach(([key, value]) => {
@@ -28,24 +33,10 @@ const SettingsNumberInputModalStories = {
   basic: () => (
     <SettingsNumberInputModal
       title="Temperature range"
-      initialSliderValue={30}
+      initialValue={30}
       maximumValue={999}
       minimumValue={10}
       step={7}
-    />
-  ),
-  'with picker': () => (
-    <SettingsNumberInputModal
-      title="Temperature range"
-      initialSliderValue={30}
-      maximumValue={999}
-      minimumValue={10}
-      step={7}
-      pickerOptions={[
-        { value: 'Ada', label: 'Lovelace' },
-        { value: 'Charles', label: 'Babbage' },
-      ]}
-      initialPickerValue="Babbage"
     />
   ),
 };
@@ -70,4 +61,16 @@ const SettingsTextEditModalStories = {
 
 Object.entries(SettingsTextEditModalStories).forEach(([key, value]) => {
   storiesOf('SettingsTextEditModal', module).add(key, value);
+});
+
+const SettingsAddSensorModalStories = {
+  basic: () => (
+    <Provider store={store}>
+      <SettingsAddSensorModal isOpen />
+    </Provider>
+  ),
+};
+
+Object.entries(SettingsAddSensorModalStories).forEach(([key, value]) => {
+  storiesOf('SettingsAddSensorModal', module).add(key, value);
 });

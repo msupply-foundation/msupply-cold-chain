@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
 
-import { Button, CircleButton, HalfCircleButton } from '../../components/buttons';
+import { Button, HalfCircleButton } from '../../components/buttons';
 
 import { Chevron } from '../../presentation/icons';
 
@@ -15,18 +15,6 @@ const ButtonStories = {
 
 Object.entries(ButtonStories).forEach(([key, value]) => {
   storiesOf('Button', module).add(key, value);
-});
-
-const CircleButtonStories = {
-  basic: () => (
-    <View style={{ height: '100%', width: '50%', marginTop: 50 }}>
-      <CircleButton text="1" />
-    </View>
-  ),
-};
-
-Object.entries(CircleButtonStories).forEach(([key, value]) => {
-  storiesOf('CircleButton', module).add(key, value);
 });
 
 const HalfCircleButtonStories = {

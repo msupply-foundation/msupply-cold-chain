@@ -9,3 +9,4 @@ import './SensorChartRow';
 import './SettingsItem';
 import './Settings';
 import './PinEntry';
+import './UpdatingSensorModal';
