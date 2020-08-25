@@ -8,3 +8,7 @@ export { SettingsEditModal } from './SettingsEditModal';
 export { SettingsNumberInputModal } from './SettingsNumberInputModal';
 export { SettingsNumberInputRow } from './SettingsNumberInputRow';
 export { SettingsTextEditModal } from './SettingsTextEditModal';
+export { SettingsButtonRow } from './SettingsButtonRow';
+export { SettingsAddSensorModal } from './SettingsAddSensorModal';
+export { SettingsAddSensorRow } from './SettingsAddSensorRow';
+export { SettingsLoadingIndicatorRow } from './SettingsLoadingIndicatorRow';

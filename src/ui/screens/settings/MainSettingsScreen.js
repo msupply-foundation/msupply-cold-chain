@@ -28,6 +28,14 @@ export const MainSettingsScreen = ({ navigation }) => {
           onPress={() => navigation.navigate(NAVIGATION.SCREENS.SETTINGS_STACK.TEMPERATURE_BREACH)}
           RightComponent={ChevronIcon}
         />
+        {__DEV__ ? (
+          <SettingsItem
+            label="Developer settings"
+            subtext="Assortment of options useful for development"
+            onPress={() => navigation.navigate(NAVIGATION.SCREENS.SETTINGS_STACK.DEVELOPER)}
+            RightComponent={ChevronIcon}
+          />
+        ) : null}
       </SettingsGroup>
     </SettingsList>
   );

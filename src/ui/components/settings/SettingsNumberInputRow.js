@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-wrap-multilines */
 import { COLOUR } from '~constants';
-import { useToggle, useCombinedCallback } from '~hooks';
+import { useToggle } from '~hooks';
 
 import { Row } from '~layouts';
 import { NormalText } from '~presentation/typography';
@@ -13,17 +13,14 @@ export const SettingsNumberInputRow = ({
   label,
   subtext,
   onConfirm,
-  sliderValue,
-  pickerValue,
+  initialValue,
   editDescription,
-  pickerOptions,
   maximumValue,
   minimumValue,
   step,
   metric,
 }) => {
   const [isModalOpen, toggleModal] = useToggle(false);
-  const wrappedOnConfirm = useCombinedCallback(onConfirm, toggleModal);
 
   return (
     <>
@@ -35,7 +32,7 @@ export const SettingsNumberInputRow = ({
         RightComponent={
           <Row justifyContent="space-between" alignItems="center">
             <NormalText marginRight={30} colour={COLOUR.GREY_ONE}>
-              {sliderValue}
+              {initialValue}
             </NormalText>
             <Chevron direction="right" colour={COLOUR.GREY_ONE} />
           </Row>
@@ -44,12 +41,10 @@ export const SettingsNumberInputRow = ({
       {isModalOpen && (
         <SettingsNumberInputModal
           title={editDescription}
-          onConfirm={wrappedOnConfirm}
+          onConfirm={onConfirm}
           onClose={toggleModal}
           isOpen={isModalOpen}
-          initialSliderValue={sliderValue}
-          initialPickerValue={pickerValue}
-          pickerOptions={pickerOptions}
+          initialValue={initialValue}
           maximumValue={maximumValue}
           minimumValue={minimumValue}
           step={step}

@@ -31,7 +31,10 @@ export const SettingsTextEditModal = ({
       validationSchema={Yup.object().shape({ input: validation })}
     >
       {({ handleChange, errors, values, isValid }) => {
-        const wrappedOnConfirm = useCallback(() => isValid && onConfirm({ inputValue }), [isValid]);
+        const wrappedOnConfirm = useCallback(() => isValid && onConfirm({ inputValue }), [
+          isValid,
+          inputValue,
+        ]);
         const textInputRef = useRef();
 
         useEffect(() => {

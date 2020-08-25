@@ -1,22 +1,37 @@
+import { useSelector, useDispatch } from 'react-redux';
 import * as Yup from 'yup';
+
+import { SensorAction } from '~sensor';
+import { useRouteProps } from '~hooks';
 
 import { t } from '~translations';
 import { SettingsList } from '~layouts';
+import { UpdateSensorAction } from '~bluetooth/bluetoothSlice';
 
 import {
+  SettingsLoadingIndicatorRow,
   SettingsTextInputRow,
   SettingsGroup,
-  SettingsSwitchRow,
-  SettingsDateRow,
   SettingsNumberInputRow,
 } from '~components/settings';
+import { BluetoothStateActions } from '~services/bluetooth';
 
-const mockSensor = { name: 'Sensor 1', logInterval: 300, logDelay: null };
+export const SensorDetailScreen = () => {
+  const { id } = useRouteProps();
+  const sensor = useSelector(state => state.sensor.byId[id]);
+  const blinkingSensor = useSelector(state => state.bluetooth.bluetooth.blinkingSensor);
+  const blinkWasSuccessful = useSelector(state => state.bluetooth.bluetooth.blinkWasSuccessful);
+  const dispatch = useDispatch();
 
-export const SensorDetailScreen = ({ sensor = mockSensor }) => {
-  const { name, logInterval } = sensor;
+  const { name, logInterval, macAddress } = sensor;
   return (
     <SettingsList>
+      <SettingsLoadingIndicatorRow
+        label="Blink"
+        onPress={() => dispatch(BluetoothStateActions.tryBlinkSensor(macAddress))}
+        isLoading={blinkingSensor}
+        wasSuccessful={blinkWasSuccessful}
+      />
       <SettingsGroup title={t('EDIT_SENSOR_DETAILS')}>
         <SettingsTextInputRow
           label={t('SENSOR_NAME')}
@@ -25,28 +40,22 @@ export const SensorDetailScreen = ({ sensor = mockSensor }) => {
           validation={Yup.string()
             .required(t('REQUIRED'))
             .max(20, t('MAX_CHARACTERS', { number: 20 }))}
-          onConfirm={e => e}
+          onConfirm={({ inputValue }) => dispatch(SensorAction.update(id, 'name', inputValue))}
           editDescription={t('EDIT_SENSOR_NAME')}
         />
         <SettingsNumberInputRow
           label={t('LOG_INTERVAL')}
           subtext={t('LOG_INTERVAL_SUBTEXT')}
-          sliderValue={logInterval / 60}
+          initialValue={logInterval / 60}
           maximumValue={30}
           minimumValue={1}
           step={1}
           metric={t('MINUTES')}
-          onConfirm={e => e}
+          onConfirm={({ value }) => {
+            const newLogInterval = value * 60;
+            dispatch(UpdateSensorAction.tryUpdateLogInterval(id, macAddress, newLogInterval));
+          }}
           editDescription={t('EDIT_LOG_INTERVAL')}
-        />
-
-        <SettingsDateRow label="Delay logging until.." subtext="10am" />
-      </SettingsGroup>
-      <SettingsGroup title="Available breach configurations">
-        <SettingsSwitchRow
-          label="Breach config 1"
-          subtext="Minimum temp: 2, maxmium temp: 8, duration: 30 minutes"
-          isOn
         />
       </SettingsGroup>
     </SettingsList>
