@@ -4,5 +4,5 @@ export const CHART = {
   Y_KEY: 'temperature',
   INTERPOLATION: 'natural',
   LINE_GRADIENT_ID: 'url(#grad)',
-  DOMAIN_PADDING: { y: 20 },
+  DOMAIN_PADDING: { y: 20, x: 2 },
 };

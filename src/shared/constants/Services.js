@@ -6,6 +6,11 @@ export const SERVICES = {
   SENSOR_MANAGER: 'sensorManager',
   SETTING_MANAGER: 'settingManager',
   BREACH_CONFIGURATION_MANAGER: 'breachConfigurationManager',
+  TEMPERATURE_LOG_MANAGER: 'temperatureLogManager',
+  CHART_MANAGER: 'chartManager',
+  BREACH_MANAGER: 'breachManager',
+  LOG_TABLE_MANAGER: 'logTableManager',
+  TEMPERATURE_DOWNLOAD_MANAGER: 'temperatureDownloadManager',
 };
 
 export const BLUETOOTH_SERVICE = {

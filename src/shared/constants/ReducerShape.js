@@ -8,4 +8,10 @@ export const REDUCER_SHAPE = {
   SETTING: 'setting',
   BREACH_CONFIGURATION: 'breach_configuration',
   TEMPERATURE_LOG: 'temperature_log',
+  HYDRATE: 'hydrate',
+  CHART: 'chart',
+  BREACH: 'breach',
+  DEVICE: 'device',
+  LOG_TABLE: 'log_table',
+  TEMPERATURE_DOWNLOAD: 'temperature_download',
 };
