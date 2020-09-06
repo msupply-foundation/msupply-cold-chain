@@ -9,3 +9,6 @@ export { Calendar } from './Calendar';
 export { Pencil } from './Pencil';
 export { Tick } from './Tick';
 export { Close } from './Close';
+export { Sort } from './Sort';
+export { PowerPlug } from './PowerPlug';
+export { MsupplyMan } from './MsupplyMan';
