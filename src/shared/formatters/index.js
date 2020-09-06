@@ -1,1 +1,1 @@
-export { tickFormat } from './chart';
+export { getTickFormatter } from './chart';
