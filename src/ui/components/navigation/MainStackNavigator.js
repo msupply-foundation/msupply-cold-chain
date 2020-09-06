@@ -1,26 +1,31 @@
-import { createStackNavigator } from '@react-navigation/stack';
+import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 
-import { navigationSlide } from '~animations';
 import { COLOUR, NAVIGATION } from '~constants';
+import { MsupplyMan } from '../../presentation/icons';
+import { Row } from '../../layouts';
 
 // Create a stack navigator
 const MainStack = createStackNavigator();
 
 // Default options for each screen within the stack.
 const screenOptions = {
-  cardStyle: { backgroundColor: COLOUR.TRANSPARENT, opacity: 1 },
-  cardStyleInterpolator: navigationSlide,
+  cardStyle: { opacity: 1, backgroundColor: COLOUR.TRANSPARENT },
+  cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
   cardOverlayEnabled: true,
   gestureEnabled: true,
   gestureDirection: NAVIGATION.CONFIG.MAIN_STACK.GESTURE_DIRECTION,
+  header: () => {
+    return (
+      <Row style={{ backgroundColor: COLOUR.HIGHLIGHT }} justifyContent="center">
+        <MsupplyMan />
+      </Row>
+    );
+  },
 };
 
 // Exporting a main stack navigator component
 export const MainStackNavigator = ({ children }) => (
-  <MainStack.Navigator
-    screenOptions={screenOptions}
-    headerMode={NAVIGATION.CONFIG.MAIN_STACK.HEADER_MODE}
-  >
+  <MainStack.Navigator screenOptions={screenOptions} headerMode="none">
     {children}
   </MainStack.Navigator>
 );

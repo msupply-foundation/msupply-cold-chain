@@ -26,7 +26,13 @@ const tabBarOptions = {
   inactiveTintColor: COLOUR.OFF_WHITE,
   activeBackgroundColor: COLOUR.HIGHLIGHT,
   inactiveBackgroundColor: COLOUR.SECONDARY,
-  tabStyle: { borderWidth: 1, borderColor: COLOUR.DIVIDER, borderBottomWidth: 0 },
+  tabStyle: {
+    borderWidth: 1,
+    borderColor: COLOUR.DIVIDER,
+    borderBottomWidth: 0,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+  },
   labelStyle: { fontFamily: FONT.FAMILY.REGULAR, fontSize: FONT.SIZE.MS },
   labelPosition: 'below-icon',
 };
