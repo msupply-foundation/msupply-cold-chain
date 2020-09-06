@@ -1,57 +1,88 @@
-import Animated from 'react-native-reanimated';
-import { useMemoOne } from 'use-memo-one';
+import React, { useEffect } from 'react';
+import { Animated } from 'react-native';
 
-import { Centered, LargeRectangle } from '~layouts';
-import { Header } from '~presentation/typography';
+import { Row, Centered, LargeRectangle } from '~layouts';
+import { Header, LargeText , SmallText } from '~presentation/typography';
 import { LowBattery, HotBreach, ColdBreach } from '~presentation/icons';
-import { COLOUR } from '~constants';
-import { useLoop } from '~hooks';
+import { MILLISECONDS, COLOUR } from '~constants';
+import { Battery } from '../presentation/icons/Battery';
 
-export const SensorStatus = ({ isInHotBreach, isInColdBreach, isLowBattery, temperature }) => {
-  const animations = useMemoOne(() => ({
-    temperatureAnimation: new Animated.Value(),
-    isInHotBreachAnimation: new Animated.Value(),
-    isInColdBreachAnimation: new Animated.Value(),
-    isLowBatteryAnimation: new Animated.Value(),
-  }));
 
-  const configs = [
-    { run: !!temperature, animation: animations.temperatureAnimation },
-    { run: !!isInHotBreach, animation: animations.isInHotBreachAnimation },
-    { run: !!isInColdBreach, animation: animations.isInColdBreachAnimation },
-    { run: !!isLowBattery, animation: animations.isLowBatteryAnimation },
-  ];
+const styles = {
+  icon: { position: 'absolute', left: 40 },
+};
 
-  useLoop(configs);
+export const SensorStatus = ({
+  isInHotBreach = false,
+  isInColdBreach = false,
+  isLowBattery = false,
+  batteryLevel = 100,
+  temperature,
+}) => {
+  const fadeAnim1 = React.useRef(new Animated.Value(0)).current;
+  const fadeAnim2 = React.useRef(new Animated.Value(0)).current;
+  const fadeAnim3 = React.useRef(new Animated.Value(0)).current;
 
-  return (
-    <LargeRectangle colour={COLOUR.DANGER}>
-      <Centered>
-        <Animated.View
-          style={{ position: 'absolute' }}
-          opacity={animations.temperatureAnimation || 0}
-        >
-          <Header colour={COLOUR.WHITE}>{temperature ?? '3.2c'}</Header>
-        </Animated.View>
+  const conditions = [isInHotBreach, isInColdBreach, isLowBattery, !!temperature != null];
+  const animationValues = [fadeAnim1, fadeAnim2, fadeAnim3].filter((_, i) => conditions[i]);
+  const isInDanger = isInHotBreach || isInColdBreach || isLowBattery;
 
-        <Animated.View opacity={animations.isInHotBreachAnimation || 0}>
-          <HotBreach />
-        </Animated.View>
+  const animations = () => {
+    return Animated.loop(
+      Animated.sequence(
+        animationValues.map(value => {
+          return Animated.sequence([
+            Animated.delay(MILLISECONDS.ONE_SECOND / 4),
+            Animated.timing(value, {
+              toValue: 1,
+              duration: MILLISECONDS.ONE_SECOND,
+              useNativeDriver: true,
+            }),
 
-        <Animated.View
-          style={{ position: 'absolute' }}
-          opacity={animations.isInColdBreachAnimation || 0}
-        >
-          <ColdBreach />
-        </Animated.View>
+            Animated.timing(value, {
+              toValue: 0,
+              duration: MILLISECONDS.ONE_SECOND,
+              useNativeDriver: true,
+            }),
+          ]);
+        })
+      )
+    ).start();
+  };
 
-        <Animated.View
-          style={{ position: 'absolute' }}
-          opacity={animations.isLowBatteryAnimation || 0}
-        >
-          <LowBattery />
-        </Animated.View>
-      </Centered>
+  useEffect(() => {
+    if (isInDanger) animations();
+  }, [isInDanger]);
+
+  return !isInDanger ? (
+    <Centered>
+      <Row alignItems="center" style={{ alignSelf: 'flex-start' }}>
+        <Battery size={10} />
+        <SmallText>{batteryLevel}</SmallText>
+      </Row>
+      <Header>{temperature}</Header>
+    </Centered>
+  ) : (
+    <LargeRectangle colour={isInHotBreach ? COLOUR.DANGER : COLOUR.PRIMARY}>
+      <Row flex={1}>
+        <Centered style={{ left: 10 }}>
+          <LargeText colour={COLOUR.WHITE}>{temperature}</LargeText>
+        </Centered>
+
+        <Centered>
+          <Animated.View style={styles.icon} opacity={fadeAnim1}>
+            <HotBreach />
+          </Animated.View>
+
+          <Animated.View style={styles.icon} opacity={fadeAnim2}>
+            <ColdBreach />
+          </Animated.View>
+
+          <Animated.View style={styles.icon} opacity={fadeAnim3}>
+            <LowBattery />
+          </Animated.View>
+        </Centered>
+      </Row>
     </LargeRectangle>
   );
 };
