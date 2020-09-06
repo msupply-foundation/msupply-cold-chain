@@ -11,8 +11,13 @@ class TemperatureLog {
   @Column({ type: 'double' })
   temperature;
 
+  @Index()
   @Column({ type: 'integer' })
   timestamp;
+
+  @Index()
+  @Column({ type: 'integer' })
+  logInterval;
 
   @Column({ type: 'varchar', nullable: true })
   temperatureBreachId;
@@ -24,14 +29,14 @@ class TemperatureLog {
   @JoinColumn({ name: 'temperatureBreachId' })
   temperatureBreach;
 
+  @Index()
   @Column({ type: 'varchar', nullable: true })
   sensorId;
 
-  @Index()
   @JoinColumn({ name: 'sensorId' })
   @ManyToOne(() => Sensor, temperatureBreach => temperatureBreach.temperatureLogs, {
     cascade: ['insert', 'update'],
-    eager: true,
+    eager: false,
   })
   sensor;
 }

@@ -12,6 +12,9 @@ class Sensor {
   @Column({ type: 'varchar', length: 17, unique: true })
   macAddress;
 
+  @Column({ type: 'integer', nullable: true })
+  batteryLevel;
+
   @Column({ type: 'integer' })
   logInterval;
 

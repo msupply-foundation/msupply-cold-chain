@@ -20,7 +20,7 @@ class TemperatureBreach {
 
   @ManyToOne(() => TemperatureBreachConfiguration, config => config.temperatureBreaches, {
     cascade: ['insert', 'update'],
-    eager: false,
+    eager: true,
   })
   @JoinColumn({ name: 'temperatureBreachConfigurationId' })
   temperatureBreachConfiguration;
