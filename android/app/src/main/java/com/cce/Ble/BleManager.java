@@ -40,7 +40,7 @@ public class BleManager extends ReactContextBaseJavaModule implements BleScanLis
 
     @Override
     public String getName() {
-        return "BleManager";
+        return "SussolBleManager";
     }
 
     /** 
