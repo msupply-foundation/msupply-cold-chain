@@ -36,7 +36,20 @@ const { actions: BreachConfigurationAction, reducer: BreachConfigurationReducer 
   reducers,
 });
 
-const BreachConfigurationSelector = {};
+const BreachConfigurationSelector = {
+  hotBreachConfig: ({ breachConfiguration }) => {
+    return breachConfiguration.byId.HOT_BREACH;
+  },
+  coldBreachConfig: ({ breachConfiguration }) => {
+    return breachConfiguration.byId.COLD_BREACH;
+  },
+  hotCumulativeConfig: ({ breachConfiguration }) => {
+    return breachConfiguration.byId.HOT_CUMULATIVE;
+  },
+  coldCumulativeConfig: ({ breachConfiguration }) => {
+    return breachConfiguration.byId.COLD_CUMULATIVE;
+  },
+};
 
 function* updatedBreachConfiguration({ payload: { id, key, value } }) {
   const getService = yield getContext('getService');

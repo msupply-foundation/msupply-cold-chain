@@ -11,6 +11,7 @@
   "SETTINGS_STACK/BluetoothSettings": "Bluetooth Settings",
   "SETTINGS_STACK/TemperatureBreachSettings": "Temperature Breach Settings",
   "SETTINGS_STACK/TemperatureBreachDetail": "Temperature Breach Detail",
+  "SETTINGS_STACK/TemperatureCumulativeDetail": "Temperature Cumulative Detail",
   "SETTINGS_STACK/Developer": "Developer",
   "BLUETOOTH_SETTINGS": "Bluetooth",
   "BLUETOOTH_SETTINGS_SUBTEXT": "Manage bluetooth",
@@ -45,6 +46,8 @@
   "TEMPERATURE": "Temperature",
   "HOT_BREACH_SUBTEXT": "Temperature and above to be considered a breach.",
   "COLD_BREACH_SUBTEXT": "Temperature and below to be considered a breach.",
+  "HOT_CUMULATIVE_SUBTEXT": "Temperature and above to be considered a breach.",
+  "COLD_CUMULATIVE_SUBTEXT": "Temperature and below to be considered a breach.",
   "DURATION": "Duration",
   "DURATION_SUBTEXT": "in minutes needing to be exposed",
   "OK": "OK",
@@ -55,6 +58,7 @@
   "MAX_CHARACTERS": "Must be less than %{number} characters!",
   "EDIT_BLUETOOTH_SETTINGS": "Edit bluetooth settings",
   "EDIT_TEMPERATURE_CONFIGURATION_DETAILS": "Edit temperature breach configuration details",
+  "EDIT_CUMULATIVE_TEMPERATURE_CONFIGURATION_DETAILS": "Edit cumulative temperature breach configuration details",
   "EDIT_TEMPERATURE_BREACH_DURATION": "Edit temperature breach duration",
   "AND_ABOVE": "And above",
   "AND_BELOW": "And below",
@@ -73,5 +77,10 @@
   "BLINKED_SENSOR_FAILED": "Sensor blink unsuccessful",
   "TEMPERATURE_BREACH_DESCRIPTION": "Description",
   "TEMPERATURE_BREACH_DESCRIPTION_SUBTEXT": "Simple identifier for this breach configuration",
-  "TEMPERATURE_BREACH_DESCRIPTION_EDIT": "Edit this temperature breach identifier"
+  "TEMPERATURE_BREACH_DESCRIPTION_EDIT": "Edit this temperature breach identifier",
+  "TEMPERATURE_CUMULATIVE_DESCRIPTION": "Description",
+  "TEMPERATURE_CUMULATIVE_DESCRIPTION_SUBTEXT": "Simple identifier for this cumulative configuration",
+  "TEMPERATURE_CUMULATIVE_DESCRIPTION_EDIT": "Edit this cumulative identifier",
+  "SINGLE_EXPOSURE_CONFIGS": "Single exposure breach configurations",
+  "CUMULATIVE_EXPOSURE_CONFIGS": "Cumulative exposure configurations"
 }

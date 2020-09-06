@@ -1,26 +1,47 @@
 import { useSelector } from 'react-redux';
 
-import { SettingsList } from '~layouts';
+import { t } from '~translations';
 import { NAVIGATION } from '~constants';
+import { BreachConfigurationSelector } from '~features/breachConfiguration';
 
-import { SettingsNavigationRow } from '~components/settings';
+import { SettingsList } from '~layouts';
+import { SettingsGroup, SettingsNavigationRow } from '~components/settings';
+
+const BREACH_DETAIL_SCREEN = NAVIGATION.SCREENS.SETTINGS_STACK.TEMPERATURE_BREACH_DETAIL;
+const CUMULATIVE_DETAIL_SCREEN = NAVIGATION.SCREENS.SETTINGS_STACK.TEMPERATURE_CUMULATIVE_DETAIL;
 
 export const TemperatureBreachSettingsScreen = ({ navigation }) => {
-  const configs = useSelector(({ breachConfiguration }) => {
-    const { byId, ids } = breachConfiguration;
-    return ids.map(id => byId[id]);
-  });
+  const hotBreach = useSelector(BreachConfigurationSelector.hotBreachConfig);
+  const coldBreach = useSelector(BreachConfigurationSelector.coldBreachConfig);
+  const hotCumulative = useSelector(BreachConfigurationSelector.hotCumulativeConfig);
+  const coldCumulative = useSelector(BreachConfigurationSelector.coldCumulativeConfig);
 
   return (
     <SettingsList>
-      {configs.map(({ id, description }) => (
+      <SettingsGroup title={t('SINGLE_EXPOSURE_CONFIGS')}>
         <SettingsNavigationRow
-          key={id}
-          label={description}
-          onPress={() =>
-            navigation.navigate(NAVIGATION.SCREENS.SETTINGS_STACK.TEMPERATURE_BREACH_DETAIL, { id })}
+          key={hotBreach.id}
+          label={hotBreach.description}
+          onPress={() => navigation.navigate(BREACH_DETAIL_SCREEN, { id: hotBreach.id })}
         />
-      ))}
+        <SettingsNavigationRow
+          key={coldBreach.id}
+          label={coldBreach.description}
+          onPress={() => navigation.navigate(BREACH_DETAIL_SCREEN, { id: coldBreach.id })}
+        />
+      </SettingsGroup>
+      <SettingsGroup title={t('CUMULATIVE_EXPOSURE_CONFIGS')}>
+        <SettingsNavigationRow
+          key={hotCumulative.id}
+          label={hotCumulative.description}
+          onPress={() => navigation.navigate(CUMULATIVE_DETAIL_SCREEN, { id: hotCumulative.id })}
+        />
+        <SettingsNavigationRow
+          key={coldCumulative.id}
+          label={coldCumulative.description}
+          onPress={() => navigation.navigate(CUMULATIVE_DETAIL_SCREEN, { id: coldCumulative.id })}
+        />
+      </SettingsGroup>
     </SettingsList>
   );
 };

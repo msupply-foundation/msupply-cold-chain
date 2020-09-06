@@ -18,12 +18,6 @@ import {
 } from '~components/settings';
 import { SettingAction } from '~setting';
 
-const x = (a, b) => {
-  const result = shallowEqual(a, b);
-
-  return result;
-};
-
 export const SensorSettingsScreen = React.memo(({ navigation }) => {
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
@@ -43,7 +37,7 @@ export const SensorSettingsScreen = React.memo(({ navigation }) => {
 
   const defaultLoggingInterval = useSelector(
     state => state.setting[SETTING.INT.DEFAULT_LOG_INTERVAL],
-    x
+    shallowEqual
   );
 
   useEffect(() => {
@@ -75,7 +69,7 @@ export const SensorSettingsScreen = React.memo(({ navigation }) => {
         <SettingsNumberInputRow
           label={t('DEFAULT_LOG_INTERVAL')}
           subtext={t('DEFAULT_LOG_INTERVAL_SUBTEXT')}
-          onConfirm={value =>
+          onConfirm={({ value }) =>
             dispatch(SettingAction.updatedSetting(SETTING.INT.DEFAULT_LOG_INTERVAL, value * 60))}
           initialValue={defaultLoggingInterval / 60}
           editDescription={t('DEFAULT_LOG_INTERVAL')}

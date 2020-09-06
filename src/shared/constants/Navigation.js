@@ -18,6 +18,7 @@ export const NAVIGATION = {
       TEMPERATURE_BREACH: 'SETTINGS_STACK/TemperatureBreach',
       SENSOR_DETAIL: 'SETTINGS_STACK/SensorDetail',
       TEMPERATURE_BREACH_DETAIL: 'SETTINGS_STACK/TemperatureBreachDetail',
+      TEMPERATURE_CUMULATIVE_DETAIL: 'SETTINGS_STACK/TemperatureCumulativeDetail',
       DEVELOPER: 'SETTINGS_STACK/Developer',
     },
   },

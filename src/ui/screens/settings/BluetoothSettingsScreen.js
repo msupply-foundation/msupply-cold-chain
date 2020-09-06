@@ -18,13 +18,13 @@ export const BluetoothSettingsScreen = () => {
         <SettingsNumberInputRow
           label={t('DOWNLOAD_FREQUENCY')}
           subtext={t('DOWNLOAD_FREQUENCY_SUBTEXT')}
-          initialValue={downloadInterval}
+          initialValue={downloadInterval / 60000}
           maximumValue={30}
           minimumValue={1}
           step={1}
           metric={t('MINUTES')}
           onConfirm={({ value }) =>
-            dispatch(SettingAction.updatedSetting(SETTING.INT.DOWNLOAD_INTERVAL, value))}
+            dispatch(SettingAction.updatedSetting(SETTING.INT.DOWNLOAD_INTERVAL, value * 60000))}
           editDescription={t('EDIT_LOG_INTERVAL')}
         />
       </SettingsGroup>
