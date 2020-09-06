@@ -2,7 +2,7 @@ import { Text } from 'react-native';
 
 import { FONT, COLOUR, UI_ASSERTIONS } from '~constants';
 
-const style = { fontSize: FONT.SIZE.L, fontFamily: FONT.FAMILY.BOLD };
+const style = { fontSize: FONT.SIZE.XL, fontFamily: FONT.FAMILY.BOLD };
 
 export const Header = ({ children, colour = COLOUR.PRIMARY }) => {
   if (!(typeof children === 'string' || typeof children === 'number')) {
