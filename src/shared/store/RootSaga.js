@@ -6,7 +6,11 @@ import { SettingSaga } from '~setting';
 import { WatchDatabaseActions } from '~database';
 import { BluetoothServiceWatcher } from '~bluetooth';
 import { getService, getServices } from '~services';
-import { TemperatureLogSaga } from '~temperatureLog';
+import { ChartSaga } from '../../features/chart';
+import { BreachSaga } from '../../features/breach';
+import { DeviceSaga } from '../../services/device';
+import { LogTableSaga } from '../../features/logTable';
+import { TemperatureDownloadSaga } from '../../features/temperatureDownload';
 
 export function* RootSaga() {
   yield fork(BluetoothServiceWatcher);
@@ -14,7 +18,11 @@ export function* RootSaga() {
   yield fork(SensorSaga.watchSensorActions);
   yield fork(SettingSaga.watchSettingActions);
   yield fork(BreachConfigurationSaga.watchBreachConfigurationActions);
-  yield fork(TemperatureLogSaga.watchTemperatureLogActions);
+  yield fork(ChartSaga.watchChartActions);
+  yield fork(BreachSaga.watchBreachActions);
+  yield fork(DeviceSaga.watchDeviceActions);
+  yield fork(LogTableSaga.watchLogTableActions);
+  yield fork(TemperatureDownloadSaga.watchTemperatureDownloadActions);
 }
 
 export const SagaMiddleware = createSagaMiddleware({
