@@ -3,6 +3,9 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.reactcommunity.rnlocalize.RNLocalizePackage;
+import fr.bamlab.rnimageresizer.ImageResizerPackage;
+import com.rnfs.RNFSPackage;
 import com.polidea.reactnativeble.BlePackage;
 import com.ijzerenhein.sharedelement.RNSharedElementPackage;
 import com.horcrux.svg.SvgPackage;
@@ -49,9 +52,9 @@ public class MainApplication extends Application implements ReactApplication {
           );
           
           packages.addAll(unimodules);
-
+          
           // Adding Sussol built native package.
-          // packages.add(new BlePackage());
+          packages.add(new SussolBlePackage());
           
           return packages;
         }
