@@ -58,7 +58,7 @@ export const { actions: UpdateSensorAction, reducer: UpdateSensorReducer } = cre
       reducer: draftState => {
         draftState.updatingSensor = true;
       },
-      prepare: macAddress => ({ payload: { macAddress } }),
+      prepare: (macAddress, logDelay) => ({ payload: { macAddress, logDelay } }),
     },
   },
 });
@@ -73,6 +73,11 @@ export const { actions: BluetoothStateActions, reducer: BluetoothStateReducer } 
     findingSensors: false,
   },
   reducers: {
+    startWatchingBatteryLevels: () => {},
+    stopWatchingBatteryLevels: () => {},
+    updateBatteryLevels: () => {},
+    updateBatteryLevelsSuccessful: () => {},
+    updateBatteryLevelsFailed: () => {},
     downloadTemperatures: () => {},
     downloadTemperaturesForSensor: {
       reducer: () => {},
@@ -141,7 +146,7 @@ export const { actions: BluetoothStateActions, reducer: BluetoothStateReducer } 
         draftState.updatingSensor = true;
         draftState.state = TEMPERATURE_SYNC_STATE.IN_PROGRESS;
       },
-      prepare: macAddress => ({ payload: { macAddress } }),
+      prepare: (macAddress, logDelay) => ({ payload: { macAddress, logDelay } }),
     },
 
     tryBlinkSensor: {
