@@ -1,7 +1,9 @@
 import { getBatteryLevel, isBatteryCharging } from 'react-native-device-info';
 import { check, request } from 'react-native-permissions';
 import { BluetoothStatus } from 'react-native-bluetooth-status';
-
+import RNFS from 'react-native-fs';
+import moment from 'moment';
+import { Parser } from 'json2csv';
 import { PERMISSION, PERMISSION_STATE, BLUETOOTH_STATE, DANGEROUS_BATTERY_LEVEL } from '~constants';
 
 /**
@@ -47,7 +49,36 @@ export class DeviceService {
   };
 
   requestStoragePermission = async () => {
-    const requestResult = await request(PERMISSION.STORAGE);
+    const requestResult = await request(PERMISSION.STORAGE, '');
     return requestResult === PERMISSION_STATE.GRANTED;
+  };
+
+  writeLogFile = async logs => {
+    const fields = ['timestamp', 'temperature', 'single exposure'];
+    const withSingleExposure = obj => ({ ...obj, 'single exposure': !!obj.temperatureBreachId });
+    const opts = { fields, transforms: [withSingleExposure] };
+    let csv;
+    try {
+      const parser = new Parser(opts);
+      csv = parser.parse(logs);
+    } catch (err) {
+      console.log(err);
+    }
+
+    const directory = '/Download/cce';
+    const now = moment().format('DD-MM-YYYY-HHmm');
+    const file = `/${now}.csv`;
+    await this.requestStoragePermission();
+    const path = `${RNFS.ExternalStorageDirectoryPath}${directory}${file}'`;
+
+    try {
+      await RNFS.mkdir(`${RNFS.ExternalStorageDirectoryPath}${directory}`);
+      await RNFS.writeFile(path, csv, 'utf8');
+      return path;
+    } catch (error) {
+      console.log(error.message);
+    }
+
+    return null;
   };
 }
