@@ -1,4 +1,5 @@
-import { ToastAndroid } from 'react-native';
+import { ToastAndroid, NativeModules } from 'react-native';
+import moment from 'moment';
 import { eventChannel } from 'redux-saga';
 import {
   take,
@@ -12,6 +13,7 @@ import {
   getContext,
   takeEvery,
   cancelled,
+  all,
 } from 'redux-saga/effects';
 import {
   PassiveBluetoothActions,
@@ -33,10 +35,21 @@ export function* downloadTemperaturesForSensor(action) {
 
   const getService = yield getContext('getService');
   const btService = yield call(getService, SERVICES.BLUETOOTH);
+  const sensorManager = yield call(getService, SERVICES.SENSOR_MANAGER);
 
-  const logs = yield call(btService.downloadLogs, 'DB:56:07:61:C7:13');
+  try {
+    const sensor = yield call(sensorManager.getSensor, macAddress);
 
-  yield put(TemperatureLogActions.saveSensorLogs(logs, macAddress));
+    if ((sensor.nextDownloadTime ?? 0) < moment().unix() && !__DEV__) {
+      ToastAndroid.show("Can't download yet", ToastAndroid.SHORT);
+    } else {
+      const logs = yield call(btService.downloadLogsWithRetries, macAddress, 10);
+
+      yield put(TemperatureLogActions.saveSensorLogs(logs, macAddress));
+    }
+  } catch (error) {
+    console.log('error', error.message);
+  }
 }
 
 /**
@@ -49,8 +62,10 @@ export function* downloadTemperatures() {
   const dbService = yield call(getService, SERVICES.DATABASE);
   const sensors = yield call(dbService.getSensors);
 
-  yield* sensors.map(({ macAddress }) =>
-    put(BluetoothStateActions.downloadTemperaturesForSensor(macAddress))
+  yield all(
+    sensors.map(({ macAddress }) =>
+      put(BluetoothStateActions.downloadTemperaturesForSensor(macAddress))
+    )
   );
 }
 
@@ -186,7 +201,7 @@ export function* updateSensorLogInterval({ payload: { id, logInterval, macAddres
   const btService = yield call(getService, SERVICES.BLUETOOTH);
 
   try {
-    yield call(btService.updateLogInterval, macAddress, logInterval);
+    yield call(btService.updateLogIntervalWithRetries, macAddress, logInterval, 10);
     yield put(UpdateSensorAction.updateSensorSucceeded());
     yield put(SensorAction.update(id, 'logInterval', logInterval));
   } catch (e) {
@@ -194,7 +209,7 @@ export function* updateSensorLogInterval({ payload: { id, logInterval, macAddres
   }
 }
 
-export function* connectWithNewSensor({ payload: { macAddress } }) {
+export function* connectWithNewSensor({ payload: { macAddress, logDelay } }) {
   try {
     const getServices = yield getContext('getServices');
     const [btService, settingManager] = yield call(getServices, [
@@ -207,9 +222,16 @@ export function* connectWithNewSensor({ payload: { macAddress } }) {
       SETTING.INT.DEFAULT_LOG_INTERVAL
     );
     yield put(BluetoothStateActions.stopScanning());
-    yield call(btService.updateLogInterval, macAddress, logInterval);
+    yield call(btService.updateLogIntervalWithRetries, macAddress, logInterval, 10);
+
+    const { data, success } = yield call(NativeModules.SussolBleManager.getDevices, 307, '');
+    let batteryLevel = 100;
+    if (success && data) {
+      const advertisement = data.find(adv => adv.macAddress === macAddress);
+      batteryLevel = advertisement.batteryLevel;
+    }
     yield put(UpdateSensorAction.updateSensorSucceeded());
-    yield put(SensorAction.addNewSensor(macAddress, logInterval));
+    yield put(SensorAction.addNewSensor(macAddress, logInterval, logDelay, batteryLevel));
     yield put(BluetoothStateActions.findSensors());
   } catch (e) {
     yield put(UpdateSensorAction.updateSensorFailed());
@@ -221,14 +243,56 @@ export function* blinkSensor({ payload: { macAddress } }) {
   const btService = yield call(getService, SERVICES.BLUETOOTH);
 
   try {
-    yield put(BluetoothStateActions.stopScanning());
-    yield call(btService.blink, macAddress);
+    // yield put(BluetoothStateActions.stopScanning());
+    yield call(btService.blinkWithRetries, macAddress, 10);
     yield put(BluetoothStateActions.blinkSensorSucceeded());
     ToastAndroid.show(t('BLINKED_SENSOR_SUCCESS'), ToastAndroid.SHORT);
   } catch (error) {
     yield put(BluetoothStateActions.blinkSensorFailed(error));
     ToastAndroid.show(t('BLINKED_SENSOR_FAILED'), ToastAndroid.SHORT);
   }
+}
+
+function* updateBatteryLevels() {
+  const getService = yield getContext('getService');
+  const sensorManager = yield call(getService, SERVICES.SENSOR_MANAGER);
+
+  try {
+    const { data, success } = yield call(NativeModules.SussolBleManager.getDevices, 307, '');
+    if (success) {
+      const sensors = yield call(sensorManager.getAll);
+      const mapped = sensors.map(sensor => {
+        const { batteryLevel } = data.find(adv => adv.macAddress === sensor.macAddress) ?? {};
+        if (batteryLevel) {
+          return { ...sensor, batteryLevel };
+        }
+        return { ...sensor };
+      });
+      yield all(
+        mapped.map(sensor => put(SensorAction.updateBatteryLevel(sensor.id, sensor.batteryLevel)))
+      );
+
+      yield put(BluetoothStateActions.updateBatteryLevelsSuccessful());
+    }
+  } catch (error) {
+    yield put(BluetoothStateActions.updateBatteryLevelsFailed());
+  }
+}
+
+function* stopWatchingBatteryLevels() {
+  yield take(BluetoothStateActions.stopWatchingBatteryLevels);
+}
+
+function* startWatchingBatteryLevels() {
+  while (true) {
+    yield call(updateBatteryLevels);
+    yield delay(60000);
+  }
+}
+
+function* watchBatteryLevels() {
+  yield take(BluetoothStateActions.startWatchingBatteryLevels);
+  yield race({ start: call(startWatchingBatteryLevels), stop: call(stopWatchingBatteryLevels) });
 }
 
 /**
@@ -244,6 +308,7 @@ export function* BluetoothServiceWatcher() {
     [BluetoothStateActions.downloadTemperatures, BluetoothStateActions.scanForSensors],
     startBluetooth
   );
+
   yield takeEvery(
     BluetoothStateActions.downloadTemperaturesForSensor,
     downloadTemperaturesForSensor
@@ -251,5 +316,6 @@ export function* BluetoothServiceWatcher() {
   yield takeEvery(UpdateSensorAction.tryUpdateLogInterval, updateSensorLogInterval);
   yield takeEvery(UpdateSensorAction.tryConnectWithNewSensor, connectWithNewSensor);
   yield takeEvery(BluetoothStateActions.tryBlinkSensor, blinkSensor);
-  // yield takeLeading(BluetoothStateActions.findSensors, findSensors);
+  yield takeEvery(BluetoothStateActions.updateBatteryLevels, updateBatteryLevels);
+  yield fork(watchBatteryLevels);
 }
