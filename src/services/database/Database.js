@@ -1,4 +1,4 @@
-import { createConnection } from 'typeorm/browser';
+import { createConnection, getConnectionManager } from 'typeorm/browser';
 import {
   SensorLog,
   TemperatureBreach,
@@ -10,9 +10,14 @@ import {
 
 const DEFAULT_DATABASE_CONFIG = {
   type: 'react-native',
-  database: 'test47',
+  database: 'test20.db',
   location: 'default',
+
+  // extra: {
+  //   createFromLocation: '~test.db',
+  // },
   logging: ['error', 'query', 'schema'],
+  maxQueryExecutionTime: 3000,
   synchronize: true,
   entities: [
     Sensor,
@@ -46,6 +51,8 @@ export class Database {
   };
 
   getConnection = async () => {
+    const connectionManager = getConnectionManager();
+    if (connectionManager.has('default')) return connectionManager.get('default');
     if (!this.connection) await this.createConnection();
     return this.connection;
   };
