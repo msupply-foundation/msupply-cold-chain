@@ -34,6 +34,10 @@ export const { actions: TemperatureLogActions, reducer: TemperatureLogReducer } 
   name: REDUCER_SHAPE.TEMPERATURE_LOGS,
   initialState: { bySensorId: {}, fromDate: null, toDate: null },
   reducers: {
+    addRandomLogs: {
+      reducer: () => {},
+      prepare: id => ({ payload: { id } }),
+    },
     saveTemperatureLogs: {
       reducer: () => {},
       prepare: temperatureLogs => ({ payload: { temperatureLogs } }),

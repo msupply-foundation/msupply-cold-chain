@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { Equal, IsNull, Not, Between } from 'typeorm/browser';
 import { uuid } from '../utilities';
 
-import { MILLISECONDS, ENTITIES } from '~constants';
+import { ENTITIES } from '~constants';
 
 export class DatabaseService {
   constructor(database) {
@@ -25,6 +25,13 @@ export class DatabaseService {
 
   upsert = async (entityName, object) => {
     const repository = await this.database.getRepository(entityName);
+
+    let toSave = object;
+    if (Array.isArray(object)) {
+      toSave = _.chunk(object, 500);
+      const results = await Promise.all(toSave.map(chunk => repository.save(chunk)));
+      return results.flat();
+    }
     return repository.save(object);
   };
 
@@ -33,9 +40,23 @@ export class DatabaseService {
     return repository.find(queryObject);
   };
 
+  get = async (entityName, id) => {
+    const repository = await this.database.getRepository(entityName);
+    return repository.findOne(id);
+  };
+
+  getWith = async (entityName, queryObject) => {
+    const repository = await this.database.getRepository(entityName);
+    return repository.findOne(queryObject);
+  };
+
   getQueryBuilder = async (entityName, alias) => {
     const repository = await this.database.getRepository(entityName);
     return repository.createQueryBuilder(alias);
+  };
+
+  getEntityManager = async () => {
+    return (await this.database.getConnection()).manager;
   };
 
   getSensors = async () => {
@@ -85,37 +106,34 @@ export class DatabaseService {
 
   saveSensorLogs = async logsToSave => {
     const chunks = _.chunk(logsToSave, 100);
-    const promises = chunks.map(
-      chunk => new Promise(resolve => resolve(this.upsert(ENTITIES.SENSOR_LOG, chunk)))
-    );
-
+    const promises = chunks.map(chunk => this.upsert(ENTITIES.SENSOR_LOG, chunk));
     const savedLogs = await Promise.all(promises);
     return savedLogs.reduce((acc, value) => [...acc, ...value], []);
   };
 
   createTemperatureLogs = async macAddress => {
     const [sensor] = await this.queryWith(ENTITIES.SENSOR, {
-      macAddress,
+      where: { macAddress },
       relations: ['sensorLogs'],
     });
     const { logInterval, sensorLogs, id: sensorId } = sensor;
 
-    const numberOfIntervalsPerTemp = Math.ceil(
-      MILLISECONDS.THIRTY_MINUTES / (logInterval * MILLISECONDS.ONE_SECOND)
-    );
+    // const numberOfIntervalsPerTemp = Math.ceil(
+    //   MILLISECONDS.THIRTY_MINUTES / (logInterval * MILLISECONDS.ONE_SECOND)
+    // );
 
-    const chunked = _.chunk(sensorLogs, numberOfIntervalsPerTemp);
+    const chunked = _.chunk(sensorLogs, 1);
 
     const mapped = chunked.map(groupedSensorLogs => {
       const temperature = Math.max(...groupedSensorLogs.map(({ temperature: temp }) => temp));
       const { timestamp } = groupedSensorLogs[Math.floor(groupedSensorLogs.length / 2)];
 
-      return { temperature, timestamp, sensorId, id: uuid() };
+      return { temperature, timestamp, sensorId, id: uuid(), logInterval };
     });
 
     const createdLogs = await this.upsert(ENTITIES.TEMPERATURE_LOG, mapped);
 
-    chunked.forEach(chunk => this.delete(ENTITIES.SENSOR_LOG, chunk));
+    // chunked.forEach(chunk => this.delete(ENTITIES.SENSOR_LOG, chunk));
 
     return createdLogs;
   };

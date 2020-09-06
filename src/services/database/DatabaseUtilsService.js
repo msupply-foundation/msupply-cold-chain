@@ -17,7 +17,8 @@ export class DatabaseUtilsService {
       throw new Error(DATABASE_UTIL_ERROR.CREATE_SENSOR_LOGS_INVALID_NUMBER);
     }
 
-    const { logInterval } = sensor;
+    // const { logInterval } = sensor;
+    const logInterval = 300;
 
     const sliceIndex = logs.length - maxNumberToSave;
     const logsToSave = logs.slice(sliceIndex);
@@ -46,15 +47,17 @@ export class DatabaseUtilsService {
     }
 
     const initial = moment(startTimestamp);
-    const { id: sensorId, logInterval } = sensor;
-
+    // const { id: sensorId, logInterval } = sensor;
+    const { id: sensorId } = sensor;
+    const logInterval = 300;
+    console.log(sensor);
     return logs.map(({ temperature }, i) => {
       if (!(typeof temperature === 'number')) {
         throw new Error(DATABASE_UTIL_ERROR.CREATE_SENSOR_LOGS_WITH_NO_TEMPERATURE);
       }
 
       const offset = logInterval * i;
-      const timestamp = Number(moment(initial).add(offset, 's').format('x'));
+      const timestamp = Number(moment(initial).add(offset, 's').format('X'));
       const id = uuid();
 
       return { id, sensorId, timestamp, temperature };
@@ -63,7 +66,8 @@ export class DatabaseUtilsService {
 
   // Calculates the number of sensor logs that should be saved from some given starting
   // point. Where the starting point is the timestamp for the next log.
-  calculateNumberOfLogsToSave = (mostRecentLogTime, logInterval, timeNow = moment()) => {
+  calculateNumberOfLogsToSave = (mostRecentLogTime, logIntervalz, timeNow = moment()) => {
+    const logInterval = 300;
     const now = moment(timeNow);
     const startingMoment = moment(mostRecentLogTime ?? 0).add(logInterval, 's');
 
@@ -90,7 +94,7 @@ export class DatabaseUtilsService {
   };
 
   // Pass a bunch of sensor logs and a chunk size
-  createTemperatureLogs = (logs, logsPerTemperatureLog) => {
+  createTemperatureLogs = (logs, logsPerTemperatureLog, logInterval = 300) => {
     if (!Array.isArray(logs)) {
       throw new Error(DATABASE_UTIL_ERROR.CREATE_TEMPERATURE_LOGS_INVALID_LOGS);
     }
@@ -107,13 +111,15 @@ export class DatabaseUtilsService {
     const chunked = _.chunk(withoutLeftovers, logsPerTemperatureLog);
 
     return chunked.map(sensorLogs => {
-      const temperatureLog = this.aggregateSensorLogs(sensorLogs);
+      const temperatureLog = this.aggregateSensorLogs(sensorLogs, logInterval);
       return { temperatureLog, sensorLogs };
     });
   };
 
   // Calculates the number of sensor logs per temp log
-  calculateSensorLogsPerTemperatureLog = (logInterval, temperatureLogSize) => {
+  // eslint-disable-next-line no-shadow
+  calculateSensorLogsPerTemperatureLog = (_, temperatureLogSize) => {
+    const logInterval = 300;
     if (typeof logInterval !== 'number' || typeof temperatureLogSize !== 'number') {
       throw new Error(DATABASE_UTIL_ERROR.CALCULATE_TEMPERATURE_LOG_SIZE_INVALID_NUMBER);
     }
@@ -164,6 +170,7 @@ export class DatabaseUtilsService {
       sensorId: commonSensorId,
       temperature: averageTemperature,
       timestamp: minimumTimestamp,
+      logInterval: 300,
     };
   };
 
@@ -227,7 +234,7 @@ export class DatabaseUtilsService {
     const { timestamp: startTimestamp } = logs[0];
     const logsDuration = endTimestamp - startTimestamp;
 
-    if (logsDuration < duration) return false;
+    if (logsDuration < duration / 1000) return false;
 
     const temperaturesWithinBounds = logs.every(log => {
       const { temperature } = log;
