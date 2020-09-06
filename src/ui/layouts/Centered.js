@@ -5,8 +5,9 @@ export const Centered = ({
   justifyContent = 'center',
   style = {},
   children,
+  flex = null,
 }) => {
-  const internalStyle = { alignItems, justifyContent, ...style };
+  const internalStyle = { alignItems, justifyContent, flex, ...style };
 
   return <View style={internalStyle}>{children}</View>;
 };

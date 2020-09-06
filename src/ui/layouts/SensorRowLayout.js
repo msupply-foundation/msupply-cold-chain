@@ -1,3 +1,4 @@
+import { View } from 'react-native';
 import { HalfCircleButton } from '~components/buttons';
 import { Chevron } from '~presentation/icons';
 
@@ -13,19 +14,29 @@ const styles = {
     paddingVertical: STYLE.PADDING.VERTICAL,
     width: '100%',
   },
+  chartContainer: {
+    minHeight: STYLE.HEIGHT.NORMAL_CHART,
+    minWidth: STYLE.WIDTH.NORMAL_CHART,
+  },
 };
 
-export const SensorRowLayout = ({ Chart, SensorStatus, SensorName, direction }) => {
+export const SensorRowLayout = ({
+  Chart,
+  SensorStatus,
+  SensorName,
+  direction,
+  Extra = <FlexPaddingView height={35} />,
+}) => {
   return (
     <Row justifyContent="space-between" alignItems="center" style={styles.row}>
       {direction === 'left' && (
         <HalfCircleButton direction={direction} Icon={<Chevron direction={direction} />} />
       )}
-      {Chart}
+      <View style={{}}>{Chart}</View>
       <Column>
         {SensorName}
         {SensorStatus}
-        <FlexPaddingView height={35} />
+        {Extra}
       </Column>
       {direction === 'right' && (
         <HalfCircleButton direction={direction} Icon={<Chevron direction={direction} />} />
