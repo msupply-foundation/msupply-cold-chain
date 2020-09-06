@@ -2,6 +2,7 @@ import { put, takeEvery, getContext, call } from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
 
 import { SERVICES, SETTING, REDUCER_SHAPE } from '~constants';
+import { HydrateAction } from '../hydrate/hydrateSlice';
 
 const initialState = {
   [SETTING.INT.DEFAULT_LOG_INTERVAL]: null,
@@ -51,13 +52,14 @@ const SettingSelector = {
   },
 };
 
-function* initialiseSettings() {
+function* hydrate() {
   const getService = yield getContext('getService');
   const settingsManager = yield call(getService, SERVICES.SETTING_MANAGER);
 
   try {
     const settings = yield call(settingsManager.getSettings);
     yield put(SettingAction.hydrateSucceeded(settings));
+    yield put(HydrateAction.setting());
   } catch (error) {
     yield put(SettingAction.hydrateFailed());
   }
@@ -76,10 +78,10 @@ function* updateSetting({ payload: { key, value } }) {
 }
 
 function* watchSettingActions() {
-  yield takeEvery(SettingAction.hydrate, initialiseSettings);
+  yield takeEvery(SettingAction.hydrate, hydrate);
   yield takeEvery(SettingAction.updatedSetting, updateSetting);
 }
 
-const SettingSaga = { watchSettingActions, updateSetting, initialiseSettings };
+const SettingSaga = { watchSettingActions, updateSetting, hydrate };
 
 export { SettingAction, SettingReducer, SettingSelector, SettingSaga };
