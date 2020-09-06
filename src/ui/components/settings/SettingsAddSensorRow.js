@@ -22,9 +22,14 @@ export const SettingsAddSensorRow = ({ macAddress }) => {
     dispatch(BluetoothStateActions.findSensors());
   };
 
-  const onConfirm = () => {
+  const onConfirm = date => {
     toggleModal();
-    dispatch(UpdateSensorAction.tryConnectWithNewSensor(macAddress));
+    dispatch(
+      UpdateSensorAction.tryConnectWithNewSensor(
+        macAddress,
+        Math.ceil(new Date(date).getTime() / 1000)
+      )
+    );
   };
 
   const onBlink = () => dispatch(BluetoothStateActions.tryBlinkSensor(macAddress));
