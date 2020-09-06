@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-wrap-multilines */
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { Pressable, ActivityIndicator } from 'react-native';
 
@@ -30,10 +30,30 @@ const styles = {
 export const SettingsAddSensorModal = ({ onClose, isOpen, onConfirm, onBlink }) => {
   const [date, setDate] = useState(new Date());
 
-  const [isDatePickerOpen, onChangeDate, toggleDatePicker] = useDatePicker(setDate);
-  const [isTimePickerOpen, onChangeTime, toggleTimePicker] = useDatePicker(setDate);
+  const validator = useCallback(
+    inputDate => {
+      const now = moment();
+      const input = moment(inputDate);
+      if (input.isBefore(now)) {
+        setDate(now.toDate());
+      } else {
+        setDate(inputDate);
+      }
+    },
+    [setDate]
+  );
+
+  const wrappedOnConfirm = useCallback(() => {
+    onConfirm(date);
+  }, [date]);
+
+  const [isDatePickerOpen, onChangeDate, toggleDatePicker] = useDatePicker(validator);
+  const [isTimePickerOpen, onChangeTime, toggleTimePicker] = useDatePicker(validator);
 
   const blinkingSensor = useSelector(state => state.bluetooth.bluetooth.blinkingSensor);
+
+  const maximumDate = moment().add(30, 'days').toDate();
+  const minimumDate = new Date();
 
   return (
     <>
@@ -41,7 +61,7 @@ export const SettingsAddSensorModal = ({ onClose, isOpen, onConfirm, onBlink }) 
         title={t('CONNECT_WITH_SENSOR')}
         isOpen={isOpen}
         onClose={onClose}
-        onConfirm={onConfirm}
+        onConfirm={wrappedOnConfirm}
         Content={
           <Column style={styles.column}>
             <Row flex={1} alignItems="center" justifyContent="center">
@@ -83,10 +103,24 @@ export const SettingsAddSensorModal = ({ onClose, isOpen, onConfirm, onBlink }) 
         }
       />
       {isDatePickerOpen && (
-        <DateTimePicker value={new Date()} onChange={onChangeDate} mode="date" display="calendar" />
+        <DateTimePicker
+          value={new Date()}
+          onChange={onChangeDate}
+          minimumDate={minimumDate}
+          maximumDate={maximumDate}
+          mode="date"
+          display="calendar"
+        />
       )}
       {isTimePickerOpen && (
-        <DateTimePicker value={new Date()} onChange={onChangeTime} mode="time" display="spinner" />
+        <DateTimePicker
+          value={new Date()}
+          onChange={onChangeTime}
+          mode="time"
+          display="spinner"
+          minimumDate={minimumDate}
+          maximumDate={maximumDate}
+        />
       )}
     </>
   );
