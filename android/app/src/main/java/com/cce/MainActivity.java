@@ -25,7 +25,7 @@ public class MainActivity extends ReactActivity {
     super.onCreate(savedInstanceState);
     
     // SplashScreen.show(...) has to be called after super.onCreate(...)
-    SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, false);
+    SplashScreen.show(this, SplashScreenImageResizeMode.COVER, false);
   }
 
 
