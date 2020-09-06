@@ -2,11 +2,12 @@ import { takeEvery, getContext, call, put } from 'redux-saga/effects';
 
 import { createSlice } from '@reduxjs/toolkit';
 import { REDUCER_SHAPE, SERVICES } from '~constants';
+import { HydrateAction } from '../hydrate/hydrateSlice';
 
 const initialState = { byId: [], ids: [] };
 const reducers = {
-  init: () => {},
-  initSucceeded: {
+  hydrate: () => {},
+  hydrateSucceeded: {
     reducer: (draftState, { payload: { configs } }) => {
       draftState.byId = configs.reduce((acc, value) => {
         return { ...acc, [value.id]: value };
@@ -15,9 +16,7 @@ const reducers = {
     },
     prepare: configs => ({ payload: { configs } }),
   },
-  // Should probably like, stop people from using the app if this fails
-  // as the db is probs like, corrupted or something :shrug
-  initFailed: () => {},
+  hydrateFailed: () => {},
   update: {
     reducer: () => {},
     prepare: (id, key, value) => ({ payload: { id, key, value } }),
@@ -51,26 +50,27 @@ function* updatedBreachConfiguration({ payload: { id, key, value } }) {
   }
 }
 
-function* initSaga() {
+function* hydrate() {
   const getService = yield getContext('getService');
   const breachConfigurationManager = yield call(getService, SERVICES.BREACH_CONFIGURATION_MANAGER);
 
   try {
     const result = yield call(breachConfigurationManager.init);
-    yield put(BreachConfigurationAction.initSucceeded(result));
+    yield put(BreachConfigurationAction.hydrateSucceeded(result));
+    yield put(HydrateAction.breachConfiguration());
   } catch (error) {
-    yield put(BreachConfigurationAction.initFailed());
+    yield put(BreachConfigurationAction.hydrateFailed());
   }
 }
 
 function* watchBreachConfigurationActions() {
-  yield takeEvery(BreachConfigurationAction.init, initSaga);
+  yield takeEvery(BreachConfigurationAction.hydrate, hydrate);
   yield takeEvery(BreachConfigurationAction.update, updatedBreachConfiguration);
 }
 
 const BreachConfigurationSaga = {
   watchBreachConfigurationActions,
-  initSaga,
+  hydrate,
   updatedBreachConfiguration,
 };
 

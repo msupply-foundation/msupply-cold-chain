@@ -10,14 +10,33 @@ const COLD_BREACH = {
 
 const HOT_BREACH = {
   id: 'HOT_BREACH',
-  minimumTemperature: 999,
-  maximumTemperature: 8,
-  duration: MILLISECONDS.ONE_MINUTE * 120,
+  minimumTemperature: 8,
+  maximumTemperature: 999,
+  duration: MILLISECONDS.ONE_MINUTE * 30,
   description: 'Hot breach',
 };
 
+const HOT_CUMULATIVE = {
+  id: 'HOT_CUMULATIVE',
+  minimumTemperature: 8,
+  maximumTemperature: 999,
+  duration: MILLISECONDS.ONE_MINUTE * 60,
+  description: 'Hot cumulative',
+};
+
+const COLD_CUMULATIVE = {
+  id: 'COLD_CUMULATIVE',
+  minimumTemperature: -999,
+  maximumTemperature: 2,
+  duration: MILLISECONDS.ONE_MINUTE * 40,
+  description: 'Cold cumulative',
+};
+
 export class BreachConfigurationManager {
-  constructor(databaseService, defaultConfigs = [COLD_BREACH, HOT_BREACH]) {
+  constructor(
+    databaseService,
+    defaultConfigs = [COLD_BREACH, HOT_BREACH, COLD_CUMULATIVE, HOT_CUMULATIVE]
+  ) {
     this.databaseService = databaseService;
     this.defaultConfigs = defaultConfigs;
   }
@@ -36,7 +55,7 @@ export class BreachConfigurationManager {
 
   init = async () => {
     const configs = await this.getAll();
-    if (configs.length >= 2) return configs;
+    if (configs.length >= 4) return configs;
     return this.upsert(this.defaultConfigs);
   };
 }
