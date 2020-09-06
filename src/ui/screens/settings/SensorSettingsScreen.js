@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import { ActivityIndicator } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, InteractionManager } from 'react-native';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
 
 import { t } from '~translations';
@@ -18,16 +18,32 @@ import {
 } from '~components/settings';
 import { SettingAction } from '~setting';
 
-export const SensorSettingsScreen = ({ navigation }) => {
-  const isFocused = useIsFocused();
+const x = (a, b) => {
+  const result = shallowEqual(a, b);
 
+  return result;
+};
+
+export const SensorSettingsScreen = React.memo(({ navigation }) => {
+  const isFocused = useIsFocused();
   const dispatch = useDispatch();
-  const availableSensors = useSelector(SensorSelector.availableSensorsList);
-  const foundSensors = useSelector(SensorSelector.foundSensorsList);
-  const findingSensors = useSelector(state => state.bluetooth.bluetooth.findingSensors);
+
+  const [load, setLoad] = useState();
+
+  const availableSensors = useSelector(SensorSelector.availableSensorsList, shallowEqual);
+  const foundSensors = useSelector(SensorSelector.foundSensorsList, shallowEqual);
+  const findingSensors = useSelector(
+    state => state.bluetooth.bluetooth.findingSensors,
+    shallowEqual
+  );
+
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(setLoad(true));
+  }, []);
 
   const defaultLoggingInterval = useSelector(
-    state => state.setting[SETTING.INT.DEFAULT_LOG_INTERVAL]
+    state => state.setting[SETTING.INT.DEFAULT_LOG_INTERVAL],
+    x
   );
 
   useEffect(() => {
@@ -40,7 +56,7 @@ export const SensorSettingsScreen = ({ navigation }) => {
     return reset;
   }, [isFocused]);
 
-  return (
+  return !load ? null : (
     <SettingsList>
       {!!availableSensors.length && (
         <SettingsGroup title={t('AVAILABLE_SENSORS')}>
@@ -54,6 +70,7 @@ export const SensorSettingsScreen = ({ navigation }) => {
           ))}
         </SettingsGroup>
       )}
+
       <SettingsGroup title={t('OPTIONS')}>
         <SettingsNumberInputRow
           label={t('DEFAULT_LOG_INTERVAL')}
@@ -67,16 +84,18 @@ export const SensorSettingsScreen = ({ navigation }) => {
           step={1}
           metric={t('MINUTES')}
         />
-        <SettingsGroup title={t('FOUND_SENSORS')}>
-          {foundSensors.map(macAddress => (
-            <SettingsAddSensorRow key={macAddress} macAddress={macAddress} />
-          ))}
-          {findingSensors ? (
-            <ActivityIndicator style={{ marginTop: 20 }} size="large" color={COLOUR.SECONDARY} />
-          ) : null}
-        </SettingsGroup>
       </SettingsGroup>
+
+      <SettingsGroup title={t('FOUND_SENSORS')}>
+        {foundSensors.map(macAddress => (
+          <SettingsAddSensorRow key={macAddress} macAddress={macAddress} />
+        ))}
+        {findingSensors ? (
+          <ActivityIndicator style={{ marginTop: 20 }} size="large" color={COLOUR.SECONDARY} />
+        ) : null}
+      </SettingsGroup>
+
       <UpdatingSensorModal />
     </SettingsList>
   );
-};
+});

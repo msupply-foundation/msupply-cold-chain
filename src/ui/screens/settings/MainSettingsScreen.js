@@ -7,6 +7,7 @@ import { SettingsGroup, SettingsItem } from '~components/settings';
 const ChevronIcon = <Chevron direction="right" colour={COLOUR.GREY_ONE} />;
 
 export const MainSettingsScreen = ({ navigation }) => {
+  console.log('re-render main settings screen');
   return (
     <SettingsList>
       <SettingsGroup title={t('OPTIONS')}>
@@ -28,14 +29,13 @@ export const MainSettingsScreen = ({ navigation }) => {
           onPress={() => navigation.navigate(NAVIGATION.SCREENS.SETTINGS_STACK.TEMPERATURE_BREACH)}
           RightComponent={ChevronIcon}
         />
-        {__DEV__ ? (
-          <SettingsItem
-            label="Developer settings"
-            subtext="Assortment of options useful for development"
-            onPress={() => navigation.navigate(NAVIGATION.SCREENS.SETTINGS_STACK.DEVELOPER)}
-            RightComponent={ChevronIcon}
-          />
-        ) : null}
+
+        <SettingsItem
+          label="Developer settings"
+          subtext="Assortment of options useful for development"
+          onPress={() => navigation.navigate(NAVIGATION.SCREENS.SETTINGS_STACK.DEVELOPER)}
+          RightComponent={ChevronIcon}
+        />
       </SettingsGroup>
     </SettingsList>
   );

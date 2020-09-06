@@ -13,8 +13,10 @@ import {
   SettingsTextInputRow,
   SettingsGroup,
   SettingsNumberInputRow,
-} from '~components/settings';
+ SettingsButtonRow, SettingsItem } from '~components/settings';
 import { BluetoothStateActions } from '~services/bluetooth';
+
+import { TemperatureDownloadAction } from '../../../features/temperatureDownload';
 
 export const SensorDetailScreen = () => {
   const { id } = useRouteProps();
@@ -32,6 +34,18 @@ export const SensorDetailScreen = () => {
         isLoading={blinkingSensor}
         wasSuccessful={blinkWasSuccessful}
       />
+      <SettingsButtonRow
+        label="Download"
+        onPress={() => dispatch(TemperatureDownloadAction.downloadTemperaturesForSensor(id))}
+      />
+      <SettingsGroup title="SENSOR DETAILS">
+        <SettingsItem label={sensor.macAddress} subtext="This sensors mac address" isDisabled />
+        <SettingsItem
+          label={`${sensor.batteryLevel}%`}
+          subtext="This sensors battery level"
+          isDisabled
+        />
+      </SettingsGroup>
       <SettingsGroup title={t('EDIT_SENSOR_DETAILS')}>
         <SettingsTextInputRow
           label={t('SENSOR_NAME')}

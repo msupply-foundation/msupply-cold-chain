@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux';
 
-import { SensorAction , SensorSelector } from '~sensor';
+import { SensorAction, SensorSelector } from '~sensor';
 
 import { SettingsButtonRow, SettingsGroup } from '~components/settings';
 import { SettingsList } from '~layouts';
-
+import { TemperatureLogActions } from '../../../services/database/DatabaseSlice';
 
 const randomMacAddress = () => {
   return 'XX:XX:XX:XX:XX:XX'.replace(/X/g, () => {
@@ -15,7 +15,7 @@ const randomMacAddress = () => {
 export const DevSettingsScreen = () => {
   const dispatch = useDispatch();
   const availableSensors = useSelector(SensorSelector.sensorsList);
-  console.log('mounted');
+
   return (
     <SettingsList>
       <SettingsGroup title="Add records">
@@ -28,7 +28,7 @@ export const DevSettingsScreen = () => {
           <SettingsButtonRow
             key={sensor?.id}
             label={`Add logs for ${sensor?.name ?? sensor.macAddress}`}
-            onPress={() => dispatch(SensorAction.addNewSensor(randomMacAddress(), 300))}
+            onPress={() => dispatch(TemperatureLogActions.addRandomLogs(sensor.id))}
           />
         ))}
       </SettingsGroup>
