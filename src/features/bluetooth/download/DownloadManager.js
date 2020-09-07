@@ -9,12 +9,14 @@ export class DownloadManager {
 
   // Calculates the number of sensor logs that should be saved from some given starting
   // point. Where the starting point is the timestamp for the next log.
-  calculateNumberOfLogsToSave = (mostRecentLogTime = 0, logInterval, timeNow = moment().unix()) => {
+  // TODO: Do this in SQL
+  calculateNumberOfLogsToSave = (
+    nextPossibleLogTime = 0,
+    logInterval,
+    timeNow = moment().unix()
+  ) => {
     const now = moment(timeNow * MILLISECONDS.ONE_SECOND);
-    const startingMoment = moment(mostRecentLogTime * MILLISECONDS.ONE_SECOND).add(
-      logInterval,
-      's'
-    );
+    const startingMoment = moment(nextPossibleLogTime * MILLISECONDS.ONE_SECOND);
     // If the time for the next log is in the future, then don't save any.
     if (startingMoment.isAfter(now)) return 0;
     // Calculate the seconds between the starting time and now.

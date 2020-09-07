@@ -46,24 +46,19 @@ left JOIN
 where s.id = ?
 `;
 
-// If using sensor logs, will need to use this one.
-// const MOST_RECENT_TIMESTAMP = `
-// select
-//   coalesce(case when sensorLogMaxTimestamp > temperatureLogMaxTimestamp
-//     then sensorLogMaxTimestamp
-//     else temperatureLogMaxTimestamp
-//   end, 0) as mostRecentTimestamp
-// from (
-//   select
-//   (select max(timestamp) from temperaturelog where sensorid = ?) temperatureLogMaxTimestamp,
-//   (select max(timestamp) from sensorlog where sensorid = ?) sensorLogMaxTimestamp
-// )
-// `;
-
 const MOST_RECENT_TIMESTAMP = `
 select coalesce(max(timestamp), 0) mostRecentTimestamp
 from temperaturelog
 where sensorid = ?
+`;
+
+const NEXT_POSSIBLE_LOG_TIME = `
+select max(coalesce(s.logDelay, 0), coalesce(mostRecentTimestamp,0)+s.logInterval) as nextTime
+from sensor s
+left outer join(
+select coalesce(max(timestamp), 0) mostRecentTimestamp
+from temperaturelog)
+where s.id = ?
 `;
 
 const CAN_DOWNLOAD = `
@@ -90,6 +85,14 @@ export class SensorManager {
     const sensor = await this.databaseService.queryWith(ENTITIES.SENSOR, { macAddress });
 
     return sensor[0];
+  };
+
+  getNextPossibleLogTime = async id => {
+    const manager = await this.databaseService.getEntityManager();
+    const result = await manager.query(NEXT_POSSIBLE_LOG_TIME, [id]);
+
+    const { nextPossibleLogTime = 0 } = result[0] ?? {};
+    return nextPossibleLogTime;
   };
 
   getMostRecentLogTime = async id => {
