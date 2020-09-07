@@ -1,5 +1,5 @@
 import * as ServiceLocator from './ServiceLocator';
-import { SERVICES, SERVICE_LOCATOR_ERROR } from '../shared/constants';
+import { SERVICES, SERVICE_LOCATOR_ERROR } from '~constants';
 
 beforeEach(() => ServiceLocator.deleteServices());
 

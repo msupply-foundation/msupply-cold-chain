@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { uuid } from '~services/utilities';
-import { ENTITIES, MILLISECONDS } from '../../shared/constants';
+import { ENTITIES, MILLISECONDS } from '~constants';
 
 export class TemperatureDownloadManager {
   constructor(databaseService) {

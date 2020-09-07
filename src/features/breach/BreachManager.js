@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { Not, IsNull, MoreThan, Equal } from 'typeorm/browser';
 
-import { ENTITIES } from '../../shared/constants';
+import { ENTITIES } from '~constants';
 import { uuid } from '~services/utilities';
 
 const CUMULATIVE_EXPOSURE = `

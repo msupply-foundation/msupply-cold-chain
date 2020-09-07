@@ -6,10 +6,10 @@ import {
   SettingsNumberInputModal,
   SettingsEditModal,
   SettingsTextEditModal,
- SettingsAddSensorModal } from '~components/settings';
+  SettingsAddSensorModal,
+} from '~components/settings';
 import { Slider } from '~presentation';
-import { store } from '~shared/store/store';
-
+import { store } from '~store';
 
 const MainSettingsScreenStories = {
   basic: () => <MainSettingsScreen />,

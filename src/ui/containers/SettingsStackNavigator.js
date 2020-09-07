@@ -1,9 +1,8 @@
 import React from 'react';
 
-import { createStackNavigator } from '@react-navigation/stack';
+import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 
 import { NAVIGATION } from '~constants';
-import { navigationSlide } from '~animations';
 
 import { SettingsStackHeader } from '~components/settings/SettingsStackHeader';
 
@@ -13,7 +12,7 @@ const SettingsStack = createStackNavigator();
 // Default screen options for each screen within the stack.
 
 const screenOptions = {
-  cardStyleInterpolator: navigationSlide,
+  cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
   header: ({
     scene: {
       route: { name },

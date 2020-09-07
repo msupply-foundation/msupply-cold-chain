@@ -1,6 +1,6 @@
 import { Chevron } from '~presentation/icons';
 import { SettingsItem } from './SettingsItem';
-import { COLOUR } from '../../../shared/constants';
+import { COLOUR } from '~constants';
 
 export const SettingsNavigationRow = ({ label, subtext, Icon, onPress }) => {
   return (

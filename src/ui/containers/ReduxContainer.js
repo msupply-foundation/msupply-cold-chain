@@ -1,6 +1,6 @@
 import { Provider as ReduxProvider } from 'react-redux';
 
-import { store } from '~shared/store';
+import { store } from '~store';
 
 export const ReduxContainer = props => {
   const { children } = props;

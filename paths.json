@@ -9,10 +9,11 @@
   "~animations": "./src/ui/animations",
   "~screens": "./src/ui/screens",
 
-  "~shared": "./src/shared",
-  "~constants": "./src/shared/constants",
-  "~translations": "./src/shared/translations",
-  "~formatters": "./src/shared/formatters",
+  "~common": "./src/common",
+  "~constants": "./src/common/constants",
+  "~translations": "./src/common/translations",
+  "~formatters": "./src/common/formatters",
+  "~store": "./src/common/store",
 
   "~services": "./src/services",
   "~database": "./src/services/database",

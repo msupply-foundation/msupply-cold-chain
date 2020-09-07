@@ -1,6 +1,6 @@
 import { Text } from 'react-native';
 import { Row } from '~layouts';
-import { FONT, COLOUR } from '../../../shared/constants';
+import { FONT, COLOUR } from '~constants';
 
 const style = {
   text: {

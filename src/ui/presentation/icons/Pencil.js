@@ -1,4 +1,4 @@
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { COLOUR } from '../../../shared/constants';
+import { COLOUR } from '~constants';
 
 export const Pencil = () => <FontAwesome name="pencil" size={20} color={COLOUR.SECONDARY} />;

@@ -9,12 +9,12 @@ import {
   LargeRectangle,
   SettingsRowLayout,
   LoadingModalLayout,
- FullScreenModal } from '~layouts';
-import { MediumText , NormalText, LargeText } from '~presentation/typography';
-import { COLOUR } from '../../../shared/constants';
+  FullScreenModal,
+} from '~layouts';
+import { MediumText, NormalText, LargeText } from '~presentation/typography';
+import { COLOUR } from '~constants';
 
 import { Chevron } from '../../presentation/icons';
-
 
 const A = ({ i }) => {
   return (
