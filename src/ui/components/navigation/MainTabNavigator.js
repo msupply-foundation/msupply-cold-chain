@@ -2,6 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { Cog, Map, Sensors } from '~presentation/icons';
 import { NAVIGATION, COLOUR, FONT } from '~constants';
+import { t } from '../../../shared/translations';
 
 export const ICON_LOOKUP = {
   [NAVIGATION.SCREENS.MAIN_TABS.SETTINGS]: <Cog />,
@@ -13,11 +14,9 @@ export const ICON_LOOKUP = {
 const Tab = createBottomTabNavigator();
 
 // Default screen options for each page. Fetch an icon given the route name.
-const screenOptions = ({ route }) => ({
-  tabBarIcon: () => {
-    const { name: routeName } = route;
-    return ICON_LOOKUP[routeName];
-  },
+const screenOptions = ({ route: { name: routeName } }) => ({
+  tabBarIcon: () => ICON_LOOKUP[routeName],
+  title: t(routeName),
 });
 
 // TabBar styling options
