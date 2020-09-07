@@ -1,8 +1,6 @@
 import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 
 import { COLOUR, NAVIGATION } from '~constants';
-import { MsupplyMan } from '../../presentation/icons';
-import { Row } from '../../layouts';
 
 // Create a stack navigator
 const MainStack = createStackNavigator();
@@ -14,18 +12,14 @@ const screenOptions = {
   cardOverlayEnabled: true,
   gestureEnabled: true,
   gestureDirection: NAVIGATION.CONFIG.MAIN_STACK.GESTURE_DIRECTION,
-  header: () => {
-    return (
-      <Row style={{ backgroundColor: COLOUR.HIGHLIGHT }} justifyContent="center">
-        <MsupplyMan />
-      </Row>
-    );
-  },
 };
 
 // Exporting a main stack navigator component
 export const MainStackNavigator = ({ children }) => (
-  <MainStack.Navigator screenOptions={screenOptions} headerMode="none">
+  <MainStack.Navigator
+    screenOptions={screenOptions}
+    headerMode={NAVIGATION.CONFIG.MAIN_STACK.HEADER_MODE}
+  >
     {children}
   </MainStack.Navigator>
 );
