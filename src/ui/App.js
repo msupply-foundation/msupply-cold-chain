@@ -7,15 +7,6 @@ import { NAVIGATION } from '~constants';
 import { MainHeader } from './components';
 
 import {
-  SettingsStackNavigator,
-  SettingsStackScreen,
-  MainStackNavigator,
-  MainStackScreen,
-  MainTabNavigator,
-  MainTabScreen,
-} from './components/navigation';
-
-import {
   MainSettingsScreen,
   BluetoothSettingsScreen,
   TemperatureBreachSettingsScreen,
@@ -26,9 +17,18 @@ import {
   CumulativeDetailSettingScreen,
 } from '~screens/settings';
 
-import { StoreRehydrateContainer } from './containers/StoreRehydrateContainer';
-import { DependencyContainer } from './containers/DependencyContainer';
-import { ReduxContainer } from './containers/ReduxContainer';
+import {
+  ReduxContainer,
+  KeepAwakeContainer,
+  DependencyContainer,
+  StoreRehydrateContainer,
+  SettingsStackNavigator,
+  SettingsStackScreen,
+  MainStackNavigator,
+  MainStackScreen,
+  MainTabNavigator,
+  MainTabScreen,
+} from './containers';
 
 import { SensorListScreen, SensorDetailScreen } from './screens/sensor';
 
@@ -84,18 +84,20 @@ const Stack = () => {
 const App = () => {
   return (
     <ReduxContainer>
-      <DependencyContainer>
-        <StoreRehydrateContainer>
-          <NavigationContainer>
-            <StatusBar hidden />
-            <MainHeader />
-            <MainTabNavigator>
-              <MainTabScreen name={NAVIGATION.SCREENS.MAIN_TABS.SENSORS} component={Stack} />
-              <MainTabScreen name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS} component={Settings} />
-            </MainTabNavigator>
-          </NavigationContainer>
-        </StoreRehydrateContainer>
-      </DependencyContainer>
+      <KeepAwakeContainer>
+        <DependencyContainer>
+          <StoreRehydrateContainer>
+            <NavigationContainer>
+              <StatusBar hidden />
+              <MainHeader />
+              <MainTabNavigator>
+                <MainTabScreen name={NAVIGATION.SCREENS.MAIN_TABS.SENSORS} component={Stack} />
+                <MainTabScreen name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS} component={Settings} />
+              </MainTabNavigator>
+            </NavigationContainer>
+          </StoreRehydrateContainer>
+        </DependencyContainer>
+      </KeepAwakeContainer>
     </ReduxContainer>
   );
 };

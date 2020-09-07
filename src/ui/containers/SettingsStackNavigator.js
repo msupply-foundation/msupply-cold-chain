@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NAVIGATION } from '~constants';
 import { navigationSlide } from '~animations';
 
-import { SettingsStackHeader } from './SettingsStackHeader';
+import { SettingsStackHeader } from '~components/settings/SettingsStackHeader';
 
 // Create a stack navigator
 const SettingsStack = createStackNavigator();

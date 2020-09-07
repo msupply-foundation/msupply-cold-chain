@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { BleManager } from 'react-native-ble-plx';
-import { useKeepAwake } from 'expo-keep-awake';
 
 import { Database, DatabaseService } from '~database';
 import { SERVICES } from '~constants';
@@ -23,7 +22,6 @@ import { TemperatureDownloadManager } from '../../features/temperatureDownload';
 const bleManager = new BleManager();
 
 export const DependencyContainer = props => {
-  useKeepAwake();
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
