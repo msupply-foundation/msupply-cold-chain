@@ -8,15 +8,17 @@ const CUMULATIVE_EXPOSURE = `
 select max(temperature) maximumTemperature,
 sum(logInterval) duration,
 min(temperature) minimumTemperature,
-case when min(temperature) >= hotCumulativeMinThreshold then 1 else 0 end as isHotCumulative,
-case when max(temperature) <= coldCumulativeMaxThreshold then 1 else 0 end as isColdCumulative
+case when min(temperature) >= hotCumulativeMinThreshold and duration > hotCumulativeDuration then 1 else 0 end as isHotCumulative,
+case when max(temperature) <= coldCumulativeMaxThreshold and duration > coldCumulativeDuration then 1 else 0 end as isColdCumulative
 from (
 select temperature,
 logInterval,
 (select maximumTemperature from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeMaxThreshold,
 (select minimumTemperature from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeMinThreshold,
+(select duration from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeDuration,
 (select maximumTemperature from temperaturebreachconfiguration where id = 'COLD_CUMULATIVE') as coldCumulativeMaxThreshold,
 (select minimumTemperature from temperaturebreachconfiguration where id = 'COLD_CUMULATIVE') as coldCumulativeMinThreshold
+(select duration from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as coldCumulativeDuration,
 from temperaturelog
 where ((temperature between hotCumulativeMinThreshold and hotCumulativeMaxThreshold) 
 or (temperature between coldCumulativeMinThreshold and coldCumulativeMaxThreshold))
