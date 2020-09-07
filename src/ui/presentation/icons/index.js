@@ -12,3 +12,4 @@ export { Close } from './Close';
 export { Sort } from './Sort';
 export { PowerPlug } from './PowerPlug';
 export { MsupplyMan } from './MsupplyMan';
+export { Lock, UnLock } from './Lock';
