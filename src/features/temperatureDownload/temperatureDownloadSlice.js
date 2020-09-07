@@ -74,7 +74,7 @@ function* downloadTemperaturesForSensor({ payload: { sensorId, isPassive } }) {
       yield call(TemperatureDownloadManager.saveLogs, sensorLogs);
       yield put(BreachAction.createBreaches(sensor));
     } else {
-      ToastAndroid.show(`Can download logs yet!`, ToastAndroid.SHORT);
+      ToastAndroid.show(`Cannot download logs yet!`, ToastAndroid.SHORT);
     }
   } catch (error) {
     if (!isPassive) {
