@@ -5,6 +5,7 @@
   "~presentation": "./src/ui/presentation",
   "~layouts": "./src/ui/layouts",
   "~components": "./src/ui/components",
+  "~containers": "./src/ui/containers",
   "~animations": "./src/ui/animations",
   "~screens": "./src/ui/screens",
 

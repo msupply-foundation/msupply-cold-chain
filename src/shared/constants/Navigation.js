@@ -6,9 +6,9 @@ export const NAVIGATION = {
       SETTINGS: 'MAIN_TABS/Settings',
     },
 
-    MAIN_STACK: {
-      TABS: 'MAIN_STACK/Tabs',
-      SENSOR_DETAIL: 'MAIN_STACK/SensorDetail',
+    SENSOR_STACK: {
+      TABS: 'SENSOR_STACK/Tabs',
+      SENSOR_DETAIL: 'SENSOR_STACK/SensorDetail',
     },
 
     SETTINGS_STACK: {
@@ -24,7 +24,7 @@ export const NAVIGATION = {
   },
 
   CONFIG: {
-    MAIN_STACK: {
+    SENSOR_STACK: {
       HEADER_MODE: 'none',
       GESTURE_DIRECTION: 'horizontal',
     },

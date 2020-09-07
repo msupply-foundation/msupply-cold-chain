@@ -3,7 +3,7 @@ import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/
 import { COLOUR, NAVIGATION } from '~constants';
 
 // Create a stack navigator
-const MainStack = createStackNavigator();
+const SensorStack = createStackNavigator();
 
 // Default options for each screen within the stack.
 const screenOptions = {
@@ -11,18 +11,18 @@ const screenOptions = {
   cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
   cardOverlayEnabled: true,
   gestureEnabled: true,
-  gestureDirection: NAVIGATION.CONFIG.MAIN_STACK.GESTURE_DIRECTION,
+  gestureDirection: NAVIGATION.CONFIG.SENSOR_STACK.GESTURE_DIRECTION,
 };
 
 // Exporting a main stack navigator component
-export const MainStackNavigator = ({ children }) => (
-  <MainStack.Navigator
+export const SensorStackNavigator = ({ children }) => (
+  <SensorStack.Navigator
     screenOptions={screenOptions}
-    headerMode={NAVIGATION.CONFIG.MAIN_STACK.HEADER_MODE}
+    headerMode={NAVIGATION.CONFIG.SENSOR_STACK.HEADER_MODE}
   >
     {children}
-  </MainStack.Navigator>
+  </SensorStack.Navigator>
 );
 
 // As well as a screen component for this stack navigator
-export const MainStackScreen = MainStack.Screen;
+export const SensorStackScreen = SensorStack.Screen;
