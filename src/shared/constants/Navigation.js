@@ -8,7 +8,7 @@ export const NAVIGATION = {
 
     MAIN_STACK: {
       TABS: 'MAIN_STACK/Tabs',
-      SENSOR: 'MAIN_STACK/Sensor',
+      SENSOR_DETAIL: 'MAIN_STACK/SensorDetail',
     },
 
     SETTINGS_STACK: {
