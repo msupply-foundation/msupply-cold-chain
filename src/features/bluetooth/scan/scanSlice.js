@@ -10,7 +10,7 @@ import {
   takeLeading,
   select,
 } from 'redux-saga/effects';
-import { SERVICES, REDUCER_SHAPE } from '~constants';
+import { SERVICES, REDUCER } from '~constants';
 import { SensorSelector } from '../../sensor';
 import { NewSensorAction } from '../newSensor/newSensorSlice';
 
@@ -53,7 +53,7 @@ const { actions: ScanAction, reducer: ScanReducer } = createSlice({
   initialState,
   reducers,
   extraReducers,
-  name: REDUCER_SHAPE.SCAN,
+  name: REDUCER.SCAN,
 });
 
 const ScanSelector = {

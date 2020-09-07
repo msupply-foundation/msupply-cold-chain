@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { takeEvery, getContext, call, put, all } from 'redux-saga/effects';
 
-import { REDUCER_SHAPE , SERVICES } from '~constants';
+import { REDUCER, SERVICES } from '~constants';
 
 import { SensorAction } from '../sensor';
 import { ChartAction } from '../chart';
@@ -102,7 +102,7 @@ const reducers = {
 };
 
 const { actions: BreachAction, reducer: BreachReducer } = createSlice({
-  name: REDUCER_SHAPE.BREACH,
+  name: REDUCER.BREACH,
   initialState,
   reducers,
 });
@@ -161,9 +161,6 @@ function* getListCumulativeForSensor({ payload: { sensorId } }) {
     const cumulative = yield call(breachManager.getCumulativeExposure, from, to, sensorId);
     yield put(BreachAction.getListCumulativeForSensorSuccessful(sensorId, cumulative));
   } catch (error) {
-    console.log('-------------------------------------------');
-    console.log('error', error);
-    console.log('-------------------------------------------');
     yield put(BreachAction.getListCumulativeForSensorFailed());
   }
 }
@@ -176,9 +173,6 @@ function* getDetailCumulativeForSensor({ payload: { from, to, sensorId } }) {
     const cumulative = yield call(breachManager.getCumulativeExposure, from, to, sensorId);
     yield put(BreachAction.getDetailCumulativeForSensorSuccessful(sensorId, cumulative));
   } catch (error) {
-    console.log('-------------------------------------------');
-    console.log('error', error);
-    console.log('-------------------------------------------');
     yield put(BreachAction.getDetailCumulativeForSensorFailed());
   }
 }
@@ -190,11 +184,8 @@ function* getAllCumulativeExposures() {
   try {
     const sensors = yield call(sensorManager.getAll);
     yield all(sensors.map(({ id }) => put(BreachAction.getListCumulativeForSensor(id))));
-  } catch (error) {
-    console.log('-------------------------------------------');
-    console.log('error', error);
-    console.log('-------------------------------------------');
-  }
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
 }
 
 function* createBreaches({ payload: { sensor } }) {
@@ -219,11 +210,8 @@ function* createBreaches({ payload: { sensor } }) {
     yield call(breachManager.updateBreaches, breaches, updatedLogs);
     yield put(ChartAction.getListChartData(id));
     yield put(SensorAction.getSensorState(id));
-  } catch (e) {
-    console.log('-------------------------------------------');
-    console.log('e', e.message);
-    console.log('-------------------------------------------');
-  }
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
 }
 
 function* watchBreachActions() {

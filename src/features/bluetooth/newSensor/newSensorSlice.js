@@ -1,7 +1,7 @@
 import { NativeModules } from 'react-native';
 import { createSlice } from '@reduxjs/toolkit';
 import { getContext, call, put, takeLeading } from 'redux-saga/effects';
-import { SERVICES, SETTING, REDUCER_SHAPE } from '~constants';
+import { SERVICES, SETTING, REDUCER } from '~constants';
 
 import { SensorAction } from '../../sensor';
 
@@ -24,7 +24,7 @@ const reducers = {
 const { actions: NewSensorAction, reducer: NewSensorReducer } = createSlice({
   initialState,
   reducers,
-  name: REDUCER_SHAPE.NEW_SENSOR,
+  name: REDUCER.NEW_SENSOR,
 });
 
 const NewSensorSelector = {};

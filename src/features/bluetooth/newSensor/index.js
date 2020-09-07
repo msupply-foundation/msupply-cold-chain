@@ -1,1 +1,6 @@
-export { NewSensorReducer, NewSensorSaga } from './newSensorSlice';
+export {
+  NewSensorReducer,
+  NewSensorSaga,
+  NewSensorSelector,
+  NewSensorAction,
+} from './newSensorSlice';

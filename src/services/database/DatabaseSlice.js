@@ -1,8 +1,8 @@
 import { createSlice, combineReducers } from '@reduxjs/toolkit';
-import { REDUCER_SHAPE } from '~constants';
+import { REDUCER } from '~constants';
 
 export const { actions: SensorsActions, reducer: SensorsReducer } = createSlice({
-  name: REDUCER_SHAPE.SENSORS,
+  name: REDUCER.SENSORS,
   initialState: { sensorIds: [], byId: {} },
   reducers: {
     setSensors: {
@@ -31,7 +31,7 @@ export const { actions: SensorsActions, reducer: SensorsReducer } = createSlice(
 });
 
 export const { actions: TemperatureLogActions, reducer: TemperatureLogReducer } = createSlice({
-  name: REDUCER_SHAPE.TEMPERATURE_LOGS,
+  name: REDUCER.TEMPERATURE_LOGS,
   initialState: { bySensorId: {}, fromDate: null, toDate: null },
   reducers: {
     addRandomLogs: {

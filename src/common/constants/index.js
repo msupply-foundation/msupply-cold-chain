@@ -1,5 +1,5 @@
 export { TEMPERATURE_SYNC_STATE, PASSIVE_TEMPERATURE_SYNC_STATE } from './TemperatureSyncState';
-export { REDUCER_SHAPE } from './ReducerShape';
+export { REDUCER } from './Reducer';
 export { MILLISECONDS } from './Milliseconds';
 export { SERVICES, BLUETOOTH_SERVICE } from './Services';
 export { ENTITIES } from './Entities';

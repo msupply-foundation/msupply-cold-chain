@@ -2,7 +2,7 @@ import { ToastAndroid } from 'react-native';
 import { createSlice } from '@reduxjs/toolkit';
 import { put, takeEvery, getContext, call } from 'redux-saga/effects';
 
-import { SERVICES, ENTITIES, REDUCER_SHAPE } from '~constants';
+import { SERVICES, ENTITIES, REDUCER } from '~constants';
 
 const DeviceSelector = {
   isWriting({ device }) {
@@ -35,7 +35,7 @@ const reducers = {
 };
 
 const { actions: DeviceAction, reducer: DeviceReducer } = createSlice({
-  name: REDUCER_SHAPE.DEVICE,
+  name: REDUCER.DEVICE,
   initialState,
   reducers,
 });

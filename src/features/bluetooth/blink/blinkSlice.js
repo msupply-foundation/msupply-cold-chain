@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { takeEvery, call, put, getContext } from 'redux-saga/effects';
 
 import { t } from '~translations';
-import { SERVICES, REDUCER_SHAPE } from '~constants';
+import { SERVICES, REDUCER } from '~constants';
 
 const initialState = {
   blinkingById: {},
@@ -27,8 +27,18 @@ const reducers = {
 const { actions: BlinkAction, reducer: BlinkReducer } = createSlice({
   initialState,
   reducers,
-  name: REDUCER_SHAPE.BLINK,
+  name: REDUCER.BLINK,
 });
+
+const BlinkSelector = {
+  isBlinking: ({
+    bluetooth: {
+      blink: { blinkingById },
+    },
+  }) => {
+    return blinkingById;
+  },
+};
 
 function* tryBlinkSensor({ payload: { macAddress } }) {
   const getService = yield getContext('getService');
@@ -49,6 +59,5 @@ function* root() {
 }
 
 const BlinkSaga = { root };
-const BlinkSelector = {};
 
 export { BlinkAction, BlinkReducer, BlinkSaga, BlinkSelector };

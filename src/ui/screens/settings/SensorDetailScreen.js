@@ -16,15 +16,16 @@ import {
   SettingsItem,
 } from '~components/settings';
 
-import { BlinkAction } from '../../../features/bluetooth/blink';
+import { BlinkAction, BlinkSelector } from '../../../features/bluetooth/blink';
 import { DownloadAction } from '../../../features/bluetooth/download';
 import { UpdateAction } from '../../../features/bluetooth/update';
 
 export const SensorDetailScreen = () => {
   const { id } = useRouteProps();
+
   const sensor = useSelector(state => state.sensor.byId[id]);
-  const blinkingSensor = useSelector(state => state.bluetooth.bluetooth.blinkingSensor);
-  const blinkWasSuccessful = useSelector(state => state.bluetooth.bluetooth.blinkWasSuccessful);
+  const { [id]: isBlinking } = useSelector(BlinkSelector.isBlinking);
+
   const dispatch = useDispatch();
 
   const { name, logInterval, macAddress } = sensor;
@@ -33,8 +34,7 @@ export const SensorDetailScreen = () => {
       <SettingsLoadingIndicatorRow
         label="Blink"
         onPress={() => dispatch(BlinkAction.tryBlinkSensor(macAddress))}
-        isLoading={blinkingSensor}
-        wasSuccessful={blinkWasSuccessful}
+        isLoading={isBlinking}
       />
       <SettingsButtonRow
         label="Download"

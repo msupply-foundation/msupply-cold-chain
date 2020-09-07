@@ -2,7 +2,7 @@ import { NativeModules } from 'react-native';
 import { take, delay, getContext, call, all, put, takeLeading, race } from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
 
-import { SERVICES, REDUCER_SHAPE } from '~constants';
+import { SERVICES, REDUCER } from '~constants';
 
 import { SensorAction } from '../../sensor';
 
@@ -22,7 +22,7 @@ const reducers = {
 const { actions: BatteryObserverAction, reducer: BatteryObserverReducer } = createSlice({
   initialState,
   reducers,
-  name: REDUCER_SHAPE.BATTERY_OBSERVER,
+  name: REDUCER.BATTERY_OBSERVER,
 });
 
 const BatteryObserverSelector = {};

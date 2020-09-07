@@ -1,7 +1,7 @@
 import { takeEvery, getContext, call, put } from 'redux-saga/effects';
 
 import { createSlice } from '@reduxjs/toolkit';
-import { REDUCER_SHAPE, SERVICES } from '~constants';
+import { REDUCER, SERVICES } from '~constants';
 import { HydrateAction } from '../hydrate/hydrateSlice';
 
 const initialState = { byId: [], ids: [] };
@@ -31,7 +31,7 @@ const reducers = {
 };
 
 const { actions: BreachConfigurationAction, reducer: BreachConfigurationReducer } = createSlice({
-  name: REDUCER_SHAPE.BREACH_CONFIGURATION,
+  name: REDUCER.BREACH_CONFIGURATION,
   initialState,
   reducers,
 });

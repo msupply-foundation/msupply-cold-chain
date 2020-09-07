@@ -2,7 +2,7 @@ import { ToastAndroid } from 'react-native';
 import { call, getContext, put, takeEvery, fork, take, race, all, delay } from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
 
-import { SETTING, SERVICES, REDUCER_SHAPE } from '~constants';
+import { SETTING, SERVICES, REDUCER } from '~constants';
 import { BreachAction } from '../../breach';
 
 const initialState = {
@@ -58,7 +58,7 @@ const reducers = {
 const { actions: DownloadAction, reducer: DownloadReducer } = createSlice({
   initialState,
   reducers,
-  name: REDUCER_SHAPE.DOWNLOAD,
+  name: REDUCER.DOWNLOAD,
 });
 
 function* tryManualDownloadForSensor({ payload: { sensorId } }) {

@@ -1,7 +1,7 @@
 import { put, takeEvery, getContext, call } from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
 
-import { SERVICES, SETTING, REDUCER_SHAPE } from '~constants';
+import { SERVICES, SETTING, REDUCER } from '~constants';
 import { HydrateAction } from '../hydrate/hydrateSlice';
 
 const initialState = {
@@ -36,7 +36,7 @@ const reducers = {
 };
 
 const { actions: SettingAction, reducer: SettingReducer } = createSlice({
-  name: REDUCER_SHAPE.SETTING,
+  name: REDUCER.SETTING,
   initialState,
   reducers,
 });

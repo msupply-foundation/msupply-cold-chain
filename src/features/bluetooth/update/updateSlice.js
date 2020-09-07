@@ -1,47 +1,42 @@
+import { ToastAndroid } from 'react-native';
 import { createSlice } from '@reduxjs/toolkit';
 import { getContext, call, put, takeEvery } from 'redux-saga/effects';
 
-import { SERVICES, REDUCER_SHAPE } from '~constants';
+import { SERVICES, REDUCER } from '~constants';
 import { SensorAction } from '../../sensor';
 
 const initialState = {
-  updatingById: {},
+  isUpdating: false,
 };
 
 const reducers = {
   tryUpdateLogInterval: {
     prepare: (id, logInterval) => ({ payload: { id, logInterval } }),
-    reducer: (draftState, { payload: { id } }) => {
-      draftState.updatingById[id] = true;
+    reducer: draftState => {
+      draftState.isUpdating = true;
     },
   },
-  updateLogIntervalSuccess: {
-    prepare: id => ({ payload: { id } }),
-    reducer: (draftState, { payload: { id } }) => {
-      draftState.updatingById[id] = false;
-    },
+  updateLogIntervalSuccess: draftState => {
+    draftState.isUpdating = false;
   },
-  updateLogIntervalFail: {
-    prepare: id => ({ payload: { id } }),
-    reducer: (draftState, { payload: { id } }) => {
-      draftState.updatingById[id] = false;
-    },
+  updateLogIntervalFail: draftState => {
+    draftState.isUpdating = false;
   },
 };
 
 const { actions: UpdateAction, reducer: UpdateReducer } = createSlice({
   initialState,
   reducers,
-  name: REDUCER_SHAPE.UPDATE,
+  name: REDUCER.UPDATE,
 });
 
 const UpdateSelector = {
   isUpdating: ({
     bluetooth: {
-      update: { updatingById },
+      update: { isUpdating },
     },
   }) => {
-    return updatingById;
+    return isUpdating;
   },
 };
 
@@ -57,8 +52,10 @@ export function* tryUpdateLogInterval({ payload: { id, logInterval } }) {
     yield call(btService.updateLogIntervalWithRetries, sensor.macAddress, logInterval, 10);
     yield put(UpdateAction.updateLogIntervalSuccess(id));
     yield put(SensorAction.update(id, 'logInterval', logInterval));
+    ToastAndroid.show('Updated log interval', ToastAndroid.SHORT);
   } catch (e) {
     yield put(UpdateAction.updateLogIntervalFail());
+    ToastAndroid.show('Could not update log interval', ToastAndroid.SHORT);
   }
 }
 

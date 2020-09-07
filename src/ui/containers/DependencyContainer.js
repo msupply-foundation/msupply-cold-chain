@@ -8,7 +8,7 @@ import { registerService } from '~services';
 import { DeviceService } from '~services/device/DeviceService';
 import { SensorManager } from '~sensor';
 
-import { BleService } from '~services/bluetooth';
+import { BleService } from '../../features/bluetooth';
 import { SettingManager } from '../../features/setting/SettingManager';
 import { BreachConfigurationManager } from '../../features/breachConfiguration';
 import { ChartManager } from '../../features/chart';

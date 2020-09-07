@@ -7,6 +7,7 @@ import { ScanReducer, ScanSaga } from './scan';
 import { UpdateReducer, UpdateSaga } from './update';
 import { BatteryObserverReducer, BatteryObserverSaga } from './batteryObserver';
 import { NewSensorReducer, NewSensorSaga } from './newSensor';
+import { REDUCER } from '~constants';
 
 export function* root() {
   yield fork(BlinkSaga.root);
@@ -17,13 +18,13 @@ export function* root() {
   yield fork(NewSensorSaga.root);
 }
 
-export const BluetoothReducer2 = combineReducers({
-  blink: BlinkReducer,
-  download: DownloadReducer,
-  scan: ScanReducer,
-  update: UpdateReducer,
-  battery: BatteryObserverReducer,
-  newSensor: NewSensorReducer,
+export const BluetoothReducer = combineReducers({
+  [REDUCER.BLINK]: BlinkReducer,
+  [REDUCER.DOWNLOAD]: DownloadReducer,
+  [REDUCER.SCAN]: ScanReducer,
+  [REDUCER.UPDATE]: UpdateReducer,
+  [REDUCER.BATTERY_OBSERVER]: BatteryObserverReducer,
+  [REDUCER.NEW_SENSOR]: NewSensorReducer,
 });
 
 export const BluetoothSaga = { root };

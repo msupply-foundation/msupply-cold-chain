@@ -1,6 +1,6 @@
 import { takeEvery, getContext, call, put, select } from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
-import { SERVICES, REDUCER_SHAPE } from '~constants';
+import { SERVICES, REDUCER } from '~constants';
 
 const initialState = {
   logData: [],
@@ -44,7 +44,7 @@ const reducers = {
 const { actions: LogTableAction, reducer: LogTableReducer } = createSlice({
   initialState,
   reducers,
-  name: REDUCER_SHAPE.LOG_TABLE,
+  name: REDUCER.LOG_TABLE,
 });
 
 const LogTableSelector = {

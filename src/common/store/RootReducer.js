@@ -8,17 +8,18 @@ import { ChartReducer } from '../../features/chart';
 import { BreachReducer } from '../../features/breach';
 import { DeviceReducer } from '../../services/device';
 import { LogTableReducer } from '../../features/logTable';
-import { BluetoothReducer2 } from '../../features/bluetooth';
+import { BluetoothReducer } from '../../features/bluetooth';
+import { REDUCER } from '../constants';
 
 export const RootReducer = combineReducers({
-  database: DatabaseReducer,
-  sensor: SensorReducer,
-  setting: SettingReducer,
-  breachConfiguration: BreachConfigurationReducer,
-  hydrate: HydrateReducer,
-  chart: ChartReducer,
-  breach: BreachReducer,
-  device: DeviceReducer,
-  logTable: LogTableReducer,
-  bluetooth: BluetoothReducer2,
+  [REDUCER.DATABASE]: DatabaseReducer,
+  [REDUCER.SENSOR]: SensorReducer,
+  [REDUCER.SETTING]: SettingReducer,
+  [REDUCER.BREACH_CONFIGURATION]: BreachConfigurationReducer,
+  [REDUCER.HYDRATE]: HydrateReducer,
+  [REDUCER.CHART]: ChartReducer,
+  [REDUCER.BREACH]: BreachReducer,
+  [REDUCER.DEVICE]: DeviceReducer,
+  [REDUCER.LOG_TABLE]: LogTableReducer,
+  [REDUCER.BLUETOOTH]: BluetoothReducer,
 });

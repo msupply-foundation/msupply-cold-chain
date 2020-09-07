@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { REDUCER_SHAPE } from '~constants';
+import { REDUCER } from '~constants';
 
 const HydrateSelector = {
   temperatureLog({ hydrate }) {
@@ -68,7 +68,7 @@ const reducers = {
 
 const { actions: HydrateAction, reducer: HydrateReducer } = createSlice({
   initialState,
-  name: REDUCER_SHAPE.HYDRATE,
+  name: REDUCER.HYDRATE,
   reducers,
 });
 

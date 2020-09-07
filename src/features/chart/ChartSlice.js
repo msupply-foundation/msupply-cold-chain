@@ -1,7 +1,7 @@
 import { all, takeEvery, getContext, call, put } from 'redux-saga/effects';
 import moment from 'moment';
 import { createSlice } from '@reduxjs/toolkit';
-import { SERVICES, REDUCER_SHAPE } from '~constants';
+import { SERVICES, REDUCER } from '~constants';
 
 import { HydrateAction } from '../hydrate/hydrateSlice';
 
@@ -74,7 +74,7 @@ const ChartSelector = {
 };
 
 const { actions: ChartAction, reducer: ChartReducer } = createSlice({
-  name: REDUCER_SHAPE.CHART,
+  name: REDUCER.CHART,
   reducers,
   initialState,
 });
