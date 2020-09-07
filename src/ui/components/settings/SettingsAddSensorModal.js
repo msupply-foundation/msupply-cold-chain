@@ -17,6 +17,7 @@ import { NormalText } from '~presentation/typography';
 import { Button } from '~components/buttons';
 
 import { SettingsEditModal } from './SettingsEditModal';
+import { BlinkSelector } from '../../../features/bluetooth';
 
 const styles = {
   column: { maxHeight: STYLE.HEIGHT.SENSOR_ROW },
@@ -27,7 +28,7 @@ const styles = {
   },
 };
 
-export const SettingsAddSensorModal = ({ onClose, isOpen, onConfirm, onBlink }) => {
+export const SettingsAddSensorModal = ({ macAddress, onClose, isOpen, onConfirm, onBlink }) => {
   const [date, setDate] = useState(new Date());
 
   const validator = useCallback(
@@ -50,7 +51,7 @@ export const SettingsAddSensorModal = ({ onClose, isOpen, onConfirm, onBlink }) 
   const [isDatePickerOpen, onChangeDate, toggleDatePicker] = useDatePicker(validator);
   const [isTimePickerOpen, onChangeTime, toggleTimePicker] = useDatePicker(validator);
 
-  const blinkingSensor = useSelector(state => state.bluetooth.bluetooth.blinkingSensor);
+  const { [macAddress]: isBlinking } = useSelector(BlinkSelector.isBlinking);
 
   const maximumDate = moment().add(30, 'days').toDate();
   const minimumDate = new Date();
@@ -65,7 +66,7 @@ export const SettingsAddSensorModal = ({ onClose, isOpen, onConfirm, onBlink }) 
         Content={
           <Column style={styles.column}>
             <Row flex={1} alignItems="center" justifyContent="center">
-              {blinkingSensor ? (
+              {isBlinking ? (
                 <ActivityIndicator size="large" color={COLOUR.PRIMARY} />
               ) : (
                 <Button text={t('BLINK')} variant="dark" onPress={onBlink} />

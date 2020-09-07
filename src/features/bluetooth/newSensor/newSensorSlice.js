@@ -1,23 +1,31 @@
-import { NativeModules } from 'react-native';
+import { NativeModules, ToastAndroid } from 'react-native';
 import { createSlice } from '@reduxjs/toolkit';
 import { getContext, call, put, takeLeading } from 'redux-saga/effects';
 import { SERVICES, SETTING, REDUCER } from '~constants';
 
 import { SensorAction } from '../../sensor';
 
-const initialState = {};
+const initialState = {
+  connectingByMac: {},
+};
 const reducers = {
   tryConnectWithNewSensor: {
     prepare: (macAddress, logDelay) => ({ payload: { macAddress, logDelay } }),
-    reducer: () => {},
+    reducer: (draftState, { payload: { macAddress } }) => {
+      draftState.connectingByMac[macAddress] = true;
+    },
   },
   connectWithNewSensorSuccess: {
-    prepare: macAddress => ({ payload: { macAddress } }),
-    reducer: () => {},
+    prepare: (macAddress, logDelay) => ({ payload: { macAddress, logDelay } }),
+    reducer: (draftState, { payload: { macAddress } }) => {
+      draftState.connectingByMac[macAddress] = false;
+    },
   },
   connectWithNewSensorFail: {
-    prepare: () => ({}),
-    reducer: () => {},
+    prepare: (macAddress, logDelay) => ({ payload: { macAddress, logDelay } }),
+    reducer: (draftState, { payload: { macAddress } }) => {
+      draftState.connectingByMac[macAddress] = false;
+    },
   },
 };
 
@@ -27,7 +35,15 @@ const { actions: NewSensorAction, reducer: NewSensorReducer } = createSlice({
   name: REDUCER.NEW_SENSOR,
 });
 
-const NewSensorSelector = {};
+const NewSensorSelector = {
+  isConnecting: ({
+    bluetooth: {
+      new_sensor: { connectingByMac },
+    },
+  }) => {
+    return connectingByMac;
+  },
+};
 
 export function* connectWithNewSensor({ payload: { macAddress, logDelay } }) {
   const getServices = yield getContext('getServices');
@@ -50,8 +66,10 @@ export function* connectWithNewSensor({ payload: { macAddress, logDelay } }) {
     }
     yield put(NewSensorAction.connectWithNewSensorSuccess(macAddress));
     yield put(SensorAction.addNewSensor(macAddress, logInterval, logDelay, batteryLevel));
+    ToastAndroid.show(`Connected and setup ${macAddress}`, ToastAndroid.SHORT);
   } catch (e) {
-    yield put(NewSensorAction.connectWithNewSensorFail());
+    yield put(NewSensorAction.connectWithNewSensorFail(macAddress, e.message));
+    ToastAndroid.show(`Could not connect with ${macAddress}`, ToastAndroid.SHORT);
   }
 }
 

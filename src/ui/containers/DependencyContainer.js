@@ -39,6 +39,8 @@ export const DependencyContainer = props => {
       await db.getConnection();
       setReady(true);
       await deviceService.requestStoragePermission();
+      await deviceService.requestLocationPermission();
+      await deviceService.enableBluetooth();
     })();
 
     const sensorsManager = new SensorManager(dbService);

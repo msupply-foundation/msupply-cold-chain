@@ -6,21 +6,27 @@ import { t } from '~translations';
 import { SERVICES, REDUCER } from '~constants';
 
 const initialState = {
-  blinkingById: {},
+  blinkingByMac: {},
 };
 
 const reducers = {
   tryBlinkSensor: {
     prepare: macAddress => ({ payload: { macAddress } }),
-    reducer: () => {},
+    reducer: (draftState, { payload: { macAddress } }) => {
+      draftState.blinkingByMac[macAddress] = true;
+    },
   },
   tryBlinkSensorSuccess: {
     prepare: macAddress => ({ payload: { macAddress } }),
-    reducer: () => {},
+    reducer: (draftState, { payload: { macAddress } }) => {
+      draftState.blinkingByMac[macAddress] = false;
+    },
   },
   tryBlinkSensorFail: {
     prepare: macAddress => ({ payload: { macAddress } }),
-    reducer: () => {},
+    reducer: (draftState, { payload: { macAddress } }) => {
+      draftState.blinkingByMac[macAddress] = false;
+    },
   },
 };
 
@@ -33,10 +39,10 @@ const { actions: BlinkAction, reducer: BlinkReducer } = createSlice({
 const BlinkSelector = {
   isBlinking: ({
     bluetooth: {
-      blink: { blinkingById },
+      blink: { blinkingByMac },
     },
   }) => {
-    return blinkingById;
+    return blinkingByMac;
   },
 };
 
@@ -46,10 +52,10 @@ function* tryBlinkSensor({ payload: { macAddress } }) {
 
   try {
     yield call(btService.blinkWithRetries, macAddress, 10);
-    yield put(BlinkAction.tryBlinkSensorSuccess());
+    yield put(BlinkAction.tryBlinkSensorSuccess(macAddress));
     ToastAndroid.show(t('BLINKED_SENSOR_SUCCESS'), ToastAndroid.SHORT);
   } catch (error) {
-    yield put(BlinkAction.tryBlinkSensorFail(error));
+    yield put(BlinkAction.tryBlinkSensorFail(macAddress, error.message));
     ToastAndroid.show(t('BLINKED_SENSOR_FAILED'), ToastAndroid.SHORT);
   }
 }

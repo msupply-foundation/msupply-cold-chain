@@ -29,6 +29,14 @@ export class DeviceService {
     return bluetoothState === BLUETOOTH_STATE.ON;
   };
 
+  enableBluetooth = async () => {
+    return BluetoothStatus.enable();
+  };
+
+  disableBluetooth = async () => {
+    return BluetoothStatus.disable();
+  };
+
   checkLocationPermission = async () => check(PERMISSION.LOCATION);
 
   hasLocationPermission = async () => {
@@ -61,9 +69,8 @@ export class DeviceService {
     try {
       const parser = new Parser(opts);
       csv = parser.parse(logs);
-    } catch (err) {
-      console.log(err);
-    }
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
 
     const directory = '/Download/cce';
     const now = moment().format('DD-MM-YYYY-HHmm');
@@ -75,9 +82,8 @@ export class DeviceService {
       await RNFS.mkdir(`${RNFS.ExternalStorageDirectoryPath}${directory}`);
       await RNFS.writeFile(path, csv, 'utf8');
       return path;
-    } catch (error) {
-      console.log(error.message);
-    }
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
 
     return null;
   };

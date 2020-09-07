@@ -24,7 +24,7 @@ export const SensorDetailScreen = () => {
   const { id } = useRouteProps();
 
   const sensor = useSelector(state => state.sensor.byId[id]);
-  const { [id]: isBlinking } = useSelector(BlinkSelector.isBlinking);
+  const { [sensor.macAddress]: isBlinking } = useSelector(BlinkSelector.isBlinking);
 
   const dispatch = useDispatch();
 
