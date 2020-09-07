@@ -14,10 +14,6 @@ const middleware = [];
  */
 
 const defaultMiddlewareOptions = {
-  // These are actions which have non-serializable payloads. It is ...
-  // ... recommended to ensure state is serializable. Payloads should
-  // not be saved in the store.
-  serializableCheck: { ignoredActions: ['setBluetoothService'] },
   thunk: false,
 };
 middleware.concat(getDefaultMiddleware(defaultMiddlewareOptions));
