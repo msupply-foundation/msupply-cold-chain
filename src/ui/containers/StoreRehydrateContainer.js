@@ -13,6 +13,7 @@ import { BreachAction } from '../../features/breach';
 
 import { DownloadAction } from '../../features/bluetooth/download';
 
+// TODO: Remove this and replace with calls within components on mount
 export const StoreRehydrateContainer = ({ children }) => {
   const dispatch = useDispatch();
   const allReady = useSelector(HydrateSelector.all);

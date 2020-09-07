@@ -42,7 +42,7 @@ export class BreachConfigurationManager {
   }
 
   upsert = async objectOrObjects => {
-    this.databaseService.upsert(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION, objectOrObjects);
+    return this.databaseService.upsert(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION, objectOrObjects);
   };
 
   getAll = async () => {
@@ -55,6 +55,7 @@ export class BreachConfigurationManager {
 
   init = async () => {
     const configs = await this.getAll();
+
     if (configs.length >= 4) return configs;
     return this.upsert(this.defaultConfigs);
   };
