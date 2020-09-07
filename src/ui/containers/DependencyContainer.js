@@ -7,17 +7,15 @@ import { registerService } from '~services';
 
 import { DeviceService } from '~services/device/DeviceService';
 import { SensorManager } from '~sensor';
-import { TemperatureLogManager } from '~temperatureLog';
 
-import { DatabaseUtilsService } from '../../services/database/DatabaseUtilsService';
-import { Ble } from '../../services/bluetooth/Ble';
+import { BleService } from '~services/bluetooth';
 import { SettingManager } from '../../features/setting/SettingManager';
 import { BreachConfigurationManager } from '../../features/breachConfiguration';
 import { ChartManager } from '../../features/chart';
 import { BreachManager } from '../../features/breach';
 
 import { LogTableManager } from '../../features/logTable';
-import { TemperatureDownloadManager } from '../../features/temperatureDownload';
+import { DownloadManager } from '../../features/bluetooth/download';
 
 const bleManager = new BleManager();
 
@@ -30,14 +28,12 @@ export const DependencyContainer = props => {
     const db = new Database();
     const dbService = new DatabaseService(db);
     const deviceService = new DeviceService();
-    const dbUtilsService = new DatabaseUtilsService();
     const settingManager = new SettingManager(dbService);
     const breachConfigurationManager = new BreachConfigurationManager(dbService);
-    const temperatureLogManager = new TemperatureLogManager(dbService);
     const chartManager = new ChartManager(dbService);
     const breachManager = new BreachManager(dbService);
     const logTableManager = new LogTableManager(dbService);
-    const temperatureDownloadManager = new TemperatureDownloadManager(dbService);
+    const downloadManager = new DownloadManager(dbService);
 
     (async () => {
       await db.getConnection();
@@ -47,20 +43,18 @@ export const DependencyContainer = props => {
 
     const sensorsManager = new SensorManager(dbService);
 
-    const btService = new Ble(bleManager);
+    const btService = new BleService(bleManager);
 
     registerService(SERVICES.BREACH_CONFIGURATION_MANAGER, breachConfigurationManager);
     registerService(SERVICES.SENSOR_MANAGER, sensorsManager);
-    registerService(SERVICES.DATABASE_UTILS, dbUtilsService);
     registerService(SERVICES.DEVICE, deviceService);
     registerService(SERVICES.BLUETOOTH, btService);
     registerService(SERVICES.DATABASE, dbService);
-    registerService(SERVICES.TEMPERATURE_LOG_MANAGER, temperatureLogManager);
     registerService(SERVICES.SETTING_MANAGER, settingManager);
     registerService(SERVICES.CHART_MANAGER, chartManager);
     registerService(SERVICES.BREACH_MANAGER, breachManager);
     registerService(SERVICES.LOG_TABLE_MANAGER, logTableManager);
-    registerService(SERVICES.TEMPERATURE_DOWNLOAD_MANAGER, temperatureDownloadManager);
+    registerService(SERVICES.DOWNLOAD_MANAGER, downloadManager);
   }, []);
 
   const { children } = props;

@@ -9,11 +9,17 @@ import { SensorSelector } from '~sensor';
 import { Gradient } from '~layouts';
 import { NAVIGATION } from '~constants';
 import { BreachAction } from '~features/breach';
+import { BatteryObserverAction } from '../../../features/bluetooth/batteryObserver';
 
 export const SensorListScreen = React.memo(({ navigation }) => {
   const sensors = useSelector(SensorSelector.sensorsList, shallowEqual);
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(BatteryObserverAction.start());
+    return () => dispatch(BatteryObserverAction.stop());
+  });
 
   useEffect(() => {
     dispatch(BreachAction.getAllCumulativeExposures());

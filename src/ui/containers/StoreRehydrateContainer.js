@@ -10,8 +10,8 @@ import { HydrateSelector } from '../../features/hydrate/hydrateSlice';
 import { ChartAction } from '../../features/chart';
 
 import { BreachAction } from '../../features/breach';
-import { TemperatureDownloadAction } from '../../features/temperatureDownload';
-import { BluetoothStateActions } from '../../services/bluetooth';
+
+import { DownloadAction } from '../../features/bluetooth/download';
 
 export const StoreRehydrateContainer = ({ children }) => {
   const dispatch = useDispatch();
@@ -44,11 +44,7 @@ export const StoreRehydrateContainer = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    dispatch(TemperatureDownloadAction.startPassiveDownloading());
-  });
-
-  useEffect(() => {
-    dispatch(BluetoothStateActions.startWatchingBatteryLevels());
+    dispatch(DownloadAction.passiveDownloadingStart());
   });
 
   return allReady ? children : null;

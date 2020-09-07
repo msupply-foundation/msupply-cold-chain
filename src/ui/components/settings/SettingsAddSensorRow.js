@@ -2,44 +2,34 @@
 import { useDispatch } from 'react-redux';
 
 import { useToggle } from '~hooks';
-import { BluetoothStateActions } from '~bluetooth';
-import { UpdateSensorAction } from '~bluetooth/bluetoothSlice';
 
 import { SettingsItem } from './SettingsItem';
 import { SettingsAddSensorModal } from './SettingsAddSensorModal';
+import { BlinkAction } from '../../../features/bluetooth/blink';
+import { NewSensorAction } from '../../../features/bluetooth/newSensor/newSensorSlice';
 
 export const SettingsAddSensorRow = ({ macAddress }) => {
   const [isModalOpen, toggleModal] = useToggle(false);
   const dispatch = useDispatch();
 
-  const onPress = () => {
-    toggleModal();
-    dispatch(BluetoothStateActions.stopScanning());
-  };
-
-  const onCancel = () => {
-    toggleModal();
-    dispatch(BluetoothStateActions.findSensors());
-  };
-
   const onConfirm = date => {
     toggleModal();
     dispatch(
-      UpdateSensorAction.tryConnectWithNewSensor(
+      NewSensorAction.tryConnectWithNewSensor(
         macAddress,
         Math.ceil(new Date(date).getTime() / 1000)
       )
     );
   };
 
-  const onBlink = () => dispatch(BluetoothStateActions.tryBlinkSensor(macAddress));
+  const onBlink = () => dispatch(BlinkAction.tryBlinkSensor(macAddress));
 
   return (
     <>
-      <SettingsItem label={macAddress} onPress={onPress} />
+      <SettingsItem label={macAddress} onPress={toggleModal} />
       {isModalOpen && (
         <SettingsAddSensorModal
-          onClose={onCancel}
+          onClose={toggleModal}
           macAddress={macAddress}
           isOpen={isModalOpen}
           onBlink={onBlink}

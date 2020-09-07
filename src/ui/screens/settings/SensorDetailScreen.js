@@ -6,17 +6,19 @@ import { useRouteProps } from '~hooks';
 
 import { t } from '~translations';
 import { SettingsList } from '~layouts';
-import { UpdateSensorAction } from '~bluetooth/bluetoothSlice';
 
 import {
   SettingsLoadingIndicatorRow,
   SettingsTextInputRow,
   SettingsGroup,
   SettingsNumberInputRow,
- SettingsButtonRow, SettingsItem } from '~components/settings';
-import { BluetoothStateActions } from '~services/bluetooth';
+  SettingsButtonRow,
+  SettingsItem,
+} from '~components/settings';
 
-import { TemperatureDownloadAction } from '../../../features/temperatureDownload';
+import { BlinkAction } from '../../../features/bluetooth/blink';
+import { DownloadAction } from '../../../features/bluetooth/download';
+import { UpdateAction } from '../../../features/bluetooth/update';
 
 export const SensorDetailScreen = () => {
   const { id } = useRouteProps();
@@ -30,13 +32,13 @@ export const SensorDetailScreen = () => {
     <SettingsList>
       <SettingsLoadingIndicatorRow
         label="Blink"
-        onPress={() => dispatch(BluetoothStateActions.tryBlinkSensor(macAddress))}
+        onPress={() => dispatch(BlinkAction.tryBlinkSensor(macAddress))}
         isLoading={blinkingSensor}
         wasSuccessful={blinkWasSuccessful}
       />
       <SettingsButtonRow
         label="Download"
-        onPress={() => dispatch(TemperatureDownloadAction.downloadTemperaturesForSensor(id))}
+        onPress={() => dispatch(DownloadAction.tryManualDownloadForSensor(id))}
       />
       <SettingsGroup title="SENSOR DETAILS">
         <SettingsItem label={sensor.macAddress} subtext="This sensors mac address" isDisabled />
@@ -67,7 +69,7 @@ export const SensorDetailScreen = () => {
           metric={t('MINUTES')}
           onConfirm={({ value }) => {
             const newLogInterval = value * 60;
-            dispatch(UpdateSensorAction.tryUpdateLogInterval(id, macAddress, newLogInterval));
+            dispatch(UpdateAction.tryUpdateLogInterval(id, newLogInterval));
           }}
           editDescription={t('EDIT_LOG_INTERVAL')}
         />

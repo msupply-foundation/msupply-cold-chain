@@ -64,7 +64,7 @@ const checkForManufacturerId = device => {
   return ((manufacturerDataArray[1] << 8) | manufacturerDataArray[0]) === 307;
 };
 
-export class Ble {
+export class BleService {
   constructor(manager) {
     this.manager = manager;
     this.downloading = {};

@@ -191,11 +191,8 @@ function* updateLogDelay({ payload: { logDelay, sensorId } }) {
     yield call(sensorManager.updateLogDelay, sensorId, logDelay);
     yield put(SensorAction.updateLogDelaySuccessful);
     yield put(SensorAction.getSensor(sensorId));
-  } catch (error) {
-    console.log('-------------------------------------------');
-    console.log('error', error.message);
-    console.log('-------------------------------------------');
-  }
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
 }
 
 function* updateBatteryLevel({ payload: { sensorId, batteryLevel } }) {
@@ -206,11 +203,8 @@ function* updateBatteryLevel({ payload: { sensorId, batteryLevel } }) {
     yield call(sensorManager.updateBatteryLevel, sensorId, batteryLevel);
     yield put(SensorAction.updateBatteryLevelSuccessful(sensorId, batteryLevel));
     yield put(SensorAction.getSensorState(sensorId));
-  } catch (error) {
-    console.log('-------------------------------------------');
-    console.log('error', error.message);
-    console.log('-------------------------------------------');
-  }
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
 }
 
 function* watchSensorActions() {
@@ -237,7 +231,7 @@ const SensorSelector = {
   macAddress: ({ sensor }, { id }) => {
     return sensor.byId[id].macAddress;
   },
-  macAddresses: ({ sensor: { byId, ids } }) => {
+  macs: ({ sensor: { byId, ids } }) => {
     return ids.map(id => byId[id].macAddress);
   },
   foundSensorsList: ({ sensor }) => {

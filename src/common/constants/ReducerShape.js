@@ -14,4 +14,10 @@ export const REDUCER_SHAPE = {
   DEVICE: 'device',
   LOG_TABLE: 'log_table',
   TEMPERATURE_DOWNLOAD: 'temperature_download',
+  UPDATE: 'update',
+  SCAN: 'scan',
+  DOWNLOAD: 'download',
+  BLINK: 'blink',
+  BATTERY_OBSERVER: 'battery_observer',
+  NEW_SENSOR: 'new_sensor',
 };

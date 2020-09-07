@@ -5,8 +5,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 import { t } from '~translations';
 import { COLOUR, NAVIGATION, SETTING } from '~constants';
-import { SensorSelector, SensorAction } from '~sensor';
-import { BluetoothStateActions } from '~bluetooth';
+import { SensorSelector } from '~sensor';
 
 import { SettingsList } from '~layouts';
 import { UpdatingSensorModal } from '~components';
@@ -17,6 +16,7 @@ import {
   SettingsAddSensorRow,
 } from '~components/settings';
 import { SettingAction } from '~setting';
+import { ScanAction, ScanSelector } from '../../../features/bluetooth/scan';
 
 export const SensorSettingsScreen = React.memo(({ navigation }) => {
   const isFocused = useIsFocused();
@@ -25,11 +25,8 @@ export const SensorSettingsScreen = React.memo(({ navigation }) => {
   const [load, setLoad] = useState();
 
   const availableSensors = useSelector(SensorSelector.availableSensorsList, shallowEqual);
-  const foundSensors = useSelector(SensorSelector.foundSensorsList, shallowEqual);
-  const findingSensors = useSelector(
-    state => state.bluetooth.bluetooth.findingSensors,
-    shallowEqual
-  );
+  const foundSensors = useSelector(ScanSelector.foundSensors, shallowEqual);
+  const isScanning = useSelector(ScanSelector.isScanning);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(setLoad(true));
@@ -42,10 +39,9 @@ export const SensorSettingsScreen = React.memo(({ navigation }) => {
 
   useEffect(() => {
     const reset = () => {
-      dispatch(BluetoothStateActions.stopScanning());
-      dispatch(SensorAction.clearFoundSensors());
+      dispatch(ScanAction.tryStop());
     };
-    if (isFocused) dispatch(BluetoothStateActions.findSensors());
+    if (isFocused) dispatch(ScanAction.tryStart());
     else reset();
     return reset;
   }, [isFocused]);
@@ -84,7 +80,7 @@ export const SensorSettingsScreen = React.memo(({ navigation }) => {
         {foundSensors.map(macAddress => (
           <SettingsAddSensorRow key={macAddress} macAddress={macAddress} />
         ))}
-        {findingSensors ? (
+        {isScanning ? (
           <ActivityIndicator style={{ marginTop: 20 }} size="large" color={COLOUR.SECONDARY} />
         ) : null}
       </SettingsGroup>

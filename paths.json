@@ -22,7 +22,6 @@
 
   "~features": "./src/features",
   "~sensor": "./src/features/sensor",
-  "~temperatureLog": "./src/features/temperatureLog",
   "~breach": "./src/features/breach",
   "~setting": "./src/features/setting",
   "~breachConfiguration": "./src/features/breachConfiguration",
