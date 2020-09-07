@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NAVIGATION } from '~constants';
 import { navigationSlide } from '~animations';
 
-import { StackHeader } from './StackHeader';
+import { SettingsStackHeader } from './SettingsStackHeader';
 
 // Create a stack navigator
 const SettingsStack = createStackNavigator();
@@ -21,7 +21,7 @@ const screenOptions = {
     navigation: { goBack },
   }) => {
     return (
-      <StackHeader
+      <SettingsStackHeader
         name={name}
         goBack={name !== NAVIGATION.SCREENS.SETTINGS_STACK.MENU ? goBack : null}
       />

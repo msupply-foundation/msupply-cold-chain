@@ -15,12 +15,11 @@ const LeftIcon = ({ goBack }) => (
   </Pressable>
 );
 
-export const StackHeader = ({ name, goBack, RightComponent }) => {
+export const SettingsStackHeader = ({ name, goBack }) => {
   return (
     <SettingsRowLayout
       LeftIcon={goBack ? <LeftIcon goBack={goBack} /> : null}
       Text={<LargeText colour={COLOUR.SECONDARY}>{t(name)}</LargeText>}
-      RightComponent={RightComponent}
     />
   );
 };
