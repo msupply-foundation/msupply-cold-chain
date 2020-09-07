@@ -1,8 +1,9 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { Cog, Map, Sensors } from '~presentation/icons';
 import { NAVIGATION, COLOUR, FONT } from '~constants';
-import { t } from '../../../shared/translations';
+import { t } from '~translations';
+
+import { Cog, Map, Sensors } from '~presentation/icons';
 
 export const ICON_LOOKUP = {
   [NAVIGATION.SCREENS.MAIN_TABS.SETTINGS]: <Cog />,
