@@ -91,6 +91,7 @@ function* tryManualDownloadForSensor({ payload: { sensorId } }) {
       yield call(downloadManager.saveLogs, sensorLogs);
       yield put(BreachAction.createBreaches(sensor));
       yield put(DownloadAction.passiveDownloadForSensorSuccess());
+      yield put(BreachAction.getListCumulativeForSensor(sensorId));
     } else {
       ToastAndroid.show(`Cannot download logs yet!`, ToastAndroid.SHORT);
       yield put(DownloadAction.passiveDownloadForSensorFail());
@@ -136,6 +137,7 @@ function* tryPassiveDownloadForSensor({ payload: { sensorId } }) {
       yield call(downloadManager.saveLogs, sensorLogs);
       yield put(BreachAction.createBreaches(sensor));
       yield put(DownloadAction.passiveDownloadForSensorSuccess());
+      yield put(BreachAction.getListCumulativeForSensor(sensorId));
     }
   } catch (error) {
     yield put(DownloadAction.passiveDownloadForSensorFail(error.message));
