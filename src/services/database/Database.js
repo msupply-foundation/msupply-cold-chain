@@ -10,7 +10,7 @@ import {
 
 const DEFAULT_DATABASE_CONFIG = {
   type: 'react-native',
-  database: 'test32.db',
+  database: 'test34.db',
   location: 'default',
 
   // extra: {

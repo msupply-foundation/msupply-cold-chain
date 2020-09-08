@@ -183,8 +183,8 @@ export class BleService {
         const device = await this.connectToDevice(macAddress, { scanMode: 2 });
 
         device.onDisconnected(() => reject());
-
         await device.discoverAllServicesAndCharacteristics();
+
         await this.manager.monitorCharacteristicForDevice(
           macAddress,
           BLUETOOTH.UART_SERVICE_UUID,
@@ -214,6 +214,54 @@ export class BleService {
         reject(e);
       }
     });
+  };
+
+  toggleButton = async macAddress => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        const device = await this.connectToDevice(macAddress, { scanMode: 2 });
+
+        device.onDisconnected(() => reject());
+
+        await device.discoverAllServicesAndCharacteristics();
+        await this.manager.monitorCharacteristicForDevice(
+          macAddress,
+          BLUETOOTH.UART_SERVICE_UUID,
+          BLUETOOTH.WRITE_CHARACTERISTIC_UUID,
+
+          (_, result) => {
+            if (result?.value) {
+              const raw = Base64.decode(result.value);
+              const rawLength = raw.length;
+              const array = new Uint8Array(new ArrayBuffer(rawLength));
+
+              for (let i = 0; i < rawLength; i += 1) array[i] = raw.charCodeAt(i);
+
+              resolve(array);
+              device.cancelConnection();
+            }
+          }
+        );
+
+        await this.manager.writeCharacteristicWithoutResponseForDevice(
+          macAddress,
+          BLUETOOTH.UART_SERVICE_UUID,
+          BLUETOOTH.READ_CHARACTERISTIC_UUID,
+          Buffer.from('*bd', 'utf-8').toString('base64')
+        );
+      } catch (e) {
+        reject(e);
+      }
+    });
+  };
+
+  toggleButtonWithRetries = async (macAddress, retriesLeft, error) => {
+    if (!retriesLeft) throw error;
+
+    return this.toggleButton(macAddress).catch(err =>
+      this.toggleButtonWithRetries(macAddress, retriesLeft - 1, err)
+    );
   };
 
   downloadLogsWithRetries = async (macAddress, retriesLeft, error) => {

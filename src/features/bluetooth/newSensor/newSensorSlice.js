@@ -22,7 +22,7 @@ const reducers = {
     },
   },
   connectWithNewSensorFail: {
-    prepare: (macAddress, logDelay) => ({ payload: { macAddress, logDelay } }),
+    prepare: (macAddress, errorMessage) => ({ payload: { macAddress, errorMessage } }),
     reducer: (draftState, { payload: { macAddress } }) => {
       draftState.connectingByMac[macAddress] = false;
     },
@@ -58,6 +58,7 @@ export function* connectWithNewSensor({ payload: { macAddress, logDelay } }) {
       SETTING.INT.DEFAULT_LOG_INTERVAL
     );
     yield call(btService.updateLogIntervalWithRetries, macAddress, logInterval, 10);
+    yield call(btService.toggleButtonWithRetries, macAddress, 10);
     const { data, success } = yield call(NativeModules.SussolBleManager.getDevices, 307, '');
     let batteryLevel = 100;
     if (success && data) {
@@ -68,7 +69,7 @@ export function* connectWithNewSensor({ payload: { macAddress, logDelay } }) {
     yield put(SensorAction.addNewSensor(macAddress, logInterval, logDelay, batteryLevel));
     ToastAndroid.show(`Connected and setup ${macAddress}`, ToastAndroid.SHORT);
   } catch (e) {
-    yield put(NewSensorAction.connectWithNewSensorFail(macAddress, e.message));
+    yield put(NewSensorAction.connectWithNewSensorFail(macAddress, e?.message));
     ToastAndroid.show(`Could not connect with ${macAddress}`, ToastAndroid.SHORT);
   }
 }
