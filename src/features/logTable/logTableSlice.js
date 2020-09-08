@@ -49,14 +49,14 @@ const { actions: LogTableAction, reducer: LogTableReducer } = createSlice({
 });
 
 const LogTableSelector = {
-  logData({ log_table }) {
-    return log_table.logData;
+  logData({ logTable }) {
+    return logTable.logData;
   },
-  isLoading({ log_table }) {
-    return log_table.isLoading;
+  isLoading({ logTable }) {
+    return logTable.isLoading;
   },
-  pagination({ log_table }) {
-    const { limit, offset } = log_table;
+  pagination({ logTable }) {
+    const { limit, offset } = logTable;
     return { limit, offset };
   },
 };
