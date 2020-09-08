@@ -1,4 +1,4 @@
-import { NativeModules, ToastAndroid } from 'react-native';
+import { ToastAndroid } from 'react-native';
 import { createSlice } from '@reduxjs/toolkit';
 import { getContext, call, put, takeLeading } from 'redux-saga/effects';
 import { SERVICES, SETTING, REDUCER } from '~constants';
@@ -58,13 +58,12 @@ export function* connectWithNewSensor({ payload: { macAddress, logDelay } }) {
       SETTING.INT.DEFAULT_LOG_INTERVAL
     );
     yield call(btService.updateLogIntervalWithRetries, macAddress, logInterval, 10);
-    yield call(btService.toggleButtonWithRetries, macAddress, 10);
-    const { data, success } = yield call(NativeModules.SussolBleManager.getDevices, 307, '');
-    let batteryLevel = 100;
-    if (success && data) {
-      const advertisement = data.find(adv => adv.macAddress === macAddress);
-      batteryLevel = advertisement.batteryLevel;
+    const { batteryLevel, isDisabled } = yield call(btService.getInfoWithRetries, macAddress, 10);
+
+    if (!isDisabled) {
+      yield call(btService.toggleButtonWithRetries, macAddress, 10);
     }
+
     yield put(NewSensorAction.connectWithNewSensorSuccess(macAddress));
     yield put(SensorAction.addNewSensor(macAddress, logInterval, logDelay, batteryLevel));
     ToastAndroid.show(`Connected and setup ${macAddress}`, ToastAndroid.SHORT);

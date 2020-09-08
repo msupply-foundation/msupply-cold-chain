@@ -216,6 +216,66 @@ export class BleService {
     });
   };
 
+  getInfo = async macAddress => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolver, reject) => {
+      try {
+        const device = await this.connectToDevice(macAddress);
+
+        const data = [];
+        device.onDisconnected(async () => {
+          try {
+            if (!data.length) throw new Error('No data!');
+            const parsedAsFullString = data
+              .reduce((acc, value) => acc.concat(...value), [])
+              .map(d => String.fromCharCode(d))
+              .join('');
+
+            const batteryLevel = Number(
+              ((parsedAsFullString.match(/Batt lvl: [0-9]{1,3}/) ?? [''])[0].match(
+                /[0-9]{1,3}/
+              ) ?? [''])[0] ?? 0
+            );
+
+            const isDisabled = !!parsedAsFullString.match(/Btn on\/off: 1/);
+            const result = { batteryLevel, isDisabled };
+
+            resolver(result);
+          } catch (error) {
+            reject(error);
+          }
+          this.downloading[macAddress] = false;
+        });
+
+        await device.discoverAllServicesAndCharacteristics();
+        await this.manager.monitorCharacteristicForDevice(
+          macAddress,
+          BLUETOOTH.UART_SERVICE_UUID,
+          BLUETOOTH.WRITE_CHARACTERISTIC_UUID,
+          (_, characteristic) => {
+            if (characteristic?.value) {
+              const raw = Base64.decode(characteristic.value);
+              const rawLength = raw.length;
+              const array = new Int16Array(new ArrayBuffer(rawLength * 2));
+              for (let i = 0; i < rawLength; i += 1) array[i] = raw.charCodeAt(i);
+              data.push(array);
+            }
+          }
+        );
+
+        await this.manager.writeCharacteristicWithoutResponseForDevice(
+          macAddress,
+          BLUETOOTH.UART_SERVICE_UUID,
+          BLUETOOTH.READ_CHARACTERISTIC_UUID,
+          Buffer.from('*info', 'utf-8').toString('base64')
+        );
+      } catch (error) {
+        this.downloading[macAddress] = false;
+        reject(error);
+      }
+    });
+  };
+
   toggleButton = async macAddress => {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
@@ -254,6 +314,14 @@ export class BleService {
         reject(e);
       }
     });
+  };
+
+  getInfoWithRetries = async (macAddress, retriesLeft, error) => {
+    if (!retriesLeft) throw error;
+
+    return this.getInfo(macAddress).catch(err =>
+      this.getInfoWithRetries(macAddress, retriesLeft - 1, err)
+    );
   };
 
   toggleButtonWithRetries = async (macAddress, retriesLeft, error) => {
