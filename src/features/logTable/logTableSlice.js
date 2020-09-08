@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { takeEvery, getContext, call, put, select } from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
 import { SERVICES, REDUCER } from '~constants';
@@ -48,14 +49,14 @@ const { actions: LogTableAction, reducer: LogTableReducer } = createSlice({
 });
 
 const LogTableSelector = {
-  logData({ logTable }) {
-    return logTable.logData;
+  logData({ log_table }) {
+    return log_table.logData;
   },
-  isLoading({ logTable }) {
-    return logTable.isLoading;
+  isLoading({ log_table }) {
+    return log_table.isLoading;
   },
-  pagination({ logTable }) {
-    const { limit, offset } = logTable;
+  pagination({ log_table }) {
+    const { limit, offset } = log_table;
     return { limit, offset };
   },
 };

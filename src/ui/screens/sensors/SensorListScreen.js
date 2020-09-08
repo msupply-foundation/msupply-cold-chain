@@ -31,7 +31,7 @@ export const SensorListScreen = React.memo(({ navigation }) => {
 
   const renderItem = useCallback(({ item: { id } }) => {
     const onPress = () => {
-      navigation.navigate(NAVIGATION.SCREENS.SENSOR_STACK.SENSOR, { id });
+      navigation.navigate(NAVIGATION.SCREENS.SENSOR_STACK.SENSOR_DETAIL, { id });
     };
     return <SensorChartRow id={id} onPress={onPress} />;
   }, []);
