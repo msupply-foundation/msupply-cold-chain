@@ -21,7 +21,7 @@ FROM      sensor s OUTER
 left JOIN
 (
   SELECT  max(timestamp) mostRecentLogTimestamp,
-          min(timestamp) firstTimestamp,
+          coalesce(min(timestamp), 0) firstTimestamp,
           temperature    currentTemperature,
           count(*) numberOfLogs,
           tl.sensorid,

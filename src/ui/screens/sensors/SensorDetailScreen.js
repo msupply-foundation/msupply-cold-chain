@@ -24,20 +24,13 @@ import { BreachAction } from '../../../features/breach';
 import { WritingLogsModal } from '../../components/WritingLogsModal';
 import { ExportDataModal } from '../../components/ExportDataModal';
 
-const getDateRange = (firstLogTimestamp, mostRecentLogTimestamp) => {
-  const to = moment.min(moment(), moment(mostRecentLogTimestamp * 1000));
-  const from = moment.max(moment(to).subtract(3, 'days'), moment(firstLogTimestamp * 1000));
-
-  return [from, to];
-};
-
 export const SensorDetailScreen = ({ navigation }) => {
   const [exportModalIsOpen, toggleExportModal] = useToggle();
 
   const { id } = useRouteProps();
-  const { [id]: sensor } = useSelector(SensorSelector.sensors);
+  const { [id]: sensor } = useSelector(SensorSelector.status);
 
-  const { mostRecentLogTimestamp, minChartTimestamp } = sensor;
+  const { mostRecentLogTimestamp, minChartTimestamp, firstTimestamp } = sensor;
   const [load, setLoad] = useState(false);
   const dispatch = useDispatch();
 
@@ -46,12 +39,13 @@ export const SensorDetailScreen = ({ navigation }) => {
     toggleExportModal();
   }, []);
 
-  const [[minimumDate, maximumDate]] = useState(
-    getDateRange(minChartTimestamp, mostRecentLogTimestamp)
-  );
+  const [[minimumDate, maximumDate]] = useState([
+    moment(firstTimestamp * 1000),
+    moment(mostRecentLogTimestamp * 1000),
+  ]);
 
   const [dateRange, setDateRange] = useState(
-    moment(minimumDate).twix(maximumDate, { allDay: true })
+    moment(minChartTimestamp * 1000).twix(mostRecentLogTimestamp * 1000, { allDay: true })
   );
   const [dateRangeIsOpen, toggleDateRange] = useToggle();
 
@@ -68,11 +62,19 @@ export const SensorDetailScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    dispatch(ChartAction.getDetailChartData(dateRange.start().unix(), dateRange.end().unix(), id));
+    dispatch(
+      ChartAction.getDetailChartData(
+        dateRange.start().unix(),
+        dateRange.end().endOf('day').unix(),
+        id
+      )
+    );
   }, []);
 
   useEffect(() => {
-    dispatch(LogTableAction.updateLogs(dateRange.start().unix(), dateRange.end().unix(), id));
+    dispatch(
+      LogTableAction.updateLogs(dateRange.start().unix(), dateRange.end().endOf('day').unix(), id)
+    );
   }, []);
 
   useEffect(() => {

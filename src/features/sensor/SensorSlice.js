@@ -167,6 +167,7 @@ function* addNewSensor({ payload: { macAddress, logInterval, logDelay, batteryLe
     );
 
     yield put(SensorAction.addNewSensorSuccessful(newlyAddedSensor));
+    yield put(SensorAction.getSensorState(newlyAddedSensor.id));
   } catch (error) {
     yield put(SensorAction.addNewSensorFailed(error));
   }
@@ -248,6 +249,9 @@ const SensorSelector = {
   },
   sensorIds: ({ sensor: { ids } }) => {
     return ids;
+  },
+  status: ({ sensor: { status } }) => {
+    return status;
   },
 };
 
