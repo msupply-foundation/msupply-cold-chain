@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { InteractionManager, ActivityIndicator, Pressable } from 'react-native';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import { TouchableNativeFeedback } from 'react-native-gesture-handler';
@@ -16,16 +16,16 @@ import { NormalText, LargeText } from '../../presentation/typography';
 import { Chart } from '~presentation';
 
 import { Download } from '../../presentation/icons/Download';
-import { DeviceAction } from '../../../services/device';
 import { Calendar } from '../../presentation/icons';
 import { LogTableAction } from '../../../features/logTable';
 import { ChartSelector, ChartAction } from '../../../features/chart';
 import { BreachAction } from '../../../features/breach';
 import { WritingLogsModal } from '../../components/WritingLogsModal';
 import { ExportDataModal } from '../../components/ExportDataModal';
+import { Email } from '../../presentation/icons/Email';
 
 export const SensorDetailScreen = ({ navigation }) => {
-  const [exportModalIsOpen, toggleExportModal] = useToggle();
+  const [exportModalVariant, setExportModalVariant] = useState(null);
 
   const { id } = useRouteProps();
   const { [id]: sensor } = useSelector(SensorSelector.status);
@@ -33,11 +33,6 @@ export const SensorDetailScreen = ({ navigation }) => {
   const { mostRecentLogTimestamp, minChartTimestamp, firstTimestamp } = sensor;
   const [load, setLoad] = useState(false);
   const dispatch = useDispatch();
-
-  const onConfirmExport = useCallback(({ username, comment }) => {
-    dispatch(DeviceAction.tryWriteLogFile(id, username, comment));
-    toggleExportModal();
-  }, []);
 
   const [[minimumDate, maximumDate]] = useState([
     moment(firstTimestamp * 1000),
@@ -161,17 +156,28 @@ export const SensorDetailScreen = ({ navigation }) => {
               </TouchableNativeFeedback>
             </Column>
 
-            <Column flex={4} alignItems="flex-end" justifyContent="center">
+            <Row flex={4} justifyContent="flex-end">
               <Pressable
-                onPress={toggleExportModal}
+                onPress={() => setExportModalVariant('export')}
                 style={{
+                  marginHorizontal: 30,
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
               >
                 <Download />
               </Pressable>
-            </Column>
+
+              <Pressable
+                onPress={() => setExportModalVariant('email')}
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Email />
+              </Pressable>
+            </Row>
           </Row>
 
           <SensorLogsTable id={id} />
@@ -179,9 +185,11 @@ export const SensorDetailScreen = ({ navigation }) => {
       )}
       <WritingLogsModal />
       <ExportDataModal
-        isOpen={exportModalIsOpen}
-        onClose={toggleExportModal}
-        onConfirm={onConfirmExport}
+        id={id}
+        variant={exportModalVariant}
+        isOpen={!!exportModalVariant}
+        onClose={() => setExportModalVariant(null)}
+        onConfirm={() => setExportModalVariant(null)}
       />
     </Gradient>
   );

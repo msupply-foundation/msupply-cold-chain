@@ -1,4 +1,5 @@
 /* eslint-disable react/jsx-wrap-multilines */
+import { useDispatch } from 'react-redux';
 import { Input } from 'react-native-elements';
 import { useEffect, useRef, useCallback } from 'react';
 import { useWindowDimensions } from 'react-native';
@@ -10,8 +11,24 @@ import { Column } from '~layouts';
 
 import { SettingsEditModal } from './settings/SettingsEditModal';
 
-export const ExportDataModal = ({ onConfirm, isOpen, onClose }) => {
+import { DeviceAction } from '../../services/device';
+
+export const ExportDataModal = ({ id, onConfirm, isOpen, onClose, variant = 'export' }) => {
   const { width } = useWindowDimensions();
+  const dispatch = useDispatch();
+
+  const onConfirmModal = useCallback(
+    ({ username, comment }) => {
+      if (variant === 'export') {
+        dispatch(DeviceAction.tryWriteLogFile(id, username, comment));
+      }
+      if (variant === 'email') {
+        dispatch(DeviceAction.tryEmailLogFile(id, username, comment));
+      }
+      onConfirm();
+    },
+    [id, onConfirm, variant]
+  );
 
   return (
     <Formik
@@ -24,10 +41,10 @@ export const ExportDataModal = ({ onConfirm, isOpen, onClose }) => {
     >
       {({ handleChange, errors, values, isValid }) => {
         const { username, comment } = values;
-        const wrappedOnConfirm = useCallback(() => isValid && onConfirm({ username, comment }), [
-          username,
-          comment,
-        ]);
+        const wrappedOnConfirm = useCallback(
+          () => isValid && onConfirmModal({ username, comment }),
+          [username, comment]
+        );
         const usernameRef = useRef();
         const commentRef = useRef();
 
@@ -39,7 +56,7 @@ export const ExportDataModal = ({ onConfirm, isOpen, onClose }) => {
           <SettingsEditModal
             onClose={onClose}
             isOpen={isOpen}
-            title="Export data"
+            title={variant === 'export' ? 'Export data' : 'Email data'}
             onConfirm={wrappedOnConfirm}
             isDisabled={!isValid}
             Content={

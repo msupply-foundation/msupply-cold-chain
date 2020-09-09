@@ -32,6 +32,12 @@ const reducers = {
   writeLogFileFailed: draftState => {
     draftState.isWriting = false;
   },
+  tryEmailLogFile: {
+    prepare: (sensorId, username, comment) => ({ payload: { sensorId, username, comment } }),
+    reducer: () => {},
+  },
+  emailLogFileSuccessful: () => {},
+  emailLogFileFailed: () => {},
 };
 
 const { actions: DeviceAction, reducer: DeviceReducer } = createSlice({
@@ -39,6 +45,43 @@ const { actions: DeviceAction, reducer: DeviceReducer } = createSlice({
   initialState,
   reducers,
 });
+
+function* tryEmailLogFile({ payload: { sensorId, username, comment } }) {
+  const getServices = yield getContext('getServices');
+  const [deviceService, sensorManager, breachManager, breachConfigManager] = yield call(
+    getServices,
+    [
+      SERVICES.DEVICE,
+      SERVICES.SENSOR_MANAGER,
+      SERVICES.BREACH_MANAGER,
+      SERVICES.BREACH_CONFIGURATION_MANAGER,
+    ]
+  );
+
+  try {
+    const sensor = yield call(sensorManager.getSensorById, sensorId);
+    const sensorStats = yield call(sensorManager.getStats, sensorId);
+    const sensorReport = yield call(sensorManager.getSensorReport, sensorId);
+    const logsReport = yield call(sensorManager.getLogsReport, sensorId);
+    const breachReport = yield call(breachManager.getBreachReport, sensorId);
+    const breachConfigReport = yield call(breachConfigManager.report, sensorId);
+
+    const writtenPath = yield call(
+      deviceService.emailLogFile,
+      sensor,
+      sensorReport,
+      sensorStats,
+      logsReport,
+      breachReport,
+      breachConfigReport,
+      username,
+      comment
+    );
+    yield put(DeviceAction.emailLogFileSuccessful(writtenPath));
+  } catch (error) {
+    yield put(DeviceAction.emailLogFileFailed());
+  }
+}
 
 function* tryWriteLogFile({ payload: { sensorId, username, comment } }) {
   const getServices = yield getContext('getServices');
@@ -81,6 +124,7 @@ function* tryWriteLogFile({ payload: { sensorId, username, comment } }) {
 
 function* watchDeviceActions() {
   yield takeEvery(DeviceAction.tryWriteLogFile, tryWriteLogFile);
+  yield takeEvery(DeviceAction.tryEmailLogFile, tryEmailLogFile);
 }
 
 const DeviceSaga = { watchDeviceActions };

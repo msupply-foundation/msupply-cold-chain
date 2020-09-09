@@ -302,7 +302,7 @@ export class SensorManager {
 
   getStats = async id => {
     const manager = await this.databaseService.getEntityManager();
-    return manager.query(STATS, [id, id]);
+    return manager.query(STATS, [id, id, id, id]);
   };
 
   getLogsReport = async id => {
