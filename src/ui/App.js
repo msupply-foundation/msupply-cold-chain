@@ -1,5 +1,6 @@
 import React from 'react';
 import { StatusBar } from 'react-native';
+import RNSettings from 'react-native-settings';
 
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -17,6 +18,12 @@ import {
   MainTabNavigator,
   MainTabScreen,
 } from './containers';
+
+RNSettings.getSetting(RNSettings.LOCATION_SETTING).then(result => {
+  if (result !== RNSettings.ENABLED) {
+    RNSettings.openSetting(RNSettings.ACTION_LOCATION_SOURCE_SETTINGS);
+  }
+});
 
 const App = () => {
   return (

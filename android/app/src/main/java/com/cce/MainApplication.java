@@ -3,6 +3,7 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import io.rumors.reactnativesettings.RNSettingsPackage;
 import com.reactcommunity.rnlocalize.RNLocalizePackage;
 import fr.bamlab.rnimageresizer.ImageResizerPackage;
 import com.rnfs.RNFSPackage;

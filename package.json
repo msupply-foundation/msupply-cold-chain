@@ -66,6 +66,7 @@
     "react-native-redash": "^14.2.3",
     "react-native-safe-area-context": "3.1.1",
     "react-native-screens": "2.9.0",
+    "react-native-settings": "0.2.3",
     "react-native-shared-element": "^0.7.0",
     "react-native-sqlite-storage": "^5.0.0",
     "react-native-svg": "12.1.0",
