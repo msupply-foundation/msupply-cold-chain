@@ -32,6 +32,14 @@ const COLD_CUMULATIVE = {
   description: 'Cold cumulative',
 };
 
+const REPORT = `
+select description "Breach Name", duration / 60000 "Number of Minutes", 
+case when id = "HOT_BREACH" or id = "COLD_BREACH" then "Continuous" else "Cumulative" end as "Breach Type",
+case when id = "HOT_BREACH" or id ="HOT_CUMULATIVE" then minimumTemperature else maximumTemperature end as Temperature,
+case when id = "HOT_BREACH" or id ="HOT_CUMULATIVE" then "Max" else "Min" end as Direction
+from temperaturebreachconfiguration
+`;
+
 export class BreachConfigurationManager {
   constructor(
     databaseService,
@@ -58,5 +66,10 @@ export class BreachConfigurationManager {
 
     if (configs.length >= 4) return configs;
     return this.upsert(this.defaultConfigs);
+  };
+
+  report = async () => {
+    const manager = await this.databaseService.getEntityManager();
+    return manager.query(REPORT);
   };
 }

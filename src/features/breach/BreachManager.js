@@ -18,7 +18,7 @@ logInterval,
 (select duration from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeDuration,
 (select maximumTemperature from temperaturebreachconfiguration where id = 'COLD_CUMULATIVE') as coldCumulativeMaxThreshold,
 (select minimumTemperature from temperaturebreachconfiguration where id = 'COLD_CUMULATIVE') as coldCumulativeMinThreshold,
-(select duration from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as coldCumulativeDuration
+(select duration from temperaturebreachconfiguration where id = 'COLD_CUMULATIVE') as coldCumulativeDuration
 from temperaturelog
 where ((temperature between hotCumulativeMinThreshold and hotCumulativeMaxThreshold) 
 or (temperature between coldCumulativeMinThreshold and coldCumulativeMaxThreshold))
@@ -26,6 +26,20 @@ and (timestamp >= ? and timestamp <= ?)
 and sensorId = ?
 )
 group by temperature >= hotCumulativeMinThreshold
+`;
+
+const REPORT = `
+select (select "Continuous") "Breach Type", 
+case when temperatureBreachConfigurationId = "HOT_BREACH" then "Hot" else "Cold" end as "Breach Name",
+datetime(startTimestamp, "unixepoch", "localtime") Start,
+datetime(endTimestamp, "unixepoch", "localtime") as End,
+(endTimestamp - startTimestamp) / 60 "Exposure Duration (minutes)",
+max(temperature) as "Max Temp",
+min(temperature) as "Min Temp"
+from temperaturebreach tb
+join temperaturelog tl on tl.temperatureBreachId = tb.id
+where tb.sensorId = ?
+group by tb.id
 `;
 
 export class BreachManager {
@@ -238,5 +252,10 @@ export class BreachManager {
     });
 
     return configs;
+  };
+
+  getBreachReport = async id => {
+    const manager = await this.databaseService.getEntityManager();
+    return manager.query(REPORT, [id]);
   };
 }

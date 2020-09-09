@@ -2,7 +2,7 @@ import { ToastAndroid } from 'react-native';
 import { createSlice } from '@reduxjs/toolkit';
 import { put, takeEvery, getContext, call } from 'redux-saga/effects';
 
-import { SERVICES, ENTITIES, REDUCER } from '~constants';
+import { SERVICES, REDUCER } from '~constants';
 
 const DeviceSelector = {
   isWriting({ device }) {
@@ -16,7 +16,7 @@ const initialState = {
 
 const reducers = {
   tryWriteLogFile: {
-    prepare: sensorId => ({ payload: { sensorId } }),
+    prepare: (sensorId, username, comment) => ({ payload: { sensorId, username, comment } }),
     reducer: draftState => {
       draftState.isWriting = true;
       draftState.writtenPath = '';
@@ -40,16 +40,37 @@ const { actions: DeviceAction, reducer: DeviceReducer } = createSlice({
   reducers,
 });
 
-function* tryWriteLogFile({ payload: { sensorId } }) {
+function* tryWriteLogFile({ payload: { sensorId, username, comment } }) {
   const getServices = yield getContext('getServices');
-  const [deviceService, databaseService] = yield call(getServices, [
-    SERVICES.DEVICE,
-    SERVICES.DATABASE,
-  ]);
+  const [deviceService, sensorManager, breachManager, breachConfigManager] = yield call(
+    getServices,
+    [
+      SERVICES.DEVICE,
+      SERVICES.SENSOR_MANAGER,
+      SERVICES.BREACH_MANAGER,
+      SERVICES.BREACH_CONFIGURATION_MANAGER,
+    ]
+  );
 
   try {
-    const logs = yield call(databaseService.queryWith, ENTITIES.TEMPERATURE_LOG, { sensorId });
-    const writtenPath = yield call(deviceService.writeLogFile, logs);
+    const sensor = yield call(sensorManager.getSensorById, sensorId);
+    const sensorStats = yield call(sensorManager.getStats, sensorId);
+    const sensorReport = yield call(sensorManager.getSensorReport, sensorId);
+    const logsReport = yield call(sensorManager.getLogsReport, sensorId);
+    const breachReport = yield call(breachManager.getBreachReport, sensorId);
+    const breachConfigReport = yield call(breachConfigManager.report, sensorId);
+
+    const writtenPath = yield call(
+      deviceService.writeLogFile,
+      sensor,
+      sensorReport,
+      sensorStats,
+      logsReport,
+      breachReport,
+      breachConfigReport,
+      username,
+      comment
+    );
     yield put(DeviceAction.writeLogFileSuccessful(writtenPath));
     ToastAndroid.show('Downloaded logs successful', ToastAndroid.SHORT);
   } catch (error) {

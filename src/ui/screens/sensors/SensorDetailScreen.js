@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { InteractionManager, ActivityIndicator, Pressable } from 'react-native';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import { TouchableNativeFeedback } from 'react-native-gesture-handler';
@@ -22,6 +22,7 @@ import { LogTableAction } from '../../../features/logTable';
 import { ChartSelector, ChartAction } from '../../../features/chart';
 import { BreachAction } from '../../../features/breach';
 import { WritingLogsModal } from '../../components/WritingLogsModal';
+import { ExportDataModal } from '../../components/ExportDataModal';
 
 const getDateRange = (firstLogTimestamp, mostRecentLogTimestamp) => {
   const to = moment.min(moment(), moment(mostRecentLogTimestamp * 1000));
@@ -31,12 +32,19 @@ const getDateRange = (firstLogTimestamp, mostRecentLogTimestamp) => {
 };
 
 export const SensorDetailScreen = ({ navigation }) => {
+  const [exportModalIsOpen, toggleExportModal] = useToggle();
+
   const { id } = useRouteProps();
   const { [id]: sensor } = useSelector(SensorSelector.sensors);
 
   const { mostRecentLogTimestamp, minChartTimestamp } = sensor;
   const [load, setLoad] = useState(false);
   const dispatch = useDispatch();
+
+  const onConfirmExport = useCallback(({ username, comment }) => {
+    dispatch(DeviceAction.tryWriteLogFile(id, username, comment));
+    toggleExportModal();
+  }, []);
 
   const [[minimumDate, maximumDate]] = useState(
     getDateRange(minChartTimestamp, mostRecentLogTimestamp)
@@ -153,9 +161,7 @@ export const SensorDetailScreen = ({ navigation }) => {
 
             <Column flex={4} alignItems="flex-end" justifyContent="center">
               <Pressable
-                onPress={() => {
-                  dispatch(DeviceAction.tryWriteLogFile(id));
-                }}
+                onPress={toggleExportModal}
                 style={{
                   justifyContent: 'center',
                   alignItems: 'center',
@@ -170,6 +176,11 @@ export const SensorDetailScreen = ({ navigation }) => {
         </>
       )}
       <WritingLogsModal />
+      <ExportDataModal
+        isOpen={exportModalIsOpen}
+        onClose={toggleExportModal}
+        onConfirm={onConfirmExport}
+      />
     </Gradient>
   );
 };

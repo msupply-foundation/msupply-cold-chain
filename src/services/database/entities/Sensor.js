@@ -24,6 +24,9 @@ class Sensor {
   @Column({ nullable: true, type: 'int' })
   logDelay;
 
+  @Column({ nullable: true, type: 'int' })
+  programmedDate;
+
   @OneToMany(() => SensorLog, sensorLog => sensorLog.sensor, {
     cascade: ['insert', 'update'],
   })

@@ -68,6 +68,49 @@ left outer join temperaturelog tl on s.id = tl.sensorid
 where s.id = ?
 `;
 
+const STATS = `
+select max(temperature) "Max Temperature", min(temperature) "Min Temperature",
+(select count(*) from temperaturebreach where sensorid = ?) as "Number of continuous breaches"
+from temperaturelog
+where sensorid = ?
+group by sensorid`;
+
+const LOGS_REPORT = `
+with cumulativeBreachFields as (
+  select *, (select case when sum(logInterval) >= hotCumulativeDuration then 1 else 0 end as hasHotCumulative from temperaturelog where temperature >= hotCumulativeMinThreshold and temperature <= hotCumulativeMaxThreshold and sensorId = ?) as hasHotCumulative,
+  (select case when sum(logInterval) >= coldCumulativeDuration then 1 else 0 end as hasColdCumulative from temperaturelog where temperature >= coldCumulativeMinThreshold and temperature <= coldCumulativeMaxThreshold and sensorId = ?) as hasColdCumulative
+  from ( 
+       select (select maximumTemperature from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeMaxThreshold,
+      (select minimumTemperature from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeMinThreshold,
+      (select duration from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeDuration,
+      (select maximumTemperature from temperaturebreachconfiguration where id = 'COLD_CUMULATIVE') as coldCumulativeMaxThreshold,
+      (select minimumTemperature from temperaturebreachconfiguration where id = 'COLD_CUMULATIVE') as coldCumulativeMinThreshold,
+      (select duration from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as coldCumulativeDuration
+  )
+  )
+  
+  select case 
+  when hasHotCumulative = 1 and temperature >= hotCumulativeMinThreshold and temperature <= hotCumulativeMaxThreshold then "Hot" 
+  when hasColdCumulative = 1 and temperature >= coldCumulativeMinThreshold and temperature <= coldCumulativeMaxThreshold then "Cold"
+  else "" end as "Is cumulative breach",
+  datetime(timestamp,"unixepoch","localtime") Timestamp,
+  temperature Temperature,
+  tl.logInterval / 60 "Logging Interval (Minutes)",
+  case when tbc.id = "HOT_BREACH" then "Hot" when tbc.id = "COLD_BREACH" then "Cold" else "" end as "Is continuous breach"
+  from temperaturelog tl
+  left join temperatureBreach tb on tb.id = tl.temperatureBreachId
+  left join temperaturebreachconfiguration tbc on tbc.id = tb.temperatureBreachConfigurationId
+  join cumulativeBreachFields
+  where tl.sensorId = ?
+`;
+
+const REPORT = `
+select datetime(s.programmedDate, "unixepoch", "localtime") "Programmed On", datetime(max(min(tl.timestamp),s.logDelay),"unixepoch","localtime") "Logging Start", s.logInterval / 60 "Logging Interval"
+from sensor s
+left join temperaturelog tl on tl.sensorId = s.id
+where s.id = ?
+`;
+
 export class SensorManager {
   constructor(dbService) {
     this.databaseService = dbService;
@@ -207,7 +250,14 @@ export class SensorManager {
 
   addNewSensor = async (macAddress, logInterval, logDelay, batteryLevel) => {
     const id = uuid();
-    return this.upsert({ logInterval, macAddress, id, batteryLevel, logDelay });
+    return this.upsert({
+      logInterval,
+      macAddress,
+      id,
+      batteryLevel,
+      logDelay,
+      programmedDate: moment().unix(),
+    });
   };
 
   updateField = async (id, key, value) => {
@@ -228,5 +278,20 @@ export class SensorManager {
 
   updateBatteryLevel = async (id, batteryLevel) => {
     return this.upsert({ id, batteryLevel });
+  };
+
+  getSensorReport = async id => {
+    const manager = await this.databaseService.getEntityManager();
+    return manager.query(REPORT, [id]);
+  };
+
+  getStats = async id => {
+    const manager = await this.databaseService.getEntityManager();
+    return manager.query(STATS, [id, id]);
+  };
+
+  getLogsReport = async id => {
+    const manager = await this.databaseService.getEntityManager();
+    return manager.query(LOGS_REPORT, [id, id, id]);
   };
 }

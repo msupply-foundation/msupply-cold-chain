@@ -43,8 +43,6 @@ export const DateRangePicker = ({
   minimumDate,
 }) => {
   const [range, setRange] = useState(moment(initialStart).twix(initialEnd));
-  // const
-
   const onDayPress = useCallback(
     ({ dateString, timestamp }) => {
       if (range.contains(timestamp)) {
@@ -62,7 +60,7 @@ export const DateRangePicker = ({
   );
 
   return (
-    <View>
+    <View style={{ width: '100%' }}>
       <Calendar
         current={range.start().format('YYYY-MM-DD')}
         markingType="period"

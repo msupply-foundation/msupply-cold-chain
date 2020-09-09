@@ -157,7 +157,6 @@ function* getListCumulativeForSensor({ payload: { sensorId } }) {
       chartManager.getChartTimestamps,
       sensorId
     );
-
     const cumulative = yield call(breachManager.getCumulativeExposure, from, to, sensorId);
     yield put(BreachAction.getListCumulativeForSensorSuccessful(sensorId, cumulative));
   } catch (error) {

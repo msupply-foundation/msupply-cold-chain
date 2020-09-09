@@ -1,4 +1,6 @@
-import { getBatteryLevel, isBatteryCharging } from 'react-native-device-info';
+/* eslint-disable no-empty */
+import DeviceInfo, { getBatteryLevel, isBatteryCharging } from 'react-native-device-info';
+import * as RNLocalize from 'react-native-localize';
 import { check, request } from 'react-native-permissions';
 import { BluetoothStatus } from 'react-native-bluetooth-status';
 import RNFS from 'react-native-fs';
@@ -61,14 +63,104 @@ export class DeviceService {
     return requestResult === PERMISSION_STATE.GRANTED;
   };
 
-  writeLogFile = async logs => {
-    const fields = ['timestamp', 'temperature', 'single exposure'];
-    const withSingleExposure = obj => ({ ...obj, 'single exposure': !!obj.temperatureBreachId });
-    const opts = { fields, transforms: [withSingleExposure] };
-    let csv;
+  getDeviceModel = () => {
+    return DeviceInfo.getModel();
+  };
+
+  getDeviceTimezone = () => {
+    return RNLocalize.getTimeZone();
+  };
+
+  writeLogFile = async (
+    sensor,
+    sensorReport,
+    sensorStats,
+    logsReport,
+    breachReport,
+    breachConfigReport,
+    username,
+    comment
+  ) => {
+    let csv = '';
+
+    const generalReportFields = [
+      'Timezone',
+      'Device',
+      'Sensor Name',
+      'Exported By',
+      'Job description',
+    ];
+    const generalReport = {
+      Timezone: this.getDeviceTimezone(),
+      Device: this.getDeviceModel(),
+      'Sensor Name': sensor.name ?? sensor.macAddress,
+      'Exported By': username,
+      'Job description': comment,
+    };
+    const generalReportParser = new Parser({ fields: generalReportFields });
     try {
-      const parser = new Parser(opts);
-      csv = parser.parse(logs);
+      csv += `${generalReportParser.parse(generalReport)} \n\n`;
+    } catch (e) {}
+
+    const sensorReportFields = ['Programmed On', 'Logging Start', 'Logging Interval'];
+    const sensorReportParser = new Parser(sensorReportFields);
+
+    try {
+      csv += `LAST PROGRAMMED\n${sensorReportParser.parse(sensorReport)}\n\n`;
+    } catch (e) {}
+
+    const breachConfigReportFields = [
+      'Breach Type',
+      'Breach Name',
+      'Number of Minutes',
+      'Temperature',
+      'Direction',
+    ];
+    const breachConfigReportParser = new Parser(breachConfigReportFields);
+
+    try {
+      csv += `BREACH CONFIGURATIONS\n${breachConfigReportParser.parse(breachConfigReport)}\n\n`;
+    } catch (e) {}
+
+    const sensorStatsFields = [
+      'Max Temperature',
+      'Min Temperature',
+      'Number of continuous breaches',
+    ];
+    const sensorStatsParser = new Parser({ fields: sensorStatsFields });
+
+    try {
+      csv += `STATISTICS\n${sensorStatsParser.parse(sensorStats)}\n\n`;
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+
+    const breachReportFields = [
+      'Breach Type',
+      'Breach Name',
+      'Start',
+      'End',
+      'Exposure Duration (minutes)',
+      'Min Temp',
+      'Max Temp',
+    ];
+    const breachReportParser = new Parser({ fields: breachReportFields });
+    try {
+      csv += `BREACHES\n${breachReportParser.parse(breachReport)}\n\n`;
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+
+    const logReportFields = [
+      'Timestamp',
+      'Temperature',
+      'Is cumulative breach',
+      'Is continuous breach',
+      'Logging Interval (Minutes)',
+    ];
+
+    const logReportParser = new Parser({ fields: logReportFields });
+
+    try {
+      csv += `LOGS\n${logReportParser.parse(logsReport)}`;
       // eslint-disable-next-line no-empty
     } catch (e) {}
 
@@ -76,7 +168,7 @@ export class DeviceService {
     const now = moment().format('DD-MM-YYYY-HHmm');
     const file = `/${now}.csv`;
     await this.requestStoragePermission();
-    const path = `${RNFS.ExternalStorageDirectoryPath}${directory}${file}'`;
+    const path = `${RNFS.ExternalStorageDirectoryPath}${directory}${file}`;
 
     try {
       await RNFS.mkdir(`${RNFS.ExternalStorageDirectoryPath}${directory}`);

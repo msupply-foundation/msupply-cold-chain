@@ -10,11 +10,11 @@ import {
 
 const DEFAULT_DATABASE_CONFIG = {
   type: 'react-native',
-  database: 'test43.db',
+  database: 'josh2.sqlite',
   location: 'default',
 
   // extra: {
-  //   createFromLocation: '~test.db',
+  //   createFromLocation: '~josh.sqlite',
   // },
   logging: ['error', 'query', 'schema'],
   maxQueryExecutionTime: 3000,
