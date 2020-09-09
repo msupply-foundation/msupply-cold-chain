@@ -11,12 +11,12 @@ export const MainSettingsScreen = ({ navigation }) => {
   return (
     <SettingsList>
       <SettingsGroup title={t('OPTIONS')}>
-        <SettingsItem
+        {/* <SettingsItem
           label={t('BLUETOOTH_SETTINGS')}
           subtext={t('BLUETOOTH_SETTINGS_SUBTEXT')}
           onPress={() => navigation.navigate(NAVIGATION.SCREENS.SETTINGS_STACK.BLUETOOTH)}
           RightComponent={ChevronIcon}
-        />
+        /> */}
         <SettingsItem
           label={t('SENSOR_SETTINGS')}
           subtext={t('SENSOR_SETTINGS_SUBTEXT')}
