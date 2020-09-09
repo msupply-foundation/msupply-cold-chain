@@ -1,12 +1,15 @@
 /* eslint-disable no-empty */
+
+import { Alert } from 'react-native';
 import DeviceInfo, { getBatteryLevel, isBatteryCharging } from 'react-native-device-info';
+import SystemSetting from 'react-native-system-setting';
 import * as RNLocalize from 'react-native-localize';
 import { check, request } from 'react-native-permissions';
 import { BluetoothStatus } from 'react-native-bluetooth-status';
 import RNFS from 'react-native-fs';
 import moment from 'moment';
 import { Parser } from 'json2csv';
-import { PERMISSION, PERMISSION_STATE, BLUETOOTH_STATE, DANGEROUS_BATTERY_LEVEL } from '~constants';
+import { PERMISSION, PERMISSION_STATE, DANGEROUS_BATTERY_LEVEL } from '~constants';
 
 /**
  * This service object is a facade over multiple different native modules ...
@@ -24,11 +27,10 @@ export class DeviceService {
 
   isCharging = async () => isBatteryCharging();
 
-  getBluetoothState = async () => BluetoothStatus.getState();
+  getBluetoothState = async () => BluetoothStatus.state();
 
   isBluetoothEnabled = async () => {
-    const bluetoothState = await this.getBluetoothState();
-    return bluetoothState === BLUETOOTH_STATE.ON;
+    return this.getBluetoothState();
   };
 
   enableBluetooth = async () => {
@@ -61,6 +63,48 @@ export class DeviceService {
   requestStoragePermission = async () => {
     const requestResult = await request(PERMISSION.STORAGE, '');
     return requestResult === PERMISSION_STATE.GRANTED;
+  };
+
+  isLocationServicesEnabled = async () => {
+    return SystemSetting.isLocationEnabled();
+  };
+
+  requestLocationServicesEnabled = async () => {
+    const isEnabled = await this.isLocationServicesEnabled();
+    // eslint-disable-next-line consistent-return
+    return new Promise(resolve => {
+      if (isEnabled) return resolve(true);
+      Alert.alert(
+        'Location Services',
+        'Please enable location services to allow the use of bluetooth.',
+        [
+          {
+            text: 'OK',
+            onPress: async () => {
+              await SystemSetting.switchLocation(async () => {
+                const result = await this.isLocationServicesEnabled();
+                resolve(result);
+              });
+            },
+          },
+        ],
+        { cancelable: false }
+      );
+    });
+  };
+
+  addFeatureListener = async (feature, callback) => {
+    switch (feature) {
+      default: {
+        return null;
+      }
+      case 'location': {
+        return SystemSetting.addLocationListener(callback);
+      }
+      case 'bluetooth': {
+        return SystemSetting.addBluetoothListener(callback);
+      }
+    }
   };
 
   getDeviceModel = () => {

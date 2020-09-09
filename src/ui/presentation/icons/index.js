@@ -13,3 +13,6 @@ export { Sort } from './Sort';
 export { PowerPlug } from './PowerPlug';
 export { MsupplyMan } from './MsupplyMan';
 export { Lock, UnLock } from './Lock';
+export { Bluetooth } from './Bluetooth';
+export { Location } from './Location';
+export { Storage } from './Storage';

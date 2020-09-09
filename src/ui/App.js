@@ -1,6 +1,5 @@
 import React from 'react';
 import { StatusBar } from 'react-native';
-import RNSettings from 'react-native-settings';
 
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -19,11 +18,7 @@ import {
   MainTabScreen,
 } from './containers';
 
-RNSettings.getSetting(RNSettings.LOCATION_SETTING).then(result => {
-  if (result !== RNSettings.ENABLED) {
-    RNSettings.openSetting(RNSettings.ACTION_LOCATION_SOURCE_SETTINGS);
-  }
-});
+import { DeviceSettingsContainer } from './containers/DeviceSettingsContainer';
 
 const App = () => {
   return (
@@ -31,14 +26,19 @@ const App = () => {
       <KeepAwakeContainer>
         <DependencyContainer>
           <StoreRehydrateContainer>
-            <NavigationContainer>
-              <StatusBar hidden />
-              <MainHeader />
-              <MainTabNavigator>
-                <MainTabScreen name={NAVIGATION.SCREENS.MAIN_TABS.SENSORS} component={Sensors} />
-                <MainTabScreen name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS} component={Settings} />
-              </MainTabNavigator>
-            </NavigationContainer>
+            <DeviceSettingsContainer>
+              <NavigationContainer>
+                <StatusBar hidden />
+                <MainHeader />
+                <MainTabNavigator>
+                  <MainTabScreen name={NAVIGATION.SCREENS.MAIN_TABS.SENSORS} component={Sensors} />
+                  <MainTabScreen
+                    name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS}
+                    component={Settings}
+                  />
+                </MainTabNavigator>
+              </NavigationContainer>
+            </DeviceSettingsContainer>
           </StoreRehydrateContainer>
         </DependencyContainer>
       </KeepAwakeContainer>

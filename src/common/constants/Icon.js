@@ -14,6 +14,7 @@ export const ICON = {
   SORT_DOWN: 'sort-desc',
   SORT: 'sort',
   DOWNLOAD: 'download',
+  BLUETOOTH: 'bluetooth',
 
   // Power off icon is for PRO FA members. Using MaterialCommunityIcon variants.
   POWER_PLUG_ON: 'power-plug',

@@ -71,6 +71,7 @@
     "react-native-sqlite-storage": "^5.0.0",
     "react-native-svg": "12.1.0",
     "react-native-svg-charts": "^5.4.0",
+    "react-native-system-setting": "1.7.5",
     "react-native-unimodules": "^0.10.1",
     "react-native-uuid": "^1.4.9",
     "react-native-vector-icons": "^7.0.0",

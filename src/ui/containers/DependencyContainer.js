@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
+
 import { BleManager } from 'react-native-ble-plx';
 
 import { Database, DatabaseService } from '~database';
 import { SERVICES } from '~constants';
-import { registerService } from '~services';
+import { registerService, getService, getServices } from '~services';
 
 import { DeviceService } from '~services/device/DeviceService';
 import { SensorManager } from '~sensor';
@@ -18,6 +19,9 @@ import { LogTableManager } from '../../features/logTable';
 import { DownloadManager } from '../../features/bluetooth/download';
 
 const bleManager = new BleManager();
+
+export const ServiceLocatorContext = createContext();
+const serviceLocators = { getService, getServices };
 
 export const DependencyContainer = props => {
   const [ready, setReady] = useState(false);
@@ -38,9 +42,6 @@ export const DependencyContainer = props => {
     (async () => {
       await db.getConnection();
       setReady(true);
-      await deviceService.requestStoragePermission();
-      await deviceService.requestLocationPermission();
-      await deviceService.enableBluetooth();
     })();
 
     const sensorsManager = new SensorManager(dbService);
@@ -61,5 +62,9 @@ export const DependencyContainer = props => {
 
   const { children } = props;
 
-  return ready ? children : null;
+  return ready ? (
+    <ServiceLocatorContext.Provider value={serviceLocators}>
+      {children}
+    </ServiceLocatorContext.Provider>
+  ) : null;
 };

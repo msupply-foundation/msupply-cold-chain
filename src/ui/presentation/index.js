@@ -3,3 +3,4 @@ export { Chart } from './Chart';
 export { ChartGradient } from './ChartGradient';
 export { Switch } from './Switch';
 export { Slider } from './Slider';
+export { DeviceServiceModal } from './DeviceServiceModal';
