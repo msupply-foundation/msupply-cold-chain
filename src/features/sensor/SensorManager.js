@@ -69,9 +69,24 @@ where s.id = ?
 `;
 
 const STATS = `
+with cumulativeBreachFields as (
+  select *, (select case when sum(logInterval) >= hotCumulativeDuration then 1 else 0 end as hasHotCumulative from temperaturelog where temperature >= hotCumulativeMinThreshold and temperature <= hotCumulativeMaxThreshold and sensorId = ?) as hasHotCumulative,
+  (select case when sum(logInterval) >= coldCumulativeDuration then 1 else 0 end as hasColdCumulative from temperaturelog where temperature >= coldCumulativeMinThreshold and temperature <= coldCumulativeMaxThreshold and sensorId = ?) as hasColdCumulative
+  from ( 
+       select (select maximumTemperature from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeMaxThreshold,
+      (select minimumTemperature from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeMinThreshold,
+      (select duration from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeDuration,
+      (select maximumTemperature from temperaturebreachconfiguration where id = 'COLD_CUMULATIVE') as coldCumulativeMaxThreshold,
+      (select minimumTemperature from temperaturebreachconfiguration where id = 'COLD_CUMULATIVE') as coldCumulativeMinThreshold,
+      (select duration from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as coldCumulativeDuration
+  )
+  )
+
 select max(temperature) "Max Temperature", min(temperature) "Min Temperature",
+cbf.hasHotCumulative + cbf.hasColdCumulative as "Number of cumulative breaches",
 (select count(*) from temperaturebreach where sensorid = ?) as "Number of continuous breaches"
 from temperaturelog
+left join cumulativeBreachFields cbf
 where sensorid = ?
 group by sensorid`;
 
