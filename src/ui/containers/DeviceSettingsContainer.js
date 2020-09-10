@@ -23,7 +23,7 @@ export const DeviceSettingsContainer = ({ children }) => {
     (async () => {
       setHasStoragePermission(await deviceService.hasStoragePermission());
       setHasLocationPermission(await deviceService.hasLocationPermission());
-      setIsBluetoothOn((await deviceService.isBluetoothEnabled()) || __DEV__);
+      setIsBluetoothOn(await deviceService.isBluetoothEnabled());
       setIsLocationOn(await deviceService.isLocationServicesEnabled());
     })();
   }, []);
@@ -40,7 +40,7 @@ export const DeviceSettingsContainer = ({ children }) => {
         setIsLocationOn(await deviceService.requestLocationServicesEnabled());
       }
       if (!isBluetoothOn) {
-        setIsBluetoothOn((await deviceService.enableBluetooth()) || __DEV__);
+        setIsBluetoothOn(await deviceService.enableBluetooth());
       }
 
       setHasDoneInitialPermissionRequests(true);

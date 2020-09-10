@@ -4,7 +4,7 @@ export class LogTableManager {
   }
 
   getLogs = async (from, to, id, pagination = {}) => {
-    const { offset = 0, limit = 50 } = pagination;
+    const { offset = 0, limit = 250 } = pagination;
     return (await this.databaseService.getEntityManager()).query(
       `
         select tl.id id,

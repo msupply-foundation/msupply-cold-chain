@@ -26,6 +26,7 @@ const reducers = {
     reducer: draftState => {
       draftState.isLoading = true;
       draftState.logData = [];
+      draftState.offset = 0;
     },
   },
   updateLogsSuccessful: {
