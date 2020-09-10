@@ -63,7 +63,8 @@ export class BreachManager {
 
     const lookup = result.reduce((acc, value) => {
       if (value.isHotCumulative) return { ...acc, hotCumulative: value };
-      return { ...acc, coldCumulative: value };
+      if (value.isColdCumulative) return { ...acc, coldCumulative: value };
+      return acc;
     }, {});
 
     return lookup;
