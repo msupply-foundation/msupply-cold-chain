@@ -82,7 +82,7 @@ function* tryManualDownloadForSensor({ payload: { sensorId } }) {
       const mostRecentLogTime = yield call(sensorManager.getMostRecentLogTime, sensorId);
       const numberOfLogsToSave = yield call(
         downloadManager.calculateNumberOfLogsToSave,
-        Math.max(mostRecentLogTime, logDelay, programmedDate),
+        Math.max(mostRecentLogTime + logInterval, logDelay, programmedDate),
         logInterval
       );
 
@@ -135,7 +135,7 @@ function* tryPassiveDownloadForSensor({ payload: { sensorId } }) {
 
       const numberOfLogsToSave = yield call(
         downloadManager.calculateNumberOfLogsToSave,
-        Math.max(mostRecentLogTime, logDelay, programmedDate),
+        Math.max(mostRecentLogTime + logInterval, logDelay, programmedDate),
         logInterval
       );
 

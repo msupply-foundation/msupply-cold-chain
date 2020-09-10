@@ -28,7 +28,7 @@ export class DeviceService {
 
   isCharging = async () => isBatteryCharging();
 
-  getBluetoothState = async () => BluetoothStatus.state();
+  getBluetoothState = async () => BluetoothStatus.state() || __DEV__;
 
   isBluetoothEnabled = async () => {
     return this.getBluetoothState();

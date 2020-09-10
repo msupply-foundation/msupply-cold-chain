@@ -26,7 +26,8 @@ export class DownloadManager {
     // and the 1000 log. If there was less than one log interval between, then the
     // times would be 0955 and 0957 - so we only save a single log, as the 1000 log
     // has not been recorded yet.
-    return Math.floor(secondsBetween / logInterval);
+
+    return Math.floor(secondsBetween / logInterval) + 1;
   };
 
   createLogs = (logs, sensor, maxNumberToSave, mostRecentLogTime, timeNow = moment().unix()) => {
@@ -37,12 +38,13 @@ export class DownloadManager {
     let initial;
     if (!mostRecentLogTime) {
       initial = moment(timeNow * MILLISECONDS.ONE_SECOND);
-      initial.subtract(logsToSave.length * logInterval, 'seconds');
+      initial.subtract((logsToSave.length - 1) * logInterval, 'seconds');
     } else {
       const now = moment().unix();
-      const numberOfLogIntervalsUntilNow = Math.floor((now - mostRecentLogTime) / logInterval);
+      const numberOfLogIntervalsUntilNow = Math.floor((now - mostRecentLogTime) / logInterval) + 1;
       // Take the most recent log timestamp and count log intervals until now, then, remove the log intervals
       // for the number we are saving up to.
+
       initial = moment(
         (mostRecentLogTime +
           (numberOfLogIntervalsUntilNow * logInterval - maxNumberToSave * logInterval)) *
