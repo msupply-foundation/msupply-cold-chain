@@ -100,7 +100,7 @@ export class BleService {
           const parsedData = parseDownloadedData(data);
           try {
             resolver(
-              parsedData?.temperatureReadings.map(temp => ({ temperature: temp / 10.0 })) ?? []
+              parsedData.temperatureReadings.map(temp => ({ temperature: temp / 10.0 })) ?? []
             );
           } catch (error) {
             reject(error);
