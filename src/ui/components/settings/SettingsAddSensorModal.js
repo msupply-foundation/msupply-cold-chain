@@ -45,7 +45,7 @@ export const SettingsAddSensorModal = ({ macAddress, onClose, isOpen, onConfirm,
   );
 
   const wrappedOnConfirm = useCallback(() => {
-    onConfirm(date);
+    onConfirm(moment(date).startOf('minute').toDate());
   }, [date]);
 
   const [isDatePickerOpen, onChangeDate, toggleDatePicker] = useDatePicker(validator);

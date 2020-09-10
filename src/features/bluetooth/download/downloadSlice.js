@@ -77,16 +77,22 @@ function* tryManualDownloadForSensor({ payload: { sensorId } }) {
     if (canDownload) {
       yield put(DownloadAction.downloadStart(sensorId));
 
-      const { macAddress, logInterval } = sensor;
+      const { macAddress, logInterval, logDelay, programmedDate } = sensor;
       const logs = yield call(btService.downloadLogsWithRetries, macAddress, 10);
       const mostRecentLogTime = yield call(sensorManager.getMostRecentLogTime, sensorId);
       const numberOfLogsToSave = yield call(
         downloadManager.calculateNumberOfLogsToSave,
-        mostRecentLogTime,
+        Math.max(mostRecentLogTime, logDelay, programmedDate),
         logInterval
       );
 
-      const sensorLogs = yield call(downloadManager.createLogs, logs, sensor, numberOfLogsToSave);
+      const sensorLogs = yield call(
+        downloadManager.createLogs,
+        logs,
+        sensor,
+        numberOfLogsToSave,
+        mostRecentLogTime
+      );
 
       yield call(downloadManager.saveLogs, sensorLogs);
       yield put(BreachAction.createBreaches(sensor));
@@ -123,16 +129,23 @@ function* tryPassiveDownloadForSensor({ payload: { sensorId } }) {
     if (canDownload) {
       yield put(DownloadAction.downloadStart(sensorId));
 
-      const { macAddress, logInterval } = sensor;
+      const { macAddress, logInterval, logDelay, programmedDate } = sensor;
       const logs = yield call(btService.downloadLogsWithRetries, macAddress, 10);
       const mostRecentLogTime = yield call(sensorManager.getMostRecentLogTime, sensorId);
+
       const numberOfLogsToSave = yield call(
         downloadManager.calculateNumberOfLogsToSave,
-        mostRecentLogTime,
+        Math.max(mostRecentLogTime, logDelay, programmedDate),
         logInterval
       );
 
-      const sensorLogs = yield call(downloadManager.createLogs, logs, sensor, numberOfLogsToSave);
+      const sensorLogs = yield call(
+        downloadManager.createLogs,
+        logs,
+        sensor,
+        numberOfLogsToSave,
+        mostRecentLogTime
+      );
 
       yield call(downloadManager.saveLogs, sensorLogs);
       yield put(BreachAction.createBreaches(sensor));
