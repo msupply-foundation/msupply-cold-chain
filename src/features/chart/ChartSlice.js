@@ -1,9 +1,7 @@
-import { all, takeEvery, getContext, call, put } from 'redux-saga/effects';
+import { takeEvery, getContext, call, put } from 'redux-saga/effects';
 import moment from 'moment';
 import { createSlice } from '@reduxjs/toolkit';
 import { SERVICES, REDUCER } from '~constants';
-
-import { HydrateAction } from '../hydrate/hydrateSlice';
 
 const initialState = {
   listLoading: {},
@@ -12,10 +10,6 @@ const initialState = {
 };
 
 const reducers = {
-  hydrate: () => {},
-  hydrateSuccessful: () => {},
-  hydrateFailed: () => {},
-
   getListChartData: {
     prepare: (sensorId, dataPoints = 30) => ({
       payload: {
@@ -115,21 +109,7 @@ function* getDetailChartData({ payload: { from, to, sensorId, dataPoints } }) {
   }
 }
 
-function* hydrate() {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
-
-  try {
-    const sensors = yield call(sensorManager.getAll);
-    yield all(sensors.map(({ id }) => put(ChartAction.getListChartData(id))));
-    yield put(HydrateAction.chart());
-  } catch (error) {
-    yield put(ChartAction.hydrateFailed());
-  }
-}
-
 function* watchChartActions() {
-  yield takeEvery(ChartAction.hydrate, hydrate);
   yield takeEvery(ChartAction.getListChartData, getListChartData);
   yield takeEvery(ChartAction.getDetailChartData, getDetailChartData);
 }

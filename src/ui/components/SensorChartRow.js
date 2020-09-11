@@ -9,6 +9,7 @@ import { STYLE, COLOUR } from '~constants';
 import { NormalText, BoldText, MediumText } from '~presentation/typography';
 import { SensorAction } from '~features/sensor';
 import { SensorStatus } from './SensorStatus';
+import { ChartAction } from '../../features/chart';
 
 export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, onLongPress }) => {
   const isLoading = useSelector(state => state.chart.listLoading[id]);
@@ -23,6 +24,7 @@ export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, on
 
   useEffect(() => {
     dispatch(SensorAction.getSensorState(id));
+    dispatch(ChartAction.getListChartData(id));
   }, []);
 
   return (

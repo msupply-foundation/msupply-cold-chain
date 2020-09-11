@@ -19,15 +19,13 @@ const HydrateSelector = {
     const { setting } = hydrate;
     return setting;
   },
-  chart({ hydrate: { chart } }) {
-    return chart;
-  },
+
   logTable: ({ hydrate: { logTable } }) => {
     return logTable;
   },
   all({ hydrate }) {
-    const { setting, temperatureLog, breachConfiguration, sensor, chart } = hydrate;
-    return setting && temperatureLog && breachConfiguration && sensor && chart;
+    const { setting, temperatureLog, breachConfiguration, sensor } = hydrate;
+    return setting && temperatureLog && breachConfiguration && sensor;
   },
 };
 
@@ -58,10 +56,6 @@ const reducers = {
   },
   setting: draftState => {
     draftState.setting = true;
-    draftState.all = HydrateSelector.all({ hydrate: draftState });
-  },
-  chart: draftState => {
-    draftState.chart = true;
     draftState.all = HydrateSelector.all({ hydrate: draftState });
   },
 };
