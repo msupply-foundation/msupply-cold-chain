@@ -95,6 +95,10 @@ function* tryManualDownloadForSensor({ payload: { sensorId } }) {
       );
 
       yield call(downloadManager.saveLogs, sensorLogs);
+      if (numberOfLogsToSave) {
+        yield call(btService.updateLogIntervalWithRetries, macAddress, logInterval, 10);
+      }
+
       yield put(BreachAction.createBreaches(sensor));
       yield put(DownloadAction.passiveDownloadForSensorSuccess());
       yield put(BreachAction.getListCumulativeForSensor(sensorId));
@@ -148,6 +152,9 @@ function* tryPassiveDownloadForSensor({ payload: { sensorId } }) {
       );
 
       yield call(downloadManager.saveLogs, sensorLogs);
+      if (numberOfLogsToSave) {
+        yield call(btService.updateLogIntervalWithRetries, macAddress, logInterval, 10);
+      }
       yield put(BreachAction.createBreaches(sensor));
       yield put(DownloadAction.passiveDownloadForSensorSuccess());
       yield put(BreachAction.getListCumulativeForSensor(sensorId));
