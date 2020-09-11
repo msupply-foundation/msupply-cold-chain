@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { takeEvery, getContext, call, put, all } from 'redux-saga/effects';
+import { takeEvery, getContext, call, put } from 'redux-saga/effects';
 
 import { REDUCER, DEPENDENCY } from '~constants';
 
@@ -7,12 +7,6 @@ import { SensorAction } from '../sensor';
 import { ChartAction } from '../chart';
 
 const initialState = {
-  ids: [],
-  byId: [],
-  breaches: [],
-  chartLogs: [],
-  sensorId: '',
-  breachId: '',
   listCumulative: {},
   detailCumulative: {},
 };
@@ -21,8 +15,6 @@ const reducers = {
     prepare: sensor => ({ payload: { sensor } }),
     reducer: () => {},
   },
-
-  getAllCumulativeExposures: () => {},
   getListCumulativeForSensor: {
     prepare: sensorId => ({ payload: { sensorId } }),
     reducer: () => {},
@@ -46,59 +38,6 @@ const reducers = {
     },
   },
   getDetailCumulativeForSensorFailed: () => {},
-
-  getBreachesForSensor: {
-    reducer: (draftState, { payload: { sensorId } }) => {
-      draftState.sensorId = sensorId;
-    },
-    prepare: sensorId => ({ payload: { sensorId } }),
-  },
-  getBreachesForSensorSuccessful: {
-    prepare: breaches => ({ payload: { breaches } }),
-    reducer: (draftState, { payload: { breaches } }) => {
-      const ids = breaches.map(({ id }) => id);
-      const byId = breaches.reduce((acc, breach) => {
-        return { ...acc, [breach.id]: breach };
-      }, {});
-
-      draftState.ids = ids;
-      draftState.byId = byId;
-      draftState.breaches = breaches;
-    },
-  },
-  getBreachesForSensorFailed: () => {},
-
-  getLogsForBreach: {
-    prepare: breachId => ({ payload: { breachId } }),
-    reducer: draftState => {
-      draftState.chartLogs = [];
-    },
-  },
-  getLogsForBreachSuccessful: {
-    prepare: logs => ({ payload: { logs } }),
-    reducer: (draftState, { payload: { logs } }) => {
-      draftState.chartLogs = logs;
-    },
-  },
-  getLogsForBreachFailed: () => {},
-  reset: draftState => {
-    draftState.ids = [];
-    draftState.byId = [];
-    draftState.breaches = [];
-    draftState.chartLogs = [];
-    draftState.sensorId = '';
-    draftState.breachId = '';
-  },
-  sort: {
-    prepare: (key, isAsc) => ({ payload: { key, isAsc } }),
-    reducer: (draftState, { payload: { key, isAsc } }) => {
-      draftState.breaches = draftState.breaches.sort(({ [key]: keyA }, { [key]: keyB }) => {
-        if (isAsc) return keyA - keyB;
-        return keyB - keyA;
-      });
-      draftState.ids = draftState.breaches.map(({ id }) => id);
-    },
-  },
 };
 
 const { actions: BreachAction, reducer: BreachReducer } = createSlice({
@@ -107,43 +46,7 @@ const { actions: BreachAction, reducer: BreachReducer } = createSlice({
   reducers,
 });
 
-const BreachSelector = {
-  getLogsForBreach({ breach }) {
-    return breach.chartLogs;
-  },
-  getBreachesForSensor({ breach }) {
-    return breach.breaches;
-  },
-};
-
-function* getLogsForBreach({ payload: { breachId } }) {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const manager = yield call(DependencyLocator.get, DEPENDENCY.BREACH_MANAGER);
-
-  try {
-    const result = yield call(manager.getLogsForBreach, breachId);
-
-    yield put(BreachAction.getLogsForBreachSuccessful(result));
-  } catch (error) {
-    yield put(BreachAction.getLogsForBreachFailed());
-  }
-}
-
-function* getBreachesForSensor({ payload: { sensorId } }) {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const manager = yield call(DependencyLocator.get, DEPENDENCY.BREACH_MANAGER);
-
-  try {
-    const result = yield call(manager.getTableData, sensorId);
-    yield put(BreachAction.getBreachesForSensorSuccessful(result));
-
-    if (result.length) {
-      yield put(BreachAction.getLogsForBreach(result[0]?.id));
-    }
-  } catch (error) {
-    yield put(BreachAction.getBreachesForSensorFailed());
-  }
-}
+const BreachSelector = {};
 
 function* getListCumulativeForSensor({ payload: { sensorId } }) {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
@@ -176,17 +79,6 @@ function* getDetailCumulativeForSensor({ payload: { from, to, sensorId } }) {
   }
 }
 
-function* getAllCumulativeExposures() {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
-
-  try {
-    const sensors = yield call(sensorManager.getAll);
-    yield all(sensors.map(({ id }) => put(BreachAction.getListCumulativeForSensor(id))));
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
-}
-
 function* createBreaches({ payload: { sensor } }) {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const breachManager = yield call(DependencyLocator.get, DEPENDENCY.BREACH_MANAGER);
@@ -214,11 +106,8 @@ function* createBreaches({ payload: { sensor } }) {
 }
 
 function* watchBreachActions() {
-  yield takeEvery(BreachAction.getBreachesForSensor, getBreachesForSensor);
-  yield takeEvery(BreachAction.getLogsForBreach, getLogsForBreach);
   yield takeEvery(BreachAction.getListCumulativeForSensor, getListCumulativeForSensor);
   yield takeEvery(BreachAction.getDetailCumulativeForSensor, getDetailCumulativeForSensor);
-  yield takeEvery(BreachAction.getAllCumulativeExposures, getAllCumulativeExposures);
   yield takeEvery(BreachAction.createBreaches, createBreaches);
 }
 

@@ -53,8 +53,7 @@ const keyExtractor = item => {
 };
 
 export const SensorLogsRow = React.memo(
-  ({ i, id, isInHotBreach, isInColdBreach, temperature, timestamp }) => {
-    const dispatch = useDispatch();
+  ({ i, isInHotBreach, isInColdBreach, temperature, timestamp }) => {
     const even = i % 2 === 0;
 
     const time = moment(timestamp * 1000).format('DD/MM/YY HH:mm:ss');
@@ -66,7 +65,7 @@ export const SensorLogsRow = React.memo(
     };
 
     return (
-      <TouchableNativeFeedback onPress={() => dispatch(BreachAction.getLogsForBreach(id))}>
+      <TouchableNativeFeedback onPress={() => {}}>
         <Row
           flex={1}
           justifyContent="space-between"
