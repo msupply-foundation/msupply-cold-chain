@@ -55,7 +55,7 @@ function* tryBlinkSensor({ payload: { macAddress } }) {
     yield put(BlinkAction.tryBlinkSensorSuccess(macAddress));
     ToastAndroid.show(t('BLINKED_SENSOR_SUCCESS'), ToastAndroid.SHORT);
   } catch (error) {
-    yield put(BlinkAction.tryBlinkSensorFail(macAddress, error.message));
+    yield put(BlinkAction.tryBlinkSensorFail(macAddress, error?.message));
     ToastAndroid.show(t('BLINKED_SENSOR_FAILED'), ToastAndroid.SHORT);
   }
 }

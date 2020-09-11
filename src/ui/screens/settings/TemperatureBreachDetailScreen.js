@@ -7,6 +7,7 @@ import { useRouteProps } from '~hooks';
 
 import { SettingsTextInputRow, SettingsGroup, SettingsNumberInputRow } from '~components/settings';
 import { BreachConfigurationAction } from '~breachConfiguration';
+import { MILLISECONDS } from '../../../common/constants';
 
 export const TemperatureBreachDetailScreen = () => {
   const { id } = useRouteProps();
@@ -45,7 +46,9 @@ export const TemperatureBreachDetailScreen = () => {
           step={1}
           metric={t('MINUTES')}
           onConfirm={({ value }) =>
-            dispatch(BreachConfigurationAction.update(id, 'duration', value))}
+            dispatch(
+              BreachConfigurationAction.update(id, 'duration', value * MILLISECONDS.ONE_MINUTE)
+            )}
           editDescription={t('EDIT_TEMPERATURE_BREACH_DURATION')}
         />
         <SettingsNumberInputRow

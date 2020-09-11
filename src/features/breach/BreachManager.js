@@ -151,7 +151,7 @@ export class BreachManager {
       const willContinueBreach = this.willContinueBreach(currentBreach, log);
 
       if (willCloseBreach) {
-        this.closeBreach(currentBreach, stack[stack.length - 1]?.timestamp);
+        this.closeBreach(currentBreach, log.timestamp);
         currentBreach = null;
         stack = [];
       }

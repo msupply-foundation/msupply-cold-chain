@@ -2,11 +2,10 @@ import React, { useEffect } from 'react';
 import { Animated } from 'react-native';
 
 import { Row, Centered, LargeRectangle } from '~layouts';
-import { Header, LargeText , SmallText } from '~presentation/typography';
+import { Header, LargeText, SmallText } from '~presentation/typography';
 import { LowBattery, HotBreach, ColdBreach } from '~presentation/icons';
 import { MILLISECONDS, COLOUR } from '~constants';
 import { Battery } from '../presentation/icons/Battery';
-
 
 const styles = {
   icon: { position: 'absolute', left: 40 },
