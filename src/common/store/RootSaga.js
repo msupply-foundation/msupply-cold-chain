@@ -6,7 +6,7 @@ import { SettingSaga } from '~setting';
 import { DependencyLocator } from '~services';
 import { ChartSaga } from '../../features/chart';
 import { BreachSaga } from '../../features/breach';
-import { DeviceSaga } from '../../services/device';
+import { DeviceSaga } from '../services/DeviceFeature';
 import { LogTableSaga } from '../../features/logTable';
 import { BluetoothSaga } from '../../features/bluetooth';
 

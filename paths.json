@@ -16,10 +16,6 @@
   "~store": "./src/common/store",
   "~services": "./src/common/services",
 
-  "~database": "./src/services/database",
-  "~entities": "./src/services/database/entities",
-  "~bluetooth": "./src/services/bluetooth",
-
   "~features": "./src/features",
   "~sensor": "./src/features/sensor",
   "~breach": "./src/features/breach",

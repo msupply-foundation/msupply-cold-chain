@@ -3,12 +3,12 @@ import { useMemo, useContext, useState, useEffect } from 'react';
 import { SERVICES } from '~constants';
 import { useOnAppFocus } from '~hooks';
 
-import { ServiceLocatorContext } from './DependencyContainer';
+import { DependencyLocatorContext } from './DependencyContainer';
 import { DeviceServiceModal } from '~presentation';
 import { Location, Bluetooth, Storage } from '~presentation/icons';
 
 export const DeviceSettingsContainer = ({ children }) => {
-  const DependencyLocator = useContext(ServiceLocatorContext);
+  const DependencyLocator = useContext(DependencyLocatorContext);
   const deviceService = DependencyLocator.get(SERVICES.DEVICE);
 
   const [isLocationOn, setIsLocationOn] = useState(false);

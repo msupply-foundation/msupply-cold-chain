@@ -3,7 +3,6 @@
 import moment from 'moment';
 import _ from 'lodash';
 import { Equal, IsNull, Not, Between } from 'typeorm/browser';
-import { uuid } from '../utilities';
 
 import { ENTITIES } from '~constants';
 
@@ -109,33 +108,6 @@ export class DatabaseService {
     const promises = chunks.map(chunk => this.upsert(ENTITIES.SENSOR_LOG, chunk));
     const savedLogs = await Promise.all(promises);
     return savedLogs.reduce((acc, value) => [...acc, ...value], []);
-  };
-
-  createTemperatureLogs = async macAddress => {
-    const [sensor] = await this.queryWith(ENTITIES.SENSOR, {
-      where: { macAddress },
-      relations: ['sensorLogs'],
-    });
-    const { logInterval, sensorLogs, id: sensorId } = sensor;
-
-    // const numberOfIntervalsPerTemp = Math.ceil(
-    //   MILLISECONDS.THIRTY_MINUTES / (logInterval * MILLISECONDS.ONE_SECOND)
-    // );
-
-    const chunked = _.chunk(sensorLogs, 1);
-
-    const mapped = chunked.map(groupedSensorLogs => {
-      const temperature = Math.max(...groupedSensorLogs.map(({ temperature: temp }) => temp));
-      const { timestamp } = groupedSensorLogs[Math.floor(groupedSensorLogs.length / 2)];
-
-      return { temperature, timestamp, sensorId, id: uuid(), logInterval };
-    });
-
-    const createdLogs = await this.upsert(ENTITIES.TEMPERATURE_LOG, mapped);
-
-    // chunked.forEach(chunk => this.delete(ENTITIES.SENSOR_LOG, chunk));
-
-    return createdLogs;
   };
 
   getTemperatureLogs = async (sensor, fromDate = new Date(null), toDate = new Date()) => {

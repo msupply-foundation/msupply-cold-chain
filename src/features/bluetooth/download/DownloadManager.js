@@ -1,10 +1,10 @@
 import moment from 'moment';
-import { uuid } from '../../../services/utilities';
 import { ENTITIES, MILLISECONDS } from '~constants';
 
 export class DownloadManager {
-  constructor(databaseService) {
+  constructor(databaseService, utils) {
     this.databaseService = databaseService;
+    this.utils = utils;
   }
 
   // Calculates the number of sensor logs that should be saved from some given starting
@@ -55,7 +55,7 @@ export class DownloadManager {
     return logsToSave.map(({ temperature }, i) => {
       const offset = logInterval * i;
       const timestamp = Number(moment(initial).add(offset, 's').format('X'));
-      const id = uuid();
+      const id = this.utils.uuid();
 
       return { id, sensorId, timestamp, temperature, logInterval };
     });

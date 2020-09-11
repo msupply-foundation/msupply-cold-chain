@@ -2,7 +2,6 @@ import moment from 'moment';
 import { Not, IsNull, MoreThan, Equal } from 'typeorm/browser';
 
 import { ENTITIES } from '~constants';
-import { uuid } from '../../services/utilities';
 
 const CUMULATIVE_EXPOSURE = `
 select max(temperature) maximumTemperature,
@@ -43,8 +42,9 @@ group by tb.id
 `;
 
 export class BreachManager {
-  constructor(databaseService) {
+  constructor(databaseService, utils) {
     this.databaseService = databaseService;
+    this.utils = utils;
   }
 
   getAll = async () => {
@@ -79,7 +79,7 @@ export class BreachManager {
   createBreach = (sensor, temperatureBreachConfiguration, startTimestamp) => {
     const { id: sensorId } = sensor;
     const { id: temperatureBreachConfigurationId } = temperatureBreachConfiguration;
-    const id = uuid();
+    const id = this.utils.uuid();
 
     return {
       id,

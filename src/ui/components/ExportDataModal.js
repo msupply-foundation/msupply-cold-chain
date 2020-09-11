@@ -11,7 +11,7 @@ import { Column } from '~layouts';
 
 import { SettingsEditModal } from './settings/SettingsEditModal';
 
-import { DeviceAction } from '../../services/device';
+import { DeviceAction } from '../../common/services/DeviceFeature';
 
 export const ExportDataModal = ({ id, onConfirm, isOpen, onClose, variant = 'export' }) => {
   const { width } = useWindowDimensions();

@@ -1,6 +1,5 @@
 import moment from 'moment';
 import { ENTITIES } from '~constants';
-import { uuid } from '../../services/utilities';
 
 const SENSOR_STATE = `
 SELECT s.id id,
@@ -127,8 +126,9 @@ where s.id = ?
 `;
 
 export class SensorManager {
-  constructor(dbService) {
+  constructor(dbService, utils) {
     this.databaseService = dbService;
+    this.utils = utils;
   }
 
   upsert = async (...params) => {
@@ -253,7 +253,7 @@ export class SensorManager {
 
   // eslint-disable-next-line class-methods-use-this
   createBreachConfigurationJoinRecord = async (sensor, temperatureBreachConfiguration) => {
-    const id = uuid();
+    const id = this.utils.uuid();
     const joinRecord = {
       id,
       sensorId: sensor.id,
@@ -264,7 +264,7 @@ export class SensorManager {
   };
 
   addNewSensor = async (macAddress, logInterval, logDelay, batteryLevel) => {
-    const id = uuid();
+    const id = this.utils.uuid();
     return this.upsert({
       logInterval,
       macAddress,
