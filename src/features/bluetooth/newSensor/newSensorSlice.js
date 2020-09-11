@@ -1,7 +1,7 @@
 import { ToastAndroid } from 'react-native';
 import { createSlice } from '@reduxjs/toolkit';
 import { getContext, call, put, takeLeading } from 'redux-saga/effects';
-import { SERVICES, SETTING, REDUCER } from '~constants';
+import { DEPENDENCY, SETTING, REDUCER } from '~constants';
 
 import { SensorAction } from '../../sensor';
 
@@ -46,10 +46,10 @@ const NewSensorSelector = {
 };
 
 export function* connectWithNewSensor({ payload: { macAddress, logDelay } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const [btService, settingManager] = yield call(DependencyLocator.get, [
-    SERVICES.BLUETOOTH,
-    SERVICES.SETTING_MANAGER,
+    DEPENDENCY.BLUETOOTH,
+    DEPENDENCY.SETTING_MANAGER,
   ]);
 
   try {

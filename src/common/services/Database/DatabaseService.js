@@ -4,12 +4,58 @@ import moment from 'moment';
 import _ from 'lodash';
 import { Equal, IsNull, Not, Between } from 'typeorm/browser';
 
-import { ENTITIES } from '~constants';
+import { ENTITIES , MILLISECONDS } from '~constants';
+
 
 export class DatabaseService {
   constructor(database) {
     this.database = database;
   }
+
+  init = async () => {
+    const COLD_BREACH = {
+      id: 'COLD_BREACH',
+      minimumTemperature: -999,
+      maximumTemperature: 2,
+      duration: MILLISECONDS.ONE_MINUTE * 20,
+      description: 'Cold breach',
+    };
+
+    const HOT_BREACH = {
+      id: 'HOT_BREACH',
+      minimumTemperature: 8,
+      maximumTemperature: 999,
+      duration: MILLISECONDS.ONE_MINUTE * 30,
+      description: 'Hot breach',
+    };
+
+    const HOT_CUMULATIVE = {
+      id: 'HOT_CUMULATIVE',
+      minimumTemperature: 8,
+      maximumTemperature: 999,
+      duration: MILLISECONDS.ONE_MINUTE * 60,
+      description: 'Hot cumulative',
+    };
+
+    const COLD_CUMULATIVE = {
+      id: 'COLD_CUMULATIVE',
+      minimumTemperature: -999,
+      maximumTemperature: 2,
+      duration: MILLISECONDS.ONE_MINUTE * 40,
+      description: 'Cold cumulative',
+    };
+
+    const configs = await this.getAll(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION);
+
+    if (configs.length >= 4) return configs;
+
+    return this.upsert(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION, [
+      HOT_BREACH,
+      HOT_CUMULATIVE,
+      COLD_BREACH,
+      COLD_CUMULATIVE,
+    ]);
+  };
 
   delete = async (entityName, entities) => {
     const repository = await this.database.getRepository(entityName);

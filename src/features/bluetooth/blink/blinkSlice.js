@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { takeEvery, call, put, getContext } from 'redux-saga/effects';
 
 import { t } from '~translations';
-import { SERVICES, REDUCER } from '~constants';
+import { DEPENDENCY, REDUCER } from '~constants';
 
 const initialState = {
   blinkingByMac: {},
@@ -47,8 +47,8 @@ const BlinkSelector = {
 };
 
 function* tryBlinkSensor({ payload: { macAddress } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const btService = yield call(DependencyLocator.get, SERVICES.BLUETOOTH);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const btService = yield call(DependencyLocator.get, DEPENDENCY.BLUETOOTH);
 
   try {
     yield call(btService.blinkWithRetries, macAddress, 10);

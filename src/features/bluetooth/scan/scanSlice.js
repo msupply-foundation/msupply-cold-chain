@@ -10,7 +10,7 @@ import {
   takeLeading,
   select,
 } from 'redux-saga/effects';
-import { SERVICES, REDUCER } from '~constants';
+import { DEPENDENCY, REDUCER } from '~constants';
 import { SensorSelector, SensorAction } from '../../sensor';
 
 const initialState = {
@@ -82,8 +82,8 @@ const ScanSelector = {
 export function* stop() {
   yield take(ScanAction.tryStop);
 
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const btService = yield call(DependencyLocator.get, SERVICES.BLUETOOTH);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const btService = yield call(DependencyLocator.get, DEPENDENCY.BLUETOOTH);
 
   try {
     yield call(btService.stopScan);
@@ -103,8 +103,8 @@ export function callback(btService) {
 }
 
 export function* start() {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const btService = yield call(DependencyLocator.get, SERVICES.BLUETOOTH);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const btService = yield call(DependencyLocator.get, DEPENDENCY.BLUETOOTH);
 
   yield put(ScanAction.startSuccess());
 

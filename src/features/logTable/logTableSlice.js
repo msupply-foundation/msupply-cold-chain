@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { takeEvery, getContext, call, put, select } from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
-import { SERVICES, REDUCER } from '~constants';
+import { DEPENDENCY, REDUCER } from '~constants';
 
 const initialState = {
   logData: [],
@@ -63,8 +63,8 @@ const LogTableSelector = {
 };
 
 function* getMoreLogs({ payload: { from, to, id } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const logTableManager = yield call(DependencyLocator.get, SERVICES.LOG_TABLE_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const logTableManager = yield call(DependencyLocator.get, DEPENDENCY.LOG_TABLE_MANAGER);
   const pagination = yield select(LogTableSelector.pagination);
 
   try {
@@ -76,8 +76,8 @@ function* getMoreLogs({ payload: { from, to, id } }) {
 }
 
 function* updateLogs({ payload: { from, to, id } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const logTableManager = yield call(DependencyLocator.get, SERVICES.LOG_TABLE_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const logTableManager = yield call(DependencyLocator.get, DEPENDENCY.LOG_TABLE_MANAGER);
 
   try {
     const logs = yield call(logTableManager.getLogs, from, to, id);

@@ -1,7 +1,7 @@
 import { put, takeEvery, getContext, call } from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
 
-import { SERVICES, SETTING, REDUCER } from '~constants';
+import { DEPENDENCY, SETTING, REDUCER } from '~constants';
 import { HydrateAction } from '../hydrate/hydrateSlice';
 
 const initialState = {
@@ -53,8 +53,8 @@ const SettingSelector = {
 };
 
 function* hydrate() {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const settingsManager = yield call(DependencyLocator.get, SERVICES.SETTING_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const settingsManager = yield call(DependencyLocator.get, DEPENDENCY.SETTING_MANAGER);
 
   try {
     const settings = yield call(settingsManager.getSettings);
@@ -66,8 +66,8 @@ function* hydrate() {
 }
 
 function* updateSetting({ payload: { key, value } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const settingsManager = yield call(DependencyLocator.get, SERVICES.SETTING_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const settingsManager = yield call(DependencyLocator.get, DEPENDENCY.SETTING_MANAGER);
 
   try {
     const setting = yield call(settingsManager.setSetting, key, JSON.stringify(value));

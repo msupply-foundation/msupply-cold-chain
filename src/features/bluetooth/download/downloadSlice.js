@@ -2,7 +2,7 @@ import { ToastAndroid } from 'react-native';
 import { call, getContext, put, takeEvery, fork, take, race, all, delay } from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
 
-import { SETTING, SERVICES, REDUCER } from '~constants';
+import { SETTING, DEPENDENCY, REDUCER } from '~constants';
 import { BreachAction } from '../../breach';
 
 const initialState = {
@@ -62,11 +62,11 @@ const { actions: DownloadAction, reducer: DownloadReducer } = createSlice({
 });
 
 function* tryManualDownloadForSensor({ payload: { sensorId } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const [btService, sensorManager, downloadManager] = yield call(DependencyLocator.get, [
-    SERVICES.BLUETOOTH,
-    SERVICES.SENSOR_MANAGER,
-    SERVICES.DOWNLOAD_MANAGER,
+    DEPENDENCY.BLUETOOTH,
+    DEPENDENCY.SENSOR_MANAGER,
+    DEPENDENCY.DOWNLOAD_MANAGER,
   ]);
 
   const sensor = yield call(sensorManager.getSensorById, sensorId);
@@ -118,11 +118,11 @@ function* tryManualDownloadForSensor({ payload: { sensorId } }) {
 }
 
 function* tryPassiveDownloadForSensor({ payload: { sensorId } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const [btService, sensorManager, downloadManager] = yield call(DependencyLocator.get, [
-    SERVICES.BLUETOOTH,
-    SERVICES.SENSOR_MANAGER,
-    SERVICES.DOWNLOAD_MANAGER,
+    DEPENDENCY.BLUETOOTH,
+    DEPENDENCY.SENSOR_MANAGER,
+    DEPENDENCY.DOWNLOAD_MANAGER,
   ]);
 
   const sensor = yield call(sensorManager.getSensorById, sensorId);
@@ -167,8 +167,8 @@ function* tryPassiveDownloadForSensor({ payload: { sensorId } }) {
 }
 
 function* downloadTemperatures() {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
 
   try {
     const sensors = yield call(sensorManager.getSensors);
@@ -184,9 +184,9 @@ function* stopPassiveDownloading() {
 }
 
 function* startPassiveDownloading() {
-  const DependencyLocator = yield getContext('DependencyLocator');
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
 
-  const settingManager = yield call(DependencyLocator.get, SERVICES.SETTING_MANAGER);
+  const settingManager = yield call(DependencyLocator.get, DEPENDENCY.SETTING_MANAGER);
   const downloadIntervalSetting = yield call(
     settingManager.getSetting,
     SETTING.INT.DOWNLOAD_INTERVAL

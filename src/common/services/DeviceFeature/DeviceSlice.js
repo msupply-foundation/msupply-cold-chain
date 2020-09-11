@@ -2,7 +2,7 @@ import { ToastAndroid } from 'react-native';
 import { createSlice } from '@reduxjs/toolkit';
 import { put, takeEvery, getContext, call } from 'redux-saga/effects';
 
-import { SERVICES, REDUCER } from '~constants';
+import { DEPENDENCY, REDUCER } from '~constants';
 
 const DeviceSelector = {
   isWriting({ device }) {
@@ -47,17 +47,17 @@ const { actions: DeviceAction, reducer: DeviceReducer } = createSlice({
 });
 
 function* tryEmailLogFile({ payload: { sensorId, username, comment } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const [
     deviceService,
     sensorManager,
     breachManager,
     breachConfigManager,
   ] = yield call(DependencyLocator.get, [
-    SERVICES.DEVICE,
-    SERVICES.SENSOR_MANAGER,
-    SERVICES.BREACH_MANAGER,
-    SERVICES.BREACH_CONFIGURATION_MANAGER,
+    DEPENDENCY.DEVICE,
+    DEPENDENCY.SENSOR_MANAGER,
+    DEPENDENCY.BREACH_MANAGER,
+    DEPENDENCY.BREACH_CONFIGURATION_MANAGER,
   ]);
 
   try {
@@ -86,17 +86,17 @@ function* tryEmailLogFile({ payload: { sensorId, username, comment } }) {
 }
 
 function* tryWriteLogFile({ payload: { sensorId, username, comment } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const [
     deviceService,
     sensorManager,
     breachManager,
     breachConfigManager,
   ] = yield call(DependencyLocator.get, [
-    SERVICES.DEVICE,
-    SERVICES.SENSOR_MANAGER,
-    SERVICES.BREACH_MANAGER,
-    SERVICES.BREACH_CONFIGURATION_MANAGER,
+    DEPENDENCY.DEVICE,
+    DEPENDENCY.SENSOR_MANAGER,
+    DEPENDENCY.BREACH_MANAGER,
+    DEPENDENCY.BREACH_CONFIGURATION_MANAGER,
   ]);
 
   try {

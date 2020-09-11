@@ -2,7 +2,7 @@ import { ToastAndroid } from 'react-native';
 import { createSlice } from '@reduxjs/toolkit';
 import { getContext, call, put, takeEvery } from 'redux-saga/effects';
 
-import { SERVICES, REDUCER } from '~constants';
+import { DEPENDENCY, REDUCER } from '~constants';
 import { SensorAction } from '../../sensor';
 
 const initialState = {
@@ -41,10 +41,10 @@ const UpdateSelector = {
 };
 
 export function* tryUpdateLogInterval({ payload: { id, logInterval } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const [btService, sensorManager] = yield call(DependencyLocator.get, [
-    SERVICES.BLUETOOTH,
-    SERVICES.SENSOR_MANAGER,
+    DEPENDENCY.BLUETOOTH,
+    DEPENDENCY.SENSOR_MANAGER,
   ]);
 
   try {

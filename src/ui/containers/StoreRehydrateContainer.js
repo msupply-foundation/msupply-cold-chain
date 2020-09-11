@@ -4,10 +4,8 @@ import * as SplashScreen from 'expo-splash-screen';
 
 import { SensorAction } from '~sensor';
 import { SettingAction } from '~setting';
-import { BreachConfigurationAction } from '~breachConfiguration';
 
 import { HydrateSelector } from '../../features/hydrate/hydrateSlice';
-import { ChartAction } from '../../features/chart';
 
 import { BreachAction } from '../../features/breach';
 
@@ -30,14 +28,6 @@ export const StoreRehydrateContainer = ({ children }) => {
 
   useEffect(() => {
     dispatch(SettingAction.hydrate());
-  }, []);
-
-  useEffect(() => {
-    dispatch(BreachConfigurationAction.hydrate());
-  }, []);
-
-  useEffect(() => {
-    dispatch(ChartAction.hydrate());
   }, []);
 
   useEffect(() => {

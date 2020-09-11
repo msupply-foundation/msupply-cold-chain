@@ -1,8 +1,7 @@
+import { createSlice } from '@reduxjs/toolkit';
 import { takeEvery, getContext, call, put } from 'redux-saga/effects';
 
-import { createSlice } from '@reduxjs/toolkit';
-import { REDUCER, SERVICES } from '~constants';
-import { HydrateAction } from '../hydrate/hydrateSlice';
+import { REDUCER, DEPENDENCY } from '~constants';
 
 const initialState = { byId: [], ids: [] };
 const reducers = {
@@ -52,10 +51,10 @@ const BreachConfigurationSelector = {
 };
 
 function* updatedBreachConfiguration({ payload: { id, key, value } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const breachConfigurationManager = yield call(
     DependencyLocator.get,
-    SERVICES.BREACH_CONFIGURATION_MANAGER
+    DEPENDENCY.BREACH_CONFIGURATION_MANAGER
   );
 
   try {
@@ -67,16 +66,15 @@ function* updatedBreachConfiguration({ payload: { id, key, value } }) {
 }
 
 function* hydrate() {
-  const DependencyLocator = yield getContext('DependencyLocator');
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const breachConfigurationManager = yield call(
     DependencyLocator.get,
-    SERVICES.BREACH_CONFIGURATION_MANAGER
+    DEPENDENCY.BREACH_CONFIGURATION_MANAGER
   );
 
   try {
-    const result = yield call(breachConfigurationManager.init);
+    const result = yield call(breachConfigurationManager.getAll);
     yield put(BreachConfigurationAction.hydrateSucceeded(result));
-    yield put(HydrateAction.breachConfiguration());
   } catch (error) {
     yield put(BreachConfigurationAction.hydrateFailed());
   }

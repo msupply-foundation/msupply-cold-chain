@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { takeEvery, getContext, call, put, all } from 'redux-saga/effects';
 
-import { REDUCER, SERVICES } from '~constants';
+import { REDUCER, DEPENDENCY } from '~constants';
 
 import { SensorAction } from '../sensor';
 import { ChartAction } from '../chart';
@@ -117,8 +117,8 @@ const BreachSelector = {
 };
 
 function* getLogsForBreach({ payload: { breachId } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const manager = yield call(DependencyLocator.get, SERVICES.BREACH_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const manager = yield call(DependencyLocator.get, DEPENDENCY.BREACH_MANAGER);
 
   try {
     const result = yield call(manager.getLogsForBreach, breachId);
@@ -130,8 +130,8 @@ function* getLogsForBreach({ payload: { breachId } }) {
 }
 
 function* getBreachesForSensor({ payload: { sensorId } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const manager = yield call(DependencyLocator.get, SERVICES.BREACH_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const manager = yield call(DependencyLocator.get, DEPENDENCY.BREACH_MANAGER);
 
   try {
     const result = yield call(manager.getTableData, sensorId);
@@ -146,10 +146,10 @@ function* getBreachesForSensor({ payload: { sensorId } }) {
 }
 
 function* getListCumulativeForSensor({ payload: { sensorId } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const [breachManager, chartManager] = yield call(DependencyLocator.get, [
-    SERVICES.BREACH_MANAGER,
-    SERVICES.CHART_MANAGER,
+    DEPENDENCY.BREACH_MANAGER,
+    DEPENDENCY.CHART_MANAGER,
   ]);
 
   try {
@@ -165,8 +165,8 @@ function* getListCumulativeForSensor({ payload: { sensorId } }) {
 }
 
 function* getDetailCumulativeForSensor({ payload: { from, to, sensorId } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const breachManager = yield call(DependencyLocator.get, SERVICES.BREACH_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const breachManager = yield call(DependencyLocator.get, DEPENDENCY.BREACH_MANAGER);
 
   try {
     const cumulative = yield call(breachManager.getCumulativeExposure, from, to, sensorId);
@@ -177,8 +177,8 @@ function* getDetailCumulativeForSensor({ payload: { from, to, sensorId } }) {
 }
 
 function* getAllCumulativeExposures() {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
 
   try {
     const sensors = yield call(sensorManager.getAll);
@@ -188,8 +188,8 @@ function* getAllCumulativeExposures() {
 }
 
 function* createBreaches({ payload: { sensor } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const breachManager = yield call(DependencyLocator.get, SERVICES.BREACH_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const breachManager = yield call(DependencyLocator.get, DEPENDENCY.BREACH_MANAGER);
 
   const { id } = sensor;
 

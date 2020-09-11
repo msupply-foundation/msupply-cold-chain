@@ -1,4 +1,5 @@
-export const SERVICES = {
+export const DEPENDENCY = {
+  LOCATOR: 'DependencyLocator',
   BLUETOOTH: 'bluetooth',
   DATABASE: 'database',
   DEVICE: 'device',

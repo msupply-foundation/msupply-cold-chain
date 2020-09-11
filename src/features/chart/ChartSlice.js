@@ -1,7 +1,8 @@
-import { takeEvery, getContext, call, put } from 'redux-saga/effects';
 import moment from 'moment';
 import { createSlice } from '@reduxjs/toolkit';
-import { SERVICES, REDUCER } from '~constants';
+import { getContext, call, put, takeLatest } from 'redux-saga/effects';
+
+import { DEPENDENCY, REDUCER } from '~constants';
 
 const initialState = {
   listLoading: {},
@@ -74,8 +75,8 @@ const { actions: ChartAction, reducer: ChartReducer } = createSlice({
 });
 
 function* getListChartData({ payload: { sensorId, dataPoints } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const chartManager = yield call(DependencyLocator.get, SERVICES.CHART_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const chartManager = yield call(DependencyLocator.get, DEPENDENCY.CHART_MANAGER);
 
   try {
     const { minChartTimestamp, maxChartTimestamp } = yield call(
@@ -98,8 +99,8 @@ function* getListChartData({ payload: { sensorId, dataPoints } }) {
 }
 
 function* getDetailChartData({ payload: { from, to, sensorId, dataPoints } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const chartManager = yield call(DependencyLocator.get, SERVICES.CHART_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const chartManager = yield call(DependencyLocator.get, DEPENDENCY.CHART_MANAGER);
 
   try {
     const result = yield call(chartManager.getLogs, from, to, sensorId, dataPoints);
@@ -110,8 +111,8 @@ function* getDetailChartData({ payload: { from, to, sensorId, dataPoints } }) {
 }
 
 function* watchChartActions() {
-  yield takeEvery(ChartAction.getListChartData, getListChartData);
-  yield takeEvery(ChartAction.getDetailChartData, getDetailChartData);
+  yield takeLatest(ChartAction.getListChartData, getListChartData);
+  yield takeLatest(ChartAction.getDetailChartData, getDetailChartData);
 }
 
 const ChartSaga = { watchChartActions };

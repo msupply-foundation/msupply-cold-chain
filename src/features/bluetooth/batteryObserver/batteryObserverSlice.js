@@ -2,7 +2,7 @@ import { NativeModules } from 'react-native';
 import { take, delay, getContext, call, all, put, takeLeading, race } from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
 
-import { SERVICES, REDUCER } from '~constants';
+import { DEPENDENCY, REDUCER } from '~constants';
 
 import { SensorAction } from '../../sensor';
 
@@ -28,8 +28,8 @@ const { actions: BatteryObserverAction, reducer: BatteryObserverReducer } = crea
 const BatteryObserverSelector = {};
 
 function* updateBatteryLevels() {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
 
   try {
     const { data, success } = yield call(NativeModules.SussolBleManager.getDevices, 307, '');

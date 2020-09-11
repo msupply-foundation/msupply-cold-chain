@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { getContext, call, put, takeEvery } from 'redux-saga/effects';
 
 import { createSelector } from 'reselect';
-import { SERVICES } from '~constants';
+import { DEPENDENCY } from '~constants';
 import { HydrateAction } from '../hydrate/hydrateSlice';
 
 const initialState = {
@@ -134,11 +134,11 @@ const { actions: SensorAction, reducer: SensorReducer } = createSlice({
 });
 
 function* hydrate() {
-  const DependencyLocator = yield getContext('DependencyLocator');
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   console.log('-------------------------------------------');
   console.log('DependencyLocator', DependencyLocator);
   console.log('-------------------------------------------');
-  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
+  const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
   try {
     const sensors = yield call(sensorManager.getSensors);
     yield put(SensorAction.hydrateSuccessful(sensors));
@@ -149,8 +149,8 @@ function* hydrate() {
 }
 
 function* update({ payload: { id, key, value } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const manager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const manager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
   try {
     yield call(manager.updateField, id, key, value);
     yield put(SensorAction.updateSuccessful(id, key, value));
@@ -160,8 +160,8 @@ function* update({ payload: { id, key, value } }) {
 }
 
 function* addNewSensor({ payload: { macAddress, logInterval, logDelay, batteryLevel } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
   try {
     const newlyAddedSensor = yield call(
       sensorManager.addNewSensor,
@@ -179,8 +179,8 @@ function* addNewSensor({ payload: { macAddress, logInterval, logDelay, batteryLe
 }
 
 function* getSensorState({ payload: { sensorId } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
   try {
     const state = yield call(sensorManager.getSensorState, sensorId);
     yield put(SensorAction.getSensorStateSuccessful(sensorId, state));
@@ -190,8 +190,8 @@ function* getSensorState({ payload: { sensorId } }) {
 }
 
 function* updateLogDelay({ payload: { logDelay, sensorId } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
 
   try {
     yield call(sensorManager.updateLogDelay, sensorId, logDelay);
@@ -202,8 +202,8 @@ function* updateLogDelay({ payload: { logDelay, sensorId } }) {
 }
 
 function* updateBatteryLevel({ payload: { sensorId, batteryLevel } }) {
-  const DependencyLocator = yield getContext('DependencyLocator');
-  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
 
   try {
     yield call(sensorManager.updateBatteryLevel, sensorId, batteryLevel);

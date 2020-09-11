@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from 'react';
 
 import { BleManager } from 'react-native-ble-plx';
-import { SERVICES } from '~constants';
+import { DEPENDENCY } from '~constants';
 import {
   Database,
   DependencyLocator,
@@ -39,12 +39,12 @@ export const DependencyContainer = props => {
     const utilService = new UtilService();
     const exportService = new ExportService();
 
-    DependencyLocator.register(SERVICES.DEVICE, deviceService);
-    DependencyLocator.register(SERVICES.BLUETOOTH, btService);
-    DependencyLocator.register(SERVICES.DATABASE, dbService);
-    DependencyLocator.register(SERVICES.FORMAT_SERVICE, formatService);
-    DependencyLocator.register(SERVICES.UTIL_SERVICE, utilService);
-    DependencyLocator.register(SERVICES.EXPORT_SERVICE, exportService);
+    DependencyLocator.register(DEPENDENCY.DEVICE, deviceService);
+    DependencyLocator.register(DEPENDENCY.BLUETOOTH, btService);
+    DependencyLocator.register(DEPENDENCY.DATABASE, dbService);
+    DependencyLocator.register(DEPENDENCY.FORMAT_SERVICE, formatService);
+    DependencyLocator.register(DEPENDENCY.UTIL_SERVICE, utilService);
+    DependencyLocator.register(DEPENDENCY.EXPORT_SERVICE, exportService);
 
     const settingManager = new SettingManager(dbService);
     const breachConfigurationManager = new BreachConfigurationManager(dbService);
@@ -54,16 +54,17 @@ export const DependencyContainer = props => {
     const downloadManager = new DownloadManager(dbService, utilService);
     const sensorsManager = new SensorManager(dbService, utilService);
 
-    DependencyLocator.register(SERVICES.BREACH_CONFIGURATION_MANAGER, breachConfigurationManager);
-    DependencyLocator.register(SERVICES.SENSOR_MANAGER, sensorsManager);
-    DependencyLocator.register(SERVICES.SETTING_MANAGER, settingManager);
-    DependencyLocator.register(SERVICES.CHART_MANAGER, chartManager);
-    DependencyLocator.register(SERVICES.BREACH_MANAGER, breachManager);
-    DependencyLocator.register(SERVICES.LOG_TABLE_MANAGER, logTableManager);
-    DependencyLocator.register(SERVICES.DOWNLOAD_MANAGER, downloadManager);
+    DependencyLocator.register(DEPENDENCY.BREACH_CONFIGURATION_MANAGER, breachConfigurationManager);
+    DependencyLocator.register(DEPENDENCY.SENSOR_MANAGER, sensorsManager);
+    DependencyLocator.register(DEPENDENCY.SETTING_MANAGER, settingManager);
+    DependencyLocator.register(DEPENDENCY.CHART_MANAGER, chartManager);
+    DependencyLocator.register(DEPENDENCY.BREACH_MANAGER, breachManager);
+    DependencyLocator.register(DEPENDENCY.LOG_TABLE_MANAGER, logTableManager);
+    DependencyLocator.register(DEPENDENCY.DOWNLOAD_MANAGER, downloadManager);
 
     (async () => {
       await db.getConnection();
+      await dbService.init();
       setReady(true);
     })();
   }, []);

@@ -1,6 +1,6 @@
 import { useMemo, useContext, useState, useEffect } from 'react';
 
-import { SERVICES } from '~constants';
+import { DEPENDENCY } from '~constants';
 import { useOnAppFocus } from '~hooks';
 
 import { DependencyLocatorContext } from './DependencyContainer';
@@ -9,7 +9,7 @@ import { Location, Bluetooth, Storage } from '~presentation/icons';
 
 export const DeviceSettingsContainer = ({ children }) => {
   const DependencyLocator = useContext(DependencyLocatorContext);
-  const deviceService = DependencyLocator.get(SERVICES.DEVICE);
+  const deviceService = DependencyLocator.get(DEPENDENCY.DEVICE);
 
   const [isLocationOn, setIsLocationOn] = useState(false);
   const [isBluetoothOn, setIsBluetoothOn] = useState(false);

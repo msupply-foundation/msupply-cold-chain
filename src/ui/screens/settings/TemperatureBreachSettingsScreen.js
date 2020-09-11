@@ -1,8 +1,14 @@
-import { useSelector } from 'react-redux';
+import { ActivityIndicator } from 'react-native';
+
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { t } from '~translations';
-import { NAVIGATION } from '~constants';
-import { BreachConfigurationSelector } from '~features/breachConfiguration';
+import { COLOUR, NAVIGATION } from '~constants';
+import {
+  BreachConfigurationSelector,
+  BreachConfigurationAction,
+} from '~features/breachConfiguration';
 
 import { SettingsList } from '~layouts';
 import { SettingsGroup, SettingsNavigationRow } from '~components/settings';
@@ -16,7 +22,13 @@ export const TemperatureBreachSettingsScreen = ({ navigation }) => {
   const hotCumulative = useSelector(BreachConfigurationSelector.hotCumulativeConfig);
   const coldCumulative = useSelector(BreachConfigurationSelector.coldCumulativeConfig);
 
-  return (
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(BreachConfigurationAction.hydrate());
+  }, []);
+
+  return hotBreach ? (
     <SettingsList>
       <SettingsGroup title={t('SINGLE_EXPOSURE_CONFIGS')}>
         <SettingsNavigationRow
@@ -43,5 +55,7 @@ export const TemperatureBreachSettingsScreen = ({ navigation }) => {
         />
       </SettingsGroup>
     </SettingsList>
+  ) : (
+    <ActivityIndicator size="large" color={COLOUR.PRIMARY} />
   );
 };
