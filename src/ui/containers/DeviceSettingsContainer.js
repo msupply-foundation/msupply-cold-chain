@@ -111,7 +111,7 @@ export const DeviceSettingsContainer = ({ children }) => {
 
   return (
     <>
-      {children}
+      {!!hasDoneInitialPermissionRequests && children}
       {!!hasDoneInitialPermissionRequests && Modal}
     </>
   );

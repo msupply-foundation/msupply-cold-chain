@@ -35,7 +35,8 @@ export class DeviceService {
   };
 
   enableBluetooth = async () => {
-    return BluetoothStatus.enable();
+    BluetoothStatus.enable();
+    return this.getBluetoothState();
   };
 
   disableBluetooth = async () => {
