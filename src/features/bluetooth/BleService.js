@@ -96,7 +96,7 @@ export class BleService {
         const device = await this.connectToDevice(macAddress);
 
         const data = [];
-        device.onDisconnected(async () => {
+        const onDisconnectedSubscription = device.onDisconnected(async () => {
           const parsedData = parseDownloadedData(data);
           try {
             resolver(
@@ -105,6 +105,7 @@ export class BleService {
           } catch (error) {
             reject(error);
           }
+          onDisconnectedSubscription.remove();
           this.downloading[macAddress] = false;
         });
 
@@ -144,7 +145,7 @@ export class BleService {
         const device = await this.connectToDevice(macAddress);
         await device.discoverAllServicesAndCharacteristics();
 
-        await this.manager.monitorCharacteristicForDevice(
+        const monitorSubscription = await this.manager.monitorCharacteristicForDevice(
           macAddress,
           BLUETOOTH.UART_SERVICE_UUID,
           BLUETOOTH.WRITE_CHARACTERISTIC_UUID,
@@ -159,6 +160,7 @@ export class BleService {
 
               resolver(array);
 
+              monitorSubscription.remove();
               device.cancelConnection();
             }
           }
@@ -182,25 +184,27 @@ export class BleService {
       try {
         const device = await this.connectToDevice(macAddress, { scanMode: 2 });
 
-        device.onDisconnected(() => reject());
+        const onDisconnectedSubscription = device.onDisconnected(() => {
+          reject();
+          onDisconnectedSubscription.remove();
+        });
         await device.discoverAllServicesAndCharacteristics();
 
-        await this.manager.monitorCharacteristicForDevice(
+        const onMonitorSubscription = await this.manager.monitorCharacteristicForDevice(
           macAddress,
           BLUETOOTH.UART_SERVICE_UUID,
           BLUETOOTH.WRITE_CHARACTERISTIC_UUID,
 
           (_, result) => {
-            if (result?.value) {
-              const raw = Base64.decode(result.value);
-              const rawLength = raw.length;
-              const array = new Uint8Array(new ArrayBuffer(rawLength));
-
-              for (let i = 0; i < rawLength; i += 1) array[i] = raw.charCodeAt(i);
-
-              resolve(array);
-              device.cancelConnection();
+            const asString = Buffer.from(result?.value ?? '', 'base64').toString('ascii');
+            if (asString.match(/ok/i)) {
+              resolve(true);
+            } else {
+              reject(new Error('Decode failed'));
             }
+
+            onMonitorSubscription.remove();
+            device.cancelConnection();
           }
         );
 
@@ -223,7 +227,7 @@ export class BleService {
         const device = await this.connectToDevice(macAddress);
 
         const data = [];
-        device.onDisconnected(async () => {
+        const onDisconnectedSubscription = device.onDisconnected(async () => {
           try {
             if (!data.length) throw new Error('No data!');
             const parsedAsFullString = data
@@ -245,6 +249,7 @@ export class BleService {
             reject(error);
           }
           this.downloading[macAddress] = false;
+          onDisconnectedSubscription.remove();
         });
 
         await device.discoverAllServicesAndCharacteristics();
@@ -271,6 +276,7 @@ export class BleService {
         );
       } catch (error) {
         this.downloading[macAddress] = false;
+
         reject(error);
       }
     });
@@ -282,7 +288,10 @@ export class BleService {
       try {
         const device = await this.connectToDevice(macAddress, { scanMode: 2 });
 
-        device.onDisconnected(() => reject());
+        const disconnectedSubscription = device.onDisconnected(() => {
+          reject();
+          disconnectedSubscription.remove();
+        });
 
         await device.discoverAllServicesAndCharacteristics();
         await this.manager.monitorCharacteristicForDevice(
