@@ -47,8 +47,8 @@ const BlinkSelector = {
 };
 
 function* tryBlinkSensor({ payload: { macAddress } }) {
-  const getService = yield getContext('getService');
-  const btService = yield call(getService, SERVICES.BLUETOOTH);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const btService = yield call(DependencyLocator.get, SERVICES.BLUETOOTH);
 
   try {
     yield call(btService.blinkWithRetries, macAddress, 10);

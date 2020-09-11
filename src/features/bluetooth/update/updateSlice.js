@@ -41,8 +41,8 @@ const UpdateSelector = {
 };
 
 export function* tryUpdateLogInterval({ payload: { id, logInterval } }) {
-  const getServices = yield getContext('getServices');
-  const [btService, sensorManager] = yield call(getServices, [
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const [btService, sensorManager] = yield call(DependencyLocator.get, [
     SERVICES.BLUETOOTH,
     SERVICES.SENSOR_MANAGER,
   ]);

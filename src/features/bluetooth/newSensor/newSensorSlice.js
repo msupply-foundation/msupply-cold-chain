@@ -46,8 +46,8 @@ const NewSensorSelector = {
 };
 
 export function* connectWithNewSensor({ payload: { macAddress, logDelay } }) {
-  const getServices = yield getContext('getServices');
-  const [btService, settingManager] = yield call(getServices, [
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const [btService, settingManager] = yield call(DependencyLocator.get, [
     SERVICES.BLUETOOTH,
     SERVICES.SETTING_MANAGER,
   ]);

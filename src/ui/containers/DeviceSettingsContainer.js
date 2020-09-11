@@ -8,8 +8,8 @@ import { DeviceServiceModal } from '~presentation';
 import { Location, Bluetooth, Storage } from '~presentation/icons';
 
 export const DeviceSettingsContainer = ({ children }) => {
-  const { getService } = useContext(ServiceLocatorContext);
-  const deviceService = getService(SERVICES.DEVICE);
+  const DependencyLocator = useContext(ServiceLocatorContext);
+  const deviceService = DependencyLocator.get(SERVICES.DEVICE);
 
   const [isLocationOn, setIsLocationOn] = useState(false);
   const [isBluetoothOn, setIsBluetoothOn] = useState(false);

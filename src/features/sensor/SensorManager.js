@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { ENTITIES } from '~constants';
-import { uuid } from '~services/utilities';
+import { uuid } from '../../services/utilities';
 
 const SENSOR_STATE = `
 SELECT s.id id,

@@ -80,8 +80,8 @@ const { actions: ChartAction, reducer: ChartReducer } = createSlice({
 });
 
 function* getListChartData({ payload: { sensorId, dataPoints } }) {
-  const getService = yield getContext('getService');
-  const chartManager = yield call(getService, SERVICES.CHART_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const chartManager = yield call(DependencyLocator.get, SERVICES.CHART_MANAGER);
 
   try {
     const { minChartTimestamp, maxChartTimestamp } = yield call(
@@ -104,8 +104,8 @@ function* getListChartData({ payload: { sensorId, dataPoints } }) {
 }
 
 function* getDetailChartData({ payload: { from, to, sensorId, dataPoints } }) {
-  const getService = yield getContext('getService');
-  const chartManager = yield call(getService, SERVICES.CHART_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const chartManager = yield call(DependencyLocator.get, SERVICES.CHART_MANAGER);
 
   try {
     const result = yield call(chartManager.getLogs, from, to, sensorId, dataPoints);
@@ -116,8 +116,8 @@ function* getDetailChartData({ payload: { from, to, sensorId, dataPoints } }) {
 }
 
 function* hydrate() {
-  const getService = yield getContext('getService');
-  const sensorManager = yield call(getService, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
 
   try {
     const sensors = yield call(sensorManager.getAll);

@@ -63,8 +63,8 @@ const LogTableSelector = {
 };
 
 function* getMoreLogs({ payload: { from, to, id } }) {
-  const getService = yield getContext('getService');
-  const logTableManager = yield call(getService, SERVICES.LOG_TABLE_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const logTableManager = yield call(DependencyLocator.get, SERVICES.LOG_TABLE_MANAGER);
   const pagination = yield select(LogTableSelector.pagination);
 
   try {
@@ -76,8 +76,8 @@ function* getMoreLogs({ payload: { from, to, id } }) {
 }
 
 function* updateLogs({ payload: { from, to, id } }) {
-  const getService = yield getContext('getService');
-  const logTableManager = yield call(getService, SERVICES.LOG_TABLE_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const logTableManager = yield call(DependencyLocator.get, SERVICES.LOG_TABLE_MANAGER);
 
   try {
     const logs = yield call(logTableManager.getLogs, from, to, id);

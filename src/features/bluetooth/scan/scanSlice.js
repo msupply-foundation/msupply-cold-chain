@@ -82,8 +82,8 @@ const ScanSelector = {
 export function* stop() {
   yield take(ScanAction.tryStop);
 
-  const getService = yield getContext('getService');
-  const btService = yield call(getService, SERVICES.BLUETOOTH);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const btService = yield call(DependencyLocator.get, SERVICES.BLUETOOTH);
 
   try {
     yield call(btService.stopScan);
@@ -103,8 +103,8 @@ export function callback(btService) {
 }
 
 export function* start() {
-  const getService = yield getContext('getService');
-  const btService = yield call(getService, SERVICES.BLUETOOTH);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const btService = yield call(DependencyLocator.get, SERVICES.BLUETOOTH);
 
   yield put(ScanAction.startSuccess());
 

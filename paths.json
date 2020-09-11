@@ -14,8 +14,8 @@
   "~translations": "./src/common/translations",
   "~formatters": "./src/common/formatters",
   "~store": "./src/common/store",
+  "~services": "./src/common/services",
 
-  "~services": "./src/services",
   "~database": "./src/services/database",
   "~entities": "./src/services/database/entities",
   "~bluetooth": "./src/services/bluetooth",

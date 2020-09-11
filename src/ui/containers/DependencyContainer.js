@@ -4,9 +4,9 @@ import { BleManager } from 'react-native-ble-plx';
 
 import { Database, DatabaseService } from '~database';
 import { SERVICES } from '~constants';
-import { registerService, getService, getServices } from '~services';
+import { DependencyLocator } from '~common/services';
 
-import { DeviceService } from '~services/device/DeviceService';
+import { DeviceService } from '../../services/device/DeviceService';
 import { SensorManager } from '~sensor';
 
 import { BleService } from '../../features/bluetooth';
@@ -21,7 +21,6 @@ import { DownloadManager } from '../../features/bluetooth/download';
 const bleManager = new BleManager();
 
 export const ServiceLocatorContext = createContext();
-const serviceLocators = { getService, getServices };
 
 export const DependencyContainer = props => {
   const [ready, setReady] = useState(false);
@@ -48,22 +47,22 @@ export const DependencyContainer = props => {
 
     const btService = new BleService(bleManager);
 
-    registerService(SERVICES.BREACH_CONFIGURATION_MANAGER, breachConfigurationManager);
-    registerService(SERVICES.SENSOR_MANAGER, sensorsManager);
-    registerService(SERVICES.DEVICE, deviceService);
-    registerService(SERVICES.BLUETOOTH, btService);
-    registerService(SERVICES.DATABASE, dbService);
-    registerService(SERVICES.SETTING_MANAGER, settingManager);
-    registerService(SERVICES.CHART_MANAGER, chartManager);
-    registerService(SERVICES.BREACH_MANAGER, breachManager);
-    registerService(SERVICES.LOG_TABLE_MANAGER, logTableManager);
-    registerService(SERVICES.DOWNLOAD_MANAGER, downloadManager);
+    DependencyLocator.register(SERVICES.BREACH_CONFIGURATION_MANAGER, breachConfigurationManager);
+    DependencyLocator.register(SERVICES.SENSOR_MANAGER, sensorsManager);
+    DependencyLocator.register(SERVICES.DEVICE, deviceService);
+    DependencyLocator.register(SERVICES.BLUETOOTH, btService);
+    DependencyLocator.register(SERVICES.DATABASE, dbService);
+    DependencyLocator.register(SERVICES.SETTING_MANAGER, settingManager);
+    DependencyLocator.register(SERVICES.CHART_MANAGER, chartManager);
+    DependencyLocator.register(SERVICES.BREACH_MANAGER, breachManager);
+    DependencyLocator.register(SERVICES.LOG_TABLE_MANAGER, logTableManager);
+    DependencyLocator.register(SERVICES.DOWNLOAD_MANAGER, downloadManager);
   }, []);
 
   const { children } = props;
 
   return ready ? (
-    <ServiceLocatorContext.Provider value={serviceLocators}>
+    <ServiceLocatorContext.Provider value={DependencyLocator}>
       {children}
     </ServiceLocatorContext.Provider>
   ) : null;

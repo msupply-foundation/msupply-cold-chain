@@ -2,7 +2,7 @@ import moment from 'moment';
 import { Not, IsNull, MoreThan, Equal } from 'typeorm/browser';
 
 import { ENTITIES } from '~constants';
-import { uuid } from '~services/utilities';
+import { uuid } from '../../services/utilities';
 
 const CUMULATIVE_EXPOSURE = `
 select max(temperature) maximumTemperature,

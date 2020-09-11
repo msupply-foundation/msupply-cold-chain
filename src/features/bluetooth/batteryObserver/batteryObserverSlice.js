@@ -28,8 +28,8 @@ const { actions: BatteryObserverAction, reducer: BatteryObserverReducer } = crea
 const BatteryObserverSelector = {};
 
 function* updateBatteryLevels() {
-  const getService = yield getContext('getService');
-  const sensorManager = yield call(getService, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
 
   try {
     const { data, success } = yield call(NativeModules.SussolBleManager.getDevices, 307, '');

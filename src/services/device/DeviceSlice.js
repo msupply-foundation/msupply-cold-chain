@@ -47,16 +47,18 @@ const { actions: DeviceAction, reducer: DeviceReducer } = createSlice({
 });
 
 function* tryEmailLogFile({ payload: { sensorId, username, comment } }) {
-  const getServices = yield getContext('getServices');
-  const [deviceService, sensorManager, breachManager, breachConfigManager] = yield call(
-    getServices,
-    [
-      SERVICES.DEVICE,
-      SERVICES.SENSOR_MANAGER,
-      SERVICES.BREACH_MANAGER,
-      SERVICES.BREACH_CONFIGURATION_MANAGER,
-    ]
-  );
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const [
+    deviceService,
+    sensorManager,
+    breachManager,
+    breachConfigManager,
+  ] = yield call(DependencyLocator.get, [
+    SERVICES.DEVICE,
+    SERVICES.SENSOR_MANAGER,
+    SERVICES.BREACH_MANAGER,
+    SERVICES.BREACH_CONFIGURATION_MANAGER,
+  ]);
 
   try {
     const sensor = yield call(sensorManager.getSensorById, sensorId);
@@ -84,16 +86,18 @@ function* tryEmailLogFile({ payload: { sensorId, username, comment } }) {
 }
 
 function* tryWriteLogFile({ payload: { sensorId, username, comment } }) {
-  const getServices = yield getContext('getServices');
-  const [deviceService, sensorManager, breachManager, breachConfigManager] = yield call(
-    getServices,
-    [
-      SERVICES.DEVICE,
-      SERVICES.SENSOR_MANAGER,
-      SERVICES.BREACH_MANAGER,
-      SERVICES.BREACH_CONFIGURATION_MANAGER,
-    ]
-  );
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const [
+    deviceService,
+    sensorManager,
+    breachManager,
+    breachConfigManager,
+  ] = yield call(DependencyLocator.get, [
+    SERVICES.DEVICE,
+    SERVICES.SENSOR_MANAGER,
+    SERVICES.BREACH_MANAGER,
+    SERVICES.BREACH_CONFIGURATION_MANAGER,
+  ]);
 
   try {
     const sensor = yield call(sensorManager.getSensorById, sensorId);

@@ -134,8 +134,11 @@ const { actions: SensorAction, reducer: SensorReducer } = createSlice({
 });
 
 function* hydrate() {
-  const getService = yield getContext('getService');
-  const sensorManager = yield call(getService, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  console.log('-------------------------------------------');
+  console.log('DependencyLocator', DependencyLocator);
+  console.log('-------------------------------------------');
+  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
   try {
     const sensors = yield call(sensorManager.getSensors);
     yield put(SensorAction.hydrateSuccessful(sensors));
@@ -146,8 +149,8 @@ function* hydrate() {
 }
 
 function* update({ payload: { id, key, value } }) {
-  const getService = yield getContext('getService');
-  const manager = yield call(getService, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const manager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
   try {
     yield call(manager.updateField, id, key, value);
     yield put(SensorAction.updateSuccessful(id, key, value));
@@ -157,8 +160,8 @@ function* update({ payload: { id, key, value } }) {
 }
 
 function* addNewSensor({ payload: { macAddress, logInterval, logDelay, batteryLevel } }) {
-  const getService = yield getContext('getService');
-  const sensorManager = yield call(getService, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
   try {
     const newlyAddedSensor = yield call(
       sensorManager.addNewSensor,
@@ -176,8 +179,8 @@ function* addNewSensor({ payload: { macAddress, logInterval, logDelay, batteryLe
 }
 
 function* getSensorState({ payload: { sensorId } }) {
-  const getService = yield getContext('getService');
-  const sensorManager = yield call(getService, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
   try {
     const state = yield call(sensorManager.getSensorState, sensorId);
     yield put(SensorAction.getSensorStateSuccessful(sensorId, state));
@@ -187,8 +190,8 @@ function* getSensorState({ payload: { sensorId } }) {
 }
 
 function* updateLogDelay({ payload: { logDelay, sensorId } }) {
-  const getService = yield getContext('getService');
-  const sensorManager = yield call(getService, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
 
   try {
     yield call(sensorManager.updateLogDelay, sensorId, logDelay);
@@ -199,8 +202,8 @@ function* updateLogDelay({ payload: { logDelay, sensorId } }) {
 }
 
 function* updateBatteryLevel({ payload: { sensorId, batteryLevel } }) {
-  const getService = yield getContext('getService');
-  const sensorManager = yield call(getService, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
 
   try {
     yield call(sensorManager.updateBatteryLevel, sensorId, batteryLevel);

@@ -4,7 +4,6 @@ import { SensorAction, SensorSelector } from '~sensor';
 
 import { SettingsButtonRow, SettingsGroup } from '~components/settings';
 import { SettingsList } from '~layouts';
-import { TemperatureLogActions } from '../../../services/database/DatabaseSlice';
 
 const randomMacAddress = () => {
   return 'XX:XX:XX:XX:XX:XX'.replace(/X/g, () => {
@@ -28,7 +27,7 @@ export const DevSettingsScreen = () => {
           <SettingsButtonRow
             key={sensor?.id}
             label={`Add logs for ${sensor?.name ?? sensor.macAddress}`}
-            onPress={() => dispatch(TemperatureLogActions.addRandomLogs(sensor.id))}
+            // onPress={() => dispatch(TemperatureLogActions.addRandomLogs(sensor.id))}
           />
         ))}
       </SettingsGroup>

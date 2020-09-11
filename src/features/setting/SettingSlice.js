@@ -53,8 +53,8 @@ const SettingSelector = {
 };
 
 function* hydrate() {
-  const getService = yield getContext('getService');
-  const settingsManager = yield call(getService, SERVICES.SETTING_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const settingsManager = yield call(DependencyLocator.get, SERVICES.SETTING_MANAGER);
 
   try {
     const settings = yield call(settingsManager.getSettings);
@@ -66,8 +66,8 @@ function* hydrate() {
 }
 
 function* updateSetting({ payload: { key, value } }) {
-  const getService = yield getContext('getService');
-  const settingsManager = yield call(getService, SERVICES.SETTING_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const settingsManager = yield call(DependencyLocator.get, SERVICES.SETTING_MANAGER);
 
   try {
     const setting = yield call(settingsManager.setSetting, key, JSON.stringify(value));

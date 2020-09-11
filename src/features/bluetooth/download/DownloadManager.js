@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { uuid } from '~services/utilities';
+import { uuid } from '../../../services/utilities';
 import { ENTITIES, MILLISECONDS } from '~constants';
 
 export class DownloadManager {

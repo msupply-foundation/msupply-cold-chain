@@ -62,8 +62,8 @@ const { actions: DownloadAction, reducer: DownloadReducer } = createSlice({
 });
 
 function* tryManualDownloadForSensor({ payload: { sensorId } }) {
-  const getServices = yield getContext('getServices');
-  const [btService, sensorManager, downloadManager] = yield call(getServices, [
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const [btService, sensorManager, downloadManager] = yield call(DependencyLocator.get, [
     SERVICES.BLUETOOTH,
     SERVICES.SENSOR_MANAGER,
     SERVICES.DOWNLOAD_MANAGER,
@@ -118,8 +118,8 @@ function* tryManualDownloadForSensor({ payload: { sensorId } }) {
 }
 
 function* tryPassiveDownloadForSensor({ payload: { sensorId } }) {
-  const getServices = yield getContext('getServices');
-  const [btService, sensorManager, downloadManager] = yield call(getServices, [
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const [btService, sensorManager, downloadManager] = yield call(DependencyLocator.get, [
     SERVICES.BLUETOOTH,
     SERVICES.SENSOR_MANAGER,
     SERVICES.DOWNLOAD_MANAGER,
@@ -167,8 +167,8 @@ function* tryPassiveDownloadForSensor({ payload: { sensorId } }) {
 }
 
 function* downloadTemperatures() {
-  const getServices = yield getContext('getService');
-  const sensorManager = yield call(getServices, SERVICES.SENSOR_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const sensorManager = yield call(DependencyLocator.get, SERVICES.SENSOR_MANAGER);
 
   try {
     const sensors = yield call(sensorManager.getSensors);
@@ -184,8 +184,9 @@ function* stopPassiveDownloading() {
 }
 
 function* startPassiveDownloading() {
-  const getServices = yield getContext('getService');
-  const settingManager = yield call(getServices, SERVICES.SETTING_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+
+  const settingManager = yield call(DependencyLocator.get, SERVICES.SETTING_MANAGER);
   const downloadIntervalSetting = yield call(
     settingManager.getSetting,
     SETTING.INT.DOWNLOAD_INTERVAL

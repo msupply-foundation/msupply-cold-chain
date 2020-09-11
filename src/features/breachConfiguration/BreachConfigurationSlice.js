@@ -52,8 +52,11 @@ const BreachConfigurationSelector = {
 };
 
 function* updatedBreachConfiguration({ payload: { id, key, value } }) {
-  const getService = yield getContext('getService');
-  const breachConfigurationManager = yield call(getService, SERVICES.BREACH_CONFIGURATION_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const breachConfigurationManager = yield call(
+    DependencyLocator.get,
+    SERVICES.BREACH_CONFIGURATION_MANAGER
+  );
 
   try {
     yield call(breachConfigurationManager.updateField, id, key, value);
@@ -64,8 +67,11 @@ function* updatedBreachConfiguration({ payload: { id, key, value } }) {
 }
 
 function* hydrate() {
-  const getService = yield getContext('getService');
-  const breachConfigurationManager = yield call(getService, SERVICES.BREACH_CONFIGURATION_MANAGER);
+  const DependencyLocator = yield getContext('DependencyLocator');
+  const breachConfigurationManager = yield call(
+    DependencyLocator.get,
+    SERVICES.BREACH_CONFIGURATION_MANAGER
+  );
 
   try {
     const result = yield call(breachConfigurationManager.init);
