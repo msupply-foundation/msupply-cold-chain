@@ -90,12 +90,12 @@ const reducers = {
   updateFailed: () => {},
 
   addNewSensor: {
-    reducer: (draftState, { payload: { macAddress } }) => {
-      draftState.foundSensors = draftState.foundSensors.filter(newMac => macAddress !== newMac);
-    },
     prepare: (macAddress, logInterval, logDelay, batteryLevel) => ({
       payload: { macAddress, logInterval, logDelay, batteryLevel },
     }),
+    reducer: (draftState, { payload: { macAddress } }) => {
+      draftState.foundSensors = draftState.foundSensors.filter(newMac => macAddress !== newMac);
+    },
   },
   addNewSensorSuccessful: {
     reducer: (draftState, { payload: { sensor } }) => {

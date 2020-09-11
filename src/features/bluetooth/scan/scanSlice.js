@@ -11,8 +11,7 @@ import {
   select,
 } from 'redux-saga/effects';
 import { SERVICES, REDUCER } from '~constants';
-import { SensorSelector } from '../../sensor';
-import { NewSensorAction } from '../newSensor/newSensorSlice';
+import { SensorSelector, SensorAction } from '../../sensor';
 
 const initialState = {
   foundSensors: [],
@@ -44,7 +43,14 @@ const reducers = {
 };
 
 const extraReducers = {
-  [NewSensorAction.connectWithNewSensorSuccess]: (draftState, { payload: { macAddress } }) => {
+  [SensorAction.addNewSensorSuccessful]: (
+    draftState,
+    {
+      payload: {
+        sensor: { macAddress },
+      },
+    }
+  ) => {
     draftState.foundSensors = draftState.foundSensors.filter(mac => macAddress !== mac);
   },
 };
