@@ -57,8 +57,8 @@ export function* connectWithNewSensor({ payload: { macAddress, logDelay } }) {
       settingManager.getSetting,
       SETTING.INT.DEFAULT_LOG_INTERVAL
     );
-    yield call(btService.updateLogIntervalWithRetries, macAddress, logInterval, 10);
     const { batteryLevel, isDisabled } = yield call(btService.getInfoWithRetries, macAddress, 10);
+    yield call(btService.updateLogIntervalWithRetries, macAddress, logInterval, 10);
 
     if (!isDisabled) {
       yield call(btService.toggleButtonWithRetries, macAddress, 10);
