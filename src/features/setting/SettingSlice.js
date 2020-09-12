@@ -6,7 +6,6 @@ import { DEPENDENCY, SETTING, REDUCER } from '~constants';
 const initialState = {
   [SETTING.INT.DEFAULT_LOG_INTERVAL]: null,
   [SETTING.INT.DOWNLOAD_INTERVAL]: null,
-  [SETTING.BOOL.AUTO_APPLY_BREACH_CONFIGS]: null,
 };
 
 const reducers = {
@@ -22,8 +21,8 @@ const reducers = {
   hydrateFailed: () => {},
 
   updatedSetting: {
-    reducer: () => {},
     prepare: (key, value) => ({ payload: { key, value } }),
+    reducer: () => {},
   },
   updatedSettingSucceeded: {
     reducer: (draftState, { payload: { setting } }) => {
