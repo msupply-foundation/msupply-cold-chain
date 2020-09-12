@@ -13,7 +13,6 @@ import {
   ReduxContainer,
   KeepAwakeContainer,
   DependencyContainer,
-  StoreRehydrateContainer,
   MainTabNavigator,
   MainTabScreen,
 } from './containers';
@@ -25,21 +24,16 @@ const App = () => {
     <ReduxContainer>
       <KeepAwakeContainer>
         <DependencyContainer>
-          <StoreRehydrateContainer>
-            <DeviceSettingsContainer>
-              <NavigationContainer>
-                <StatusBar hidden />
-                <MainHeader />
-                <MainTabNavigator>
-                  <MainTabScreen name={NAVIGATION.SCREENS.MAIN_TABS.SENSORS} component={Sensors} />
-                  <MainTabScreen
-                    name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS}
-                    component={Settings}
-                  />
-                </MainTabNavigator>
-              </NavigationContainer>
-            </DeviceSettingsContainer>
-          </StoreRehydrateContainer>
+          <DeviceSettingsContainer>
+            <NavigationContainer>
+              <StatusBar hidden />
+              <MainHeader />
+              <MainTabNavigator>
+                <MainTabScreen name={NAVIGATION.SCREENS.MAIN_TABS.SENSORS} component={Sensors} />
+                <MainTabScreen name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS} component={Settings} />
+              </MainTabNavigator>
+            </NavigationContainer>
+          </DeviceSettingsContainer>
         </DependencyContainer>
       </KeepAwakeContainer>
     </ReduxContainer>

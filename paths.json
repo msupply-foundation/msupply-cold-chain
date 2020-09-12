@@ -21,7 +21,6 @@
   "~breach": "./src/features/breach",
   "~setting": "./src/features/setting",
   "~breachConfiguration": "./src/features/breachConfiguration",
-  "~hydrate": "./src/features/hydrate",
   "~chart": "./src/features/chart",
 
   "~device": "./src/features/device"

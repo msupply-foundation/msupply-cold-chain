@@ -1,13 +1,22 @@
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
 import { SettingsList } from '~layouts';
 import { COLOUR, NAVIGATION } from '~constants';
 import { t } from '~translations';
 import { Chevron } from '~presentation/icons';
 import { SettingsGroup, SettingsItem } from '~components/settings';
 
+import { SettingAction } from '../../../features/setting';
+
 const ChevronIcon = <Chevron direction="right" colour={COLOUR.GREY_ONE} />;
 
 export const MainSettingsScreen = ({ navigation }) => {
-  console.log('re-render main settings screen');
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(SettingAction.hydrate());
+  }, []);
+
   return (
     <SettingsList>
       <SettingsGroup title={t('OPTIONS')}>

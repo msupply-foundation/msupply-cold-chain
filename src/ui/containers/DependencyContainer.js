@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from 'react';
-
 import { BleManager } from 'react-native-ble-plx';
+import * as SplashScreen from 'expo-splash-screen';
 import { DEPENDENCY } from '~constants';
 import {
   Database,
@@ -66,6 +66,7 @@ export const DependencyContainer = props => {
       await db.getConnection();
       await dbService.init();
       setReady(true);
+      SplashScreen.hideAsync();
     })();
   }, []);
 

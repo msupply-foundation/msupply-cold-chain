@@ -3,7 +3,6 @@ import { getContext, call, put, takeEvery } from 'redux-saga/effects';
 
 import { createSelector } from 'reselect';
 import { DEPENDENCY } from '~constants';
-import { HydrateAction } from '../hydrate/hydrateSlice';
 
 const initialState = {
   byId: {},
@@ -135,14 +134,11 @@ const { actions: SensorAction, reducer: SensorReducer } = createSlice({
 
 function* hydrate() {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  console.log('-------------------------------------------');
-  console.log('DependencyLocator', DependencyLocator);
-  console.log('-------------------------------------------');
+
   const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
   try {
     const sensors = yield call(sensorManager.getSensors);
     yield put(SensorAction.hydrateSuccessful(sensors));
-    yield put(HydrateAction.sensor());
   } catch (error) {
     yield put(SensorAction.hydrateFailed(error));
   }

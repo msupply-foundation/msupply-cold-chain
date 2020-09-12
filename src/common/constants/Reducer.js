@@ -7,7 +7,6 @@ export const REDUCER = {
   SETTING: 'setting',
   BREACH_CONFIGURATION: 'breachConfiguration',
   TEMPERATURE_LOG: 'temperatureLog',
-  HYDRATE: 'hydrate',
   CHART: 'chart',
   BREACH: 'breach',
   DEVICE: 'device',

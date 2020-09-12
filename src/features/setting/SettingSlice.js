@@ -2,7 +2,6 @@ import { put, takeEvery, getContext, call } from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
 
 import { DEPENDENCY, SETTING, REDUCER } from '~constants';
-import { HydrateAction } from '../hydrate/hydrateSlice';
 
 const initialState = {
   [SETTING.INT.DEFAULT_LOG_INTERVAL]: null,
@@ -59,7 +58,6 @@ function* hydrate() {
   try {
     const settings = yield call(settingsManager.getSettings);
     yield put(SettingAction.hydrateSucceeded(settings));
-    yield put(HydrateAction.setting());
   } catch (error) {
     yield put(SettingAction.hydrateFailed());
   }
