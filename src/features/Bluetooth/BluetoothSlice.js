@@ -1,11 +1,11 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import { fork } from 'redux-saga/effects';
 
-import { BlinkReducer, BlinkSaga } from './blink';
-import { DownloadReducer, DownloadSaga } from './download';
-import { ScanReducer, ScanSaga } from './scan';
+import { BlinkReducer, BlinkSaga } from './Blink';
+import { DownloadReducer, DownloadSaga } from './Download';
+import { ScanReducer, ScanSaga } from './Scan';
 import { ProgramReducer, ProgramSaga } from './Program';
-import { BatteryObserverReducer, BatteryObserverSaga } from './batteryObserver';
+import { BatteryObserverReducer, BatteryObserverSaga } from './BatteryObserver';
 
 import { REDUCER } from '~constants';
 
