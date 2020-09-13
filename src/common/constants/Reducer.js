@@ -18,4 +18,5 @@ export const REDUCER = {
   BATTERY_OBSERVER: 'batteryObserver',
   NEW_SENSOR: 'new_sensor',
   REPORT: 'report',
+  PERMISSION: 'permission',
 };

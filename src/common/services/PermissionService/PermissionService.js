@@ -14,7 +14,7 @@ import { PERMISSION, PERMISSION_STATE, DANGEROUS_BATTERY_LEVEL } from '~constant
  * ... native features and OS controlled aspects like the battery level.
  *
  */
-export class DeviceFeatureService {
+export class PermissionService {
   batteryLevel = async () => getBatteryLevel();
 
   isBatteryLevelDangerous = async () => {

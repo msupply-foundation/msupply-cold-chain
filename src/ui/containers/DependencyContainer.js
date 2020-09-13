@@ -6,7 +6,7 @@ import {
   Database,
   DependencyLocator,
   BleService,
-  DeviceFeatureService,
+  PermissionService,
   DatabaseService,
   ExportService,
   UtilService,
@@ -34,13 +34,13 @@ export const DependencyContainer = props => {
 
     const db = new Database();
     const dbService = new DatabaseService(db);
-    const deviceService = new DeviceFeatureService();
+    const permissionService = new PermissionService();
     const btService = new BleService(bleManager);
     const formatService = new FormatService();
     const utilService = new UtilService();
     const exportService = new ExportService();
 
-    DependencyLocator.register(DEPENDENCY.DEVICE, deviceService);
+    DependencyLocator.register(DEPENDENCY.PERMISSION_SERVICE, permissionService);
     DependencyLocator.register(DEPENDENCY.BLUETOOTH, btService);
     DependencyLocator.register(DEPENDENCY.DATABASE, dbService);
     DependencyLocator.register(DEPENDENCY.FORMAT_SERVICE, formatService);
@@ -54,7 +54,7 @@ export const DependencyContainer = props => {
     const logTableManager = new LogTableManager(dbService);
     const downloadManager = new DownloadManager(dbService, utilService);
     const sensorsManager = new SensorManager(dbService, utilService);
-    const reportManager = new ReportManager(dbService, exportService, deviceService);
+    const reportManager = new ReportManager(dbService, exportService, permissionService);
 
     DependencyLocator.register(DEPENDENCY.BREACH_CONFIGURATION_MANAGER, breachConfigurationManager);
     DependencyLocator.register(DEPENDENCY.SENSOR_MANAGER, sensorsManager);

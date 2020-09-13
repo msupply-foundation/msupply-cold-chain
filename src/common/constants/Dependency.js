@@ -15,6 +15,7 @@ export const DEPENDENCY = {
   LOG_TABLE_MANAGER: 'logTableManager',
   DOWNLOAD_MANAGER: 'downloadManager',
   REPORT_MANAGER: 'reportManager',
+  PERMISSION_SERVICE: 'permissionService',
 };
 
 export const BLUETOOTH_SERVICE = {
