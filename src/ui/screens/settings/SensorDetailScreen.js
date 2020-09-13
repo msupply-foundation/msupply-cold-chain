@@ -16,9 +16,12 @@ import {
   SettingsItem,
 } from '~components/settings';
 
-import { BlinkAction, BlinkSelector } from '../../../features/bluetooth/blink';
-import { DownloadAction } from '../../../features/bluetooth/download';
-import { UpdateAction } from '../../../features/bluetooth/update';
+import {
+  ProgramAction,
+  DownloadAction,
+  BlinkAction,
+  BlinkSelector,
+} from '../../../features/bluetooth';
 
 export const SensorDetailScreen = () => {
   const { id } = useRouteProps();
@@ -69,7 +72,7 @@ export const SensorDetailScreen = () => {
           metric={t('MINUTES')}
           onConfirm={({ value }) => {
             const newLogInterval = value * 60;
-            dispatch(UpdateAction.tryUpdateLogInterval(id, newLogInterval));
+            dispatch(ProgramAction.tryUpdateLogInterval(id, newLogInterval));
           }}
           editDescription={t('EDIT_LOG_INTERVAL')}
         />

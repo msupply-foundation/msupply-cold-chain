@@ -5,8 +5,8 @@ import { useToggle } from '~hooks';
 
 import { SettingsItem } from './SettingsItem';
 import { SettingsAddSensorModal } from './SettingsAddSensorModal';
-import { BlinkAction } from '../../../features/bluetooth/blink';
-import { NewSensorAction } from '../../../features/bluetooth/newSensor/newSensorSlice';
+import { ProgramAction, BlinkAction } from '../../../features/bluetooth';
+
 import { ConnectingWithSensorModal } from '../ConnectingWithSensorModal';
 
 export const SettingsAddSensorRow = ({ macAddress }) => {
@@ -16,10 +16,7 @@ export const SettingsAddSensorRow = ({ macAddress }) => {
   const onConfirm = date => {
     toggleModal();
     dispatch(
-      NewSensorAction.tryConnectWithNewSensor(
-        macAddress,
-        Math.ceil(new Date(date).getTime() / 1000)
-      )
+      ProgramAction.tryProgramNewSensor(macAddress, Math.ceil(new Date(date).getTime() / 1000))
     );
   };
 
