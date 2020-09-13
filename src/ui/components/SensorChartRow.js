@@ -7,10 +7,10 @@ import { SensorRowLayout, Row, Column } from '~layouts';
 import { Divider, Chart } from '~presentation';
 import { STYLE, COLOUR } from '~constants';
 import { NormalText, BoldText, MediumText } from '~presentation/typography';
-import { SensorAction } from '~features/sensor';
+import { SensorAction } from '~features/Sensor';
 import { SensorStatus } from './SensorStatus';
-import { ChartAction } from '../../features/chart';
-import { BreachAction } from '../../features/breach';
+import { ChartAction } from '../../features/Chart';
+import { BreachAction } from '../../features/Breach';
 import { SensorStatusAction, SensorStatusSelector } from '../../features/SensorStatus';
 
 export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, onLongPress }) => {

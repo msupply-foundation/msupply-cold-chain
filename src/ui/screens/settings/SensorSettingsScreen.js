@@ -5,7 +5,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 import { t } from '~translations';
 import { COLOUR, NAVIGATION, SETTING } from '~constants';
-import { SensorSelector } from '~sensor';
+import { SensorSelector } from '~features/Sensor';
 
 import { SettingsList } from '~layouts';
 import { UpdatingSensorModal } from '~components';
@@ -15,7 +15,7 @@ import {
   SettingsNavigationRow,
   SettingsAddSensorRow,
 } from '~components/settings';
-import { SettingAction } from '~setting';
+import { SettingAction } from '~features/Setting';
 import { ScanAction, ScanSelector } from '../../../features/Bluetooth';
 
 export const SensorSettingsScreen = React.memo(({ navigation }) => {

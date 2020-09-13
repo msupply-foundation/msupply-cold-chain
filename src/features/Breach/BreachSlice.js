@@ -3,8 +3,8 @@ import { takeEvery, getContext, call, put } from 'redux-saga/effects';
 
 import { REDUCER, DEPENDENCY } from '~constants';
 
-import { SensorAction } from '../sensor';
-import { ChartAction } from '../chart';
+import { SensorAction } from '../Sensor';
+import { ChartAction } from '../Chart';
 
 const initialState = {
   listCumulative: {},

@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
-import { SensorReducer } from '~sensor';
-import { SettingReducer } from '~setting';
-import { BreachConfigurationReducer } from '~breachConfiguration';
-import { ChartReducer } from '../../features/chart';
-import { BreachReducer } from '../../features/breach';
-import { LogTableReducer } from '../../features/logTable';
+import { SensorReducer } from '~features/Sensor';
+import { SettingReducer } from '~features/Setting';
+import { BreachConfigurationReducer } from '~features/BreachConfiguration';
+import { ChartReducer } from '../../features/Chart';
+import { BreachReducer } from '../../features/Breach';
+import { LogTableReducer } from '../../features/LogTable';
 import { BluetoothReducer } from '../../features/Bluetooth';
 import { REDUCER } from '../constants';
 import { ReportReducer } from '../../features/Report';

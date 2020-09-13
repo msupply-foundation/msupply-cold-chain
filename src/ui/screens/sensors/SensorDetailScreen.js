@@ -16,9 +16,9 @@ import { Chart } from '~presentation';
 
 import { Download } from '../../presentation/icons/Download';
 import { Calendar } from '../../presentation/icons';
-import { LogTableAction } from '../../../features/logTable';
-import { ChartSelector, ChartAction } from '../../../features/chart';
-import { BreachAction } from '../../../features/breach';
+import { LogTableAction } from '../../../features/LogTable';
+import { ChartSelector, ChartAction } from '../../../features/Chart';
+import { BreachAction } from '../../../features/Breach';
 import { WritingLogsModal } from '../../components/WritingLogsModal';
 import { ExportDataModal } from '../../components/ExportDataModal';
 import { Email } from '../../presentation/icons/Email';

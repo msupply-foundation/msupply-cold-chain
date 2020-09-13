@@ -9,7 +9,7 @@ import { COLOUR } from '~constants';
 
 import { Row } from './Row';
 import { Centered } from './Centered';
-import { LogTableAction, LogTableSelector } from '../../features/logTable';
+import { LogTableAction, LogTableSelector } from '../../features/LogTable';
 
 const COLUMNS = [
   { header: 'Timestamp', flex: 1, key: 'time', textAlign: 'left' },

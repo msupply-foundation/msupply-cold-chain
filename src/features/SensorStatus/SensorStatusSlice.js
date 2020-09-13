@@ -2,8 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 import { call, getContext, put, takeEvery } from 'redux-saga/effects';
 import { DEPENDENCY, REDUCER } from '~constants';
 
-import { BreachAction } from '../breach';
-import { SensorAction } from '../sensor';
+import { BreachAction } from '../Breach';
+import { SensorAction } from '../Sensor';
 
 const initialState = {
   fetchingStatusById: { exampleId: false },

@@ -1,12 +1,12 @@
 import createSagaMiddleware from 'redux-saga';
 import { fork } from 'redux-saga/effects';
-import { SensorSaga } from '~sensor';
-import { BreachConfigurationSaga } from '~breachConfiguration';
-import { SettingSaga } from '~setting';
+import { SensorSaga } from '~features/Sensor';
+import { BreachConfigurationSaga } from '~features/BreachConfiguration';
+import { SettingSaga } from '~features/Setting';
 import { DependencyLocator } from '~services';
-import { ChartSaga } from '../../features/chart';
-import { BreachSaga } from '../../features/breach';
-import { LogTableSaga } from '../../features/logTable';
+import { ChartSaga } from '../../features/Chart';
+import { BreachSaga } from '../../features/Breach';
+import { LogTableSaga } from '../../features/LogTable';
 import { BluetoothSaga } from '../../features/Bluetooth';
 import { ReportSaga } from '../../features/Report';
 import { SensorStatusSaga } from '../../features/SensorStatus';

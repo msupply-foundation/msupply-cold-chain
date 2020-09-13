@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 
-import { SettingAction } from '~setting';
+import { SettingAction } from '~features/Setting';
 import { t } from '~translations';
 import { SETTING } from '~constants';
 

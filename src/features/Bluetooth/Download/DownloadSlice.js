@@ -3,7 +3,7 @@ import { call, getContext, put, takeEvery, fork, take, race, all, delay } from '
 import { createSlice } from '@reduxjs/toolkit';
 
 import { SETTING, DEPENDENCY, REDUCER } from '~constants';
-import { BreachAction } from '../../breach';
+import { BreachAction } from '../../Breach';
 
 const initialState = {
   downloadingById: {},

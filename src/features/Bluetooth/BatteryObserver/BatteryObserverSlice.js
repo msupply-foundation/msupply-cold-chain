@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { DEPENDENCY, REDUCER } from '~constants';
 
-import { SensorAction } from '../../sensor';
+import { SensorAction } from '../../Sensor';
 
 const initialState = {
   isWatching: false,

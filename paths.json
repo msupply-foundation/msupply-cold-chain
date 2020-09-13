@@ -16,12 +16,5 @@
   "~store": "./src/common/store",
   "~services": "./src/common/services",
 
-  "~features": "./src/features",
-  "~sensor": "./src/features/sensor",
-  "~breach": "./src/features/breach",
-  "~setting": "./src/features/setting",
-  "~breachConfiguration": "./src/features/breachConfiguration",
-  "~chart": "./src/features/chart",
-
-  "~device": "./src/features/device"
+  "~features": "./src/features"
 }

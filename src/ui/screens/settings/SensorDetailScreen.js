@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 
-import { SensorAction } from '~sensor';
+import { SensorAction } from '~features/Sensor';
 import { useRouteProps } from '~hooks';
 
 import { t } from '~translations';

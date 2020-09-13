@@ -11,7 +11,7 @@ import {
   select,
 } from 'redux-saga/effects';
 import { DEPENDENCY, REDUCER } from '~constants';
-import { SensorSelector, SensorAction } from '../../sensor';
+import { SensorSelector, SensorAction } from '../../Sensor';
 
 const initialState = {
   foundSensors: [],

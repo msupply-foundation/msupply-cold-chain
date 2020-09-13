@@ -8,7 +8,7 @@ import { COLOUR, NAVIGATION } from '~constants';
 import {
   BreachConfigurationSelector,
   BreachConfigurationAction,
-} from '~features/breachConfiguration';
+} from '~features/BreachConfiguration';
 
 import { SettingsList } from '~layouts';
 import { SettingsGroup, SettingsNavigationRow } from '~components/settings';

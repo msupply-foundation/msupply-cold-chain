@@ -13,12 +13,12 @@ import {
   FormatService,
 } from '~common/services';
 
-import { SensorManager } from '~sensor';
-import { SettingManager } from '../../features/setting/SettingManager';
-import { BreachConfigurationManager } from '../../features/breachConfiguration';
-import { ChartManager } from '../../features/chart';
-import { BreachManager } from '../../features/breach';
-import { LogTableManager } from '../../features/logTable';
+import { SensorManager } from '~features/Sensor';
+import { SettingManager } from '../../features/Setting/SettingManager';
+import { BreachConfigurationManager } from '../../features/BreachConfiguration';
+import { ChartManager } from '../../features/Chart';
+import { BreachManager } from '../../features/Breach';
+import { LogTableManager } from '../../features/LogTable';
 import { DownloadManager } from '../../features/Bluetooth';
 import { ReportManager } from '../../features/Report';
 import { SensorStatusManager } from '../../features/SensorStatus';
