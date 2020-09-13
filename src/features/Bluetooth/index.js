@@ -1,6 +1,6 @@
-export { BatteryObserverAction, BatteryObserverSelector } from './batteryObserver';
-export { BlinkAction, BlinkSelector } from './blink';
-export { DownloadAction, DownloadSelector } from './download';
+export { BatteryObserverAction, BatteryObserverSelector } from './BatteryObserver';
+export { BlinkAction, BlinkSelector } from './Blink';
+export { DownloadAction, DownloadSelector } from './Download';
 export { ProgramAction, ProgramSelector } from './Program';
-export { ScanAction, ScanSelector } from './scan';
-export { BluetoothReducer, BluetoothSaga } from './bluetoothSlice';
+export { ScanAction, ScanSelector } from './Scan';
+export { BluetoothReducer, BluetoothSaga } from './BluetoothSlice';
