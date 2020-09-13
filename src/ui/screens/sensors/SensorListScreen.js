@@ -8,7 +8,6 @@ import { SensorSelector, SensorAction } from '~sensor';
 
 import { Gradient } from '~layouts';
 import { NAVIGATION } from '~constants';
-import { BreachAction } from '~features/breach';
 import { BatteryObserverAction } from '../../../features/bluetooth/batteryObserver';
 
 import { DownloadAction } from '../../../features/bluetooth';
@@ -30,10 +29,6 @@ export const SensorListScreen = React.memo(({ navigation }) => {
     dispatch(BatteryObserverAction.start());
     return () => dispatch(BatteryObserverAction.stop());
   });
-
-  useEffect(() => {
-    dispatch(BreachAction.getAllCumulativeExposures());
-  }, []);
 
   useEffect(() => {
     if (isFocused) navigation.dangerouslyGetParent().setOptions({ tabBarVisible: true });

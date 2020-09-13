@@ -11,7 +11,7 @@ import { Column } from '~layouts';
 
 import { SettingsEditModal } from './settings/SettingsEditModal';
 
-import { DeviceAction } from '../../common/services/DeviceFeature';
+import { ReportAction } from '../../features/Report';
 
 export const ExportDataModal = ({ id, onConfirm, isOpen, onClose, variant = 'export' }) => {
   const { width } = useWindowDimensions();
@@ -20,10 +20,10 @@ export const ExportDataModal = ({ id, onConfirm, isOpen, onClose, variant = 'exp
   const onConfirmModal = useCallback(
     ({ username, comment }) => {
       if (variant === 'export') {
-        dispatch(DeviceAction.tryWriteLogFile(id, username, comment));
+        dispatch(ReportAction.tryCreate(id, username, comment));
       }
       if (variant === 'email') {
-        dispatch(DeviceAction.tryEmailLogFile(id, username, comment));
+        dispatch(ReportAction.tryCreateAndEmail(id, username, comment));
       }
       onConfirm();
     },

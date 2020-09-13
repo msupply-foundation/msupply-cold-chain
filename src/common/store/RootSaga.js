@@ -9,6 +9,7 @@ import { BreachSaga } from '../../features/breach';
 import { DeviceSaga } from '../services/DeviceFeature';
 import { LogTableSaga } from '../../features/logTable';
 import { BluetoothSaga } from '../../features/bluetooth';
+import { ReportSaga } from '../../features/Report';
 
 export function* RootSaga() {
   yield fork(SensorSaga.watchSensorActions);
@@ -19,6 +20,7 @@ export function* RootSaga() {
   yield fork(DeviceSaga.watchDeviceActions);
   yield fork(LogTableSaga.watchLogTableActions);
   yield fork(BluetoothSaga.root);
+  yield fork(ReportSaga.root);
 }
 
 export const SagaMiddleware = createSagaMiddleware({

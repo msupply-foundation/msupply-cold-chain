@@ -9,7 +9,6 @@ import { COLOUR } from '~constants';
 
 import { Row } from './Row';
 import { Centered } from './Centered';
-import { BreachAction } from '../../features/breach';
 import { LogTableAction, LogTableSelector } from '../../features/logTable';
 
 const COLUMNS = [
@@ -88,8 +87,7 @@ export const SensorLogsRow = React.memo(
   }
 );
 
-const Header = ({ columns, sortDirection }) => {
-  const dispatch = useDispatch();
+const Header = ({ columns }) => {
   return (
     <Row
       justifyContent="space-between"
@@ -100,20 +98,14 @@ const Header = ({ columns, sortDirection }) => {
       }}
     >
       {columns.map((column, ind) => (
-        <TouchableNativeFeedback
-          onPress={() => {
-            dispatch(BreachAction.sort(column.key, sortDirection === 'asc'));
-          }}
-        >
-          <Row flex={column.flex} justifyContent="center">
-            <SensorLogsCell
-              data={column.header}
-              isLast
-              // eslint-disable-next-line react/no-array-index-key
-              key={`${ind}${column.key}`}
-            />
-          </Row>
-        </TouchableNativeFeedback>
+        <Row flex={column.flex} justifyContent="center">
+          <SensorLogsCell
+            data={column.header}
+            isLast
+            // eslint-disable-next-line react/no-array-index-key
+            key={`${ind}${column.key}`}
+          />
+        </Row>
       ))}
     </Row>
   );

@@ -20,6 +20,7 @@ import { ChartManager } from '../../features/chart';
 import { BreachManager } from '../../features/breach';
 import { LogTableManager } from '../../features/logTable';
 import { DownloadManager } from '../../features/bluetooth/download';
+import { ReportManager } from '../../features/Report';
 
 const bleManager = new BleManager();
 
@@ -53,6 +54,7 @@ export const DependencyContainer = props => {
     const logTableManager = new LogTableManager(dbService);
     const downloadManager = new DownloadManager(dbService, utilService);
     const sensorsManager = new SensorManager(dbService, utilService);
+    const reportManager = new ReportManager(dbService, exportService, deviceService);
 
     DependencyLocator.register(DEPENDENCY.BREACH_CONFIGURATION_MANAGER, breachConfigurationManager);
     DependencyLocator.register(DEPENDENCY.SENSOR_MANAGER, sensorsManager);
@@ -61,6 +63,7 @@ export const DependencyContainer = props => {
     DependencyLocator.register(DEPENDENCY.BREACH_MANAGER, breachManager);
     DependencyLocator.register(DEPENDENCY.LOG_TABLE_MANAGER, logTableManager);
     DependencyLocator.register(DEPENDENCY.DOWNLOAD_MANAGER, downloadManager);
+    DependencyLocator.register(DEPENDENCY.REPORT_MANAGER, reportManager);
 
     (async () => {
       await db.getConnection();

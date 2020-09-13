@@ -1,7 +1,7 @@
 export { TEMPERATURE_SYNC_STATE, PASSIVE_TEMPERATURE_SYNC_STATE } from './TemperatureSyncState';
 export { REDUCER } from './Reducer';
 export { MILLISECONDS } from './Milliseconds';
-export { DEPENDENCY, BLUETOOTH_SERVICE } from './Services';
+export { DEPENDENCY, BLUETOOTH_SERVICE } from './Dependency';
 export { ENTITIES } from './Entities';
 export {
   BLUETOOTH_STATE,
