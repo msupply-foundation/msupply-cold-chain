@@ -8,10 +8,10 @@ import { t } from '~translations';
 import { LoadingModalLayout, FullScreenModal } from '~layouts';
 
 import { LargeText } from '~presentation/typography';
-import { NewSensorSelector } from '../../features/bluetooth';
+import { ProgramSelector } from '../../features/Bluetooth';
 
 export const ConnectingWithSensorModal = ({ macAddress }) => {
-  const { [macAddress]: isConnecting } = useSelector(NewSensorSelector.isConnecting);
+  const { [macAddress]: isConnecting } = useSelector(ProgramSelector.programmingByMac);
 
   return (
     <FullScreenModal isOpen={isConnecting}>

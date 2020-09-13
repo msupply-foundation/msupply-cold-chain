@@ -21,7 +21,7 @@ import {
   DownloadAction,
   BlinkAction,
   BlinkSelector,
-} from '../../../features/bluetooth';
+} from '../../../features/Bluetooth';
 
 export const SensorDetailScreen = () => {
   const { id } = useRouteProps();

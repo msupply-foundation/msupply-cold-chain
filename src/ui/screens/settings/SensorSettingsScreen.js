@@ -16,7 +16,7 @@ import {
   SettingsAddSensorRow,
 } from '~components/settings';
 import { SettingAction } from '~setting';
-import { ScanAction, ScanSelector } from '../../../features/bluetooth/scan';
+import { ScanAction, ScanSelector } from '../../../features/Bluetooth';
 
 export const SensorSettingsScreen = React.memo(({ navigation }) => {
   const isFocused = useIsFocused();

@@ -5,7 +5,7 @@ import { BreachConfigurationReducer } from '~breachConfiguration';
 import { ChartReducer } from '../../features/chart';
 import { BreachReducer } from '../../features/breach';
 import { LogTableReducer } from '../../features/logTable';
-import { BluetoothReducer } from '../../features/bluetooth';
+import { BluetoothReducer } from '../../features/Bluetooth';
 import { REDUCER } from '../constants';
 import { ReportReducer } from '../../features/Report';
 import { SensorStatusReducer } from '../../features/SensorStatus';

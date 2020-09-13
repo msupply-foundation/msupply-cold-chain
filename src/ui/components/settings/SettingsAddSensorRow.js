@@ -5,7 +5,7 @@ import { useToggle } from '~hooks';
 
 import { SettingsItem } from './SettingsItem';
 import { SettingsAddSensorModal } from './SettingsAddSensorModal';
-import { ProgramAction, BlinkAction } from '../../../features/bluetooth';
+import { ProgramAction, BlinkAction } from '../../../features/Bluetooth';
 
 import { ConnectingWithSensorModal } from '../ConnectingWithSensorModal';
 

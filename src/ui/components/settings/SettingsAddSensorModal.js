@@ -17,7 +17,7 @@ import { NormalText } from '~presentation/typography';
 import { Button } from '~components/buttons';
 
 import { SettingsEditModal } from './SettingsEditModal';
-import { BlinkSelector } from '../../../features/bluetooth';
+import { BlinkSelector } from '../../../features/Bluetooth';
 
 const styles = {
   column: { maxHeight: STYLE.HEIGHT.SENSOR_ROW },

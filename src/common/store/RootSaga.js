@@ -7,7 +7,7 @@ import { DependencyLocator } from '~services';
 import { ChartSaga } from '../../features/chart';
 import { BreachSaga } from '../../features/breach';
 import { LogTableSaga } from '../../features/logTable';
-import { BluetoothSaga } from '../../features/bluetooth';
+import { BluetoothSaga } from '../../features/Bluetooth';
 import { ReportSaga } from '../../features/Report';
 import { SensorStatusSaga } from '../../features/SensorStatus';
 

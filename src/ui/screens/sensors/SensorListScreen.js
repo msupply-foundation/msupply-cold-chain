@@ -8,9 +8,8 @@ import { SensorSelector, SensorAction } from '~sensor';
 
 import { Gradient } from '~layouts';
 import { NAVIGATION } from '~constants';
-import { BatteryObserverAction } from '../../../features/bluetooth/batteryObserver';
 
-import { DownloadAction } from '../../../features/bluetooth';
+import { BatteryObserverAction, DownloadAction } from '../../../features/Bluetooth';
 
 export const SensorListScreen = React.memo(({ navigation }) => {
   const sensors = useSelector(SensorSelector.sensorsList, shallowEqual);

@@ -111,12 +111,12 @@ const ProgramSelector = {
   }) => {
     return programmingByMac;
   },
-  isUpdating: ({
+  isProgramming: ({
     bluetooth: {
-      program: { isUpdating },
+      program: { isProgramming },
     },
   }) => {
-    return isUpdating;
+    return isProgramming;
   },
 };
 

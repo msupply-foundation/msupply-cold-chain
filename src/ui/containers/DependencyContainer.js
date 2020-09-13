@@ -19,7 +19,7 @@ import { BreachConfigurationManager } from '../../features/breachConfiguration';
 import { ChartManager } from '../../features/chart';
 import { BreachManager } from '../../features/breach';
 import { LogTableManager } from '../../features/logTable';
-import { DownloadManager } from '../../features/bluetooth/download';
+import { DownloadManager } from '../../features/Bluetooth';
 import { ReportManager } from '../../features/Report';
 import { SensorStatusManager } from '../../features/SensorStatus';
 
