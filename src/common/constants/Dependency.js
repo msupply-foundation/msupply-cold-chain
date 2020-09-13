@@ -16,6 +16,7 @@ export const DEPENDENCY = {
   DOWNLOAD_MANAGER: 'downloadManager',
   REPORT_MANAGER: 'reportManager',
   PERMISSION_SERVICE: 'permissionService',
+  SENSOR_STATUS_MANAGER: 'sensorStatusManager',
 };
 
 export const BLUETOOTH_SERVICE = {

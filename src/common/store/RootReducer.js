@@ -8,6 +8,7 @@ import { LogTableReducer } from '../../features/logTable';
 import { BluetoothReducer } from '../../features/bluetooth';
 import { REDUCER } from '../constants';
 import { ReportReducer } from '../../features/Report';
+import { SensorStatusReducer } from '../../features/SensorStatus';
 
 export const RootReducer = combineReducers({
   [REDUCER.SENSOR]: SensorReducer,
@@ -18,4 +19,5 @@ export const RootReducer = combineReducers({
   [REDUCER.LOG_TABLE]: LogTableReducer,
   [REDUCER.BLUETOOTH]: BluetoothReducer,
   [REDUCER.REPORT]: ReportReducer,
+  [REDUCER.SENSOR_STATUS]: SensorStatusReducer,
 });

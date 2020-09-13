@@ -15,6 +15,16 @@ const reducers = {
     prepare: sensor => ({ payload: { sensor } }),
     reducer: () => {},
   },
+  createBreachesSuccess: {
+    prepare: (sensorId, updatedBreaches, updatedLogs) => ({
+      payload: { sensorId, updatedBreaches, updatedLogs },
+    }),
+    reducer: () => {},
+  },
+  createBreachesFail: {
+    prepare: () => {},
+    reducer: () => {},
+  },
   getListCumulativeForSensor: {
     prepare: sensorId => ({ payload: { sensorId } }),
     reducer: () => {},
@@ -101,8 +111,11 @@ function* createBreaches({ payload: { sensor } }) {
     yield call(breachManager.updateBreaches, breaches, updatedLogs);
     yield put(ChartAction.getListChartData(id));
     yield put(SensorAction.getSensorState(id));
+    yield put(BreachAction.createBreachesSuccess(id, breaches, updatedLogs));
     // eslint-disable-next-line no-empty
-  } catch (e) {}
+  } catch (e) {
+    yield put(BreachAction.createBreachesFail());
+  }
 }
 
 function* watchBreachActions() {

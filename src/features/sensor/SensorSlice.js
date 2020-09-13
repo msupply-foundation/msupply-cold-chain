@@ -8,7 +8,6 @@ const initialState = {
   byId: {},
   ids: [],
   foundSensors: [],
-  status: {},
 };
 
 const reducers = {
@@ -200,13 +199,12 @@ function* updateLogDelay({ payload: { logDelay, sensorId } }) {
 function* updateBatteryLevel({ payload: { sensorId, batteryLevel } }) {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
-
   try {
     yield call(sensorManager.updateBatteryLevel, sensorId, batteryLevel);
     yield put(SensorAction.updateBatteryLevelSuccessful(sensorId, batteryLevel));
-    yield put(SensorAction.getSensorState(sensorId));
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
+  } catch (error) {
+    yield put(SensorAction.updateBatteryLevelFailed());
+  }
 }
 
 function* watchSensorActions() {

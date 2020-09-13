@@ -11,7 +11,6 @@ import { Row, Column, FullScreenModal, Gradient, Centered } from '~layouts';
 import { useRouteProps, useToggle } from '~hooks';
 import { SensorLogsTable } from '../../layouts/SensorLogsTable';
 
-import { SensorSelector } from '~sensor';
 import { NormalText, LargeText } from '../../presentation/typography';
 import { Chart } from '~presentation';
 
@@ -23,12 +22,13 @@ import { BreachAction } from '../../../features/breach';
 import { WritingLogsModal } from '../../components/WritingLogsModal';
 import { ExportDataModal } from '../../components/ExportDataModal';
 import { Email } from '../../presentation/icons/Email';
+import { SensorStatusSelector } from '../../../features/SensorStatus';
 
 export const SensorDetailScreen = ({ navigation }) => {
   const [exportModalVariant, setExportModalVariant] = useState(null);
 
   const { id } = useRouteProps();
-  const { [id]: sensor } = useSelector(SensorSelector.status);
+  const { [id]: sensor } = useSelector(SensorStatusSelector.byId);
 
   const { mostRecentLogTimestamp, minChartTimestamp, firstTimestamp } = sensor;
   const [load, setLoad] = useState(false);

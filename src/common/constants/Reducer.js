@@ -19,4 +19,5 @@ export const REDUCER = {
   NEW_SENSOR: 'new_sensor',
   REPORT: 'report',
   PERMISSION: 'permission',
+  SENSOR_STATUS: 'sensorStatus',
 };

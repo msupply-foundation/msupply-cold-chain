@@ -11,6 +11,7 @@ import { SensorAction } from '~features/sensor';
 import { SensorStatus } from './SensorStatus';
 import { ChartAction } from '../../features/chart';
 import { BreachAction } from '../../features/breach';
+import { SensorStatusAction, SensorStatusSelector } from '../../features/SensorStatus';
 
 export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, onLongPress }) => {
   const isLoading = useSelector(state => state.chart.listLoading[id]);
@@ -18,10 +19,15 @@ export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, on
   const { coldCumulative, hotCumulative } =
     useSelector(state => state.breach.listCumulative[id], shallowEqual) ?? {};
 
-  const sensor = useSelector(state => state.sensor.status[id], shallowEqual) ?? {};
+  const { [id]: status = {} } = useSelector(SensorStatusSelector.byId, shallowEqual) ?? {};
+
   const dispatch = useDispatch();
 
-  const { numberOfLogs, batteryLevel } = sensor;
+  useEffect(() => {
+    dispatch(SensorStatusAction.fetch(id));
+  }, []);
+
+  const { batteryLevel, numberOfLogs } = status;
 
   useEffect(() => {
     dispatch(SensorAction.getSensorState(id));
@@ -60,21 +66,21 @@ export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, on
           numberOfLogs ? (
             <SensorStatus
               batteryLevel={batteryLevel}
-              temperature={String(sensor.currentTemperature)}
-              isInHotBreach={!!sensor.isInHotBreach}
-              isInColdBreach={!!sensor.isInColdBreach}
+              temperature={String(status.currentTemperature)}
+              isInHotBreach={!!status.isInHotBreach}
+              isInColdBreach={!!status.isInColdBreach}
             />
           ) : null
         }
         Extra={
           // eslint-disable-next-line react/jsx-wrap-multilines
           <Column>
-            <BoldText colour={COLOUR.WHITE}>{sensor.name ?? sensor.macAddress}</BoldText>
+            <BoldText colour={COLOUR.WHITE}>{status.name ?? status.macAddress}</BoldText>
             {numberOfLogs ? (
               <>
                 <NormalText>
                   {`${moment
-                    .duration(moment.unix(moment().unix() - sensor.mostRecentLogTimestamp))
+                    .duration(moment.unix(moment().unix() - status.mostRecentLogTimestamp))
                     .humanize()} ago`}
                 </NormalText>
                 {coldCumulative && (
