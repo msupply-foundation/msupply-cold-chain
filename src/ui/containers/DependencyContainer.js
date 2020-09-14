@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BleManager } from 'react-native-ble-plx';
 import * as SplashScreen from 'expo-splash-screen';
 import { DEPENDENCY } from '~constants';
@@ -20,10 +20,9 @@ import { LogTableManager } from '../../features/LogTable';
 import { DownloadManager } from '../../features/Bluetooth';
 import { ReportManager } from '../../features/Report';
 import { SensorStatusManager } from '../../features/SensorStatus';
+import { DependencyLocatorContext } from '../../common/services/DependencyLocator';
 
 const bleManager = new BleManager();
-
-export const DependencyLocatorContext = createContext();
 
 export const DependencyContainer = props => {
   const [ready, setReady] = useState(false);

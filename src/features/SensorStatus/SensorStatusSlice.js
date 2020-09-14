@@ -6,22 +6,24 @@ import { ConsecutiveBreachAction } from '../Breach';
 import { SensorAction } from '../Entities';
 
 const initialState = {
-  fetchingStatusById: { exampleId: false },
+  fetchingStatusById: {
+    // exampleId: false,
+  },
   byId: {
-    exampleId: {
-      macAddress: 'AA',
-      logInterval: 300,
-      batteryLevel: 99,
-      name: 'A',
-      logDelay: 111,
-      mostRecentLogTimestamp: 111,
-      firstTimestamp: 111,
-      numberOfLogs: 111,
-      currentTemperature: 111,
-      minChartTimestamp: 111,
-      isInHotBreach: false,
-      isInColdBreach: false,
-    },
+    // exampleId: {
+    //   macAddress: 'AA',
+    //   logInterval: 300,
+    //   batteryLevel: 99,
+    //   name: 'A',
+    //   logDelay: 111,
+    //   mostRecentLogTimestamp: 111,
+    //   firstTimestamp: 111,
+    //   numberOfLogs: 111,
+    //   currentTemperature: 111,
+    //   minChartTimestamp: 111,
+    //   isInHotBreach: false,
+    //   isInColdBreach: false,
+    // },
   },
 };
 

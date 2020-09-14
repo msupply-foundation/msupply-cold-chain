@@ -13,7 +13,7 @@ import { CumulativeBreachAction } from '../../features/Breach';
 import { SensorStatusAction, SensorStatusSelector } from '../../features/SensorStatus';
 
 export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, onLongPress }) => {
-  const isLoading = useSelector(state => state.chart.listLoading[id]);
+  const isLoading = useSelector(state => state.chart.listLoading[id]) ?? true;
   const logs = useSelector(state => state.chart.listDataPoints[id], shallowEqual);
   const { coldCumulative, hotCumulative } =
     useSelector(state => state.breach.cumulative.listById[id], shallowEqual) ?? {};
