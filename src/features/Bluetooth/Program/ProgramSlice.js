@@ -69,7 +69,7 @@ export function* tryProgramNewSensor({ payload: { macAddress, logDelay } }) {
     }
 
     yield put(ProgramAction.programNewSensorSuccess(macAddress));
-    yield put(SensorAction.addNewSensor(macAddress, logInterval, logDelay, batteryLevel));
+    yield put(SensorAction.create(macAddress, logInterval, logDelay, batteryLevel));
     ToastAndroid.show(`Connected and setup ${macAddress}`, ToastAndroid.SHORT);
   } catch (e) {
     yield put(ProgramAction.programNewSensorFail(macAddress, e?.message));

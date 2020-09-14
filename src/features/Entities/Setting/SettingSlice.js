@@ -9,28 +9,28 @@ const initialState = {
 };
 
 const reducers = {
-  hydrate: () => {},
-  hydrateSucceeded: {
+  fetchAll: () => {},
+  fetchAllSuccess: {
+    prepare: settings => ({ payload: { settings } }),
     reducer: (draftState, { payload: { settings } }) => {
       settings.forEach(({ key, value }) => {
         draftState[key] = JSON.parse(value);
       });
     },
-    prepare: settings => ({ payload: { settings } }),
   },
-  hydrateFailed: () => {},
+  fetchAllFail: () => {},
 
-  updatedSetting: {
+  update: {
     prepare: (key, value) => ({ payload: { key, value } }),
     reducer: () => {},
   },
-  updatedSettingSucceeded: {
+  updateSuccess: {
+    prepare: setting => ({ payload: { setting } }),
     reducer: (draftState, { payload: { setting } }) => {
       draftState[setting.key] = JSON.parse(setting.value);
     },
-    prepare: setting => ({ payload: { setting } }),
   },
-  updatedSettingFailed: () => {},
+  updateFail: () => {},
 };
 
 const { actions: SettingAction, reducer: SettingReducer } = createSlice({
@@ -50,35 +50,34 @@ const SettingSelector = {
   },
 };
 
-function* hydrate() {
+function* fetchAll() {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const settingsManager = yield call(DependencyLocator.get, DEPENDENCY.SETTING_MANAGER);
 
   try {
     const settings = yield call(settingsManager.getSettings);
-    yield put(SettingAction.hydrateSucceeded(settings));
+    yield put(SettingAction.fetchAllSuccess(settings));
   } catch (error) {
-    yield put(SettingAction.hydrateFailed());
+    yield put(SettingAction.fetchAllFail());
   }
 }
 
-function* updateSetting({ payload: { key, value } }) {
+function* update({ payload: { key, value } }) {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const settingsManager = yield call(DependencyLocator.get, DEPENDENCY.SETTING_MANAGER);
-
   try {
     const setting = yield call(settingsManager.setSetting, key, JSON.stringify(value));
-    yield put(SettingAction.updatedSettingSucceeded(setting));
+    yield put(SettingAction.updateSuccess(setting));
   } catch (error) {
-    yield put(SettingAction.updatedSettingFailed());
+    yield put(SettingAction.updateFail());
   }
 }
 
-function* watchSettingActions() {
-  yield takeEvery(SettingAction.hydrate, hydrate);
-  yield takeEvery(SettingAction.updatedSetting, updateSetting);
+function* root() {
+  yield takeEvery(SettingAction.fetchAll, fetchAll);
+  yield takeEvery(SettingAction.update, update);
 }
 
-const SettingSaga = { watchSettingActions, updateSetting, hydrate };
+const SettingSaga = { root, update, fetchAll };
 
 export { SettingAction, SettingReducer, SettingSelector, SettingSaga };

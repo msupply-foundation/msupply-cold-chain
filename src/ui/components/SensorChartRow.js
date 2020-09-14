@@ -7,7 +7,6 @@ import { SensorRowLayout, Row, Column } from '~layouts';
 import { Divider, Chart } from '~presentation';
 import { STYLE, COLOUR } from '~constants';
 import { NormalText, BoldText, MediumText } from '~presentation/typography';
-import { SensorAction } from '~features/Entities';
 import { SensorStatus } from './SensorStatus';
 import { ChartAction } from '../../features/Chart';
 import { BreachAction } from '../../features/Breach';
@@ -30,7 +29,6 @@ export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, on
   const { batteryLevel, numberOfLogs } = status;
 
   useEffect(() => {
-    dispatch(SensorAction.getSensorState(id));
     dispatch(ChartAction.getListChartData(id));
     dispatch(BreachAction.getListCumulativeForSensor(id));
   }, []);

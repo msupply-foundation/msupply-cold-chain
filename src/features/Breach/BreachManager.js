@@ -4,11 +4,11 @@ import { Not, IsNull, MoreThan, Equal } from 'typeorm/browser';
 import { ENTITIES } from '~constants';
 
 const CUMULATIVE_EXPOSURE = `
-select max(temperature) maximumTemperature,
+select *, sum(logInterval), max(temperature) maximumTemperature,
 sum(logInterval) duration,
 min(temperature) minimumTemperature,
-case when min(temperature) >= hotCumulativeMinThreshold and sum(logInterval) >= hotCumulativeDuration then 1 else 0 end as isHotCumulative,
-case when max(temperature) <= coldCumulativeMaxThreshold and sum(logInterval) >= coldCumulativeDuration then 1 else 0 end as isColdCumulative
+case when min(temperature) >= hotCumulativeMinThreshold and sum(logInterval) * 1000 >= hotCumulativeDuration then 1 else 0 end as isHotCumulative,
+case when max(temperature) <= coldCumulativeMaxThreshold and sum(logInterval) * 1000 >= coldCumulativeDuration then 1 else 0 end as isColdCumulative
 from (
 select temperature,
 logInterval,

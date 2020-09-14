@@ -43,7 +43,7 @@ const reducers = {
 };
 
 const extraReducers = {
-  [SensorAction.addNewSensorSuccessful]: (
+  [SensorAction.createSuccess]: (
     draftState,
     {
       payload: {

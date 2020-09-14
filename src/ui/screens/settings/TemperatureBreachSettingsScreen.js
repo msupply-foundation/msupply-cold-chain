@@ -22,7 +22,7 @@ export const TemperatureBreachSettingsScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(BreachConfigurationAction.hydrate());
+    dispatch(BreachConfigurationAction.fetchAll());
   }, []);
 
   return hotBreach ? (

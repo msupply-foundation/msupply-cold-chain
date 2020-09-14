@@ -24,7 +24,7 @@ export const BluetoothSettingsScreen = () => {
           step={1}
           metric={t('MINUTES')}
           onConfirm={({ value }) =>
-            dispatch(SettingAction.updatedSetting(SETTING.INT.DOWNLOAD_INTERVAL, value * 60000))}
+            dispatch(SettingAction.update(SETTING.INT.DOWNLOAD_INTERVAL, value * 60000))}
           editDescription={t('EDIT_LOG_INTERVAL')}
         />
       </SettingsGroup>

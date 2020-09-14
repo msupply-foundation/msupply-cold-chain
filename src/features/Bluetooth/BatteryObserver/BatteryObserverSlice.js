@@ -43,7 +43,9 @@ function* updateBatteryLevels() {
         return { ...sensor };
       });
       yield all(
-        mapped.map(sensor => put(SensorAction.updateBatteryLevel(sensor.id, sensor.batteryLevel)))
+        mapped.map(sensor =>
+          put(SensorAction.update(sensor.id, 'batteryLevel', sensor.batteryLevel))
+        )
       );
 
       yield put(BatteryObserverAction.updateSuccess());

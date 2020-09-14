@@ -21,7 +21,7 @@ export const SensorListScreen = React.memo(({ navigation }) => {
   });
 
   useEffect(() => {
-    dispatch(SensorAction.hydrate());
+    dispatch(SensorAction.fetchAll());
   }, []);
 
   useEffect(() => {

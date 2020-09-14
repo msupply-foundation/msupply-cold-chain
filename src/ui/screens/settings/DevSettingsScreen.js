@@ -21,7 +21,7 @@ export const DevSettingsScreen = () => {
         <SettingsButtonRow
           label="Add random sensor"
           subtext="Adds a random sensor with a random mac address and default values"
-          onPress={() => dispatch(SensorAction.addNewSensor(randomMacAddress(), 300))}
+          onPress={() => dispatch(SensorAction.create(randomMacAddress(), 300))}
         />
         {availableSensors.map(sensor => (
           <SettingsButtonRow

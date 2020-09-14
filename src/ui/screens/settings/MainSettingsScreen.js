@@ -14,7 +14,7 @@ export const MainSettingsScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(SettingAction.hydrate());
+    dispatch(SettingAction.fetchAll());
   }, []);
 
   return (

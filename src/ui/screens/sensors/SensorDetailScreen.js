@@ -70,14 +70,14 @@ export const SensorDetailScreen = ({ navigation }) => {
     dispatch(
       BreachAction.getDetailCumulativeForSensor(
         dateRange.start().unix(),
-        dateRange.end().unix(),
+        dateRange.end().endOf('day').unix(),
         id
       )
     );
   }, []);
 
-  const { coldCumulative, hotCumulative } =
-    useSelector(state => state.breach.detailCumulative[id], shallowEqual) ?? {};
+  const { [id]: { coldCumulative, hotCumulative } = {} } =
+    useSelector(state => state.breach.detailCumulative, shallowEqual) ?? {};
 
   const data = useSelector(ChartSelector.detailDataPoints);
 

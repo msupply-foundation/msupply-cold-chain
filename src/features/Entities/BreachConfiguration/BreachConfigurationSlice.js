@@ -3,30 +3,46 @@ import { takeEvery, getContext, call, put } from 'redux-saga/effects';
 
 import { REDUCER, DEPENDENCY } from '~constants';
 
-const initialState = { byId: [], ids: [] };
+const initialState = {
+  byId: {
+    // exampleId: {
+    //   id: '',
+    //   minimumTemperature: 1,
+    //   maximumTemperature: 1,
+    //   duration: 1,
+    //   description: '',
+    // },
+  },
+  ids: [],
+};
+
 const reducers = {
-  hydrate: () => {},
-  hydrateSucceeded: {
+  fetchAll: () => {},
+  fetchAllSuccess: {
+    prepare: configs => ({ payload: { configs } }),
     reducer: (draftState, { payload: { configs } }) => {
-      draftState.byId = configs.reduce((acc, value) => {
+      const byId = configs.reduce((acc, value) => {
         return { ...acc, [value.id]: value };
       }, {});
-      draftState.ids = configs.map(({ id }) => id);
+      const ids = configs.map(({ id }) => id);
+
+      draftState.byId = byId;
+      draftState.ids = ids;
     },
-    prepare: configs => ({ payload: { configs } }),
   },
-  hydrateFailed: () => {},
+  fetchAllFail: () => {},
+
   update: {
     reducer: () => {},
     prepare: (id, key, value) => ({ payload: { id, key, value } }),
   },
-  updateSuccessful: {
+  updateSuccess: {
     reducer: (draftState, { payload: { id, key, value } }) => {
       draftState.byId[id] = { ...draftState.byId[id], [key]: value };
     },
     prepare: (id, key, value) => ({ payload: { id, key, value } }),
   },
-  updateFailed: () => {},
+  updateFail: () => {},
 };
 
 const { actions: BreachConfigurationAction, reducer: BreachConfigurationReducer } = createSlice({
@@ -50,45 +66,37 @@ const BreachConfigurationSelector = {
   },
 };
 
-function* updatedBreachConfiguration({ payload: { id, key, value } }) {
+function* update({ payload: { id, key, value } }) {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const breachConfigurationManager = yield call(
-    DependencyLocator.get,
-    DEPENDENCY.BREACH_CONFIGURATION_MANAGER
-  );
-
+  const configManager = yield call(DependencyLocator.get, DEPENDENCY.BREACH_CONFIGURATION_MANAGER);
   try {
-    yield call(breachConfigurationManager.updateField, id, key, value);
-    yield put(BreachConfigurationAction.updateSuccessful(id, key, value));
+    yield call(configManager.updateField, id, key, value);
+    yield put(BreachConfigurationAction.updateSuccess(id, key, value));
   } catch (error) {
-    yield put(BreachConfigurationAction.updateFailed(error));
+    yield put(BreachConfigurationAction.updateFail(error));
   }
 }
 
-function* hydrate() {
+function* fetchAll() {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const breachConfigurationManager = yield call(
-    DependencyLocator.get,
-    DEPENDENCY.BREACH_CONFIGURATION_MANAGER
-  );
-
+  const configManager = yield call(DependencyLocator.get, DEPENDENCY.BREACH_CONFIGURATION_MANAGER);
   try {
-    const result = yield call(breachConfigurationManager.getAll);
-    yield put(BreachConfigurationAction.hydrateSucceeded(result));
+    const result = yield call(configManager.getAll);
+    yield put(BreachConfigurationAction.fetchAllSuccess(result));
   } catch (error) {
-    yield put(BreachConfigurationAction.hydrateFailed());
+    yield put(BreachConfigurationAction.fetchAllFail());
   }
 }
 
-function* watchBreachConfigurationActions() {
-  yield takeEvery(BreachConfigurationAction.hydrate, hydrate);
-  yield takeEvery(BreachConfigurationAction.update, updatedBreachConfiguration);
+function* root() {
+  yield takeEvery(BreachConfigurationAction.fetchAll, fetchAll);
+  yield takeEvery(BreachConfigurationAction.update, update);
 }
 
 const BreachConfigurationSaga = {
-  watchBreachConfigurationActions,
-  hydrate,
-  updatedBreachConfiguration,
+  root,
+  fetchAll,
+  update,
 };
 
 export {

@@ -3,7 +3,6 @@ import { takeEvery, getContext, call, put } from 'redux-saga/effects';
 
 import { REDUCER, DEPENDENCY } from '~constants';
 
-import { SensorAction } from '../Entities';
 import { ChartAction } from '../Chart';
 
 const initialState = {
@@ -110,7 +109,6 @@ function* createBreaches({ payload: { sensor } }) {
 
     yield call(breachManager.updateBreaches, breaches, updatedLogs);
     yield put(ChartAction.getListChartData(id));
-    yield put(SensorAction.getSensorState(id));
     yield put(BreachAction.createBreachesSuccess(id, breaches, updatedLogs));
     // eslint-disable-next-line no-empty
   } catch (e) {

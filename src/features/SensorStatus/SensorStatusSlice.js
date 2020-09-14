@@ -76,14 +76,15 @@ function* getSensorStatus({ payload: { sensorId } }) {
   }
 }
 
-function* checkSensorStatus({ payload: { sensorId } }) {
+function* refreshSensorStatus({ payload: { sensorId } }) {
   yield put(SensorStatusAction.fetch(sensorId));
 }
 
 function* root() {
   yield takeEvery(SensorStatusAction.fetch, getSensorStatus);
-  yield takeEvery(BreachAction.createBreachesSuccess, checkSensorStatus);
-  yield takeEvery(SensorAction.updateBatteryLevel, checkSensorStatus);
+  yield takeEvery(BreachAction.createBreachesSuccess, refreshSensorStatus);
+  yield takeEvery(SensorAction.update, refreshSensorStatus);
+  yield takeEvery(SensorAction.createSuccess, refreshSensorStatus);
 }
 
 const SensorStatusSaga = { root };
