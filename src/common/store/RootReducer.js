@@ -9,6 +9,7 @@ import { BluetoothReducer } from '../../features/Bluetooth';
 import { REDUCER } from '../constants';
 import { ReportReducer } from '../../features/Report';
 import { SensorStatusReducer } from '../../features/SensorStatus';
+import { PermissionReducer } from '~features/Permission';
 
 export const RootReducer = combineReducers({
   [REDUCER.SENSOR]: SensorReducer,
@@ -20,4 +21,5 @@ export const RootReducer = combineReducers({
   [REDUCER.BLUETOOTH]: BluetoothReducer,
   [REDUCER.REPORT]: ReportReducer,
   [REDUCER.SENSOR_STATUS]: SensorStatusReducer,
+  [REDUCER.PERMISSION]: PermissionReducer,
 });

@@ -30,6 +30,15 @@ export class PermissionService {
     return this.getBluetoothState();
   };
 
+  checkBluetoothStatus = async () => {
+    return this.getBluetoothState();
+  };
+
+  requestBluetoothEnabled = async () => {
+    BluetoothStatus.enable();
+    return this.getBluetoothState();
+  };
+
   enableBluetooth = async () => {
     BluetoothStatus.enable();
     return this.getBluetoothState();
@@ -67,6 +76,10 @@ export class PermissionService {
     return SystemSetting.isLocationEnabled();
   };
 
+  checkLocationServicesStatus = async () => {
+    return SystemSetting.isLocationEnabled();
+  };
+
   requestLocationServicesEnabled = async () => {
     const isEnabled = await this.isLocationServicesEnabled();
     // eslint-disable-next-line consistent-return
@@ -91,13 +104,13 @@ export class PermissionService {
     });
   };
 
-  addFeatureListener = async (feature, callback) => {
+  addFeatureStatusListener = async (feature, callback) => {
     switch (feature) {
       default: {
         return null;
       }
       case 'location': {
-        return SystemSetting.addLocationListener(callback);
+        return SystemSetting.addLocationModeListener(newStatus => callback(newStatus !== 0));
       }
       case 'bluetooth': {
         return SystemSetting.addBluetoothListener(callback);

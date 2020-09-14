@@ -11,7 +11,7 @@ import { LargeText } from '~presentation/typography';
 import { ProgramSelector } from '../../features/Bluetooth';
 
 export const UpdatingSensorModal = () => {
-  const isUpdating = useSelector(ProgramSelector.isUpdating);
+  const isUpdating = useSelector(ProgramSelector.isProgramming);
 
   return (
     <FullScreenModal isOpen={isUpdating}>

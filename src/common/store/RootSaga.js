@@ -10,6 +10,7 @@ import { LogTableSaga } from '../../features/LogTable';
 import { BluetoothSaga } from '../../features/Bluetooth';
 import { ReportSaga } from '../../features/Report';
 import { SensorStatusSaga } from '../../features/SensorStatus';
+import { PermissionSaga } from '~features/Permission';
 
 export function* RootSaga() {
   yield fork(SensorSaga.watchSensorActions);
@@ -21,6 +22,7 @@ export function* RootSaga() {
   yield fork(BluetoothSaga.root);
   yield fork(ReportSaga.root);
   yield fork(SensorStatusSaga.root);
+  yield fork(PermissionSaga.root);
 }
 
 export const SagaMiddleware = createSagaMiddleware({

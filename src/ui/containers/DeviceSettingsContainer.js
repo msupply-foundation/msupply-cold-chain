@@ -1,104 +1,61 @@
-import { useMemo, useContext, useState, useEffect } from 'react';
+import { useMemo, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { DEPENDENCY } from '~constants';
-import { useOnAppFocus } from '~hooks';
-
-import { DependencyLocatorContext } from './DependencyContainer';
 import { DeviceServiceModal } from '~presentation';
 import { Location, Bluetooth, Storage } from '~presentation/icons';
+import { PermissionAction, PermissionSelector } from '../../features/Permission';
 
 export const DeviceSettingsContainer = ({ children }) => {
-  const DependencyLocator = useContext(DependencyLocatorContext);
-  const permissionService = DependencyLocator.get(DEPENDENCY.PERMISSION_SERVICE);
+  const showLocationServicesModal = useSelector(PermissionSelector.showLocationServicesModal);
+  const showBluetoothModal = useSelector(PermissionSelector.showBluetoothModal);
+  const showLocationPermissionModal = useSelector(PermissionSelector.showLocationPermissionModal);
+  const showStoragePermissionModal = useSelector(PermissionSelector.showStoragePermissionModal);
 
-  const [isLocationOn, setIsLocationOn] = useState(false);
-  const [isBluetoothOn, setIsBluetoothOn] = useState(false);
-
-  const [hasStoragePermission, setHasStoragePermission] = useState(false);
-  const [hasLocationPermission, setHasLocationPermission] = useState(false);
-
-  const [hasDoneInitialPermissionRequests, setHasDoneInitialPermissionRequests] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    (async () => {
-      setHasStoragePermission(await permissionService.hasStoragePermission());
-      setHasLocationPermission(await permissionService.hasLocationPermission());
-      setIsBluetoothOn(await permissionService.isBluetoothEnabled());
-      setIsLocationOn(await permissionService.isLocationServicesEnabled());
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      if (!hasStoragePermission) {
-        setHasStoragePermission(await permissionService.requestStoragePermission());
-      }
-      if (!hasLocationPermission) {
-        setHasLocationPermission(await permissionService.requestLocationPermission());
-      }
-      if (!isLocationOn) {
-        setIsLocationOn(await permissionService.requestLocationServicesEnabled());
-      }
-      if (!isBluetoothOn) {
-        setIsBluetoothOn(await permissionService.enableBluetooth());
-      }
-
-      setHasDoneInitialPermissionRequests(true);
-    })();
-  }, []);
-
-  useOnAppFocus(async () => {
-    setHasLocationPermission(await permissionService.hasLocationPermission());
-    setHasStoragePermission(await permissionService.hasStoragePermission());
-  });
-
-  useEffect(() => {
-    permissionService.addFeatureListener('bluetooth', setIsBluetoothOn);
-    permissionService.addFeatureListener('location', setIsLocationOn);
+    dispatch(PermissionAction.requestAndWatchPermissions());
   }, []);
 
   const Modal = useMemo(() => {
-    if (!isLocationOn) {
+    if (showLocationServicesModal) {
       return (
         <DeviceServiceModal
-          isOpen={!isLocationOn}
-          onPress={async () =>
-            setIsLocationOn(await permissionService.requestLocationServicesEnabled())}
+          isOpen={!showLocationServicesModal}
+          onPress={async () => dispatch(PermissionAction.requestLocationServicesEnabled())}
           title="Enable Location Services"
           Icon={<Location />}
           body="Please enable location services for bluetooth to function"
         />
       );
     }
-    if (!isBluetoothOn) {
+    if (showBluetoothModal) {
       return (
         <DeviceServiceModal
-          isOpen={!isBluetoothOn}
-          onPress={async () => setIsBluetoothOn(await permissionService.enableBluetooth())}
+          isOpen={!showBluetoothModal}
+          onPress={async () => dispatch(PermissionAction.requestBluetoothEnabled())}
           title="Enable Bluetooth"
           Icon={<Bluetooth />}
           body="Please enable bluetooth"
         />
       );
     }
-    if (!hasLocationPermission) {
+    if (showLocationPermissionModal) {
       return (
         <DeviceServiceModal
-          isOpen={!hasLocationPermission}
-          onPress={async () =>
-            setHasLocationPermission(await permissionService.requestLocationPermission())}
+          isOpen={!showLocationPermissionModal}
+          onPress={async () => dispatch(PermissionAction.requestLocationPermission())}
           title="Grant Location Permission"
           Icon={<Location />}
           body="Please grant access to location permissions for bluetooth to function."
         />
       );
     }
-    if (!hasStoragePermission) {
+    if (showStoragePermissionModal) {
       return (
         <DeviceServiceModal
-          isOpen={!hasStoragePermission}
-          onPress={async () =>
-            setHasStoragePermission(await permissionService.requestStoragePermission())}
+          isOpen={!showStoragePermissionModal}
+          onPress={async () => dispatch(PermissionAction.requestStoragePermission())}
           title="Grant Storage Permission"
           Icon={<Storage />}
           body="Please grant access to device storage."
@@ -107,12 +64,17 @@ export const DeviceSettingsContainer = ({ children }) => {
     }
 
     return null;
-  }, [isLocationOn, isBluetoothOn, hasLocationPermission, hasStoragePermission]);
+  }, [
+    showBluetoothModal,
+    showLocationPermissionModal,
+    showLocationServicesModal,
+    showStoragePermissionModal,
+  ]);
 
   return (
     <>
-      {!!hasDoneInitialPermissionRequests && children}
-      {!!hasDoneInitialPermissionRequests && Modal}
+      {children}
+      {Modal}
     </>
   );
 };
