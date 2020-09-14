@@ -7,10 +7,8 @@ configure(() => {
   require('./stories');
 }, module);
 
-const StorybookUIRoot = getStorybookUI({
+export const Storybook = getStorybookUI({
   asyncStorage: require('@react-native-community/async-storage').default,
 });
 
-AppRegistry.registerComponent(appName, () => StorybookUIRoot);
-
-export default StorybookUIRoot;
+AppRegistry.registerComponent(appName, () => Storybook);

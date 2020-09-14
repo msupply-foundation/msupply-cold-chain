@@ -1,5 +1,5 @@
 import { useStorybook } from '../hooks';
-import { Storybook } from '../../../__tests__/ui/storybook';
+import { Storybook } from '~storybook';
 
 export const StorybookContainer = ({ children }) => {
   const usingStorybook = useStorybook();
