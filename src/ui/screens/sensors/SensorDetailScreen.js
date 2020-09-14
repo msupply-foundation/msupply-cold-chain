@@ -76,7 +76,7 @@ export const SensorDetailScreen = ({ navigation }) => {
     dispatch(
       BreachAction.getDetailCumulativeForSensor(
         dateRange.start().unix(),
-        dateRange.end().unix(),
+        dateRange.end().endOf('day').unix(),
         id
       )
     );
