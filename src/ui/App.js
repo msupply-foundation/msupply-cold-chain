@@ -4,8 +4,8 @@ import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 
 import { NAVIGATION } from '~constants';
-import { MainHeader } from './components';
 
+import { MainHeader } from './components';
 import { Settings } from '~screens/settings';
 import { Sensors } from '~screens/sensors';
 
@@ -15,9 +15,8 @@ import {
   DependencyContainer,
   MainTabNavigator,
   MainTabScreen,
+  PermissionsContainer,
 } from './containers';
-
-import { PermissionsContainer } from './containers/DeviceSettingsContainer';
 
 const App = () => {
   return (

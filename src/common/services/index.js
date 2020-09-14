@@ -1,4 +1,4 @@
-export { DependencyLocator } from './DependencyLocator';
+export { DependencyLocator, DependencyLocatorContext } from './DependencyLocator';
 export { FormatService } from './FormatService';
 export { UtilService } from './UtilService';
 export { ExportService } from './ExportService';

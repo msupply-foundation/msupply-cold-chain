@@ -6,13 +6,12 @@
   "~layouts": "./src/ui/layouts",
   "~components": "./src/ui/components",
   "~containers": "./src/ui/containers",
-  "~animations": "./src/ui/animations",
   "~screens": "./src/ui/screens",
+  "~hoc": "./src/ui/hoc",
 
   "~common": "./src/common",
   "~constants": "./src/common/constants",
   "~translations": "./src/common/translations",
-  "~formatters": "./src/common/formatters",
   "~store": "./src/common/store",
   "~services": "./src/common/services",
 

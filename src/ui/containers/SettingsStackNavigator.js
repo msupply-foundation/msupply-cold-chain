@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 
 import { NAVIGATION } from '~constants';

@@ -6,5 +6,6 @@ import { useKeepAwake } from 'expo-keep-awake';
  */
 export const KeepAwakeContainer = ({ children }) => {
   useKeepAwake();
+
   return children;
 };

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { BleManager } from 'react-native-ble-plx';
 import * as SplashScreen from 'expo-splash-screen';
+
 import { DEPENDENCY } from '~constants';
+
 import {
   Database,
   DependencyLocator,
@@ -13,16 +15,21 @@ import {
   FormatService,
   BugsnagLoggerService,
   DevLoggerService,
+  DependencyLocatorContext,
 } from '~common/services';
 
-import { BreachConfigurationManager, SettingManager, SensorManager } from '~features/Entities';
-import { ChartManager } from '../../features/Chart';
-import { CumulativeBreachManager, ConsecutiveBreachManager } from '../../features/Breach';
-import { LogTableManager } from '../../features/LogTable';
-import { DownloadManager } from '../../features/Bluetooth';
-import { ReportManager } from '../../features/Report';
-import { SensorStatusManager } from '../../features/SensorStatus';
-import { DependencyLocatorContext } from '../../common/services/DependencyLocator';
+import {
+  SensorStatusManager,
+  ReportManager,
+  DownloadManager,
+  LogTableManager,
+  CumulativeBreachManager,
+  ConsecutiveBreachManager,
+  ChartManager,
+  BreachConfigurationManager,
+  SettingManager,
+  SensorManager,
+} from '~features';
 
 const bleManager = new BleManager();
 
@@ -30,8 +37,6 @@ export const DependencyContainer = props => {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    setReady(false);
-
     const db = new Database();
     const dbService = new DatabaseService(db);
     const permissionService = new PermissionService();
@@ -75,6 +80,7 @@ export const DependencyContainer = props => {
     (async () => {
       await db.getConnection();
       await dbService.init();
+
       setReady(true);
       SplashScreen.hideAsync();
     })();
