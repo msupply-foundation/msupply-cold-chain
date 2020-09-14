@@ -8,7 +8,7 @@ import { COLOUR, NAVIGATION, SETTING } from '~constants';
 import { SettingAction, SensorSelector } from '~features/Entities';
 
 import { SettingsList } from '~layouts';
-import { UpdatingSensorModal } from '~components';
+import { UpdatingSensorModal } from '~components/modal';
 import {
   SettingsNumberInputRow,
   SettingsGroup,

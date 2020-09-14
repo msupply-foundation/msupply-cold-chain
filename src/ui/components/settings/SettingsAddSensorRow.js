@@ -7,7 +7,7 @@ import { SettingsItem } from './SettingsItem';
 import { SettingsAddSensorModal } from './SettingsAddSensorModal';
 import { ProgramAction, BlinkAction } from '../../../features/Bluetooth';
 
-import { ConnectingWithSensorModal } from '../ConnectingWithSensorModal';
+import { ConnectingWithSensorModal } from '../modal';
 
 export const SettingsAddSensorRow = ({ macAddress }) => {
   const [isModalOpen, toggleModal] = useToggle(false);

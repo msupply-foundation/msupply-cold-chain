@@ -4,11 +4,10 @@ import { ActivityIndicator } from 'react-native';
 
 import { COLOUR } from '~constants';
 import { t } from '~translations';
+import { ProgramSelector } from '~features';
 
 import { LoadingModalLayout, FullScreenModal } from '~layouts';
-
 import { LargeText } from '~presentation/typography';
-import { ProgramSelector } from '../../features/Bluetooth';
 
 export const ConnectingWithSensorModal = ({ macAddress }) => {
   const { [macAddress]: isConnecting } = useSelector(ProgramSelector.programmingByMac);

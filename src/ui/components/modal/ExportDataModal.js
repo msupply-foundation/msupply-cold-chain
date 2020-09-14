@@ -9,9 +9,9 @@ import * as Yup from 'yup';
 import { t } from '~translations';
 import { Column } from '~layouts';
 
-import { SettingsEditModal } from './settings/SettingsEditModal';
+import { SettingsEditModal } from '../settings/SettingsEditModal';
 
-import { ReportAction } from '../../features/Report';
+import { ReportAction } from '../../../features/Report';
 
 export const ExportDataModal = ({ id, onConfirm, isOpen, onClose, variant = 'export' }) => {
   const { width } = useWindowDimensions();

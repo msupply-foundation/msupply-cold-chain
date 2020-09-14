@@ -17,4 +17,8 @@ export class FormatService {
       return formatted;
     };
   };
+
+  batteryLevel = level => {
+    return Number(level * 100).toFixed();
+  };
 }

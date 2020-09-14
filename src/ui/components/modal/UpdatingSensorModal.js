@@ -8,7 +8,7 @@ import { t } from '~translations';
 import { LoadingModalLayout, FullScreenModal } from '~layouts';
 
 import { LargeText } from '~presentation/typography';
-import { ProgramSelector } from '../../features/Bluetooth';
+import { ProgramSelector } from '../../../features/Bluetooth';
 
 export const UpdatingSensorModal = () => {
   const isUpdating = useSelector(ProgramSelector.isProgramming);

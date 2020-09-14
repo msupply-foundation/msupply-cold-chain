@@ -1,5 +1,6 @@
 import { useBatteryLevel, usePowerState } from 'react-native-device-info';
-import { Battery } from '../presentation/icons/Battery';
+
+import { Battery } from '../presentation/icons';
 import { Row } from '../layouts';
 import { LargeText } from '../presentation/typography';
 
