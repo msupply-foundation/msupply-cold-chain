@@ -17,14 +17,14 @@ import {
   MainTabScreen,
 } from './containers';
 
-import { DeviceSettingsContainer } from './containers/DeviceSettingsContainer';
+import { PermissionsContainer } from './containers/DeviceSettingsContainer';
 
 const App = () => {
   return (
     <ReduxContainer>
       <KeepAwakeContainer>
         <DependencyContainer>
-          <DeviceSettingsContainer>
+          <PermissionsContainer>
             <NavigationContainer>
               <StatusBar hidden />
               <MainHeader />
@@ -33,7 +33,7 @@ const App = () => {
                 <MainTabScreen name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS} component={Settings} />
               </MainTabNavigator>
             </NavigationContainer>
-          </DeviceSettingsContainer>
+          </PermissionsContainer>
         </DependencyContainer>
       </KeepAwakeContainer>
     </ReduxContainer>

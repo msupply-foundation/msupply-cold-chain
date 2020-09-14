@@ -6,7 +6,7 @@ import { SettingsList } from '~layouts';
 import { useRouteProps } from '~hooks';
 
 import { SettingsTextInputRow, SettingsGroup, SettingsNumberInputRow } from '~components/settings';
-import { BreachConfigurationAction } from '~features/BreachConfiguration';
+import { BreachConfigurationAction } from '~features/Entities';
 import { MILLISECONDS } from '../../../common/constants';
 
 export const TemperatureBreachDetailScreen = () => {

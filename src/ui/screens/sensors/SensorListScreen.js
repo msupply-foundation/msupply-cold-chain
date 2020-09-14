@@ -4,7 +4,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import { shallowEqual, useSelector, useDispatch } from 'react-redux';
 
 import { SensorChartRow } from '~components';
-import { SensorSelector, SensorAction } from '~features/Sensor';
+import { SensorSelector, SensorAction } from '~features/Entities';
 
 import { Gradient } from '~layouts';
 import { NAVIGATION } from '~constants';

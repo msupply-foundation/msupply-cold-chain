@@ -13,9 +13,7 @@ import {
   FormatService,
 } from '~common/services';
 
-import { SensorManager } from '~features/Sensor';
-import { SettingManager } from '../../features/Setting/SettingManager';
-import { BreachConfigurationManager } from '../../features/BreachConfiguration';
+import { BreachConfigurationManager, SettingManager, SensorManager } from '~features/Entities';
 import { ChartManager } from '../../features/Chart';
 import { BreachManager } from '../../features/Breach';
 import { LogTableManager } from '../../features/LogTable';

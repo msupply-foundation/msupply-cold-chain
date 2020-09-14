@@ -3,7 +3,7 @@ import { takeEvery, getContext, call, put } from 'redux-saga/effects';
 
 import { REDUCER, DEPENDENCY } from '~constants';
 
-import { SensorAction } from '../Sensor';
+import { SensorAction } from '../Entities';
 import { ChartAction } from '../Chart';
 
 const initialState = {

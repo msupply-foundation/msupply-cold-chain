@@ -36,16 +36,16 @@ const { actions: BreachConfigurationAction, reducer: BreachConfigurationReducer 
 });
 
 const BreachConfigurationSelector = {
-  hotBreachConfig: ({ breachConfiguration }) => {
+  hotBreachConfig: ({ entities: { breachConfiguration } }) => {
     return breachConfiguration.byId.HOT_BREACH;
   },
-  coldBreachConfig: ({ breachConfiguration }) => {
+  coldBreachConfig: ({ entities: { breachConfiguration } }) => {
     return breachConfiguration.byId.COLD_BREACH;
   },
-  hotCumulativeConfig: ({ breachConfiguration }) => {
+  hotCumulativeConfig: ({ entities: { breachConfiguration } }) => {
     return breachConfiguration.byId.HOT_CUMULATIVE;
   },
-  coldCumulativeConfig: ({ breachConfiguration }) => {
+  coldCumulativeConfig: ({ entities: { breachConfiguration } }) => {
     return breachConfiguration.byId.COLD_CUMULATIVE;
   },
 };

@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 
-import { SensorAction, SensorSelector } from '~features/Sensor';
+import { SensorAction, SensorSelector } from '~features/Entities';
 
 import { SettingsButtonRow, SettingsGroup } from '~components/settings';
 import { SettingsList } from '~layouts';

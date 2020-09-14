@@ -3,7 +3,7 @@ import { call, getContext, put, takeEvery } from 'redux-saga/effects';
 import { DEPENDENCY, REDUCER } from '~constants';
 
 import { BreachAction } from '../Breach';
-import { SensorAction } from '../Sensor';
+import { SensorAction } from '../Entities';
 
 const initialState = {
   fetchingStatusById: { exampleId: false },

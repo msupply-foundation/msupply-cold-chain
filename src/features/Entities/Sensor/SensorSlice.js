@@ -228,28 +228,40 @@ const SensorSelector = {
   availableSensorsList: createSelector([selectById, selectIds], (byId, ids) => {
     return ids.map(id => ({ id, name: byId[id].name ?? byId[id].macAddress }));
   }),
-  macAddress: ({ sensor }, { id }) => {
+  macAddress: ({ entities: { sensor } }, { id }) => {
     return sensor.byId[id].macAddress;
   },
-  macs: ({ sensor: { byId, ids } }) => {
+  macs: ({
+    entities: {
+      sensor: { byId, ids },
+    },
+  }) => {
     return ids.map(id => byId[id].macAddress);
   },
-  foundSensorsList: ({ sensor }) => {
+  foundSensorsList: ({ entities: { sensor } }) => {
     const { foundSensors } = sensor;
     return foundSensors;
   },
-  sensors: ({ sensor }) => {
+  sensors: ({ entities: { sensor } }) => {
     const { byId } = sensor;
     return byId;
   },
-  sensorsList: ({ sensor }) => {
+  sensorsList: ({ entities: { sensor } }) => {
     const { byId, ids } = sensor;
     return ids.map(id => byId[id]);
   },
-  sensorIds: ({ sensor: { ids } }) => {
+  sensorIds: ({
+    entities: {
+      sensor: { ids },
+    },
+  }) => {
     return ids;
   },
-  status: ({ sensor: { status } }) => {
+  status: ({
+    entities: {
+      sensor: { status },
+    },
+  }) => {
     return status;
   },
 };

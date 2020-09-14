@@ -3,7 +3,7 @@ import { ToastAndroid } from 'react-native';
 import { call, getContext, put, takeEvery, takeLeading } from 'redux-saga/effects';
 
 import { DEPENDENCY, SETTING, REDUCER } from '~constants';
-import { SensorAction } from '../../Sensor';
+import { SensorAction } from '../../Entities';
 
 const initialState = {
   programmingByMac: {},

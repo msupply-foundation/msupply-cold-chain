@@ -1,7 +1,5 @@
 import { combineReducers } from 'redux';
-import { SensorReducer } from '~features/Sensor';
-import { SettingReducer } from '~features/Setting';
-import { BreachConfigurationReducer } from '~features/BreachConfiguration';
+import { EntitiesReducer } from '~features/Entities';
 import { ChartReducer } from '../../features/Chart';
 import { BreachReducer } from '../../features/Breach';
 import { LogTableReducer } from '../../features/LogTable';
@@ -12,9 +10,7 @@ import { SensorStatusReducer } from '../../features/SensorStatus';
 import { PermissionReducer } from '~features/Permission';
 
 export const RootReducer = combineReducers({
-  [REDUCER.SENSOR]: SensorReducer,
-  [REDUCER.SETTING]: SettingReducer,
-  [REDUCER.BREACH_CONFIGURATION]: BreachConfigurationReducer,
+  [REDUCER.ENTITIES]: EntitiesReducer,
   [REDUCER.CHART]: ChartReducer,
   [REDUCER.BREACH]: BreachReducer,
   [REDUCER.LOG_TABLE]: LogTableReducer,

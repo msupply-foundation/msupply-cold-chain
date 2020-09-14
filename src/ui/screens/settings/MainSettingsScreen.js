@@ -6,7 +6,7 @@ import { t } from '~translations';
 import { Chevron } from '~presentation/icons';
 import { SettingsGroup, SettingsItem } from '~components/settings';
 
-import { SettingAction } from '../../../features/Setting';
+import { SettingAction } from '../../../features/Entities';
 
 const ChevronIcon = <Chevron direction="right" colour={COLOUR.GREY_ONE} />;
 

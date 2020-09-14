@@ -40,11 +40,11 @@ const { actions: SettingAction, reducer: SettingReducer } = createSlice({
 });
 
 const SettingSelector = {
-  defaultLogInterval: ({ setting }) => {
+  defaultLogInterval: ({ entities: { setting } }) => {
     const { [SETTING.INT.DEFAULT_LOG_INTERVAL]: defaultLogInterval } = setting;
     return defaultLogInterval;
   },
-  downloadInterval: ({ setting }) => {
+  downloadInterval: ({ entities: { setting } }) => {
     const { [SETTING.INT.DOWNLOAD_INTERVAL]: defaultDownloadInterval } = setting;
     return defaultDownloadInterval;
   },

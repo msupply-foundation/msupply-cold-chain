@@ -5,7 +5,7 @@ import { DeviceServiceModal } from '~presentation';
 import { Location, Bluetooth, Storage } from '~presentation/icons';
 import { PermissionAction, PermissionSelector } from '../../features/Permission';
 
-export const DeviceSettingsContainer = ({ children }) => {
+export const PermissionsContainer = ({ children }) => {
   const showLocationServicesModal = useSelector(PermissionSelector.showLocationServicesModal);
   const showBluetoothModal = useSelector(PermissionSelector.showBluetoothModal);
   const showLocationPermissionModal = useSelector(PermissionSelector.showLocationPermissionModal);

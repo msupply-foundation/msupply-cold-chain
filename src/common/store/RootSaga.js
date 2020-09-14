@@ -1,8 +1,6 @@
 import createSagaMiddleware from 'redux-saga';
 import { fork } from 'redux-saga/effects';
-import { SensorSaga } from '~features/Sensor';
-import { BreachConfigurationSaga } from '~features/BreachConfiguration';
-import { SettingSaga } from '~features/Setting';
+import { SettingSaga, BreachConfigurationSaga, SensorSaga } from '~features/Entities';
 import { DependencyLocator } from '~services';
 import { ChartSaga } from '../../features/Chart';
 import { BreachSaga } from '../../features/Breach';

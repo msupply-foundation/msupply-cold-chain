@@ -5,10 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { t } from '~translations';
 import { COLOUR, NAVIGATION } from '~constants';
-import {
-  BreachConfigurationSelector,
-  BreachConfigurationAction,
-} from '~features/BreachConfiguration';
+import { BreachConfigurationSelector, BreachConfigurationAction } from '~features/Entities';
 
 import { SettingsList } from '~layouts';
 import { SettingsGroup, SettingsNavigationRow } from '~components/settings';

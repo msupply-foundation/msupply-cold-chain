@@ -21,4 +21,5 @@ export const REDUCER = {
   PERMISSION: 'permission',
   SENSOR_STATUS: 'sensorStatus',
   PROGRAM: 'program',
+  ENTITIES: 'entities',
 };
