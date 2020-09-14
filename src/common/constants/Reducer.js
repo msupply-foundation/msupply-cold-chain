@@ -9,6 +9,8 @@ export const REDUCER = {
   TEMPERATURE_LOG: 'temperatureLog',
   CHART: 'chart',
   BREACH: 'breach',
+  CUMULATIVE_BREACH: 'cumulative',
+  CONSECUTIVE_BREACH: 'consecutive',
   DEVICE: 'device',
   LOG_TABLE: 'logTable',
   UPDATE: 'update',

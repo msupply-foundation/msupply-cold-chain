@@ -15,7 +15,7 @@ import {
 
 import { BreachConfigurationManager, SettingManager, SensorManager } from '~features/Entities';
 import { ChartManager } from '../../features/Chart';
-import { BreachManager } from '../../features/Breach';
+import { CumulativeBreachManager, ConsecutiveBreachManager } from '../../features/Breach';
 import { LogTableManager } from '../../features/LogTable';
 import { DownloadManager } from '../../features/Bluetooth';
 import { ReportManager } from '../../features/Report';
@@ -49,7 +49,8 @@ export const DependencyContainer = props => {
     const settingManager = new SettingManager(dbService);
     const breachConfigurationManager = new BreachConfigurationManager(dbService);
     const chartManager = new ChartManager(dbService);
-    const breachManager = new BreachManager(dbService, utilService);
+    const consecutiveBreachManager = new ConsecutiveBreachManager(dbService, utilService);
+    const cumulativeBreachManager = new CumulativeBreachManager(dbService);
     const logTableManager = new LogTableManager(dbService);
     const downloadManager = new DownloadManager(dbService, utilService);
     const sensorsManager = new SensorManager(dbService, utilService);
@@ -60,7 +61,8 @@ export const DependencyContainer = props => {
     DependencyLocator.register(DEPENDENCY.SENSOR_MANAGER, sensorsManager);
     DependencyLocator.register(DEPENDENCY.SETTING_MANAGER, settingManager);
     DependencyLocator.register(DEPENDENCY.CHART_MANAGER, chartManager);
-    DependencyLocator.register(DEPENDENCY.BREACH_MANAGER, breachManager);
+    DependencyLocator.register(DEPENDENCY.CONSECUTIVE_BREACH_MANAGER, consecutiveBreachManager);
+    DependencyLocator.register(DEPENDENCY.CUMULATIVE_BREACH_MANAGER, cumulativeBreachManager);
     DependencyLocator.register(DEPENDENCY.LOG_TABLE_MANAGER, logTableManager);
     DependencyLocator.register(DEPENDENCY.DOWNLOAD_MANAGER, downloadManager);
     DependencyLocator.register(DEPENDENCY.REPORT_MANAGER, reportManager);

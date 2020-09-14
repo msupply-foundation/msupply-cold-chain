@@ -9,14 +9,14 @@ import { STYLE, COLOUR } from '~constants';
 import { NormalText, BoldText, MediumText } from '~presentation/typography';
 import { SensorStatus } from './SensorStatus';
 import { ChartAction } from '../../features/Chart';
-import { BreachAction } from '../../features/Breach';
+import { CumulativeBreachAction } from '../../features/Breach';
 import { SensorStatusAction, SensorStatusSelector } from '../../features/SensorStatus';
 
 export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, onLongPress }) => {
   const isLoading = useSelector(state => state.chart.listLoading[id]);
   const logs = useSelector(state => state.chart.listDataPoints[id], shallowEqual);
   const { coldCumulative, hotCumulative } =
-    useSelector(state => state.breach.listCumulative[id], shallowEqual) ?? {};
+    useSelector(state => state.breach.cumulative.listById[id], shallowEqual) ?? {};
 
   const { [id]: status = {} } = useSelector(SensorStatusSelector.byId, shallowEqual) ?? {};
 
@@ -30,7 +30,7 @@ export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, on
 
   useEffect(() => {
     dispatch(ChartAction.getListChartData(id));
-    dispatch(BreachAction.getListCumulativeForSensor(id));
+    dispatch(CumulativeBreachAction.fetchListForSensor(id));
   }, []);
 
   return (

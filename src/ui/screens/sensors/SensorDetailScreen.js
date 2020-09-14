@@ -18,11 +18,11 @@ import { Download } from '../../presentation/icons/Download';
 import { Calendar } from '../../presentation/icons';
 import { LogTableAction } from '../../../features/LogTable';
 import { ChartSelector, ChartAction } from '../../../features/Chart';
-import { BreachAction } from '../../../features/Breach';
 import { WritingLogsModal } from '../../components/WritingLogsModal';
 import { ExportDataModal } from '../../components/ExportDataModal';
 import { Email } from '../../presentation/icons/Email';
 import { SensorStatusSelector } from '../../../features/SensorStatus';
+import { CumulativeBreachAction } from '../../../features/Breach';
 
 export const SensorDetailScreen = ({ navigation }) => {
   const [exportModalVariant, setExportModalVariant] = useState(null);
@@ -68,7 +68,7 @@ export const SensorDetailScreen = ({ navigation }) => {
 
   useEffect(() => {
     dispatch(
-      BreachAction.getDetailCumulativeForSensor(
+      CumulativeBreachAction.fetchDetailForSensor(
         dateRange.start().unix(),
         dateRange.end().endOf('day').unix(),
         id
@@ -76,8 +76,8 @@ export const SensorDetailScreen = ({ navigation }) => {
     );
   }, []);
 
-  const { [id]: { coldCumulative, hotCumulative } = {} } =
-    useSelector(state => state.breach.detailCumulative, shallowEqual) ?? {};
+  const { coldCumulative, hotCumulative } =
+    useSelector(state => state.breach.cumulative.detail, shallowEqual) ?? {};
 
   const data = useSelector(ChartSelector.detailDataPoints);
 

@@ -3,7 +3,8 @@ import { call, getContext, put, takeEvery, fork, take, race, all, delay } from '
 import { createSlice } from '@reduxjs/toolkit';
 
 import { SETTING, DEPENDENCY, REDUCER } from '~constants';
-import { BreachAction } from '../../Breach';
+
+import { CumulativeBreachAction, ConsecutiveBreachAction } from '../../Breach';
 
 const initialState = {
   downloadingById: {},
@@ -99,9 +100,9 @@ function* tryManualDownloadForSensor({ payload: { sensorId } }) {
         yield call(btService.updateLogIntervalWithRetries, macAddress, logInterval, 10);
       }
 
-      yield put(BreachAction.createBreaches(sensor));
+      yield put(ConsecutiveBreachAction.create(sensor));
       yield put(DownloadAction.passiveDownloadForSensorSuccess());
-      yield put(BreachAction.getListCumulativeForSensor(sensorId));
+      yield put(CumulativeBreachAction.fetchListForSensor(sensorId));
     } else {
       ToastAndroid.show(`Cannot download logs yet!`, ToastAndroid.SHORT);
       yield put(DownloadAction.passiveDownloadForSensorFail());
@@ -155,9 +156,9 @@ function* tryPassiveDownloadForSensor({ payload: { sensorId } }) {
       if (numberOfLogsToSave) {
         yield call(btService.updateLogIntervalWithRetries, macAddress, logInterval, 10);
       }
-      yield put(BreachAction.createBreaches(sensor));
+      yield put(ConsecutiveBreachAction.create(sensor));
       yield put(DownloadAction.passiveDownloadForSensorSuccess());
-      yield put(BreachAction.getListCumulativeForSensor(sensorId));
+      yield put(CumulativeBreachAction.fetchListForSensor(sensorId));
     }
   } catch (error) {
     yield put(DownloadAction.passiveDownloadForSensorFail(error.message));

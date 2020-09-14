@@ -13,7 +13,7 @@ import { PermissionSaga } from '~features/Permission';
 export function* RootSaga() {
   yield fork(EntitiesSaga.root);
   yield fork(ChartSaga.watchChartActions);
-  yield fork(BreachSaga.watchBreachActions);
+  yield fork(BreachSaga.root);
   yield fork(LogTableSaga.watchLogTableActions);
   yield fork(BluetoothSaga.root);
   yield fork(ReportSaga.root);
