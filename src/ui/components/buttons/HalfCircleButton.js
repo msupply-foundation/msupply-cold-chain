@@ -1,7 +1,7 @@
 import React from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
 
-import { UI_ASSERTIONS, STYLE, COLOUR } from '~constants';
+import { STYLE, COLOUR } from '~constants';
 import { Centered } from '~layouts';
 
 const style = {
@@ -21,9 +21,6 @@ const leftStyle = {
 };
 
 export const HalfCircleButton = ({ direction, onPress, Icon }) => {
-  if (!(direction === 'left' || direction === 'right')) {
-    throw new Error(UI_ASSERTIONS.HALF_CIRCLE_DIRECTION);
-  }
   const directionStyle = direction === 'left' ? leftStyle : rightStyle;
   const internalStyle = { ...style, ...directionStyle };
 

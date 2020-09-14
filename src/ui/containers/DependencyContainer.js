@@ -11,6 +11,8 @@ import {
   ExportService,
   UtilService,
   FormatService,
+  BugsnagLoggerService,
+  DevLoggerService,
 } from '~common/services';
 
 import { BreachConfigurationManager, SettingManager, SensorManager } from '~features/Entities';
@@ -37,6 +39,8 @@ export const DependencyContainer = props => {
     const formatService = new FormatService();
     const utilService = new UtilService();
     const exportService = new ExportService();
+    const devLogger = new DevLoggerService();
+    const bugsnagLogger = new BugsnagLoggerService();
 
     DependencyLocator.register(DEPENDENCY.PERMISSION_SERVICE, permissionService);
     DependencyLocator.register(DEPENDENCY.BLUETOOTH, btService);
@@ -44,6 +48,7 @@ export const DependencyContainer = props => {
     DependencyLocator.register(DEPENDENCY.FORMAT_SERVICE, formatService);
     DependencyLocator.register(DEPENDENCY.UTIL_SERVICE, utilService);
     DependencyLocator.register(DEPENDENCY.EXPORT_SERVICE, exportService);
+    DependencyLocator.register(DEPENDENCY.LOGGER_SERVICE, __DEV__ ? devLogger : bugsnagLogger);
 
     const settingManager = new SettingManager(dbService);
     const breachConfigurationManager = new BreachConfigurationManager(dbService);

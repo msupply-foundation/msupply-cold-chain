@@ -19,6 +19,7 @@ export const DEPENDENCY = {
   SENSOR_STATUS_MANAGER: 'sensorStatusManager',
   CONSECUTIVE_BREACH_MANAGER: 'consecutiveBreachManager',
   CUMULATIVE_BREACH_MANAGER: 'cumulativeBreachManager',
+  LOGGER_SERVICE: 'loggerService',
 };
 
 export const BLUETOOTH_SERVICE = {
