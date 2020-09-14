@@ -10,6 +10,7 @@ import { Settings } from '~screens/settings';
 import { Sensors } from '~screens/sensors';
 
 import {
+  StorybookContainer,
   ReduxContainer,
   KeepAwakeContainer,
   DependencyContainer,
@@ -20,22 +21,27 @@ import {
 
 const App = () => {
   return (
-    <ReduxContainer>
-      <KeepAwakeContainer>
-        <DependencyContainer>
-          <PermissionsContainer>
-            <NavigationContainer>
-              <StatusBar hidden />
-              <MainHeader />
-              <MainTabNavigator>
-                <MainTabScreen name={NAVIGATION.SCREENS.MAIN_TABS.SENSORS} component={Sensors} />
-                <MainTabScreen name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS} component={Settings} />
-              </MainTabNavigator>
-            </NavigationContainer>
-          </PermissionsContainer>
-        </DependencyContainer>
-      </KeepAwakeContainer>
-    </ReduxContainer>
+    <StorybookContainer>
+      <ReduxContainer>
+        <KeepAwakeContainer>
+          <DependencyContainer>
+            <PermissionsContainer>
+              <NavigationContainer>
+                <StatusBar hidden />
+                <MainHeader />
+                <MainTabNavigator>
+                  <MainTabScreen name={NAVIGATION.SCREENS.MAIN_TABS.SENSORS} component={Sensors} />
+                  <MainTabScreen
+                    name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS}
+                    component={Settings}
+                  />
+                </MainTabNavigator>
+              </NavigationContainer>
+            </PermissionsContainer>
+          </DependencyContainer>
+        </KeepAwakeContainer>
+      </ReduxContainer>
+    </StorybookContainer>
   );
 };
 

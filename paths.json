@@ -1,7 +1,6 @@
 {
   "~ui": "./src/ui",
   "~hooks": "./src/ui/hooks",
-  "~storybook": "./src/ui/storybook",
   "~presentation": "./src/ui/presentation",
   "~layouts": "./src/ui/layouts",
   "~components": "./src/ui/components",
@@ -15,5 +14,10 @@
   "~store": "./src/common/store",
   "~services": "./src/common/services",
 
-  "~features": "./src/features"
+  "~features": "./src/features",
+
+  "~tests": "./__tests__",
+  "~mocks": "./__mocks__",
+
+  "~root": "./"
 }
