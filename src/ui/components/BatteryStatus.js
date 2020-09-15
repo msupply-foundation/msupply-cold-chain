@@ -8,9 +8,9 @@ export const BatteryStatus = () => {
   const isCharging = usePowerState() === 'charging';
 
   return batteryLevel ? (
-    <Row justifyContent="space-evenly" alignItems="center" flex={1}>
+    <Row justifyContent="space-evenly" flex={1}>
       <Battery isCharging={isCharging} batteryLevel={Number(batteryLevel * 100).toFixed()} />
-      <LargeText>{Number(batteryLevel * 100).toFixed()}</LargeText>
+      <LargeText>{`${Number(batteryLevel * 100).toFixed()}%`}</LargeText>
     </Row>
   ) : null;
 };
