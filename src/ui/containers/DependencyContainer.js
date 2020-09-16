@@ -25,6 +25,7 @@ import {
   LogTableManager,
   CumulativeBreachManager,
   ConsecutiveBreachManager,
+  AcknowledgeBreachManager,
   ChartManager,
   BreachConfigurationManager,
   SettingManager,
@@ -60,6 +61,7 @@ export const DependencyContainer = props => {
     const chartManager = new ChartManager(dbService);
     const consecutiveBreachManager = new ConsecutiveBreachManager(dbService, utilService);
     const cumulativeBreachManager = new CumulativeBreachManager(dbService);
+    const ackBreachManager = new AcknowledgeBreachManager(dbService);
     const logTableManager = new LogTableManager(dbService);
     const downloadManager = new DownloadManager(dbService, utilService);
     const sensorsManager = new SensorManager(dbService, utilService);
@@ -76,6 +78,7 @@ export const DependencyContainer = props => {
     DependencyLocator.register(DEPENDENCY.DOWNLOAD_MANAGER, downloadManager);
     DependencyLocator.register(DEPENDENCY.REPORT_MANAGER, reportManager);
     DependencyLocator.register(DEPENDENCY.SENSOR_STATUS_MANAGER, sensorStatusManager);
+    DependencyLocator.register(DEPENDENCY.ACKNOWLEDGE_BREACH_MANAGER, ackBreachManager);
 
     (async () => {
       await db.getConnection();

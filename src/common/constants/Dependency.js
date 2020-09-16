@@ -19,6 +19,7 @@ export const DEPENDENCY = {
   SENSOR_STATUS_MANAGER: 'sensorStatusManager',
   CONSECUTIVE_BREACH_MANAGER: 'consecutiveBreachManager',
   CUMULATIVE_BREACH_MANAGER: 'cumulativeBreachManager',
+  ACKNOWLEDGE_BREACH_MANAGER: 'acknowledgeBreachManager',
   LOGGER_SERVICE: 'loggerService',
 };
 

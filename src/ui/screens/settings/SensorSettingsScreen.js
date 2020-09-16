@@ -32,7 +32,7 @@ export const SensorSettingsScreen = React.memo(({ navigation }) => {
   }, []);
 
   const defaultLoggingInterval = useSelector(
-    state => state.setting[SETTING.INT.DEFAULT_LOG_INTERVAL],
+    state => state.entities.setting[SETTING.INT.DEFAULT_LOG_INTERVAL],
     shallowEqual
   );
 

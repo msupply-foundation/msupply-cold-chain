@@ -2,7 +2,7 @@ import { ToastAndroid } from 'react-native';
 import { call, getContext, put, takeEvery, fork, take, race, all, delay } from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
 
-import { SETTING, DEPENDENCY, REDUCER } from '~constants';
+import { DEPENDENCY, REDUCER } from '~constants';
 
 import { CumulativeBreachAction, ConsecutiveBreachAction } from '../../Breach';
 
@@ -185,19 +185,9 @@ function* stopPassiveDownloading() {
 }
 
 function* startPassiveDownloading() {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-
-  const settingManager = yield call(DependencyLocator.get, DEPENDENCY.SETTING_MANAGER);
-  const downloadIntervalSetting = yield call(
-    settingManager.getSetting,
-    SETTING.INT.DOWNLOAD_INTERVAL
-  );
-
-  const downloadInterval = JSON.parse(downloadIntervalSetting.value);
-
   while (true) {
     yield call(downloadTemperatures);
-    yield delay(__DEV__ ? 60000 : downloadInterval);
+    yield delay(60000);
   }
 }
 

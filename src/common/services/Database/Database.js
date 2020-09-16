@@ -10,7 +10,7 @@ import {
 
 const DEFAULT_DATABASE_CONFIG = {
   type: 'react-native',
-  database: 'josh47.sqlite',
+  database: 'josh48.sqlite',
   location: 'default',
 
   // extra: {

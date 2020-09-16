@@ -11,6 +11,7 @@ export const REDUCER = {
   BREACH: 'breach',
   CUMULATIVE_BREACH: 'cumulative',
   CONSECUTIVE_BREACH: 'consecutive',
+  ACKNOWLEDGE_BREACH: 'acknowledgeBreach',
   DEVICE: 'device',
   LOG_TABLE: 'logTable',
   UPDATE: 'update',

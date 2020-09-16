@@ -2,7 +2,6 @@ import { SETTING, ENTITIES } from '~constants';
 
 const DEFAULTS = {
   [SETTING.INT.DEFAULT_LOG_INTERVAL]: '300',
-  [SETTING.INT.DOWNLOAD_INTERVAL]: '60000',
 };
 
 export class SettingManager {

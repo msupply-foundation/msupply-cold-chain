@@ -5,7 +5,6 @@ import { DEPENDENCY, SETTING, REDUCER } from '~constants';
 
 const initialState = {
   [SETTING.INT.DEFAULT_LOG_INTERVAL]: null,
-  [SETTING.INT.DOWNLOAD_INTERVAL]: null,
 };
 
 const reducers = {
@@ -43,10 +42,6 @@ const SettingSelector = {
   defaultLogInterval: ({ entities: { setting } }) => {
     const { [SETTING.INT.DEFAULT_LOG_INTERVAL]: defaultLogInterval } = setting;
     return defaultLogInterval;
-  },
-  downloadInterval: ({ entities: { setting } }) => {
-    const { [SETTING.INT.DOWNLOAD_INTERVAL]: defaultDownloadInterval } = setting;
-    return defaultDownloadInterval;
   },
 };
 

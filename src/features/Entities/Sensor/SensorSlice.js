@@ -33,7 +33,7 @@ const reducers = {
 
   update: {
     reducer: () => {},
-    prepare: (id, key, value) => ({ payload: { id, key, value } }),
+    prepare: (sensorId, key, value) => ({ payload: { sensorId, key, value } }),
   },
   updateSuccess: {
     prepare: (id, key, value) => ({ payload: { id, key, value } }),
@@ -76,12 +76,12 @@ function* fetchAll() {
   }
 }
 
-function* update({ payload: { id, key, value } }) {
+function* update({ payload: { sensorId, key, value } }) {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const manager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
   try {
-    yield call(manager.updateField, id, key, value);
-    yield put(SensorAction.updateSuccess(id, key, value));
+    yield call(manager.updateField, sensorId, key, value);
+    yield put(SensorAction.updateSuccess(sensorId, key, value));
   } catch (e) {
     yield put(SensorAction.updateFail());
   }

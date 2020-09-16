@@ -8,13 +8,11 @@ import { useRouteProps } from '~hooks';
 import { SettingsTextInputRow, SettingsGroup, SettingsNumberInputRow } from '~components/settings';
 import { BreachConfigurationAction } from '~features/Entities';
 import { MILLISECONDS } from '../../../common/constants';
+import { BreachConfigurationSelector } from '../../../features';
 
 export const TemperatureBreachDetailScreen = () => {
   const { id } = useRouteProps();
-  const config = useSelector(({ breachConfiguration }) => {
-    const { byId } = breachConfiguration;
-    return byId[id];
-  });
+  const { [id]: config } = useSelector(BreachConfigurationSelector.byId);
 
   const dispatch = useDispatch();
 

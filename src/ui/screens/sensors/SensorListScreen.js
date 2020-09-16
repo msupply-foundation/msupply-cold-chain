@@ -9,7 +9,8 @@ import { SensorSelector, SensorAction } from '~features/Entities';
 import { Gradient } from '~layouts';
 import { NAVIGATION } from '~constants';
 
-import { BatteryObserverAction, DownloadAction } from '../../../features/Bluetooth';
+import { BatteryObserverAction, DownloadAction } from '~features/Bluetooth';
+import { AcknowledgeBreachModal } from '../../components/AcknowledgeBreachModal';
 
 export const SensorListScreen = React.memo(({ navigation }) => {
   const sensors = useSelector(SensorSelector.sensorsList, shallowEqual);
@@ -18,7 +19,7 @@ export const SensorListScreen = React.memo(({ navigation }) => {
 
   useEffect(() => {
     dispatch(DownloadAction.passiveDownloadingStart());
-  });
+  }, []);
 
   useEffect(() => {
     dispatch(SensorAction.fetchAll());
@@ -27,7 +28,7 @@ export const SensorListScreen = React.memo(({ navigation }) => {
   useEffect(() => {
     dispatch(BatteryObserverAction.start());
     return () => dispatch(BatteryObserverAction.stop());
-  });
+  }, []);
 
   useEffect(() => {
     if (isFocused) navigation.dangerouslyGetParent().setOptions({ tabBarVisible: true });
@@ -40,19 +41,14 @@ export const SensorListScreen = React.memo(({ navigation }) => {
     return (
       <>
         <SensorChartRow id={id} onPress={onPress} />
-        <HandleBreachModal id={id} />
+        <AcknowledgeBreachModal id={id} />
       </>
     );
   }, []);
 
   return (
     <Gradient>
-      <FlatList
-        keyboardShouldPersistTaps="handled"
-        data={sensors}
-        keyExtractor={item => item.id}
-        renderItem={renderItem}
-      />
+      <FlatList data={sensors} keyExtractor={item => item.id} renderItem={renderItem} />
     </Gradient>
   );
 });

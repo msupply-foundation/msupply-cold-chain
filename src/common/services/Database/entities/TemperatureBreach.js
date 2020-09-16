@@ -19,7 +19,7 @@ class TemperatureBreach {
   temperatureBreachConfigurationId;
 
   @Column({ type: 'boolean', nullable: false, default: false })
-  handled;
+  acknowledged;
 
   @ManyToOne(() => TemperatureBreachConfiguration, config => config.temperatureBreaches, {
     cascade: ['insert', 'update'],

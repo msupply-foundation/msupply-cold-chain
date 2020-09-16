@@ -6,32 +6,32 @@ import { ActivityIndicator, FlatList } from 'react-native';
 import { SettingsEditButtonGroup, SettingsEditModalLayout, Column, Centered } from '~layouts';
 
 import { t } from '~translations';
-import { BreachAction } from '../../features/breach';
+import { AcknowledgeBreachAction } from '~features';
 import { NormalText } from '../presentation/typography';
 import { Divider } from '../presentation';
 import { COLOUR } from '../../common/constants';
 import { SettingsEditButton } from './buttons';
 
-export const HandleBreachModal = ({ id }) => {
+export const AcknowledgeBreachModal = ({ id }) => {
   const dispatch = useDispatch();
-  const handlingBreaches = useSelector(state => state.breach.handlingBreaches);
-  const fetchingUnhandledBreaches = useSelector(state => state.breach.fetchingUnhandledBreaches);
-  const unhandledBreaches = useSelector(state => state.breach.unhandledBreaches);
+  const handlingBreaches = useSelector(state => state.breach.acknowledgeBreach.acknowledging);
+  const fetchingUnhandledBreaches = useSelector(state => state.breach.acknowledgeBreach.fetching);
+  const unhandledBreaches = useSelector(state => state.breach.acknowledgeBreach.unacknowledged);
 
   return (
     <SettingsEditModalLayout
       isOpen={handlingBreaches}
-      onClose={() => dispatch(BreachAction.finishHandlingBreaches())}
+      onClose={() => dispatch(AcknowledgeBreachAction.finishAcknowledging())}
       Title={<NormalText colour={COLOUR.GREY_ONE}>ACKNOWLEDGE BREACHES</NormalText>}
       ButtonGroup={
         <SettingsEditButtonGroup>
           <SettingsEditButton
             text="ACKNOWLEDGE"
-            onPress={() => dispatch(BreachAction.tryClearBreaches(id))}
+            onPress={() => dispatch(AcknowledgeBreachAction.tryAcknowledge(id))}
           />
           <SettingsEditButton
             text={t('CANCEL')}
-            onPress={() => dispatch(BreachAction.finishHandlingBreaches())}
+            onPress={() => dispatch(AcknowledgeBreachAction.finishAcknowledging())}
           />
         </SettingsEditButtonGroup>
       }

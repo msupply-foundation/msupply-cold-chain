@@ -3,13 +3,12 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Animated, TouchableOpacity } from 'react-native';
 
+import { AcknowledgeBreachAction } from '~features';
 import { Row, Centered, LargeRectangle } from '~layouts';
 import { Header, LargeText, SmallText } from '~presentation/typography';
 import { LowBattery, HotBreach, ColdBreach } from '~presentation/icons';
 import { MILLISECONDS, COLOUR } from '~constants';
 import { Battery } from '../presentation/icons/Battery';
-
-import { BreachAction } from '../../features/breach';
 
 const styles = {
   icon: { position: 'absolute', left: 40 },
@@ -69,7 +68,7 @@ export const SensorStatus = ({
       <Header>{temperature}</Header>
     </Centered>
   ) : (
-    <TouchableOpacity onLongPress={() => dispatch(BreachAction.startHandlingBreaches(id))}>
+    <TouchableOpacity onLongPress={() => dispatch(AcknowledgeBreachAction.startAcknowledging(id))}>
       <LargeRectangle colour={isInHotBreach ? COLOUR.DANGER : COLOUR.PRIMARY}>
         <Row flex={1}>
           <Centered style={{ left: 10 }}>

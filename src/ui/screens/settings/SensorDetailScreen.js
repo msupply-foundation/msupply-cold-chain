@@ -1,7 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 
-import { SensorAction } from '~features/Entities';
 import { useRouteProps } from '~hooks';
 
 import { t } from '~translations';
@@ -16,17 +15,12 @@ import {
   SettingsItem,
 } from '~components/settings';
 
-import {
-  ProgramAction,
-  DownloadAction,
-  BlinkAction,
-  BlinkSelector,
-} from '../../../features/Bluetooth';
+import { ProgramAction, DownloadAction, BlinkAction, BlinkSelector, SensorAction } from '~features';
 
 export const SensorDetailScreen = () => {
   const { id } = useRouteProps();
 
-  const sensor = useSelector(state => state.sensor.byId[id]);
+  const sensor = useSelector(state => state.entities.sensor.byId[id]);
   const { [sensor.macAddress]: isBlinking } = useSelector(BlinkSelector.isBlinking);
 
   const dispatch = useDispatch();

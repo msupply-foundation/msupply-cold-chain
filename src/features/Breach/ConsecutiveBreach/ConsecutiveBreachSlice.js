@@ -4,7 +4,9 @@ import { call, getContext, put, takeEvery } from 'redux-saga/effects';
 import { DEPENDENCY, REDUCER } from '~constants';
 import { ChartAction } from '../../Chart';
 
-const initialState = {};
+const initialState = {
+  creatingById: {},
+};
 
 const reducers = {
   create: {
@@ -18,14 +20,16 @@ const reducers = {
     prepare: (sensorId, updatedBreaches, updatedLogs) => ({
       payload: { sensorId, updatedBreaches, updatedLogs },
     }),
+    reducer: (draftState, { payload: { sensorId } }) => {
+      draftState.creatingById[sensorId] = true;
+    },
+  },
+  createFail: {
+    prepare: sensor => ({ payload: { sensor } }),
     reducer: (draftState, { payload: { sensor } }) => {
       const { id } = sensor;
       draftState.creatingById[id] = true;
     },
-  },
-  createFail: (draftState, { payload: { sensor } }) => {
-    const { id } = sensor;
-    draftState.creatingById[id] = true;
   },
 };
 
@@ -58,7 +62,7 @@ function* create({ payload: { sensor } }) {
     yield put(ChartAction.getListChartData(id));
     yield put(ConsecutiveBreachAction.createSuccess(id, breaches, updatedLogs));
   } catch (e) {
-    yield put(ConsecutiveBreachAction.createFail());
+    yield put(ConsecutiveBreachAction.createFail(sensor));
   }
 }
 

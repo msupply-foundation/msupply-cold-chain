@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { call, getContext, put, takeEvery } from 'redux-saga/effects';
 import { DEPENDENCY, REDUCER } from '~constants';
 
-import { ConsecutiveBreachAction } from '../Breach';
+import { AcknowledgeBreachAction, ConsecutiveBreachAction } from '../Breach';
 import { SensorAction } from '../Entities';
 
 const initialState = {
@@ -87,6 +87,7 @@ function* root() {
   yield takeEvery(ConsecutiveBreachAction.createSuccess, refreshSensorStatus);
   yield takeEvery(SensorAction.update, refreshSensorStatus);
   yield takeEvery(SensorAction.createSuccess, refreshSensorStatus);
+  yield takeEvery(AcknowledgeBreachAction.acknowledgeSuccess, refreshSensorStatus);
 }
 
 const SensorStatusSaga = { root };

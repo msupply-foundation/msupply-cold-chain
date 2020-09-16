@@ -58,18 +58,6 @@ export class BreachManager {
     });
   };
 
-  getUnhandledBreaches = async sensorId => {
-    return this.databaseService.queryWith(ENTITIES.TEMPERATURE_BREACH, {
-      where: { sensorId, endTimestamp: Not(IsNull()), handled: false },
-    });
-  };
-
-  clearUnhandledBreaches = async sensorId => {
-    const breaches = await this.getUnhandledBreaches(sensorId);
-    const handled = breaches.map(breach => ({ ...breach, handled: true }));
-    return this.databaseService.upsert(ENTITIES.TEMPERATURE_BREACH, handled);
-  };
-
   getCumulativeExposure = async (from, to, sensorId) => {
     const manager = await this.databaseService.getEntityManager();
     const result = await manager.query(CUMULATIVE_EXPOSURE, [from, to, sensorId]);

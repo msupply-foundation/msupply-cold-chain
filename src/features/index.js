@@ -38,6 +38,11 @@ export {
   ConsecutiveBreachSaga,
   ConsecutiveBreachReducer,
   ConsecutiveBreachManager,
+  AcknowledgeBreachAction,
+  AcknowledgeBreachSelector,
+  AcknowledgeBreachSaga,
+  AcknowledgeBreachReducer,
+  AcknowledgeBreachManager,
 } from './Breach';
 
 export { ChartManager, ChartReducer, ChartAction, ChartSaga, ChartSelector } from './Chart';

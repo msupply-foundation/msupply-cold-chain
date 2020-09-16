@@ -11,7 +11,7 @@ import { ChartAction } from '../../features/Chart';
 import { CumulativeBreachAction } from '../../features/Breach';
 import { SensorStatusAction, SensorStatusSelector } from '../../features/SensorStatus';
 
-export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, onLongPress }) => {
+export const SensorChartRow = React.memo(({ id, direction = 'right', onPress }) => {
   const isLoading = useSelector(state => state.chart.listLoading[id]) ?? true;
   const logs = useSelector(state => state.chart.listDataPoints[id], shallowEqual);
   const { coldCumulative, hotCumulative } =
@@ -25,7 +25,7 @@ export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, on
     dispatch(SensorStatusAction.fetch(id));
   }, []);
 
-  const { batteryLevel, numberOfLogs } = status;
+  const { batteryLevel, numberOfLogs, hasHotBreach, hasColdBreach } = status;
 
   useEffect(() => {
     dispatch(ChartAction.getListChartData(id));
@@ -65,8 +65,8 @@ export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, on
               id={id}
               batteryLevel={batteryLevel}
               temperature={String(status.currentTemperature)}
-              isInHotBreach={!!status.isInHotBreach}
-              isInColdBreach={!!status.isInColdBreach}
+              isInHotBreach={!!hasHotBreach}
+              isInColdBreach={!!hasColdBreach}
             />
           ) : null
         }

@@ -16,3 +16,11 @@ export {
   ConsecutiveBreachReducer,
   ConsecutiveBreachManager,
 } from './ConsecutiveBreach';
+
+export {
+  AcknowledgeBreachAction,
+  AcknowledgeBreachSelector,
+  AcknowledgeBreachSaga,
+  AcknowledgeBreachReducer,
+  AcknowledgeBreachManager,
+} from './AcknowledgeBreach';

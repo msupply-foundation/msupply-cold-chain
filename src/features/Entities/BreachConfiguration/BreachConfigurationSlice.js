@@ -64,6 +64,9 @@ const BreachConfigurationSelector = {
   coldCumulativeConfig: ({ entities: { breachConfiguration } }) => {
     return breachConfiguration.byId.COLD_CUMULATIVE;
   },
+  byId: ({ entities: { breachConfiguration } }) => {
+    return breachConfiguration.byId;
+  },
 };
 
 function* update({ payload: { id, key, value } }) {
