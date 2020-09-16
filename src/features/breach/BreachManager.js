@@ -38,7 +38,7 @@ max(temperature) as "Max Temp",
 min(temperature) as "Min Temp"
 from temperaturebreach tb
 join temperaturelog tl on tl.temperatureBreachId = tb.id
-left join temperaturebreachconfiguration tbc on temperatureBreachConfigurationId = tb.temperatureBreachConfigurationId
+join temperaturebreachconfiguration tbc on tbc.id = tb.temperatureBreachConfigurationId
 where tb.sensorId = ?
 group by tb.id
 `;

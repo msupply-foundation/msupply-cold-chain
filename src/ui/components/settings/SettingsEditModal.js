@@ -14,7 +14,7 @@ export const SettingsEditModal = ({ title, Content, onConfirm, isDisabled, isOpe
       Content={Content}
       ButtonGroup={
         <SettingsEditButtonGroup>
-          <SettingsEditButton text="CLEAR" onPress={onConfirm} isDisabled={isDisabled} />
+          <SettingsEditButton text="OK" onPress={onConfirm} isDisabled={isDisabled} />
           <SettingsEditButton text={t('CANCEL')} onPress={onClose} />
         </SettingsEditButtonGroup>
       }
