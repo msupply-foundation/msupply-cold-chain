@@ -116,7 +116,7 @@ with cumulativeBreachFields as (
   select case 
   when (select hasHotCumulative from cumulativeBreachFields) = 1 and temperature >= (select hotCumulativeMinThreshold from cumulativeBreachFields) and temperature <= (select hotCumulativeMaxThreshold from cumulativeBreachFields) then "Hot" 
   when (select hasColdCumulative from cumulativeBreachFields) = 1 and temperature >= (select coldCumulativeMinThreshold from cumulativeBreachFields) and temperature <= (select coldCumulativeMaxThreshold from cumulativeBreachFields) then "Cold"
-  else "x" end as "Is cumulative breach",
+  else "" end as "Is cumulative breach",
   datetime(timestamp,"unixepoch","localtime") Timestamp,
   temperature Temperature,
   tl.logInterval / 60 "Logging Interval (Minutes)",
