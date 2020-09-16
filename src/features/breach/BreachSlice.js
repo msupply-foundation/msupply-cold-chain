@@ -15,8 +15,55 @@ const initialState = {
   breachId: '',
   listCumulative: {},
   detailCumulative: {},
+  handlingBreaches: false,
+  unhandledBreaches: [],
+  fetchingUnhandledBreaches: false,
+  clearingBreaches: true,
 };
 const reducers = {
+  tryClearBreaches: {
+    prepare: sensorId => ({ payload: { sensorId } }),
+    reducer: draftState => {
+      draftState.clearingBreaches = true;
+    },
+  },
+  clearBreachesSuccess: {
+    prepare: (sensorId, breaches) => ({ payload: { breaches, sensorId } }),
+    reducer: draftState => {
+      draftState.clearingBreaches = false;
+      draftState.handlingBreaches = false;
+    },
+  },
+
+  clearBreachesFail: draftState => {
+    draftState.clearingBreaches = false;
+    draftState.handlingBreaches = false;
+  },
+  startHandlingBreaches: {
+    prepare: sensorId => ({ payload: { sensorId } }),
+    reducer: draftState => {
+      draftState.handlingBreaches = true;
+    },
+  },
+  finishHandlingBreaches: draftState => {
+    draftState.handlingBreaches = false;
+  },
+  tryFetchUnhandledBreaches: {
+    prepare: sensorId => ({ payload: { sensorId } }),
+    reducer: draftState => {
+      draftState.fetchingUnhandledBreaches = true;
+    },
+  },
+  fetchUnhandledBreachesSuccess: {
+    prepare: breaches => ({ payload: { breaches } }),
+    reducer: (draftState, { payload: { breaches } }) => {
+      draftState.unhandledBreaches = breaches;
+      draftState.fetchingUnhandledBreaches = false;
+    },
+  },
+  fetchUnhandledBreachesFail: draftState => {
+    draftState.fetchingUnhandledBreaches = false;
+  },
   createBreaches: {
     prepare: sensor => ({ payload: { sensor } }),
     reducer: () => {},
@@ -213,6 +260,34 @@ function* createBreaches({ payload: { sensor } }) {
   } catch (e) {}
 }
 
+function* tryFetchUnhandledBreaches({ payload: { sensorId } }) {
+  const getService = yield getContext('getService');
+  const breachManager = yield call(getService, SERVICES.BREACH_MANAGER);
+
+  try {
+    const breaches = yield call(breachManager.getUnhandledBreaches, sensorId);
+    yield put(BreachAction.fetchUnhandledBreachesSuccess(breaches));
+  } catch (error) {
+    yield put(BreachAction.fetchUnhandledBreachesFail());
+  }
+}
+
+function* startHandlingBreaches({ payload: { sensorId } }) {
+  yield put(BreachAction.tryFetchUnhandledBreaches(sensorId));
+}
+
+function* tryClearBreaches({ payload: { sensorId } }) {
+  const getService = yield getContext('getService');
+  const breachManager = yield call(getService, SERVICES.BREACH_MANAGER);
+
+  try {
+    const breaches = yield call(breachManager.clearUnhandledBreaches, sensorId);
+    yield put(BreachAction.clearBreachesSuccess(sensorId, breaches));
+  } catch (error) {
+    yield put(BreachAction.clearBreachesFail());
+  }
+}
+
 function* watchBreachActions() {
   yield takeEvery(BreachAction.getBreachesForSensor, getBreachesForSensor);
   yield takeEvery(BreachAction.getLogsForBreach, getLogsForBreach);
@@ -220,6 +295,9 @@ function* watchBreachActions() {
   yield takeEvery(BreachAction.getDetailCumulativeForSensor, getDetailCumulativeForSensor);
   yield takeEvery(BreachAction.getAllCumulativeExposures, getAllCumulativeExposures);
   yield takeEvery(BreachAction.createBreaches, createBreaches);
+  yield takeEvery(BreachAction.startHandlingBreaches, startHandlingBreaches);
+  yield takeEvery(BreachAction.tryFetchUnhandledBreaches, tryFetchUnhandledBreaches);
+  yield takeEvery(BreachAction.tryClearBreaches, tryClearBreaches);
 }
 
 const BreachSaga = { watchBreachActions };

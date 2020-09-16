@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, TouchableOpacity } from 'react-native';
 import { shallowEqual, useSelector, useDispatch } from 'react-redux';
-import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 import moment from 'moment';
 import { SensorRowLayout, Row, Column } from '~layouts';
 import { Divider, Chart } from '~presentation';
@@ -10,7 +9,7 @@ import { NormalText, BoldText, MediumText } from '~presentation/typography';
 import { SensorAction } from '~features/sensor';
 import { SensorStatus } from './SensorStatus';
 
-export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, onLongPress }) => {
+export const SensorChartRow = React.memo(({ id, direction = 'right', onPress }) => {
   const isLoading = useSelector(state => state.chart.listLoading[id]);
   const logs = useSelector(state => state.chart.listDataPoints[id], shallowEqual);
   const { coldCumulative, hotCumulative } =
@@ -19,14 +18,14 @@ export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, on
   const sensor = useSelector(state => state.sensor.status[id], shallowEqual) ?? {};
   const dispatch = useDispatch();
 
-  const { numberOfLogs, batteryLevel } = sensor;
+  const { numberOfLogs, batteryLevel, hasHotBreach, hasColdBreach } = sensor;
 
   useEffect(() => {
     dispatch(SensorAction.getSensorState(id));
   }, []);
 
   return (
-    <TouchableNativeFeedback onPress={numberOfLogs ? onPress : null} onLongPress={onLongPress}>
+    <TouchableOpacity onPress={numberOfLogs ? () => onPress() : null}>
       <SensorRowLayout
         Chart={
           isLoading ? (
@@ -38,7 +37,7 @@ export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, on
               <ActivityIndicator size="large" color={COLOUR.PRIMARY} />
             </Row>
           ) : (
-            (logs?.length && <Chart data={logs} />) || (
+            (logs?.length && <Chart onPress={onPress} data={logs} />) || (
               <Row
                 alignItems="center"
                 justifyContent="center"
@@ -55,10 +54,11 @@ export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, on
           // eslint-disable-next-line react/jsx-wrap-multilines
           numberOfLogs ? (
             <SensorStatus
+              id={id}
               batteryLevel={batteryLevel}
               temperature={String(sensor.currentTemperature)}
-              isInHotBreach={!!sensor.isInHotBreach}
-              isInColdBreach={!!sensor.isInColdBreach}
+              isInHotBreach={!!hasHotBreach}
+              isInColdBreach={!!hasColdBreach}
             />
           ) : null
         }
@@ -97,6 +97,6 @@ export const SensorChartRow = React.memo(({ id, direction = 'right', onPress, on
         }
       />
       <Divider width={STYLE.WIDTH.DIVIDER_NEARLY_FULL} backgroundColor={COLOUR.DIVIDER} />
-    </TouchableNativeFeedback>
+    </TouchableOpacity>
   );
 });

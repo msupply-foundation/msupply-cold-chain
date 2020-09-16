@@ -3,6 +3,7 @@ import { getContext, call, put, takeEvery } from 'redux-saga/effects';
 
 import { createSelector } from 'reselect';
 import { SERVICES } from '~constants';
+import { BreachAction } from '../breach';
 import { HydrateAction } from '../hydrate/hydrateSlice';
 
 const initialState = {
@@ -217,6 +218,7 @@ function* watchSensorActions() {
   yield takeEvery(SensorAction.getSensorState, getSensorState);
   yield takeEvery(SensorAction.updateLogDelay, updateLogDelay);
   yield takeEvery(SensorAction.updateBatteryLevel, updateBatteryLevel);
+  yield takeEvery(BreachAction.clearBreachesSuccess, getSensorState);
 }
 
 const selectById = ({ sensor: { byId } }) => {

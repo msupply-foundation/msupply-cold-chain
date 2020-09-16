@@ -45,12 +45,6 @@ export const SensorDetailScreen = ({ navigation }) => {
   const [dateRangeIsOpen, toggleDateRange] = useToggle();
 
   useEffect(() => {
-    return () => {
-      dispatch(BreachAction.reset());
-    };
-  }, []);
-
-  useEffect(() => {
     const parent = navigation.dangerouslyGetParent();
     parent.setOptions({ tabBarVisible: false });
     InteractionManager.runAfterInteractions(() => setLoad(true));

@@ -1,11 +1,15 @@
 import React, { useEffect } from 'react';
-import { Animated } from 'react-native';
+
+import { useDispatch } from 'react-redux';
+import { Animated, TouchableOpacity } from 'react-native';
 
 import { Row, Centered, LargeRectangle } from '~layouts';
 import { Header, LargeText, SmallText } from '~presentation/typography';
 import { LowBattery, HotBreach, ColdBreach } from '~presentation/icons';
 import { MILLISECONDS, COLOUR } from '~constants';
 import { Battery } from '../presentation/icons/Battery';
+
+import { BreachAction } from '../../features/breach';
 
 const styles = {
   icon: { position: 'absolute', left: 40 },
@@ -17,7 +21,10 @@ export const SensorStatus = ({
   isLowBattery = false,
   batteryLevel = 100,
   temperature,
+  id,
 }) => {
+  const dispatch = useDispatch();
+
   const fadeAnim1 = React.useRef(new Animated.Value(0)).current;
   const fadeAnim2 = React.useRef(new Animated.Value(0)).current;
   const fadeAnim3 = React.useRef(new Animated.Value(0)).current;
@@ -62,26 +69,28 @@ export const SensorStatus = ({
       <Header>{temperature}</Header>
     </Centered>
   ) : (
-    <LargeRectangle colour={isInHotBreach ? COLOUR.DANGER : COLOUR.PRIMARY}>
-      <Row flex={1}>
-        <Centered style={{ left: 10 }}>
-          <LargeText colour={COLOUR.WHITE}>{temperature}</LargeText>
-        </Centered>
+    <TouchableOpacity onLongPress={() => dispatch(BreachAction.startHandlingBreaches(id))}>
+      <LargeRectangle colour={isInHotBreach ? COLOUR.DANGER : COLOUR.PRIMARY}>
+        <Row flex={1}>
+          <Centered style={{ left: 10 }}>
+            <LargeText colour={COLOUR.WHITE}>{temperature}</LargeText>
+          </Centered>
 
-        <Centered>
-          <Animated.View style={styles.icon} opacity={fadeAnim1}>
-            <HotBreach />
-          </Animated.View>
+          <Centered>
+            <Animated.View style={styles.icon} opacity={fadeAnim1}>
+              <HotBreach />
+            </Animated.View>
 
-          <Animated.View style={styles.icon} opacity={fadeAnim2}>
-            <ColdBreach />
-          </Animated.View>
+            <Animated.View style={styles.icon} opacity={fadeAnim2}>
+              <ColdBreach />
+            </Animated.View>
 
-          <Animated.View style={styles.icon} opacity={fadeAnim3}>
-            <LowBattery />
-          </Animated.View>
-        </Centered>
-      </Row>
-    </LargeRectangle>
+            <Animated.View style={styles.icon} opacity={fadeAnim3}>
+              <LowBattery />
+            </Animated.View>
+          </Centered>
+        </Row>
+      </LargeRectangle>
+    </TouchableOpacity>
   );
 };
