@@ -55,8 +55,8 @@ export const TemperatureBreachDetailScreen = () => {
           label={t('TEMPERATURE')}
           subtext={isHotBreach ? t('HOT_BREACH_SUBTEXT') : t('COLD_BREACH_SUBTEXT')}
           initialValue={temperature}
-          maximumValue={50}
-          minimumValue={1}
+          maximumValue={55}
+          minimumValue={-30}
           step={1}
           metric={`°${t('CELSIUS')}`}
           onConfirm={({ value }) =>
