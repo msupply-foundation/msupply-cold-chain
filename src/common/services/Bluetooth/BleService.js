@@ -97,16 +97,17 @@ export class BleService {
 
         const data = [];
         const onDisconnectedSubscription = device.onDisconnected(async () => {
-          const parsedData = parseDownloadedData(data);
           try {
+            const parsedData = parseDownloadedData(data);
             resolver(
               parsedData.temperatureReadings.map(temp => ({ temperature: temp / 10.0 })) ?? []
             );
           } catch (error) {
             reject(error);
+          } finally {
+            onDisconnectedSubscription.remove();
+            this.downloading[macAddress] = false;
           }
-          onDisconnectedSubscription.remove();
-          this.downloading[macAddress] = false;
         });
 
         await device.discoverAllServicesAndCharacteristics();
@@ -116,11 +117,17 @@ export class BleService {
           BLUETOOTH.WRITE_CHARACTERISTIC_UUID,
           (_, characteristic) => {
             if (characteristic?.value) {
-              const raw = Base64.decode(characteristic.value);
-              const rawLength = raw.length;
-              const array = new Int16Array(new ArrayBuffer(rawLength * 2));
-              for (let i = 0; i < rawLength; i += 1) array[i] = raw.charCodeAt(i);
-              data.push(array);
+              try {
+                const raw = Base64.decode(characteristic.value);
+                const rawLength = raw.length;
+                const array = new Int16Array(new ArrayBuffer(rawLength * 2));
+                for (let i = 0; i < rawLength; i += 1) array[i] = raw.charCodeAt(i);
+                data.push(array);
+              } catch (e) {
+                reject(e);
+              } finally {
+                this.downloading[macAddress] = false;
+              }
             }
           }
         );
@@ -132,8 +139,9 @@ export class BleService {
           Buffer.from('*logall', 'utf-8').toString('base64')
         );
       } catch (error) {
-        this.downloading[macAddress] = false;
         reject(error);
+      } finally {
+        this.downloading[macAddress] = false;
       }
     });
   };

@@ -68,7 +68,7 @@ export const SensorSettingsScreen = React.memo(({ navigation }) => {
             dispatch(SettingAction.update(SETTING.INT.DEFAULT_LOG_INTERVAL, value * 60))}
           initialValue={defaultLoggingInterval / 60}
           editDescription={t('DEFAULT_LOG_INTERVAL')}
-          maximumValue={100}
+          maximumValue={30}
           minimumValue={1}
           step={1}
           metric={t('MINUTES')}

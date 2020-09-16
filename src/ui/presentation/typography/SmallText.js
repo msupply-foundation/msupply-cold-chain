@@ -4,8 +4,8 @@ import { FONT, COLOUR } from '~constants';
 
 const baseStyle = { fontSize: FONT.SIZE.S, fontFamily: FONT.FAMILY.REGULAR };
 
-export const SmallText = ({ children = '', colour = COLOUR.PRIMARY }) => {
-  const style = { ...baseStyle, color: colour };
+export const SmallText = ({ children = '', colour = COLOUR.PRIMARY, style = {} }) => {
+  const internalStyle = { ...baseStyle, color: colour, ...style };
 
-  return <Text style={style}>{children}</Text>;
+  return <Text style={internalStyle}>{children}</Text>;
 };

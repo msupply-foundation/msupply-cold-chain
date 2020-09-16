@@ -2,47 +2,57 @@ import moment from 'moment';
 import { ENTITIES } from '~constants';
 
 const SENSOR_STATE = `
-SELECT s.id id,
-s.macAddress macAddress,
-s.logInterval logInterval,
-s.name        name,
-s.logDelay    logDelay,
-mostRecentLogTimestamp,
-firstTimestamp,
-coalesce(numberOfLogs,0) numberOfLogs,
-currentTemperature,
-CASE when mostRecentLogTimestamp - firstTimestamp > (3 * 24 * 60 * 60) then mostRecentLogTimestamp - 24 * 3 * 60 * 60 else firstTimestamp end as minChartTimestamp,
-CASE
-WHEN endTimestamp IS NULL AND temperatureBreachConfigurationId = 'HOT_BREACH' THEN 1 ELSE 0 END AS isInHotBreach,
-CASE WHEN endTimestamp IS NULL AND temperatureBreachConfigurationId = 'COLD_BREACH' THEN 1 ELSE 0 END AS isInColdBreach
-FROM      sensor s OUTER
-
-left JOIN
-(
-  SELECT  max(timestamp) mostRecentLogTimestamp,
-          coalesce(min(timestamp), 0) firstTimestamp,
-          temperature    currentTemperature,
-          count(*) numberOfLogs,
-          tl.sensorid,
-          *
-  FROM temperaturelog tl 
-  LEFT OUTER JOIN
-    (
-      SELECT   max(startTimestamp) startTimestamp,
-      temperatureBreachConfigurationId,
-      endTimestamp,
-      sensorid
-      FROM temperaturebreach tb
-      GROUP BY sensorid
-
-    ) tb
-  ON tl.sensorid = tb.sensorid
-  GROUP BY tl.sensorid
-  order by timestamp
-) logs
-
+with breach as (
+  select (select count(*) > 0
+  from temperaturebreach tb
+  where tb.handled = 0 and sensorid = ?
+  and temperaturebreachconfigurationid = "HOT_BREACH") hasHotBreach,
+  (select count(*) > 0
+  from temperaturebreach tb
+  where tb.handled = 0 and sensorid = ?
+  and temperaturebreachconfigurationid = "COLD_BREACH") hasColdBreach
+  )
+  
+  SELECT s.id id, (select hasHotBreach from breach) hasHotBreach, (select hasColdBreach from breach) hasColdBreach,
+  s.macAddress macAddress,
+  s.logInterval logInterval,
+  s.name        name,
+  s.logDelay    logDelay,
+  mostRecentLogTimestamp,
+  firstTimestamp,
+  coalesce(numberOfLogs,0) numberOfLogs,
+  currentTemperature,
+  CASE when mostRecentLogTimestamp - firstTimestamp > (3 * 24 * 60 * 60) then mostRecentLogTimestamp - 24 * 3 * 60 * 60 else firstTimestamp end as minChartTimestamp,
+  CASE
+  WHEN endTimestamp IS NULL AND temperatureBreachConfigurationId = 'HOT_BREACH' THEN 1 ELSE 0 END AS isInHotBreach,
+  CASE WHEN endTimestamp IS NULL AND temperatureBreachConfigurationId = 'COLD_BREACH' THEN 1 ELSE 0 END AS isInColdBreach
+  FROM      sensor s OUTER
+  
+  left JOIN
+  (
+    SELECT  max(timestamp) mostRecentLogTimestamp,
+            coalesce(min(timestamp), 0) firstTimestamp,
+            temperature    currentTemperature,
+            count(*) numberOfLogs,
+            tl.sensorid,
+            *
+    FROM temperaturelog tl 
+    LEFT OUTER JOIN
+      (
+        SELECT   max(startTimestamp) startTimestamp,
+        temperatureBreachConfigurationId,
+        endTimestamp,
+        sensorid
+        FROM temperaturebreach tb
+        GROUP BY sensorid
+  
+      ) tb
+    ON tl.sensorid = tb.sensorid
+    GROUP BY tl.sensorid
+    order by timestamp
+  ) logs
   ON logs.sensorid = s.id 
-where s.id = ?
+  where s.id = ?
 `;
 
 const MOST_RECENT_TIMESTAMP = `
@@ -91,8 +101,8 @@ group by sensorid`;
 
 const LOGS_REPORT = `
 with cumulativeBreachFields as (
-  select *, (select case when sum(logInterval) >= hotCumulativeDuration then 1 else 0 end as hasHotCumulative from temperaturelog where temperature >= hotCumulativeMinThreshold and temperature <= hotCumulativeMaxThreshold and sensorId = ?) as hasHotCumulative,
-  (select case when sum(logInterval) >= coldCumulativeDuration then 1 else 0 end as hasColdCumulative from temperaturelog where temperature >= coldCumulativeMinThreshold and temperature <= coldCumulativeMaxThreshold and sensorId = ?) as hasColdCumulative
+  select *, (select case when sum(logInterval) * 1000 >= (select duration from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE')  then 1 else 0 end as hasHotCumulative from temperaturelog where temperature >= hotCumulativeMinThreshold and temperature <= hotCumulativeMaxThreshold and sensorId = ?) as hasHotCumulative,
+  (select case when sum(logInterval) *1000 >= (select duration from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') then 1 else 0 end as hasColdCumulative from temperaturelog where temperature >= coldCumulativeMinThreshold and temperature <= coldCumulativeMaxThreshold and sensorId = ?) as hasColdCumulative
   from ( 
        select (select maximumTemperature from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeMaxThreshold,
       (select minimumTemperature from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeMinThreshold,
@@ -104,9 +114,9 @@ with cumulativeBreachFields as (
   )
   
   select case 
-  when hasHotCumulative = 1 and temperature >= hotCumulativeMinThreshold and temperature <= hotCumulativeMaxThreshold then "Hot" 
-  when hasColdCumulative = 1 and temperature >= coldCumulativeMinThreshold and temperature <= coldCumulativeMaxThreshold then "Cold"
-  else "" end as "Is cumulative breach",
+  when (select hasHotCumulative from cumulativeBreachFields) = 1 and temperature >= (select hotCumulativeMinThreshold from cumulativeBreachFields) and temperature <= (select hotCumulativeMaxThreshold from cumulativeBreachFields) then "Hot" 
+  when (select hasColdCumulative from cumulativeBreachFields) = 1 and temperature >= (select coldCumulativeMinThreshold from cumulativeBreachFields) and temperature <= (select coldCumulativeMaxThreshold from cumulativeBreachFields) then "Cold"
+  else "x" end as "Is cumulative breach",
   datetime(timestamp,"unixepoch","localtime") Timestamp,
   temperature Temperature,
   tl.logInterval / 60 "Logging Interval (Minutes)",
@@ -114,7 +124,6 @@ with cumulativeBreachFields as (
   from temperaturelog tl
   left join temperatureBreach tb on tb.id = tl.temperatureBreachId
   left join temperaturebreachconfiguration tbc on tbc.id = tb.temperatureBreachConfigurationId
-  join cumulativeBreachFields
   where tl.sensorId = ?
 `;
 
@@ -193,7 +202,7 @@ export class SensorManager {
 
   getSensorState = async sensorId => {
     const manager = await this.databaseService.getEntityManager();
-    const result = await manager.query(SENSOR_STATE, [sensorId]);
+    const result = await manager.query(SENSOR_STATE, [sensorId, sensorId, sensorId]);
     const resultTwo = await manager.query(
       'select s.batteryLevel batteryLevel, temperature as currentTemperature from sensor s left join temperaturelog tl on tl.sensorid = s.id where s.id = ? order by timestamp desc limit 1',
       [sensorId]

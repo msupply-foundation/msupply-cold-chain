@@ -52,8 +52,8 @@ export const CumulativeDetailSettingScreen = () => {
           label={t('TEMPERATURE')}
           subtext={isHotCumulative ? t('HOT_CUMULATIVE_SUBTEXT') : t('COLD_CUMULATIVE_SUBTEXT')}
           initialValue={temperature}
-          maximumValue={50}
-          minimumValue={1}
+          maximumValue={55}
+          minimumValue={-30}
           step={1}
           metric={`°${t('CELSIUS')}`}
           onConfirm={({ value }) =>

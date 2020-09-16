@@ -29,7 +29,7 @@ group by temperature >= hotCumulativeMinThreshold
 
 const REPORT = `
 select (select "Continuous") "Breach Type",
-case when temperatureBreachConfigurationId = "HOT_BREACH" then "Hot" else "Cold" end as "Breach Name",
+tbc.description "Breach Name",
 datetime(startTimestamp, "unixepoch", "localtime") "Start date",
 coalesce(datetime(endTimestamp, "unixepoch", "localtime"), datetime("now", "localtime")) as "End date",
 (coalesce(endTimestamp, strftime("%s", "now")) - startTimestamp) / 60 "Exposure Duration (minutes)",
@@ -37,6 +37,7 @@ max(temperature) as "Max Temp",
 min(temperature) as "Min Temp"
 from temperaturebreach tb
 join temperaturelog tl on tl.temperatureBreachId = tb.id
+left join temperaturebreachconfiguration tbc on temperatureBreachConfigurationId = tb.temperatureBreachConfigurationId
 where tb.sensorId = ?
 group by tb.id
 `;
@@ -55,6 +56,18 @@ export class BreachManager {
     return this.databaseService.queryWith(ENTITIES.TEMPERATURE_LOG, {
       temperatureBreachId: breachId,
     });
+  };
+
+  getUnhandledBreaches = async sensorId => {
+    return this.databaseService.queryWith(ENTITIES.TEMPERATURE_BREACH, {
+      where: { sensorId, endTimestamp: Not(IsNull()), handled: false },
+    });
+  };
+
+  clearUnhandledBreaches = async sensorId => {
+    const breaches = await this.getUnhandledBreaches(sensorId);
+    const handled = breaches.map(breach => ({ ...breach, handled: true }));
+    return this.databaseService.upsert(ENTITIES.TEMPERATURE_BREACH, handled);
   };
 
   getCumulativeExposure = async (from, to, sensorId) => {

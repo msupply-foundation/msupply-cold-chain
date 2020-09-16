@@ -7,7 +7,7 @@ const initialState = {
   logData: [],
   isLoading: false,
   offset: 0,
-  limit: 250,
+  limit: 50,
 };
 const reducers = {
   getMoreLogs: { prepare: (from, to, id) => ({ payload: { from, to, id } }), reducer: () => {} },

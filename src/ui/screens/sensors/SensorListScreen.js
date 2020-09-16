@@ -37,12 +37,22 @@ export const SensorListScreen = React.memo(({ navigation }) => {
     const onPress = () => {
       navigation.navigate(NAVIGATION.SCREENS.SENSOR_STACK.SENSOR_DETAIL, { id });
     };
-    return <SensorChartRow id={id} onPress={onPress} />;
+    return (
+      <>
+        <SensorChartRow id={id} onPress={onPress} />
+        <HandleBreachModal id={id} />
+      </>
+    );
   }, []);
 
   return (
     <Gradient>
-      <FlatList data={sensors} keyExtractor={item => item.id} renderItem={renderItem} />
+      <FlatList
+        keyboardShouldPersistTaps="handled"
+        data={sensors}
+        keyExtractor={item => item.id}
+        renderItem={renderItem}
+      />
     </Gradient>
   );
 });
