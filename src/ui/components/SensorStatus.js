@@ -1,63 +1,74 @@
 import React, { useEffect } from 'react';
-
-import { useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { Animated, TouchableOpacity } from 'react-native';
 
-import { AcknowledgeBreachAction } from '~features';
+import { MILLISECONDS, COLOUR } from '~constants';
+import { SensorStatusSelector, AcknowledgeBreachAction } from '~features';
+
 import { Row, Centered, LargeRectangle } from '~layouts';
 import { Header, LargeText, SmallText } from '~presentation/typography';
-import { LowBattery, HotBreach, ColdBreach } from '~presentation/icons';
-import { MILLISECONDS, COLOUR } from '~constants';
-import { Battery } from '../presentation/icons/Battery';
+import { Battery, LowBattery, HotBreach, ColdBreach } from '~presentation/icons';
+
+const stateToProps = (state, ownProps) => {
+  const hasHotBreach = SensorStatusSelector.hasHotBreach(state, ownProps);
+  const hasColdBreach = SensorStatusSelector.hasColdBreach(state, ownProps);
+  const isLowBattery = SensorStatusSelector.isLowBattery(state, ownProps);
+  const isInDanger = SensorStatusSelector.isInDanger(state, ownProps);
+  const temperature = SensorStatusSelector.currentTemperature(state, ownProps);
+
+  return { hasHotBreach, hasColdBreach, isLowBattery, isInDanger, temperature };
+};
+
+const dispatchToProps = (dispatch, { id }) => {
+  return { startAcknowledging: () => dispatch(AcknowledgeBreachAction.startAcknowledging(id)) };
+};
 
 const styles = {
   icon: { position: 'absolute', left: 40 },
 };
 
-export const SensorStatus = ({
-  isInHotBreach = false,
-  isInColdBreach = false,
-  isLowBattery = false,
+const getAnimations = animationValues => {
+  return Animated.loop(
+    Animated.sequence(
+      animationValues.map(value => {
+        return Animated.sequence([
+          Animated.delay(MILLISECONDS.ONE_SECOND / 4),
+          Animated.timing(value, {
+            toValue: 1,
+            duration: MILLISECONDS.ONE_SECOND,
+            useNativeDriver: true,
+          }),
+
+          Animated.timing(value, {
+            toValue: 0,
+            duration: MILLISECONDS.ONE_SECOND,
+            useNativeDriver: true,
+          }),
+        ]);
+      })
+    )
+  );
+};
+
+export const SensorStatusComponent = ({
   batteryLevel = 100,
   temperature,
-  id,
+  hasHotBreach,
+  hasColdBreach,
+  isLowBattery,
+  isInDanger,
+  startAcknowledging,
 }) => {
-  const dispatch = useDispatch();
-
   const fadeAnim1 = React.useRef(new Animated.Value(0)).current;
   const fadeAnim2 = React.useRef(new Animated.Value(0)).current;
   const fadeAnim3 = React.useRef(new Animated.Value(0)).current;
 
-  const conditions = [isInHotBreach, isInColdBreach, isLowBattery, !!temperature != null];
+  const conditions = [hasHotBreach, hasColdBreach, isLowBattery, !!temperature != null];
   const animationValues = [fadeAnim1, fadeAnim2, fadeAnim3].filter((_, i) => conditions[i]);
-  const isInDanger = isInHotBreach || isInColdBreach || isLowBattery;
-
-  const animations = () => {
-    return Animated.loop(
-      Animated.sequence(
-        animationValues.map(value => {
-          return Animated.sequence([
-            Animated.delay(MILLISECONDS.ONE_SECOND / 4),
-            Animated.timing(value, {
-              toValue: 1,
-              duration: MILLISECONDS.ONE_SECOND,
-              useNativeDriver: true,
-            }),
-
-            Animated.timing(value, {
-              toValue: 0,
-              duration: MILLISECONDS.ONE_SECOND,
-              useNativeDriver: true,
-            }),
-          ]);
-        })
-      )
-    ).start();
-  };
 
   useEffect(() => {
-    if (isInDanger) animations();
-  }, [isInDanger]);
+    if (isInDanger) getAnimations(animationValues).start();
+  }, [isInDanger, animationValues]);
 
   return !isInDanger ? (
     <Centered>
@@ -68,8 +79,8 @@ export const SensorStatus = ({
       <Header>{temperature}</Header>
     </Centered>
   ) : (
-    <TouchableOpacity onLongPress={() => dispatch(AcknowledgeBreachAction.startAcknowledging(id))}>
-      <LargeRectangle colour={isInHotBreach ? COLOUR.DANGER : COLOUR.PRIMARY}>
+    <TouchableOpacity onLongPress={startAcknowledging}>
+      <LargeRectangle colour={hasHotBreach ? COLOUR.DANGER : COLOUR.PRIMARY}>
         <Row flex={1}>
           <Centered style={{ left: 10 }}>
             <LargeText colour={COLOUR.WHITE}>{temperature}</LargeText>
@@ -93,3 +104,5 @@ export const SensorStatus = ({
     </TouchableOpacity>
   );
 };
+
+export const SensorStatus = connect(stateToProps, dispatchToProps)(SensorStatusComponent);

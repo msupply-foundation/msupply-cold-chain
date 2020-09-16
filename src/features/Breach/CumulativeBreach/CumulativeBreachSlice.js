@@ -42,6 +42,35 @@ const { actions: CumulativeBreachAction, reducer: CumulativeBreachReducer } = cr
   name: REDUCER.CUMULATIVE_BREACH,
 });
 
+const CumulativeBreachSelector = {
+  detailColdCumulative: ({ breach: { cumulativeBreach } }) => {
+    const { detail } = cumulativeBreach;
+    const { coldCumulative } = detail;
+
+    return coldCumulative;
+  },
+  detailHotCumulative: ({ breach: { cumulativeBreach } }) => {
+    const { detail } = cumulativeBreach;
+    const { hotCumulative } = detail;
+
+    return hotCumulative;
+  },
+  listColdCumulative: ({ breach: { cumulativeBreach } }, { id, formatter }) => {
+    const { listById } = cumulativeBreach;
+    const { [id]: listCumulative } = listById;
+    const { coldCumulative } = listCumulative;
+
+    return coldCumulative ? formatter.listCumulativeBreach(coldCumulative) : '';
+  },
+  listHotCumulative: ({ breach: { cumulativeBreach } }, { id, formatter }) => {
+    const { listById } = cumulativeBreach;
+    const { [id]: listCumulative } = listById;
+    const { hotCumulative } = listCumulative;
+
+    return hotCumulative ? formatter.listCumulativeBreach(hotCumulative) : '';
+  },
+};
+
 function* fetchListForSensor({ payload: { sensorId } }) {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const [breachManager, chartManager] = yield call(DependencyLocator.get, [
@@ -79,8 +108,6 @@ function* root() {
 }
 
 const CumulativeBreachSaga = { root, fetchDetailForSensor, fetchListForSensor };
-
-const CumulativeBreachSelector = {};
 
 export {
   CumulativeBreachAction,

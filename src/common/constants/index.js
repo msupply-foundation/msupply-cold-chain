@@ -18,3 +18,4 @@ export { CHART } from './Chart';
 export { NAVIGATION } from './Navigation';
 export { BLUETOOTH } from './Bluetooth';
 export { SETTING } from './Setting';
+export { SPECIAL_CHARACTER } from './SpecialCharacter';

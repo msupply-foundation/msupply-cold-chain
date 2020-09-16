@@ -25,7 +25,7 @@ export const SensorChartRow = React.memo(({ id, direction = 'right', onPress }) 
     dispatch(SensorStatusAction.fetch(id));
   }, []);
 
-  const { batteryLevel, numberOfLogs, hasHotBreach, hasColdBreach } = status;
+  const { numberOfLogs } = status;
 
   useEffect(() => {
     dispatch(ChartAction.getListChartData(id));
@@ -58,18 +58,7 @@ export const SensorChartRow = React.memo(({ id, direction = 'right', onPress }) 
         }
         SensorName={null}
         direction={direction}
-        SensorStatus={
-          // eslint-disable-next-line react/jsx-wrap-multilines
-          numberOfLogs ? (
-            <SensorStatus
-              id={id}
-              batteryLevel={batteryLevel}
-              temperature={String(status.currentTemperature)}
-              isInHotBreach={!!hasHotBreach}
-              isInColdBreach={!!hasColdBreach}
-            />
-          ) : null
-        }
+        SensorStatus={numberOfLogs ? <SensorStatus id={id} /> : null}
         Extra={
           // eslint-disable-next-line react/jsx-wrap-multilines
           <Column>

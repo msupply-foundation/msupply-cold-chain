@@ -7,10 +7,10 @@ import { SettingsEditButtonGroup, SettingsEditModalLayout, Column, Centered } fr
 
 import { t } from '~translations';
 import { AcknowledgeBreachAction } from '~features';
-import { NormalText } from '../presentation/typography';
-import { Divider } from '../presentation';
-import { COLOUR } from '../../common/constants';
-import { SettingsEditButton } from './buttons';
+import { NormalText } from '../../presentation/typography';
+import { Divider } from '../../presentation';
+import { COLOUR } from '../../../common/constants';
+import { SettingsEditButton } from '../buttons';
 
 export const AcknowledgeBreachModal = ({ id }) => {
   const dispatch = useDispatch();

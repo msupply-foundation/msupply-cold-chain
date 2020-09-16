@@ -10,7 +10,7 @@ import { Gradient } from '~layouts';
 import { NAVIGATION } from '~constants';
 
 import { BatteryObserverAction, DownloadAction } from '~features/Bluetooth';
-import { AcknowledgeBreachModal } from '../../components/AcknowledgeBreachModal';
+import { AcknowledgeBreachModal } from '../../components/modal/AcknowledgeBreachModal';
 
 export const SensorListScreen = React.memo(({ navigation }) => {
   const sensors = useSelector(SensorSelector.sensorsList, shallowEqual);

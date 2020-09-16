@@ -23,6 +23,9 @@ const initialState = {
     //   minChartTimestamp: 111,
     //   isInHotBreach: false,
     //   isInColdBreach: false,
+    //   hasHotBreach: false,
+    //   hasColdBreach: false,
+    //   isLowBattery: false,
     // },
   },
 };
@@ -30,6 +33,41 @@ const initialState = {
 const SensorStatusSelector = {
   byId: ({ sensorStatus }) => {
     return sensorStatus.byId;
+  },
+  hasHotBreach: ({ sensorStatus }, { id }) => {
+    const { byId } = sensorStatus;
+    const { [id]: status } = byId;
+    const { hasHotBreach } = status;
+
+    return hasHotBreach;
+  },
+  hasColdBreach: ({ sensorStatus }, { id }) => {
+    const { byId } = sensorStatus;
+    const { [id]: status } = byId;
+    const { hasColdBreach } = status;
+
+    return hasColdBreach;
+  },
+  isLowBattery: ({ sensorStatus }, { id }) => {
+    const { byId } = sensorStatus;
+    const { [id]: status } = byId;
+    const { isLowBattery } = status;
+
+    return isLowBattery;
+  },
+  isInDanger: ({ sensorStatus }, { id }) => {
+    const { byId } = sensorStatus;
+    const { [id]: status } = byId;
+    const { hasColdBreach, hasHotBreach, isLowBattery } = status;
+
+    return hasColdBreach || hasHotBreach || isLowBattery;
+  },
+  currentTemperature: ({ sensorStatus }, { id }) => {
+    const { byId } = sensorStatus;
+    const { [id]: status } = byId;
+    const { currentTemperature } = status;
+
+    return String(currentTemperature);
   },
 };
 
