@@ -58,7 +58,7 @@ export const SensorStatus = ({
 
   useEffect(() => {
     if (isInDanger) animations();
-  }, [isInDanger]);
+  }, [isInDanger, isInHotBreach, isInColdBreach, isLowBattery]);
 
   return !isInDanger ? (
     <Centered>
