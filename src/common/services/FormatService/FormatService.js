@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 import { SPECIAL_CHARACTER, MILLISECONDS, FORMAT } from '~constants';
+import { t } from '~translations';
 
 export class FormatService {
   getTickFormatter = () => {
@@ -21,8 +22,12 @@ export class FormatService {
     };
   };
 
-  batteryLevel = level => {
-    return Number(level * 100).toFixed();
+  deviceBatteryLevel = level => {
+    return `${Number(level * 100).toFixed()}%`;
+  };
+
+  sensorBatteryLevel = level => {
+    return `${level}%`;
   };
 
   headerTime = date => {
@@ -42,6 +47,12 @@ export class FormatService {
     const formattedMin = `${this.temperature(minimumTemperature)}`;
     const formattedMax = `${this.temperature(maximumTemperature)}`;
 
-    return `${formattedDuration} between ${formattedMin} ${SPECIAL_CHARACTER.DASH} ${formattedMax}`;
+    return `${formattedDuration} ${t('BETWEEN')} ${formattedMin} ${
+      SPECIAL_CHARACTER.DASH
+    } ${formattedMax}`;
+  };
+
+  lastDownloadTime = timestamp => {
+    return `${moment.duration(moment.unix(moment().unix() - timestamp)).humanize()} ${t('AGO')}`;
   };
 }

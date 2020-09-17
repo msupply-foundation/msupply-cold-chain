@@ -6,7 +6,7 @@ import { AcknowledgeBreachAction, ConsecutiveBreachAction } from '../Breach';
 import { SensorAction } from '../Entities';
 
 const initialState = {
-  fetchingStatusById: {
+  fetchingById: {
     // exampleId: false,
   },
   byId: {
@@ -30,42 +30,75 @@ const initialState = {
   },
 };
 
+const getById = ({ sensorStatus: { byId } }) => {
+  return byId;
+};
+
+const getFetchingById = ({ sensorStatus: { fetchingById } }) => {
+  return fetchingById;
+};
+
+const getStatus = (state, id) => {
+  const { [id]: status } = getById(state) ?? {};
+  return status ?? {};
+};
+
+const hasData = (state, { id }) => {
+  const { hasLogs } = getStatus(state, id);
+  return !!hasLogs;
+};
+
+const lastDownloadTime = (state, { id, formatter }) => {
+  const { mostRecentLogTimestamp } = getStatus(state, id);
+  return formatter.lastDownloadTime(mostRecentLogTimestamp);
+};
+
+const isLoading = (state, { id }) => {
+  const { [id]: isFetching } = getFetchingById(state);
+
+  return isFetching;
+};
+
 const SensorStatusSelector = {
+  getFetchingById,
+  hasData,
+  lastDownloadTime,
+  isLoading,
   byId: ({ sensorStatus }) => {
     return sensorStatus.byId;
   },
   hasHotBreach: ({ sensorStatus }, { id }) => {
     const { byId } = sensorStatus;
     const { [id]: status } = byId;
-    const { hasHotBreach } = status;
+    const { hasHotBreach } = status ?? {};
 
     return hasHotBreach;
   },
   hasColdBreach: ({ sensorStatus }, { id }) => {
     const { byId } = sensorStatus;
     const { [id]: status } = byId;
-    const { hasColdBreach } = status;
+    const { hasColdBreach } = status ?? {};
 
     return hasColdBreach;
   },
   isLowBattery: ({ sensorStatus }, { id }) => {
     const { byId } = sensorStatus;
     const { [id]: status } = byId;
-    const { isLowBattery } = status;
+    const { isLowBattery } = status ?? {};
 
     return isLowBattery;
   },
   isInDanger: ({ sensorStatus }, { id }) => {
     const { byId } = sensorStatus;
     const { [id]: status } = byId;
-    const { hasColdBreach, hasHotBreach, isLowBattery } = status;
+    const { hasColdBreach, hasHotBreach, isLowBattery } = status ?? {};
 
     return hasColdBreach || hasHotBreach || isLowBattery;
   },
   currentTemperature: ({ sensorStatus }, { id }) => {
     const { byId } = sensorStatus;
     const { [id]: status } = byId;
-    const { currentTemperature } = status;
+    const { currentTemperature } = status ?? {};
 
     return String(currentTemperature);
   },
@@ -75,20 +108,20 @@ const reducers = {
   fetch: {
     prepare: sensorId => ({ payload: { sensorId } }),
     reducer: (draftState, { payload: { sensorId } }) => {
-      draftState.fetchingStatusById[sensorId] = true;
+      draftState.fetchingById[sensorId] = true;
     },
   },
   fetchSuccess: {
     prepare: (sensorId, status) => ({ payload: { sensorId, status } }),
     reducer: (draftState, { payload: { sensorId, status } }) => {
-      draftState.fetchingStatusById[sensorId] = false;
+      draftState.fetchingById[sensorId] = false;
       draftState.byId[sensorId] = status;
     },
   },
   fetchFail: {
     prepare: sensorId => ({ payload: { sensorId } }),
     reducer: (draftState, { payload: { sensorId } }) => {
-      draftState.fetchingStatusById[sensorId] = false;
+      draftState.fetchingById[sensorId] = false;
     },
   },
   updateBatteryLevel: {

@@ -12,7 +12,7 @@ const stateToProps = (state, ownProps) => {
   return { coldCumulative, hotCumulative };
 };
 
-export const CumulativeBreachStatusComponent = ({ coldCumulative, hotCumulative }) => {
+export const SensorListCumulativeBreachStatusComponent = ({ coldCumulative, hotCumulative }) => {
   return (
     <Column>
       {coldCumulative ? <NormalText>{coldCumulative}</NormalText> : null}
@@ -21,6 +21,6 @@ export const CumulativeBreachStatusComponent = ({ coldCumulative, hotCumulative 
   );
 };
 
-export const ListCumulativeBreachStatus = withFormatService(
-  connect(stateToProps)(CumulativeBreachStatusComponent)
+export const SensorListCumulativeBreachStatus = withFormatService(
+  connect(stateToProps)(SensorListCumulativeBreachStatusComponent)
 );

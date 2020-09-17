@@ -151,7 +151,7 @@ export const SensorLogsTable = React.memo(({ id }) => {
       refreshing={isLoading}
       data={data}
       getItemLayout={(_, index) => ({ length: data.length, offset: 50 * index, index })}
-      initialNumToRender={30}
+      initialNumToRender={5}
       ListHeaderComponent={<Header columns={COLUMNS} sortedBy="endDate" sortedDirection="desc" />}
       keyExtractor={keyExtractor}
       renderItem={renderItem}

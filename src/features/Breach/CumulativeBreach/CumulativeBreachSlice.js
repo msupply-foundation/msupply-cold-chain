@@ -42,33 +42,41 @@ const { actions: CumulativeBreachAction, reducer: CumulativeBreachReducer } = cr
   name: REDUCER.CUMULATIVE_BREACH,
 });
 
+const detailColdCumulative = ({ breach: { cumulative } }) => {
+  const { detail } = cumulative;
+  const { coldCumulative } = detail;
+
+  return coldCumulative;
+};
+
+const detailHotCumulative = ({ breach: { cumulative } }) => {
+  const { detail } = cumulative;
+  const { hotCumulative } = detail;
+
+  return hotCumulative;
+};
+
+const listColdCumulative = ({ breach: { cumulative } }, { id, formatter }) => {
+  const { listById } = cumulative;
+  const { [id]: listCumulative } = listById;
+  const { coldCumulative } = listCumulative ?? {};
+
+  return coldCumulative ? formatter.listCumulativeBreach(coldCumulative) : '';
+};
+
+const listHotCumulative = ({ breach: { cumulative } }, { id, formatter }) => {
+  const { listById } = cumulative;
+  const { [id]: listCumulative } = listById;
+  const { hotCumulative } = listCumulative ?? {};
+
+  return hotCumulative ? formatter.listCumulativeBreach(hotCumulative) : '';
+};
+
 const CumulativeBreachSelector = {
-  detailColdCumulative: ({ breach: { cumulativeBreach } }) => {
-    const { detail } = cumulativeBreach;
-    const { coldCumulative } = detail;
-
-    return coldCumulative;
-  },
-  detailHotCumulative: ({ breach: { cumulativeBreach } }) => {
-    const { detail } = cumulativeBreach;
-    const { hotCumulative } = detail;
-
-    return hotCumulative;
-  },
-  listColdCumulative: ({ breach: { cumulativeBreach } }, { id, formatter }) => {
-    const { listById } = cumulativeBreach;
-    const { [id]: listCumulative } = listById;
-    const { coldCumulative } = listCumulative;
-
-    return coldCumulative ? formatter.listCumulativeBreach(coldCumulative) : '';
-  },
-  listHotCumulative: ({ breach: { cumulativeBreach } }, { id, formatter }) => {
-    const { listById } = cumulativeBreach;
-    const { [id]: listCumulative } = listById;
-    const { hotCumulative } = listCumulative;
-
-    return hotCumulative ? formatter.listCumulativeBreach(hotCumulative) : '';
-  },
+  detailColdCumulative,
+  detailHotCumulative,
+  listColdCumulative,
+  listHotCumulative,
 };
 
 function* fetchListForSensor({ payload: { sensorId } }) {
@@ -79,10 +87,7 @@ function* fetchListForSensor({ payload: { sensorId } }) {
   ]);
 
   try {
-    const { minChartTimestamp: from, maxChartTimestamp: to } = yield call(
-      chartManager.getChartTimestamps,
-      sensorId
-    );
+    const { from, to } = yield call(chartManager.getChartTimestamps, sensorId);
     const cumulative = yield call(breachManager.getCumulativeExposure, from, to, sensorId);
     yield put(CumulativeBreachAction.fetchListForSensorSuccess(sensorId, cumulative));
   } catch (error) {

@@ -6,3 +6,5 @@ export { useRouteProps } from './useRouteProps';
 export { useOnAppFocus } from './useOnAppFocus';
 export { useDependency } from './useDependency';
 export { useStorybook } from './useStorybook';
+export { useOnMount } from './useOnMount';
+export { useCallbackOnGainingFocus } from './useCallbackOnFocus';

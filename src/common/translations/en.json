@@ -83,5 +83,7 @@
   "TEMPERATURE_CUMULATIVE_DESCRIPTION_EDIT": "Edit this cumulative identifier",
   "SINGLE_EXPOSURE_CONFIGS": "Single exposure breach configurations",
   "CUMULATIVE_EXPOSURE_CONFIGS": "Cumulative exposure configurations",
-  "CONNECTING": "Setting up sensor.."
+  "CONNECTING": "Setting up sensor..",
+  "AGO": "ago",
+  "BETWEEN": "between"
 }

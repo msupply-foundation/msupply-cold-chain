@@ -3,6 +3,7 @@ import { call, getContext, put, takeEvery } from 'redux-saga/effects';
 import { REDUCER, DEPENDENCY } from '~constants';
 
 const initialState = {
+  acknowledgingSensorId: null,
   acknowledging: false,
   updating: false,
   fetching: false,
@@ -12,14 +13,16 @@ const initialState = {
 const reducers = {
   startAcknowledging: {
     prepare: sensorId => ({ payload: { sensorId } }),
-    reducer: draftState => {
+    reducer: (draftState, { payload: { sensorId } }) => {
       draftState.acknowledging = true;
+      draftState.acknowledgingSensorId = sensorId;
     },
   },
   finishAcknowledging: {
     prepare: sensorId => ({ payload: { sensorId } }),
     reducer: draftState => {
       draftState.acknowledging = false;
+      draftState.acknowledgingSensorId = null;
     },
   },
   tryAcknowledge: {
@@ -33,6 +36,7 @@ const reducers = {
     reducer: draftState => {
       draftState.updating = false;
       draftState.acknowledging = false;
+      draftState.acknowledgingSensorId = null;
     },
   },
   acknowledgeFail: {
@@ -40,6 +44,7 @@ const reducers = {
     reducer: draftState => {
       draftState.updating = false;
       draftState.acknowledging = false;
+      draftState.acknowledgingSensorId = null;
     },
   },
   tryFetchUnacknowledged: {
@@ -106,7 +111,16 @@ function* root() {
 
 const AcknowledgeBreachSaga = { root, tryAcknowledge, startAcknowledging };
 
-const AcknowledgeBreachSelector = {};
+const acknowledgeBreachState = ({ breach: { acknowledgeBreach } }) => acknowledgeBreach;
+const sensorId = state => {
+  const { acknowledgingSensorId } = acknowledgeBreachState(state);
+  return acknowledgingSensorId;
+};
+
+const AcknowledgeBreachSelector = {
+  acknowledgeBreachState,
+  sensorId,
+};
 
 export {
   AcknowledgeBreachAction,

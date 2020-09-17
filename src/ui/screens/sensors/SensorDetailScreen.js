@@ -48,6 +48,9 @@ export const SensorDetailScreen = ({ navigation }) => {
     const parent = navigation.dangerouslyGetParent();
     parent.setOptions({ tabBarVisible: false });
     InteractionManager.runAfterInteractions(() => setLoad(true));
+    return () => {
+      parent.setOptions({ tabBarVisible: true });
+    };
   }, []);
 
   useEffect(() => {
@@ -79,7 +82,7 @@ export const SensorDetailScreen = ({ navigation }) => {
   const { coldCumulative, hotCumulative } =
     useSelector(state => state.breach.cumulative.detail, shallowEqual) ?? {};
 
-  const data = useSelector(ChartSelector.detailDataPoints);
+  const data = useSelector(ChartSelector.detailData);
 
   return (
     <Gradient>

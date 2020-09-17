@@ -1,46 +1,31 @@
-import { View } from 'react-native';
-import { HalfCircleButton } from '~components/buttons';
-import { Chevron } from '~presentation/icons';
+import { TouchableOpacity } from 'react-native';
 
 import { STYLE } from '~constants';
 
 import { Column } from './Column';
-import { FlexPaddingView } from './FlexPaddingView';
 import { Row } from './Row';
+import { HalfCircleButton } from '~components/buttons';
+import { Chevron } from '~presentation/icons';
 
 const styles = {
   row: {
-    maxHeight: STYLE.HEIGHT.SENSOR_ROW,
     paddingVertical: STYLE.PADDING.VERTICAL,
-    width: '100%',
-  },
-  chartContainer: {
-    minHeight: STYLE.HEIGHT.NORMAL_CHART,
-    minWidth: STYLE.WIDTH.NORMAL_CHART,
+    height: STYLE.HEIGHT.SENSOR_ROW,
   },
 };
 
-export const SensorRowLayout = ({
-  Chart,
-  SensorStatus,
-  SensorName,
-  direction,
-  Extra = <FlexPaddingView height={35} />,
-}) => {
+export const SensorRowLayout = ({ Chart, SensorStatus, onPress, direction }) => {
   return (
-    <Row justifyContent="space-between" alignItems="center" style={styles.row}>
-      {direction === 'left' && (
-        <HalfCircleButton direction={direction} Icon={<Chevron direction={direction} />} />
-      )}
-      <View style={{}}>{Chart}</View>
-      <Column>
-        {SensorName}
-        {SensorStatus}
-        {Extra}
-      </Column>
-      {direction === 'right' && (
-        <HalfCircleButton direction={direction} Icon={<Chevron direction={direction} />} />
-      )}
-    </Row>
+    <TouchableOpacity onPress={onPress}>
+      <Row justifyContent="space-between" alignItems="center" style={styles.row}>
+        <Column justifyContent="center">{Chart}</Column>
+        <Column justifyContent="center">{SensorStatus}</Column>
+        <Column justifyContent="center">
+          {!!onPress && (
+            <HalfCircleButton direction={direction} Icon={<Chevron direction={direction} />} />
+          )}
+        </Column>
+      </Row>
+    </TouchableOpacity>
   );
 };

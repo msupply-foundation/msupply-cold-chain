@@ -3,7 +3,7 @@ import Feather from 'react-native-vector-icons/Feather';
 
 import { COLOUR, ICON } from '~constants';
 
-export const Battery = ({ batteryLevel, isCharging, size = 50 }) => {
+export const Battery = ({ batteryLevel, isCharging, size = 50, style = { marginRight: 10 } }) => {
   const getIconProps = () => {
     if (isCharging) return [ICON.BATTERY_CHARGING, COLOUR.PRIMARY];
     if (batteryLevel < 5) return [ICON.BATTERY_EMPTY, COLOUR.DANGER];
@@ -18,5 +18,5 @@ export const Battery = ({ batteryLevel, isCharging, size = 50 }) => {
   // FA charging icon is not usable under our software license
   const IconComponent = isCharging ? Feather : FontAwesome;
 
-  return <IconComponent name={iconName} size={size} color={iconColour} />;
+  return <IconComponent style={style} name={iconName} size={size} color={iconColour} />;
 };

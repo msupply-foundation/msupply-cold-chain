@@ -214,46 +214,7 @@ export class SensorManager {
   };
 
   getSensors = async () => {
-    const manager = await this.databaseService.getEntityManager();
-
-    return manager.query(
-      `
-      SELECT s.id id,
-      s.macAddress macAddress,
-      s.logInterval logInterval,
-      s.name        name,
-      s.logDelay    logDelay,
-      mostRecentLogTimestamp,
-      firstTimestamp,
-      currentTemperature,
-      CASE when mostRecentLogTimestamp - firstTimestamp > (3 * 24 * 60 * 60) then mostRecentLogTimestamp - 24 * 3 * 60 * 60 else firstTimestamp end as minChartTimestamp,
-      CASE
-      WHEN endTimestamp IS NULL AND temperatureBreachConfigurationId = 'HOT_BREACH' THEN 1 ELSE 0 END AS isInHotBreach,
-      CASE WHEN endTimestamp IS NULL AND temperatureBreachConfigurationId = 'COLD_BREACH' THEN 1 ELSE 0 END AS isInColdBreach
-      FROM      sensor s OUTER
-      left JOIN
-      (
-        SELECT  max(timestamp) mostRecentLogTimestamp,
-                min(timestamp) firstTimestamp,
-                temperature    currentTemperature,
-                tl.sensorid,
-                *
-        FROM temperaturelog tl
-        LEFT OUTER JOIN
-          (
-            SELECT   max(startTimestamp) startTimestamp,
-            temperatureBreachConfigurationId,
-            endTimestamp,
-            sensorid
-            FROM temperaturebreach tb
-            GROUP BY sensorid
-          ) tb
-        ON tl.sensorid = tb.sensorid
-        GROUP BY tl.sensorid
-      ) logs
-        ON logs.sensorid = s.id 
-      `
-    );
+    return this.getAll();
   };
 
   getTemperatureBreachConfigs = async () => {

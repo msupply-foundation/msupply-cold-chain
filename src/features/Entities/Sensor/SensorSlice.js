@@ -111,7 +111,28 @@ function* root() {
   yield takeEvery(SensorAction.update, update);
 }
 
+const getById = ({ entities: { sensor } }) => {
+  const { byId } = sensor;
+  return byId;
+};
+
+const getName = (state, { id }) => {
+  const { [id]: sensor } = getById(state);
+  const { name, macAddress } = sensor ?? {};
+
+  return name ?? macAddress;
+};
+
+const getBatteryLevel = (state, { id, formatter }) => {
+  const { [id]: sensor } = getById(state);
+  const { batteryLevel } = sensor ?? {};
+
+  return batteryLevel ? formatter.sensorBatteryLevel(batteryLevel) : '';
+};
+
 const SensorSelector = {
+  getName,
+  getBatteryLevel,
   availableSensorsList: ({
     entities: {
       sensor: { byId, ids },

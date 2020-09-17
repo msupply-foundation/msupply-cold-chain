@@ -32,18 +32,8 @@ order by
 
 const GET_CHART_TIMESTAMPS = `
 SELECT CASE
-WHEN ( Max(tl.timestamp) - Min(tl.timestamp) ) > ( 3 * 24 * 60 * 60 )
-THEN
-max(tl.timestamp) - (24 * 3 * 60 * 60)
-ELSE Min(tl.timestamp)
-END               AS minChartTimestamp,
-CASE WHEN ( Max(tl.timestamp) - Min(tl.timestamp) ) > ( 3 * 24 * 60 * 60 )
-THEN
-1
-ELSE 0
-END               AS xxx,
-Max(tl.timestamp) AS maxChartTimestamp,
-max(tl.timestamp) - min(tl.timestamp) as x
+WHEN ( Max(tl.timestamp) - Min(tl.timestamp) ) > ( 3 * 24 * 60 * 60 ) THEN max(tl.timestamp) - (24 * 3 * 60 * 60) ELSE Min(tl.timestamp) END AS "from",
+Max(tl.timestamp) AS "to"
 FROM   sensor s
 JOIN temperaturelog tl
 ON tl.sensorid = s.id
@@ -64,9 +54,6 @@ export class ChartManager {
   getChartTimestamps = async sensorId => {
     const manager = await this.databaseService.getEntityManager();
     const [result = {}] = await manager.query(GET_CHART_TIMESTAMPS, [sensorId]);
-    return {
-      minChartTimestamp: result.minChartTimestamp ?? 0,
-      maxChartTimestamp: result.maxChartTimestamp ?? 0,
-    };
+    return result;
   };
 }

@@ -18,6 +18,7 @@ with breach as (
   mostRecentLogTimestamp,
   s.batteryLevel < 75 isLowBattery,
   firstTimestamp,
+  coalesce(numberOfLogs,0) > 0 hasLogs,
   coalesce(numberOfLogs,0) numberOfLogs,
   currentTemperature,
   CASE when mostRecentLogTimestamp - firstTimestamp > (3 * 24 * 60 * 60) then mostRecentLogTimestamp - 24 * 3 * 60 * 60 else firstTimestamp end as minChartTimestamp,

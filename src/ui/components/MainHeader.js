@@ -1,3 +1,4 @@
+import { View } from 'react-native';
 import { useBatteryLevel, usePowerState } from 'react-native-device-info';
 import { COLOUR } from '~constants';
 
@@ -17,14 +18,14 @@ export const MainHeader = withFormatService(({ formatter }) => {
 
   return (
     <Row style={style.container} justifyContent="space-between">
-      <Row flex={3}>
-        <MsupplyMan />
-      </Row>
-      <Row flex={1} justifyContent="space-between">
+      <MsupplyMan />
+
+      <Row>
         <BatteryStatus
-          batteryLevel={formatter.batteryLevel(batteryLevel)}
+          batteryLevel={formatter.deviceBatteryLevel(batteryLevel)}
           isCharging={isCharging}
         />
+        <View style={{ width: 20 }} />
         <DateAndTime date={formatter.headerDate(timeNow)} time={formatter.headerTime(timeNow)} />
       </Row>
     </Row>

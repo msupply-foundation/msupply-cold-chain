@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { useCallback } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { VictoryLine, VictoryChart, VictoryAxis } from 'victory-native';
@@ -5,8 +6,9 @@ import { VictoryLine, VictoryChart, VictoryAxis } from 'victory-native';
 import { FONT, STYLE, COLOUR, CHART } from '~constants';
 
 import { ChartGradient } from './ChartGradient';
-import { Centered } from '../layouts';
+import { Centered, Row } from '../layouts';
 import { withFormatService } from '../hoc/withFormatService';
+import { MediumText } from './typography';
 
 const style = {
   container: {
@@ -40,7 +42,13 @@ const round5 = n => {
 };
 
 export const Chart = withFormatService(
-  ({ formatter, data, width = STYLE.WIDTH.NORMAL_CHART, height = STYLE.HEIGHT.NORMAL_CHART }) => {
+  ({
+    formatter,
+    data = [],
+    width = STYLE.WIDTH.NORMAL_CHART,
+    height = STYLE.HEIGHT.NORMAL_CHART,
+    isLoading,
+  }) => {
     const tickFormatter = useCallback(formatter.getTickFormatter(), [data]);
 
     const minTemp = Math.min(...data.map(({ temperature }) => temperature));
@@ -52,35 +60,48 @@ export const Chart = withFormatService(
     const minTime = Math.min(...data.map(({ timestamp }) => timestamp));
     const maxTime = Math.max(...data.map(({ timestamp }) => timestamp));
 
+    const Empty = (
+      <Row alignItems="center" justifyContent="center" style={{ width: STYLE.WIDTH.NORMAL_CHART }}>
+        <MediumText>No data</MediumText>
+      </Row>
+    );
+
     return (
       <View style={[style.container, { height, width }]}>
-        {data.length ? (
-          <VictoryChart width={width} domain={{ y: [domainMin, domainMax], x: [minTime, maxTime] }}>
-            {/* X AXIS */}
-            <VictoryAxis
-              orientation="bottom"
-              style={style.xAxis}
-              tickFormat={tickFormatter}
-              tickCount={5}
-            />
+        {!isLoading ? (
+          data.length ? (
+            <VictoryChart
+              width={width}
+              domain={{ y: [domainMin, domainMax], x: [minTime, maxTime] }}
+            >
+              {/* X AXIS */}
+              <VictoryAxis
+                orientation="bottom"
+                style={style.xAxis}
+                tickFormat={tickFormatter}
+                tickCount={5}
+              />
 
-            {/* Y AXIS */}
-            <VictoryAxis
-              dependentAxis
-              orientation="left"
-              numberOfTicks={CHART.NUMBER_OF_TICKS_Y}
-              style={style.yAxis}
-            />
+              {/* Y AXIS */}
+              <VictoryAxis
+                dependentAxis
+                orientation="left"
+                numberOfTicks={CHART.NUMBER_OF_TICKS_Y}
+                style={style.yAxis}
+              />
 
-            <ChartGradient />
-            <VictoryLine
-              data={data}
-              x={CHART.X_KEY}
-              y={CHART.Y_KEY}
-              interpolation={CHART.INTERPOLATION}
-              style={style.line}
-            />
-          </VictoryChart>
+              <ChartGradient />
+              <VictoryLine
+                data={data}
+                x={CHART.X_KEY}
+                y={CHART.Y_KEY}
+                interpolation={CHART.INTERPOLATION}
+                style={style.line}
+              />
+            </VictoryChart>
+          ) : (
+            Empty
+          )
         ) : (
           <Centered style={{ width: '100%' }}>
             <ActivityIndicator size="large" color={COLOUR.PRIMARY} />
