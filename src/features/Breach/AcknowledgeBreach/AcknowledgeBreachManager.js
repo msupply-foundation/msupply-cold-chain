@@ -1,5 +1,5 @@
 import { IsNull, Not } from 'typeorm/browser';
-import { ENTITIES } from '../../../common/constants';
+import { ENTITIES } from '~constants';
 
 export class AcknowledgeBreachManager {
   constructor(databaseService) {
