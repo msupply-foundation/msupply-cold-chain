@@ -1,12 +1,13 @@
 import React, { useCallback, useState } from 'react';
-import { View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 
 import { t } from '~translations';
 import { Button } from './buttons';
-import { Row } from '~layouts';
+import { Centered, FullScreenModal, Row } from '~layouts';
 import { COLOUR } from '~constants';
+import { LoadAfterInteractions } from './LoadAfterInteractions';
 
 const rangeToMarked = range => {
   return range
@@ -26,14 +27,6 @@ const rangeToMarked = range => {
     );
 };
 
-const getToAndFrom = range => {
-  const asArray = range.toArray('days');
-  const from = asArray[0].toDate();
-  const to = asArray[asArray.length - 1].endOf('day').toDate();
-
-  return [from, to];
-};
-
 export const DateRangePicker = ({
   initialStart,
   initialEnd,
@@ -41,6 +34,7 @@ export const DateRangePicker = ({
   onCancel,
   maximumDate,
   minimumDate,
+  isOpen,
 }) => {
   const [range, setRange] = useState(moment(initialStart).twix(initialEnd));
   const onDayPress = useCallback(
@@ -59,21 +53,37 @@ export const DateRangePicker = ({
     [range]
   );
 
+  const Loading = (
+    <Centered style={{ height: 300, backgroundColor: 'white' }}>
+      <ActivityIndicator size="large" color={COLOUR.PRIMARY} />
+    </Centered>
+  );
   return (
-    <View style={{ width: '100%' }}>
-      <Calendar
-        current={range.start().format('YYYY-MM-DD')}
-        markingType="period"
-        onDayPress={onDayPress}
-        enableSwipeMonths
-        markedDates={rangeToMarked(range)}
-        minDate={minimumDate.format('YYYY-MM-DD')}
-        maxDate={maximumDate.format('YYYY-MM-DD')}
-      />
-      <Row justifyContent="flex-end" style={{ backgroundColor: COLOUR.WHITE, paddingVertical: 50 }}>
-        <Button variant="dark" text={t('OK')} onPress={() => onConfirm(...getToAndFrom(range))} />
-        <Button variant="dark" text={t('CANCEL')} onPress={onCancel} />
-      </Row>
-    </View>
+    <FullScreenModal isOpen={isOpen} animationIn="bounceIn" animationOut="bounceOut">
+      <View style={{ width: '100%' }}>
+        <LoadAfterInteractions Loading={Loading}>
+          <Calendar
+            current={range.start().format('YYYY-MM-DD')}
+            markingType="period"
+            onDayPress={onDayPress}
+            enableSwipeMonths
+            markedDates={rangeToMarked(range)}
+            minDate={moment(minimumDate).format('YYYY-MM-DD')}
+            maxDate={moment(maximumDate).format('YYYY-MM-DD')}
+          />
+        </LoadAfterInteractions>
+        <Row
+          justifyContent="flex-end"
+          style={{ backgroundColor: COLOUR.WHITE, paddingVertical: 50 }}
+        >
+          <Button
+            variant="dark"
+            text={t('OK')}
+            onPress={() => onConfirm(range.start().unix(), range.end().endOf('day').unix())}
+          />
+          <Button variant="dark" text={t('CANCEL')} onPress={onCancel} />
+        </Row>
+      </View>
+    </FullScreenModal>
   );
 };

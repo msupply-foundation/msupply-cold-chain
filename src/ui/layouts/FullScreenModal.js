@@ -12,11 +12,25 @@ const styles = {
   },
 };
 
-export const FullScreenModal = ({ isOpen, onClose, children, style }) => {
+export const FullScreenModal = ({
+  isOpen,
+  onClose,
+  children,
+  style,
+  animationIn,
+  animationOut,
+}) => {
   const internalStyle = { ...styles.container, ...style };
 
   return (
-    <Modal isVisible={isOpen} coverScreen style={{ margin: 0 }} useNativeDriver>
+    <Modal
+      animationIn={animationIn}
+      animationOut={animationOut}
+      isVisible={isOpen}
+      coverScreen
+      style={{ margin: 0 }}
+      useNativeDriver
+    >
       <Pressable style={internalStyle} onPress={onClose}>
         {children}
       </Pressable>

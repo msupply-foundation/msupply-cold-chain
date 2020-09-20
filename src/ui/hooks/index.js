@@ -8,3 +8,5 @@ export { useDependency } from './useDependency';
 export { useStorybook } from './useStorybook';
 export { useOnMount } from './useOnMount';
 export { useCallbackOnGainingFocus } from './useCallbackOnFocus';
+export { useHideTabBar } from './useHideTabBar';
+export { useLoadAfterInteractions } from './useLoadAfterInteractions';

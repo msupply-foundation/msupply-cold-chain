@@ -6,3 +6,7 @@ export { DateRangePicker } from './DateRangePicker';
 export { MainHeader } from './MainHeader';
 export { SensorLastDownloadTime } from './SensorLastDownloadTime';
 export { SensorStatus } from './SensorStatus';
+export { LoadAfterInteractions } from './LoadAfterInteractions';
+export { SensorDetailCumulativeBreachStatus } from './SensorDetailCumulativeBreachStatus';
+export { SensorDetailActionBar } from './SensorDetailActionBar';
+export { SensorDetailChart } from './SensorDetailChart';

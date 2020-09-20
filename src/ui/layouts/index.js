@@ -12,3 +12,6 @@ export { SettingsEditButtonGroup } from './SettingsEditButtonGroup';
 export { FullScreenModal } from './FullScreenModal';
 export { Gradient } from './Gradient';
 export { LoadingModalLayout } from './LoadingModalLayout';
+export { SensorLogsTable } from './SensorLogsTable';
+export { SensorDetailScreenLayout } from './SensorDetailScreenLayout';
+export { SensorDetailActionBarLayout } from './SensorDetailActionBarLayout';

@@ -2,7 +2,7 @@ import moment from 'moment';
 import { createSlice } from '@reduxjs/toolkit';
 import { getContext, call, put, takeEvery } from 'redux-saga/effects';
 
-import { DEPENDENCY, REDUCER } from '~constants';
+import { MILLISECONDS, DEPENDENCY, REDUCER } from '~constants';
 
 const initialState = {
   listLoadingById: {},
@@ -71,10 +71,32 @@ const isLoading = ({ chart: { listLoadingById } }, { id }) => {
   return listLoadingById[id] ?? true;
 };
 
+const detailTimestamps = ({ sensorStatus }, { id }) => {
+  const { byId } = sensorStatus;
+  const { [id]: status } = byId;
+  const { minChartTimestamp, mostRecentLogTimestamp } = status ?? {};
+
+  return { from: minChartTimestamp, to: mostRecentLogTimestamp };
+};
+
+const chartTimestampRange = ({ sensorStatus }, { id }) => {
+  const { byId } = sensorStatus;
+  const { [id]: status } = byId;
+  const { minChartTimestamp, mostRecentLogTimestamp } = status ?? {};
+
+  const options = { allDay: true };
+  return moment(minChartTimestamp * MILLISECONDS.ONE_SECOND).twix(
+    mostRecentLogTimestamp * MILLISECONDS.ONE_SECOND,
+    options
+  );
+};
+
 const ChartSelector = {
+  detailTimestamps,
   listData,
   detailData,
   isLoading,
+  chartTimestampRange,
 };
 
 const { actions: ChartAction, reducer: ChartReducer } = createSlice({

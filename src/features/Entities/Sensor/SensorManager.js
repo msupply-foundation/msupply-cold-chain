@@ -210,7 +210,15 @@ export class SensorManager {
 
     const { batteryLevel, currentTemperature = 'N/A' } = resultTwo[0] ?? {};
 
-    return { ...result[0], currentTemperature, batteryLevel };
+    return {
+      ...result[0],
+      currentTemperature,
+      batteryLevel,
+      from: result[0].minChartTimestamp,
+      to: result[0].mostRecentLogTimestamp,
+      possibleFrom: result[0].firstTimestamp,
+      possibleTo: result[0].mostRecentLogTimestamp,
+    };
   };
 
   getSensors = async () => {

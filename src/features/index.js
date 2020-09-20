@@ -68,14 +68,6 @@ export {
 } from './Entities';
 
 export {
-  LogTableManager,
-  LogTableAction,
-  LogTableReducer,
-  LogTableSaga,
-  LogTableSelector,
-} from './LogTable';
-
-export {
   PermissionAction,
   PermissionReducer,
   PermissionSaga,
@@ -91,3 +83,25 @@ export {
   SensorStatusSaga,
   SensorStatusSelector,
 } from './SensorStatus';
+
+export {
+  SensorDetailReducer,
+  SensorDetailSaga,
+  DetailAction,
+  DetailSelector,
+  DetailReducer,
+  DetailSaga,
+  LogTableAction,
+  LogTableManager,
+  LogTableSelector,
+  LogTableSaga,
+  LogTableReducer,
+  DetailCumulativeAction,
+  DetailCumulativeSaga,
+  DetailCumulativeSelector,
+  DetailCumulativeReducer,
+  DetailChartAction,
+  DetailChartReducer,
+  DetailChartSaga,
+  DetailChartSelector,
+} from './SensorDetail';

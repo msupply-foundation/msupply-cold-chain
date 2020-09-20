@@ -17,3 +17,5 @@ export { Lock, UnLock } from './Lock';
 export { Bluetooth } from './Bluetooth';
 export { Location } from './Location';
 export { Storage } from './Storage';
+export { Download } from './Download';
+export { Email } from './Email';

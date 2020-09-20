@@ -1,6 +1,7 @@
+import moment from 'moment';
 import { createSlice } from '@reduxjs/toolkit';
 import { call, getContext, put, takeEvery } from 'redux-saga/effects';
-import { DEPENDENCY, REDUCER } from '~constants';
+import { MILLISECONDS, DEPENDENCY, REDUCER } from '~constants';
 
 import { AcknowledgeBreachAction, ConsecutiveBreachAction } from '../Breach';
 import { SensorAction } from '../Entities';
@@ -59,11 +60,24 @@ const isLoading = (state, { id }) => {
   return isFetching;
 };
 
+const detailTimestampRange = ({ sensorStatus }, { id }) => {
+  const { byId } = sensorStatus;
+  const { status } = byId[id] ?? {};
+  const { firstTimestamp, mostRecentLogTimestamp } = status ?? {};
+
+  return {
+    minimumDate: moment(firstTimestamp * MILLISECONDS.ONE_SECOND),
+    maximumDate: moment(mostRecentLogTimestamp * MILLISECONDS.ONE_SECOND),
+  };
+};
+
 const SensorStatusSelector = {
+  detailTimestampRange,
   getFetchingById,
   hasData,
   lastDownloadTime,
   isLoading,
+  getStatus,
   byId: ({ sensorStatus }) => {
     return sensorStatus.byId;
   },

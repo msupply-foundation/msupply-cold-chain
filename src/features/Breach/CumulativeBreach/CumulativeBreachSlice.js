@@ -5,7 +5,7 @@ import { DEPENDENCY, REDUCER } from '~constants';
 
 const initialState = {
   listById: {},
-  detail: null,
+  detail: {},
 };
 
 const reducers = {
@@ -24,7 +24,7 @@ const reducers = {
   fetchDetailForSensor: {
     prepare: (from, to, sensorId) => ({ payload: { sensorId, from, to } }),
     reducer: draftState => {
-      draftState.detail = null;
+      draftState.detail = {};
     },
   },
   fetchDetailForSensorSuccess: {
@@ -42,18 +42,18 @@ const { actions: CumulativeBreachAction, reducer: CumulativeBreachReducer } = cr
   name: REDUCER.CUMULATIVE_BREACH,
 });
 
-const detailColdCumulative = ({ breach: { cumulative } }) => {
+const detailColdCumulative = ({ breach: { cumulative } }, { formatter }) => {
   const { detail } = cumulative;
   const { coldCumulative } = detail;
 
-  return coldCumulative;
+  return coldCumulative ? formatter.listCumulativeBreach(coldCumulative) : '';
 };
 
-const detailHotCumulative = ({ breach: { cumulative } }) => {
+const detailHotCumulative = ({ breach: { cumulative } }, { formatter }) => {
   const { detail } = cumulative;
   const { hotCumulative } = detail;
 
-  return hotCumulative;
+  return hotCumulative ? formatter.listCumulativeBreach(hotCumulative) : '';
 };
 
 const listColdCumulative = ({ breach: { cumulative } }, { id, formatter }) => {

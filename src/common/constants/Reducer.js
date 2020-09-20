@@ -25,4 +25,8 @@ export const REDUCER = {
   SENSOR_STATUS: 'sensorStatus',
   PROGRAM: 'program',
   ENTITIES: 'entities',
+  SENSOR_DETAIL: 'sensorDetail',
+  DETAIL: 'detail',
+  DETAIL_CHART: 'detailChart',
+  DETAIL_CUMULATIVE_BREACH: 'detailCumulative',
 };

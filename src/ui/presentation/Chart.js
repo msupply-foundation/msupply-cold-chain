@@ -67,10 +67,18 @@ export const Chart = withFormatService(
     );
 
     return (
-      <View style={[style.container, { height, width }]}>
+      <View
+        style={{
+          minHeight: height,
+          minWidth: width,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         {!isLoading ? (
           data.length ? (
             <VictoryChart
+              height={height}
               width={width}
               domain={{ y: [domainMin, domainMax], x: [minTime, maxTime] }}
             >

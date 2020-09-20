@@ -9,7 +9,7 @@ import { COLOUR } from '~constants';
 
 import { Row } from './Row';
 import { Centered } from './Centered';
-import { LogTableAction, LogTableSelector } from '../../features/LogTable';
+import { LogTableAction, LogTableSelector } from '~features';
 
 const COLUMNS = [
   { header: 'Timestamp', flex: 1, key: 'time', textAlign: 'left' },
@@ -112,7 +112,7 @@ const Header = ({ columns }) => {
 };
 
 export const SensorLogsTable = React.memo(({ id }) => {
-  const data = useSelector(LogTableSelector.logData);
+  const data = useSelector(LogTableSelector.data);
   const isLoading = useSelector(LogTableSelector.isLoading);
   const dispatch = useDispatch();
 
@@ -136,9 +136,7 @@ export const SensorLogsTable = React.memo(({ id }) => {
 
   const onEndReached = useCallback(
     () =>
-      dispatch(
-        LogTableAction.getMoreLogs(moment().subtract(3, 'days').unix(), moment().unix(), id)
-      ),
+      dispatch(LogTableAction.fetchMore(moment().subtract(3, 'days').unix(), moment().unix(), id)),
     []
   );
 
