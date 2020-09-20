@@ -2,11 +2,10 @@ package com.cce;
 
 // Used for overriding onCreate
 import android.os.Bundle;
-
+import com.bugsnag.android.Bugsnag;
 // Used to create the splash screen on start up.
 import expo.modules.splashscreen.SplashScreen;
 import expo.modules.splashscreen.SplashScreenImageResizeMode;
-
 import com.facebook.react.ReactActivity;
 
 public class MainActivity extends ReactActivity {
@@ -23,7 +22,8 @@ public class MainActivity extends ReactActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    
+    Bugsnag.start(this); 
+
     // SplashScreen.show(...) has to be called after super.onCreate(...)
     SplashScreen.show(this, SplashScreenImageResizeMode.COVER, false);
   }

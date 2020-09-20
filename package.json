@@ -17,6 +17,7 @@
     "clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* &&  rm -rf node_modules/ && npm cache verify && npm install && npm start --reset-cache"
   },
   "dependencies": {
+    "@bugsnag/react-native": "7.3.5",
     "@react-native-community/async-storage": "1.11.0",
     "@react-native-community/datetimepicker": "^3.0.1",
     "@react-native-community/masked-view": "0.1.10",
@@ -65,6 +66,7 @@
     "react-native-pin-view": "^3.0.1",
     "react-native-reanimated": "1.9.0",
     "react-native-redash": "^14.2.3",
+    "react-native-restart": "0.0.17",
     "react-native-safe-area-context": "3.1.1",
     "react-native-screens": "2.9.0",
     "react-native-settings": "0.2.3",

@@ -17,31 +17,37 @@ import {
   MainTabNavigator,
   MainTabScreen,
   PermissionsContainer,
+  ErrorBoundary,
 } from './containers';
 
 const App = () => {
   return (
-    <StorybookContainer>
-      <ReduxContainer>
-        <KeepAwakeContainer>
-          <DependencyContainer>
-            <PermissionsContainer>
-              <NavigationContainer>
-                <StatusBar hidden />
-                <MainHeader />
-                <MainTabNavigator>
-                  <MainTabScreen name={NAVIGATION.SCREENS.MAIN_TABS.SENSORS} component={Sensors} />
-                  <MainTabScreen
-                    name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS}
-                    component={Settings}
-                  />
-                </MainTabNavigator>
-              </NavigationContainer>
-            </PermissionsContainer>
-          </DependencyContainer>
-        </KeepAwakeContainer>
-      </ReduxContainer>
-    </StorybookContainer>
+    <ErrorBoundary>
+      <StorybookContainer>
+        <ReduxContainer>
+          <KeepAwakeContainer>
+            <DependencyContainer>
+              <PermissionsContainer>
+                <NavigationContainer>
+                  <StatusBar hidden />
+                  <MainHeader />
+                  <MainTabNavigator>
+                    <MainTabScreen
+                      name={NAVIGATION.SCREENS.MAIN_TABS.SENSORS}
+                      component={Sensors}
+                    />
+                    <MainTabScreen
+                      name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS}
+                      component={Settings}
+                    />
+                  </MainTabNavigator>
+                </NavigationContainer>
+              </PermissionsContainer>
+            </DependencyContainer>
+          </KeepAwakeContainer>
+        </ReduxContainer>
+      </StorybookContainer>
+    </ErrorBoundary>
   );
 };
 

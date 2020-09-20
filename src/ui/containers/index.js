@@ -6,3 +6,4 @@ export { MainTabNavigator, MainTabScreen } from './MainTabNavigator';
 export { SettingsStackNavigator, SettingsStackScreen } from './SettingsStackNavigator';
 export { PermissionsContainer } from './PermissionsContainer';
 export { StorybookContainer } from './StorybookContainer';
+export { ErrorBoundary } from './ErrorBoundary';
