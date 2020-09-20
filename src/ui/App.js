@@ -16,33 +16,39 @@ import {
   StoreRehydrateContainer,
   MainTabNavigator,
   MainTabScreen,
+  ErrorBoundary,
 } from './containers';
 
 import { DeviceSettingsContainer } from './containers/DeviceSettingsContainer';
 
 const App = () => {
   return (
-    <ReduxContainer>
-      <KeepAwakeContainer>
-        <DependencyContainer>
-          <StoreRehydrateContainer>
-            <DeviceSettingsContainer>
-              <NavigationContainer>
-                <StatusBar hidden />
-                <MainHeader />
-                <MainTabNavigator>
-                  <MainTabScreen name={NAVIGATION.SCREENS.MAIN_TABS.SENSORS} component={Sensors} />
-                  <MainTabScreen
-                    name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS}
-                    component={Settings}
-                  />
-                </MainTabNavigator>
-              </NavigationContainer>
-            </DeviceSettingsContainer>
-          </StoreRehydrateContainer>
-        </DependencyContainer>
-      </KeepAwakeContainer>
-    </ReduxContainer>
+    <ErrorBoundary>
+      <ReduxContainer>
+        <KeepAwakeContainer>
+          <DependencyContainer>
+            <StoreRehydrateContainer>
+              <DeviceSettingsContainer>
+                <NavigationContainer>
+                  <StatusBar hidden />
+                  <MainHeader />
+                  <MainTabNavigator>
+                    <MainTabScreen
+                      name={NAVIGATION.SCREENS.MAIN_TABS.SENSORS}
+                      component={Sensors}
+                    />
+                    <MainTabScreen
+                      name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS}
+                      component={Settings}
+                    />
+                  </MainTabNavigator>
+                </NavigationContainer>
+              </DeviceSettingsContainer>
+            </StoreRehydrateContainer>
+          </DependencyContainer>
+        </KeepAwakeContainer>
+      </ReduxContainer>
+    </ErrorBoundary>
   );
 };
 

@@ -5,3 +5,4 @@ export { StoreRehydrateContainer } from './StoreRehydrateContainer';
 export { SensorStackNavigator, SensorStackScreen } from './SensorStackNavigator';
 export { MainTabNavigator, MainTabScreen } from './MainTabNavigator';
 export { SettingsStackNavigator, SettingsStackScreen } from './SettingsStackNavigator';
+export { ErrorBoundary } from './ErrorBoundary';
