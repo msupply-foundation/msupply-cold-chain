@@ -24,12 +24,53 @@ describe('DownloadManager: calculateNumberOfLogsToSave', () => {
   it('Calculates correctly when the next Download time is after the time now', () => {
     const downloadManager = new DownloadManager();
 
-    const nextPossibleLogTime = 300;
-    const logInterval = 300;
-    const timeNow = 299;
+    let nextPossibleLogTime = 300;
+    let logInterval = 300;
+    let timeNow = 299;
 
     expect(
       downloadManager.calculateNumberOfLogsToSave(nextPossibleLogTime, logInterval, timeNow)
     ).toBe(0);
+
+    nextPossibleLogTime = 1;
+    logInterval = 300;
+    timeNow = 0;
+
+    expect(
+      downloadManager.calculateNumberOfLogsToSave(nextPossibleLogTime, logInterval, timeNow)
+    ).toBe(0);
+  });
+
+  it('Calculates correctly using the log interval for additional logs', () => {
+    const downloadManager = new DownloadManager();
+
+    let nextPossibleLogTime = 0;
+    let logInterval = 300;
+    let timeNow = 301;
+
+    expect(
+      downloadManager.calculateNumberOfLogsToSave(nextPossibleLogTime, logInterval, timeNow)
+    ).toBe(2);
+
+    nextPossibleLogTime = 0;
+    logInterval = 300;
+    timeNow = 599;
+
+    expect(
+      downloadManager.calculateNumberOfLogsToSave(nextPossibleLogTime, logInterval, timeNow)
+    ).toBe(2);
+  });
+});
+
+describe('DownloadManager: createLogs', () => {
+  it('Creates logs with the correct timestamps', () => {
+    const downloadManager = new DownloadManager();
+
+    const sensor = { id: 'a', logInterval: 300 };
+    const maxNumberToSave = 1;
+    const mostRecentLogTime = 0;
+    const timeNow = 0;
+
+    expect(downloadManager.createLogs([], sensor, maxNumberToSave, mostRecentLogTime, timeNow));
   });
 });
