@@ -1,12 +1,12 @@
 /* eslint-disable no-empty */
 
 import { Alert } from 'react-native';
-import DeviceInfo, { getBatteryLevel, isBatteryCharging } from 'react-native-device-info';
+import DeviceInfo from 'react-native-device-info';
 import SystemSetting from 'react-native-system-setting';
 import * as RNLocalize from 'react-native-localize';
 import { check, request } from 'react-native-permissions';
 import { BluetoothStatus } from 'react-native-bluetooth-status';
-import { PERMISSION, PERMISSION_STATE, DANGEROUS_BATTERY_LEVEL } from '~constants';
+import { PERMISSION, PERMISSION_STATE } from '~constants';
 
 /**
  * This service object is a facade over multiple different native modules ...
@@ -15,15 +15,6 @@ import { PERMISSION, PERMISSION_STATE, DANGEROUS_BATTERY_LEVEL } from '~constant
  *
  */
 export class PermissionService {
-  batteryLevel = async () => getBatteryLevel();
-
-  isBatteryLevelDangerous = async () => {
-    const batteryLevel = await this.batteryLevel();
-    return batteryLevel < DANGEROUS_BATTERY_LEVEL;
-  };
-
-  isCharging = async () => isBatteryCharging();
-
   getBluetoothState = async () => BluetoothStatus.state();
 
   isBluetoothEnabled = async () => {
