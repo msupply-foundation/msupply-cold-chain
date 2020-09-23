@@ -47,13 +47,19 @@ export class ChartManager {
   }
 
   getLogs = async (from, to, sensorId, maxPoints) => {
-    const manager = await this.databaseService.getEntityManager();
-    return manager.query(GET_CHART_DATA, [sensorId, from, to, maxPoints, from, to, sensorId]);
+    return this.databaseService.query(GET_CHART_DATA, [
+      sensorId,
+      from,
+      to,
+      maxPoints,
+      from,
+      to,
+      sensorId,
+    ]);
   };
 
   getChartTimestamps = async sensorId => {
-    const manager = await this.databaseService.getEntityManager();
-    const [result = {}] = await manager.query(GET_CHART_TIMESTAMPS, [sensorId]);
+    const [result = {}] = await this.databaseService.query(GET_CHART_TIMESTAMPS, [sensorId]);
     return result;
   };
 }
