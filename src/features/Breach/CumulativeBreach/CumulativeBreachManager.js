@@ -28,8 +28,7 @@ export class CumulativeBreachManager {
   }
 
   getCumulativeExposure = async (from, to, sensorId) => {
-    const manager = await this.databaseService.getEntityManager();
-    const result = await manager.query(CUMULATIVE_EXPOSURE, [from, to, sensorId]);
+    const result = await this.databaseService.query(CUMULATIVE_EXPOSURE, [from, to, sensorId]);
 
     const lookup = result.reduce((acc, value) => {
       if (value.isHotCumulative) return { ...acc, hotCumulative: value };
