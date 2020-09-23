@@ -1,4 +1,4 @@
-package com.cce;
+package com.msupplycoldchain;
 
 public enum ErrorCode{
     E_PARSING_FAILED("Problem parsing, decode failed"),

@@ -1,4 +1,4 @@
-package com.cce.generated;
+package com.msupplycoldchain.generated;
 
 import java.util.Arrays;
 import java.util.List;

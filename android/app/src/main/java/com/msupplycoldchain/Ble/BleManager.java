@@ -1,4 +1,4 @@
-package com.cce;
+package com.msupplycoldchain;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;

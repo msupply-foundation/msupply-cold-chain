@@ -1,8 +1,8 @@
-package com.cce;
+package com.msupplycoldchain;
 
 import android.app.Activity;
 
-import com.cce.BleManager;
+import com.msupplycoldchain.BleManager;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;

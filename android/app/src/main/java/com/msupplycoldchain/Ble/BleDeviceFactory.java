@@ -1,4 +1,4 @@
-package com.cce;
+package com.msupplycoldchain;
 
 import android.bluetooth.le.ScanResult;
 import com.facebook.react.bridge.ReactContext;

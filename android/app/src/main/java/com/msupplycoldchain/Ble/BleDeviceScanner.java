@@ -1,4 +1,4 @@
-package com.cce;
+package com.msupplycoldchain;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.BaseActivityEventListener;
