@@ -3,35 +3,11 @@ import { Not, IsNull, MoreThan, Equal } from 'typeorm/browser';
 
 import { ENTITIES } from '~constants';
 
-const REPORT = `
-select (select "Continuous") "Breach Type",
-case when temperatureBreachConfigurationId = "HOT_BREACH" then "Hot" else "Cold" end as "Breach Name",
-datetime(startTimestamp, "unixepoch", "localtime") "Start date",
-coalesce(datetime(endTimestamp, "unixepoch", "localtime"), datetime("now", "localtime")) as "End date",
-(coalesce(endTimestamp, strftime("%s", "now")) - startTimestamp) / 60 "Exposure Duration (minutes)",
-max(temperature) as "Max Temp",
-min(temperature) as "Min Temp"
-from temperaturebreach tb
-join temperaturelog tl on tl.temperatureBreachId = tb.id
-where tb.sensorId = ?
-group by tb.id
-`;
-
 export class ConsecutiveBreachManager {
   constructor(databaseService, utils) {
     this.databaseService = databaseService;
     this.utils = utils;
   }
-
-  getAll = async () => {
-    return this.databaseService.getAll(ENTITIES.TEMPERATURE_BREACH);
-  };
-
-  getLogsForBreach = async breachId => {
-    return this.databaseService.queryWith(ENTITIES.TEMPERATURE_LOG, {
-      temperatureBreachId: breachId,
-    });
-  };
 
   closeBreach = (temperatureBreach, time) => {
     // eslint-disable-next-line no-param-reassign
@@ -216,10 +192,5 @@ export class ConsecutiveBreachManager {
     });
 
     return configs;
-  };
-
-  getBreachReport = async id => {
-    const manager = await this.databaseService.getEntityManager();
-    return manager.query(REPORT, [id]);
   };
 }
