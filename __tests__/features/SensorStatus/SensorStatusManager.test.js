@@ -1,3 +1,5 @@
+import { SensorStatusManager } from '~features/SensorStatus';
+
 const SENSOR_STATUS = `
 with breach as (
   select (select count(*) > 0
@@ -57,17 +59,24 @@ with breach as (
 const SENSOR_STATUS_ADDITIONAL =
   'select s.batteryLevel batteryLevel, temperature as currentTemperature from sensor s left join temperaturelog tl on tl.sensorid = s.id where s.id = ? order by timestamp desc limit 1';
 
-export class SensorStatusManager {
-  constructor(databaseService) {
-    this.databaseService = databaseService;
-  }
+describe('SensorStatusManager: ', () => {
+  it('Returns sensor status', async () => {
+    const query = jest.fn(queryString => {
+      if (queryString === SENSOR_STATUS) {
+        return [{}];
+      }
+      if (queryString === SENSOR_STATUS_ADDITIONAL) {
+        return [{ currentTemperature: 10, batteryLevel: 100 }];
+      }
+      return {};
+    });
+    const mockDbService = { query };
 
-  getSensorStatus = async sensorId => {
-    const result = await this.databaseService.query(SENSOR_STATUS, [sensorId, sensorId, sensorId]);
-    const resultTwo = await this.databaseService.query(SENSOR_STATUS_ADDITIONAL, [sensorId]);
+    const sensorStatusManager = new SensorStatusManager(mockDbService);
 
-    const { batteryLevel, currentTemperature = 'N/A' } = resultTwo[0] ?? {};
-
-    return { ...result[0], currentTemperature, batteryLevel };
-  };
-}
+    await expect(sensorStatusManager.getSensorStatus('a')).resolves.toEqual({
+      currentTemperature: 10,
+      batteryLevel: 100,
+    });
+  });
+});
