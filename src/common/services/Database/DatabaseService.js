@@ -93,6 +93,11 @@ export class DatabaseService {
     return repository.findOne(queryObject);
   };
 
+  query = async (entityName, query) => {
+    const manager = await this.getEntityManager();
+    return manager.query(entityName, query);
+  };
+
   getQueryBuilder = async (entityName, alias) => {
     const repository = await this.database.getRepository(entityName);
     return repository.createQueryBuilder(alias);
