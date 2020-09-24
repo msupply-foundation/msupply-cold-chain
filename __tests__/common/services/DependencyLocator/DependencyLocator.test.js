@@ -21,4 +21,15 @@ describe('DependencyLocator: get', () => {
 
     expect(locator.get('dependency')).toBe(dependency);
   });
+
+  describe('DependencyLocator: deleteAll', () => {
+    it('Deletes all registered deps', () => {
+      const locator = DependencyLocator;
+      const dependency = {};
+      locator.register('dependency', dependency);
+      locator.deleteAll();
+
+      expect(locator.dependencies).toEqual({ dependency: null });
+    });
+  });
 });
