@@ -1,11 +1,12 @@
 /* eslint-disable no-empty */
 
 import { Alert } from 'react-native';
+
 import DeviceInfo from 'react-native-device-info';
 import SystemSetting from 'react-native-system-setting';
 import * as RNLocalize from 'react-native-localize';
-import { check, request } from 'react-native-permissions';
-import { BluetoothStatus } from 'react-native-bluetooth-status';
+import * as Permissions from 'react-native-permissions';
+
 import { PERMISSION, PERMISSION_STATE } from '~constants';
 
 /**
@@ -15,75 +16,65 @@ import { PERMISSION, PERMISSION_STATE } from '~constants';
  *
  */
 export class PermissionService {
-  getBluetoothState = async () => BluetoothStatus.state();
-
-  isBluetoothEnabled = async () => {
-    return this.getBluetoothState();
-  };
+  constructor(
+    settings = SystemSetting,
+    permissions = Permissions,
+    deviceInfo = DeviceInfo,
+    localizeInfo = RNLocalize,
+    alerter = Alert
+  ) {
+    this.settings = settings;
+    this.permissions = permissions;
+    this.deviceInfo = deviceInfo;
+    this.localizeInfo = localizeInfo;
+    this.alerter = alerter;
+  }
 
   checkBluetoothStatus = async () => {
-    return this.getBluetoothState();
+    return this.settings.isBluetoothEnabled();
   };
 
   requestBluetoothEnabled = async () => {
-    BluetoothStatus.enable();
-    return this.getBluetoothState();
+    await this.settings.switchBluetooth();
+    return this.checkBluetoothStatus();
   };
-
-  enableBluetooth = async () => {
-    BluetoothStatus.enable();
-    return this.getBluetoothState();
-  };
-
-  disableBluetooth = async () => {
-    return BluetoothStatus.disable();
-  };
-
-  checkLocationPermission = async () => check(PERMISSION.LOCATION);
 
   hasLocationPermission = async () => {
-    const checkResult = await this.checkLocationPermission();
+    const checkResult = await this.permissions.check(PERMISSION.LOCATION);
     return checkResult === PERMISSION_STATE.GRANTED;
   };
 
   requestLocationPermission = async () => {
-    const requestResult = await request(PERMISSION.LOCATION);
+    const requestResult = await this.permissions.request(PERMISSION.LOCATION);
     return requestResult === PERMISSION_STATE.GRANTED;
   };
 
-  checkStoragePermission = async () => check(PERMISSION.STORAGE);
-
   hasStoragePermission = async () => {
-    const checkResult = await this.checkStoragePermission();
+    const checkResult = await this.permissions.check(PERMISSION.STORAGE);
     return checkResult === PERMISSION_STATE.GRANTED;
   };
 
   requestStoragePermission = async () => {
-    const requestResult = await request(PERMISSION.STORAGE, '');
+    const requestResult = await this.permissions.request(PERMISSION.STORAGE, '');
     return requestResult === PERMISSION_STATE.GRANTED;
   };
 
-  isLocationServicesEnabled = async () => {
-    return SystemSetting.isLocationEnabled();
-  };
-
   checkLocationServicesStatus = async () => {
-    return SystemSetting.isLocationEnabled();
+    return this.settings.isLocationEnabled();
   };
 
   requestLocationServicesEnabled = async () => {
-    const isEnabled = await this.isLocationServicesEnabled();
-    // eslint-disable-next-line consistent-return
+    const isEnabled = await this.checkLocationServicesStatus();
     return new Promise(resolve => {
       if (isEnabled) return resolve(true);
-      Alert.alert(
+      return this.alerter.alert(
         'Location Services',
         'Please enable location services to allow the use of bluetooth.',
         [
           {
             text: 'OK',
             onPress: async () => {
-              await SystemSetting.switchLocation(async () => {
+              await this.settings.switchLocation(async () => {
                 const result = await this.isLocationServicesEnabled();
                 resolve(result);
               });
@@ -101,19 +92,19 @@ export class PermissionService {
         return null;
       }
       case 'location': {
-        return SystemSetting.addLocationModeListener(newStatus => callback(newStatus !== 0));
+        return this.settings.addLocationModeListener(newStatus => callback(newStatus !== 0));
       }
       case 'bluetooth': {
-        return SystemSetting.addBluetoothListener(callback);
+        return this.settings.addBluetoothListener(callback);
       }
     }
   };
 
   getDeviceModel = () => {
-    return DeviceInfo.getModel();
+    return this.deviceInfo.getModel();
   };
 
   getDeviceTimezone = () => {
-    return RNLocalize.getTimeZone();
+    return this.localizeInfo.getTimeZone();
   };
 }
