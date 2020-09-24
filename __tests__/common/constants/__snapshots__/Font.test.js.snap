@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Constants: FONT Matches snapshot 1`] = `
+Object {
+  "ALIGN": Object {
+    "CENTER": "center",
+    "JUSTIFY": "justify",
+    "LEFT": "left",
+    "RIGHT": "right",
+  },
+  "FAMILY": Object {
+    "BOLD": "Roboto-Bold",
+    "MEDIUM": "Roboto-Medium",
+    "REGULAR": "Roboto-Regular",
+  },
+  "SIZE": Object {
+    "L": 40,
+    "M": 26,
+    "MS": 18,
+    "S": 12,
+    "XL": 70,
+  },
+  "TRANSFORM": Object {
+    "CAPITALIZE": "capitalize",
+    "LOWERCASE": "lowercase",
+    "UPPERCASE": "uppercase",
+  },
+}
+`;

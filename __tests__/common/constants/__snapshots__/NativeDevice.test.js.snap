@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Constants: BLUETOOTH_STATE Matches snapshot 1`] = `
+Object {
+  "OFF": "PoweredOff",
+  "ON": "PoweredOn",
+  "UNAUTHORIZED": "Unauthorized",
+  "UNKNOWN": "Unknown",
+  "UNSUPPORTED": "Unsupported",
+}
+`;
+
+exports[`Constants: DANGEROUS_BATTERY_LEVEL Matches snapshot 1`] = `20`;
+
+exports[`Constants: PERMISSION Matches snapshot 1`] = `
+Object {
+  "LOCATION": "android.permission.ACCESS_COARSE_LOCATION",
+  "STORAGE": "android.permission.WRITE_EXTERNAL_STORAGE",
+}
+`;
+
+exports[`Constants: PERMISSION_STATE Matches snapshot 1`] = `
+Object {
+  "BLOCKED": "blocked",
+  "DENIED": "denied",
+  "GRANTED": "granted",
+  "UNAVAILABLE": "unavailable",
+}
+`;

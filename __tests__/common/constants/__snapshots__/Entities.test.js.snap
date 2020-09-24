@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Constants: ENTITIES Matches snapshot 1`] = `
+Object {
+  "SENSOR": "Sensor",
+  "SENSOR_LOG": "SensorLog",
+  "SETTING": "Setting",
+  "TEMPERATURE_BREACH": "TemperatureBreach",
+  "TEMPERATURE_BREACH_CONFIGURATION": "TemperatureBreachConfiguration",
+  "TEMPERATURE_LOG": "TemperatureLog",
+}
+`;

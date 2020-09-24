@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Constants: FORMAT Matches snapshot 1`] = `
+Object {
+  "DATE": Object {
+    "HOUR_WITH_PERIOD": "ha",
+    "STANDARD_DATE": "DD/MM/YYYY",
+    "STANDARD_TIME": "HH:mm",
+  },
+}
+`;

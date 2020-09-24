@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Constants: MILLISECONDS Matches snapshot 1`] = `
+Object {
+  "ONE_DAY": 86400000,
+  "ONE_MINUTE": 60000,
+  "ONE_SECOND": 1000,
+  "QUARTER_SECOND": 250,
+  "TEN_MINUTES": 600000,
+  "TEN_SECONDS": 10000,
+  "THIRTY_MINUTES": 1800000,
+}
+`;
