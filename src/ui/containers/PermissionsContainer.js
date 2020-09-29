@@ -14,7 +14,9 @@ export const PermissionsContainer = ({ children }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(PermissionAction.requestAndWatchPermissions());
+    if (!__DEV__) {
+      dispatch(PermissionAction.requestAndWatchPermissions());
+    }
   }, []);
 
   const Modal = useMemo(() => {
