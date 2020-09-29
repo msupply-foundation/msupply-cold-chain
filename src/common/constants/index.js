@@ -19,3 +19,4 @@ export { NAVIGATION } from './Navigation';
 export { BLUETOOTH } from './Bluetooth';
 export { SETTING } from './Setting';
 export { SPECIAL_CHARACTER } from './SpecialCharacter';
+export { BLUE_MAESTRO } from './Bluetooth';
