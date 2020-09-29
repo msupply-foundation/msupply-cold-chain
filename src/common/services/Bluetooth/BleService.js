@@ -89,13 +89,25 @@ export class BleService {
     return monitor;
   };
 
-  sendCommand = async (macAddress, command, parser) => {
-    await this.connectAndDiscoverServices(macAddress);
-    return this.writeAndMonitor(macAddress, command, parser);
+  writeWithSingleResponse = async (macAddress, command, parser) => {
+    const monitor = this.monitorCharacteristic(macAddress, (result, resolve, reject) => {
+      if (result?.value) {
+        try {
+          resolve(parser(result.value));
+        } catch (e) {
+          reject(new Error(`Parsing failed:  ${e.message}`));
+        }
+      } else reject(new Error(`Command Failed`));
+    });
+
+    await this.writeCharacteristic(macAddress, command);
+
+    return monitor;
   };
 
   downloadLogs = async macAddress => {
-    return this.sendCommand(macAddress, BLUE_MAESTRO.COMMANDS.DOWNLOAD, data => {
+    await this.connectAndDiscoverServices(macAddress);
+    return this.writeAndMonitor(macAddress, BLUE_MAESTRO.COMMANDS.DOWNLOAD, data => {
       const buffer = Buffer.concat(data.slice(1).map(datum => bufferFromBase64(datum)));
 
       const ind = buffer.findIndex(
@@ -112,39 +124,36 @@ export class BleService {
   };
 
   updateLogInterval = async (macAddress, logInterval) => {
-    return this.sendCommand(
+    await this.connectAndDiscoverServices(macAddress);
+    return this.writeWithSingleResponse(
       macAddress,
       `${BLUE_MAESTRO.COMMANDS.UPDATE_LOG_INTERVAL}${logInterval}`,
-      data => {
-        const [datum] = data;
-        return stringFromBase64(datum);
-      }
+      stringFromBase64
     );
   };
 
   blink = async macAddress => {
-    return this.sendCommand(macAddress, BLUE_MAESTRO.COMMANDS.BLINK, data => {
-      const [datum] = data;
-      return !!stringFromBase64(datum).match(/ok/i);
+    await this.connectAndDiscoverServices(macAddress);
+    return this.writeWithSingleResponse(macAddress, BLUE_MAESTRO.COMMANDS.BLINK, data => {
+      return !!stringFromBase64(data).match(/ok/i);
     });
   };
 
   getInfo = async macAddress => {
-    return this.sendCommand(macAddress, BLUE_MAESTRO.COMMANDS.INFO, data =>
-      data
-        .map(datum => stringFromBase64(datum))
-        .reduce((acc, info) => {
-          if (info.match(/Batt/)) return { ...acc, batteryLevel: info.match(/[0-9]{1,3}/)[0] };
-          if (info.match(/Btn on\/off: 1/)) return { ...acc, isDisabled: true };
-          return acc;
-        }, {})
+    await this.connectAndDiscoverServices(macAddress);
+    return this.writeAndMonitor(macAddress, BLUE_MAESTRO.COMMANDS.INFO, data =>
+      data.map(stringFromBase64).reduce((acc, info) => {
+        if (info.match(/Batt/)) return { ...acc, batteryLevel: info.match(/[0-9]{1,3}/)[0] };
+        if (info.match(/Btn on\/off: 1/)) return { ...acc, isDisabled: true };
+        return acc;
+      }, {})
     );
   };
 
   toggleButton = async macAddress => {
-    return this.sendCommand(macAddress, BLUE_MAESTRO.COMMANDS.DISABLE_BUTTON, data => {
-      const [datum] = data;
-      return !!stringFromBase64(datum).match(/ok/i);
+    await this.connectAndDiscoverServices(macAddress);
+    return this.writeWithSingleResponse(macAddress, BLUE_MAESTRO.COMMANDS.DISABLE_BUTTON, data => {
+      return !!stringFromBase64(data).match(/ok/i);
     });
   };
 
