@@ -98,28 +98,23 @@ export class ReportManager {
   };
 
   getStats = async id => {
-    const manager = await this.databaseService.getEntityManager();
-    return manager.query(STATS, [id, id, id, id]);
+    return this.databaseService.query(STATS, [id, id, id, id]);
   };
 
   getSensorReport = async id => {
-    const manager = await this.databaseService.getEntityManager();
-    return manager.query(REPORT, [id]);
+    return this.databaseService.query(REPORT, [id]);
   };
 
   getLogsReport = async id => {
-    const manager = await this.databaseService.getEntityManager();
-    return manager.query(LOGS_REPORT, [id, id, id]);
+    return this.databaseService.query(LOGS_REPORT, [id, id, id]);
   };
 
   getBreachReport = async id => {
-    const manager = await this.databaseService.getEntityManager();
-    return manager.query(BREACH_REPORT, [id]);
+    return this.databaseService.query(BREACH_REPORT, [id]);
   };
 
   breachConfigReport = async () => {
-    const manager = await this.databaseService.getEntityManager();
-    return manager.query(BREACH_CONFIG_REPORT);
+    return this.databaseService.query(BREACH_CONFIG_REPORT);
   };
 
   writeLogFile = async (
