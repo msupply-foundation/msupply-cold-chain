@@ -155,16 +155,14 @@ export class SensorManager {
   };
 
   getNextPossibleLogTime = async id => {
-    const manager = await this.databaseService.getEntityManager();
-    const result = await manager.query(NEXT_POSSIBLE_LOG_TIME, [id]);
+    const result = await this.databaseService.query(NEXT_POSSIBLE_LOG_TIME, [id]);
 
     const { nextPossibleLogTime = 0 } = result[0] ?? {};
     return nextPossibleLogTime;
   };
 
   getMostRecentLogTime = async id => {
-    const manager = await this.databaseService.getEntityManager();
-    const result = await manager.query(MOST_RECENT_TIMESTAMP, [id]);
+    const result = await this.databaseService.query(MOST_RECENT_TIMESTAMP, [id]);
 
     const { mostRecentTimestamp = 0 } = result[0] ?? {};
     return mostRecentTimestamp;
@@ -177,8 +175,7 @@ export class SensorManager {
   };
 
   getCanDownload = async id => {
-    const manager = await this.databaseService.getEntityManager();
-    const result = await manager.query(CAN_DOWNLOAD, [id]);
+    const result = await this.databaseService.query(CAN_DOWNLOAD, [id]);
     const { logDelay, nextPossibleLogTime } = result[0];
     const now = moment().unix();
 
@@ -201,9 +198,8 @@ export class SensorManager {
   };
 
   getSensorState = async sensorId => {
-    const manager = await this.databaseService.getEntityManager();
-    const result = await manager.query(SENSOR_STATE, [sensorId, sensorId, sensorId]);
-    const resultTwo = await manager.query(
+    const result = await this.databaseService.query(SENSOR_STATE, [sensorId, sensorId, sensorId]);
+    const resultTwo = await this.databaseService.query(
       'select s.batteryLevel batteryLevel, temperature as currentTemperature from sensor s left join temperaturelog tl on tl.sensorid = s.id where s.id = ? order by timestamp desc limit 1',
       [sensorId]
     );
@@ -274,17 +270,14 @@ export class SensorManager {
   };
 
   getSensorReport = async id => {
-    const manager = await this.databaseService.getEntityManager();
-    return manager.query(REPORT, [id]);
+    return this.databaseService.query(REPORT, [id]);
   };
 
   getStats = async id => {
-    const manager = await this.databaseService.getEntityManager();
-    return manager.query(STATS, [id, id, id, id]);
+    return this.databaseService.query(STATS, [id, id, id, id]);
   };
 
   getLogsReport = async id => {
-    const manager = await this.databaseService.getEntityManager();
-    return manager.query(LOGS_REPORT, [id, id, id]);
+    return this.databaseService.query(LOGS_REPORT, [id, id, id]);
   };
 }

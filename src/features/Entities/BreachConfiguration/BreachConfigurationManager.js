@@ -26,7 +26,6 @@ export class BreachConfigurationManager {
   };
 
   report = async () => {
-    const manager = await this.databaseService.getEntityManager();
-    return manager.query(REPORT);
+    return this.databaseService.query(REPORT);
   };
 }
