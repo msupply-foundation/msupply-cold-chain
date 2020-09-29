@@ -185,13 +185,13 @@ function* requestAndWatchPermissions() {
   yield put(PermissionAction.updateStoragePermission(storagePermissionGranted));
 
   const locationPermissionGranted = yield call(permissionService.requestLocationPermission);
-  yield put(PermissionAction.updateStoragePermission(locationPermissionGranted));
+  yield put(PermissionAction.updateLocationPermission(locationPermissionGranted));
 
   const locationServicesStatus = yield call(permissionService.requestLocationServicesEnabled);
   yield put(PermissionAction.updateLocationServicesStatus(locationServicesStatus));
 
   const bluetoothStatus = yield call(permissionService.requestBluetoothEnabled);
-  yield put(PermissionAction.updateLocationServicesStatus(bluetoothStatus));
+  yield put(PermissionAction.updateBluetoothStatus(bluetoothStatus));
 
   yield put(PermissionAction.requestInitialPermissionsSuccess());
 
