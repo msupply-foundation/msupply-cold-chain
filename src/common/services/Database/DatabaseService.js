@@ -55,27 +55,29 @@ export class DatabaseService {
     ]);
   };
 
+  save = async (entityName, objectOrArray) => {
+    const repository = await this.database.getRepository(entityName);
+    return repository.save(objectOrArray);
+  };
+
   delete = async (entityName, entities) => {
     const repository = await this.database.getRepository(entityName);
     return repository.remove(entities);
   };
 
   getAll = async entityName => {
-    const connection = await this.database.getConnection();
-    const repository = await connection.getRepository(entityName);
+    const repository = await this.database.getRepository(entityName);
     return repository.find();
   };
 
   upsert = async (entityName, object) => {
-    const repository = await this.database.getRepository(entityName);
-
     let toSave = object;
     if (Array.isArray(object)) {
       toSave = _.chunk(object, 500);
-      const results = await Promise.all(toSave.map(chunk => repository.save(chunk)));
+      const results = await Promise.all(toSave.map(chunk => this.save(entityName, chunk)));
       return results.flat();
     }
-    return repository.save(object);
+    return this.save(entityName, object);
   };
 
   queryWith = async (entityName, queryObject) => {
@@ -83,27 +85,13 @@ export class DatabaseService {
     return repository.find(queryObject);
   };
 
-  get = async (entityName, id) => {
+  get = async (entityName, idOrQueryObject) => {
     const repository = await this.database.getRepository(entityName);
-    return repository.findOne(id);
-  };
-
-  getWith = async (entityName, queryObject) => {
-    const repository = await this.database.getRepository(entityName);
-    return repository.findOne(queryObject);
+    return repository.findOne(idOrQueryObject);
   };
 
   query = async (entityName, query) => {
-    const manager = await this.getEntityManager();
+    const { manager } = await this.database.getConnection();
     return manager.query(entityName, query);
-  };
-
-  getQueryBuilder = async (entityName, alias) => {
-    const repository = await this.database.getRepository(entityName);
-    return repository.createQueryBuilder(alias);
-  };
-
-  getEntityManager = async () => {
-    return (await this.database.getConnection()).manager;
   };
 }
