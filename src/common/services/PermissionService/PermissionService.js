@@ -35,6 +35,7 @@ export class PermissionService {
   };
 
   requestBluetoothEnabled = async () => {
+    if (await this.checkBluetoothStatus) return true;
     await this.settings.switchBluetooth();
     return this.checkBluetoothStatus();
   };
@@ -65,8 +66,10 @@ export class PermissionService {
 
   requestLocationServicesEnabled = async () => {
     const isEnabled = await this.checkLocationServicesStatus();
+
     return new Promise(resolve => {
       if (isEnabled) return resolve(true);
+
       return this.alerter.alert(
         'Location Services',
         'Please enable location services to allow the use of bluetooth.',
