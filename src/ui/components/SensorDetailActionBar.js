@@ -11,7 +11,8 @@ import { IconButton } from './buttons';
 import { DateRangeFilter } from './DateRangeFilter';
 
 const stateToProps = state => {
-  const { from, to } = DetailSelector.fromTo(state);
+  const from = DetailSelector.from(state);
+  const to = DetailSelector.to(state);
   const { possibleFrom, possibleTo } = DetailSelector.possibleFromTo(state);
   const fromToRange = DetailSelector.fromToRange(state);
   const isLoading = DetailSelector.isLoading(state);
