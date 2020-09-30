@@ -1,3 +1,4 @@
+import { BleManager } from 'react-native-ble-plx';
 import { Buffer } from 'buffer';
 import { BLUE_MAESTRO, BLUETOOTH } from '~constants';
 
@@ -6,7 +7,7 @@ const stringFromBase64 = base64 => bufferFromBase64(base64).toString('utf-8');
 const base64FromString = string => Buffer.from(string, 'utf-8').toString('base64');
 
 export class BleService {
-  constructor(manager) {
+  constructor(manager = new BleManager()) {
     this.manager = manager;
   }
 

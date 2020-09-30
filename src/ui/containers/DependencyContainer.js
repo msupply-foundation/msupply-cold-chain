@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BleManager } from 'react-native-ble-plx';
+
 import * as SplashScreen from 'expo-splash-screen';
 
 import { DEPENDENCY } from '~constants';
@@ -15,6 +15,7 @@ import {
   FormatService,
   BugsnagLoggerService,
   DevLoggerService,
+  DevBleManager,
   DependencyLocatorContext,
 } from '~common/services';
 
@@ -32,8 +33,6 @@ import {
   SensorManager,
 } from '~features';
 
-const bleManager = new BleManager();
-
 export const DependencyContainer = props => {
   const [ready, setReady] = useState(false);
 
@@ -41,7 +40,8 @@ export const DependencyContainer = props => {
     const db = new Database();
     const dbService = new DatabaseService(db);
     const permissionService = new PermissionService();
-    const btService = new BleService(bleManager);
+    const btService = new BleService();
+    const devBtService = new BleService(new DevBleManager());
     const formatService = new FormatService();
     const utilService = new UtilService();
     const exportService = new ExportService();
@@ -49,7 +49,7 @@ export const DependencyContainer = props => {
     const bugsnagLogger = new BugsnagLoggerService();
 
     DependencyLocator.register(DEPENDENCY.PERMISSION_SERVICE, permissionService);
-    DependencyLocator.register(DEPENDENCY.BLUETOOTH, btService);
+    DependencyLocator.register(DEPENDENCY.BLUETOOTH, __DEV__ ? devBtService : btService);
     DependencyLocator.register(DEPENDENCY.DATABASE, dbService);
     DependencyLocator.register(DEPENDENCY.FORMAT_SERVICE, formatService);
     DependencyLocator.register(DEPENDENCY.UTIL_SERVICE, utilService);
