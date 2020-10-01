@@ -20,3 +20,4 @@ export { BLUETOOTH } from './Bluetooth';
 export { SETTING } from './Setting';
 export { SPECIAL_CHARACTER } from './SpecialCharacter';
 export { BLUE_MAESTRO } from './Bluetooth';
+export { ENVIRONMENT } from './Environment';

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import * as SplashScreen from 'expo-splash-screen';
 
-import { DEPENDENCY } from '~constants';
+import { DEPENDENCY, ENVIRONMENT } from '~constants';
 
 import {
   Database,
@@ -49,12 +49,18 @@ export const DependencyContainer = props => {
     const bugsnagLogger = new BugsnagLoggerService();
 
     DependencyLocator.register(DEPENDENCY.PERMISSION_SERVICE, permissionService);
-    DependencyLocator.register(DEPENDENCY.BLUETOOTH, __DEV__ ? devBtService : btService);
+    DependencyLocator.register(
+      DEPENDENCY.BLUETOOTH,
+      ENVIRONMENT.MOCK_BLE ? devBtService : btService
+    );
     DependencyLocator.register(DEPENDENCY.DATABASE, dbService);
     DependencyLocator.register(DEPENDENCY.FORMAT_SERVICE, formatService);
     DependencyLocator.register(DEPENDENCY.UTIL_SERVICE, utilService);
     DependencyLocator.register(DEPENDENCY.EXPORT_SERVICE, exportService);
-    DependencyLocator.register(DEPENDENCY.LOGGER_SERVICE, __DEV__ ? devLogger : bugsnagLogger);
+    DependencyLocator.register(
+      DEPENDENCY.LOGGER_SERVICE,
+      ENVIRONMENT.DEV_LOGGER ? devLogger : bugsnagLogger
+    );
 
     const settingManager = new SettingManager(dbService);
     const breachConfigurationManager = new BreachConfigurationManager(dbService);

@@ -7,6 +7,7 @@ import {
   Sensor,
   Setting,
 } from './entities';
+import { ENVIRONMENT } from '~constants';
 
 const DEFAULT_DATABASE_CONFIG = {
   type: 'react-native',
@@ -16,7 +17,7 @@ const DEFAULT_DATABASE_CONFIG = {
   // extra: {
   //   createFromLocation: '~josh.sqlite',
   // },
-  logging: ['error', 'query', 'schema'],
+  logging: ENVIRONMENT.QUERY_LOGGER ? ['error', 'query', 'schema'] : [],
   maxQueryExecutionTime: 3000,
   synchronize: true,
   entities: [

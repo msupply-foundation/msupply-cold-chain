@@ -64,3 +64,6 @@ android/keystores/debug.keystore
 
 # Bundle artifact
 *.jsbundle
+
+# Extras
+.env.json

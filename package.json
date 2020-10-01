@@ -7,9 +7,10 @@
   "license": "GPL-3.0-or-later",
   "private": true,
   "scripts": {
-    "madge": "node ./madge-tree",
-    "build": "cd ./android && ./gradlew assembleRelease",
-    "start": "react-native run-android",
+    "build": "node ./scripts/setup.js && cd ./android && ./gradlew assembleRelease",
+    "start-no-options": "react-native run-android",
+    "start": "node ./scripts/setup.js --mock-ble --redux-logger --query-logger --dev-logger && react-native run-android",
+    "setup": "node ./scripts/setup.js",
     "test": "jest",
     "storybook": "(adb reverse tcp:7007 tcp:7007 || true) && start-storybook",
     "prepare": "patch-package",

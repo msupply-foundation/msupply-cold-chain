@@ -1,4 +1,5 @@
 {
+  "~": ".",
   "~ui": "./src/ui",
   "~hooks": "./src/ui/hooks",
   "~storybook": "./src/ui/storybook",
