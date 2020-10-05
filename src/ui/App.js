@@ -19,6 +19,7 @@ import {
   PermissionsContainer,
   ErrorBoundary,
 } from './containers';
+import { LargeText } from './presentation/typography';
 
 const App = () => {
   return (
@@ -26,6 +27,7 @@ const App = () => {
       <StorybookContainer>
         <ReduxContainer>
           <KeepAwakeContainer>
+            <LargeText colour="white">{!!global.HermesInternal}</LargeText>
             <DependencyContainer>
               <PermissionsContainer>
                 <NavigationContainer>
