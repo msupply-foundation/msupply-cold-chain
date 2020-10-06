@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BatteryObserverSlice: BatteryObserverAction Match Snapshots 1`] = `
+Array [
+  Object {
+    "payload": undefined,
+    "type": "batteryObserver/start",
+  },
+  Object {
+    "payload": undefined,
+    "type": "batteryObserver/stop",
+  },
+  Object {
+    "payload": undefined,
+    "type": "batteryObserver/updateSuccess",
+  },
+  Object {
+    "payload": undefined,
+    "type": "batteryObserver/updateFail",
+  },
+]
+`;

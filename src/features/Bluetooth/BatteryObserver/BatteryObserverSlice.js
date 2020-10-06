@@ -6,7 +6,7 @@ import { DEPENDENCY, REDUCER } from '~constants';
 
 import { SensorAction } from '../../Entities';
 
-const initialState = {
+export const BatteryObserverInitialState = {
   isWatching: false,
 };
 
@@ -14,15 +14,17 @@ const reducers = {
   start: draftState => {
     draftState.isWatching = true;
   },
-  stop: () => {},
+  stop: draftState => {
+    draftState.isWatching = false;
+  },
   updateSuccess: () => {},
   updateFail: () => {},
 };
 
 const { actions: BatteryObserverAction, reducer: BatteryObserverReducer } = createSlice({
-  initialState,
-  reducers,
+  initialState: BatteryObserverInitialState,
   name: REDUCER.BATTERY_OBSERVER,
+  reducers,
 });
 
 const BatteryObserverSelector = {};
@@ -42,6 +44,7 @@ function* updateBatteryLevels() {
         }
         return { ...sensor };
       });
+
       yield all(
         mapped.map(sensor =>
           put(SensorAction.update(sensor.id, 'batteryLevel', sensor.batteryLevel))
@@ -73,7 +76,7 @@ function* root() {
   yield takeLeading(BatteryObserverAction.start, watchBatteryLevels);
 }
 
-const BatteryObserverSaga = { root };
+const BatteryObserverSaga = { root, watchBatteryLevels, start, updateBatteryLevels };
 
 export {
   BatteryObserverAction,
