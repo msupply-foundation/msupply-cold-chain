@@ -6,7 +6,16 @@ jest.doMock('react-native', () => {
     {
       NativeModules: {
         ...ReactNative.NativeModules,
-        BleManager: {},
+        SussolBleManager: {
+          getDevices: () => ({
+            data: [{ id: '1', macAddress: 'AA:BB:CC:DD:EE:FF', batteryLevel: 90 }],
+            success: true,
+          }),
+        },
+      },
+      ToastAndroid: {
+        show: () => {},
+        SHORT: 'short',
       },
     },
     ReactNative
