@@ -1,1 +1,7 @@
-export { ProgramAction, ProgramReducer, ProgramSaga, ProgramSelector } from './ProgramSlice';
+export {
+  ProgramAction,
+  ProgramReducer,
+  ProgramSaga,
+  ProgramSelector,
+  ProgramInitialState,
+} from './ProgramSlice';

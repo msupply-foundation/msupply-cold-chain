@@ -1,1 +1,1 @@
-export { ScanAction, ScanReducer, ScanSaga, ScanSelector } from './ScanSlice';
+export { ScanAction, ScanReducer, ScanSaga, ScanSelector, ScanInitialState } from './ScanSlice';

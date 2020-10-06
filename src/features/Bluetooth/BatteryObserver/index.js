@@ -3,4 +3,5 @@ export {
   BatteryObserverReducer,
   BatteryObserverSaga,
   BatteryObserverSelector,
+  BatteryObserverInitialState,
 } from './BatteryObserverSlice';

@@ -13,7 +13,7 @@ import {
 import { DEPENDENCY, REDUCER } from '~constants';
 import { SensorSelector, SensorAction } from '../../Entities';
 
-const initialState = {
+export const ScanInitialState = {
   foundSensors: [],
   isScanning: false,
 };
@@ -56,7 +56,7 @@ const extraReducers = {
 };
 
 const { actions: ScanAction, reducer: ScanReducer } = createSlice({
-  initialState,
+  initialState: ScanInitialState,
   reducers,
   extraReducers,
   name: REDUCER.SCAN,

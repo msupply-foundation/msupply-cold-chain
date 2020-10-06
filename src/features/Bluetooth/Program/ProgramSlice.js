@@ -5,7 +5,7 @@ import { call, getContext, put, takeEvery, takeLeading } from 'redux-saga/effect
 import { DEPENDENCY, SETTING, REDUCER } from '~constants';
 import { SensorAction } from '../../Entities';
 
-const initialState = {
+export const ProgramInitialState = {
   programmingByMac: {},
   isProgramming: false,
 };
@@ -44,7 +44,7 @@ const reducers = {
 };
 
 const { actions: ProgramAction, reducer: ProgramReducer } = createSlice({
-  initialState,
+  initialState: ProgramInitialState,
   reducers,
   name: REDUCER.PROGRAM,
 });

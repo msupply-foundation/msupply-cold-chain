@@ -1,1 +1,7 @@
-export { BlinkAction, BlinkReducer, BlinkSaga, BlinkSelector } from './BlinkSlice';
+export {
+  BlinkAction,
+  BlinkReducer,
+  BlinkSaga,
+  BlinkSelector,
+  BlinkInitialState,
+} from './BlinkSlice';

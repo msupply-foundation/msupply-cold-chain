@@ -5,7 +5,7 @@ import { takeEvery, call, put, getContext } from 'redux-saga/effects';
 import { t } from '~translations';
 import { DEPENDENCY, REDUCER } from '~constants';
 
-const initialState = {
+export const BlinkInitialState = {
   blinkingByMac: {},
 };
 
@@ -31,7 +31,7 @@ const reducers = {
 };
 
 const { actions: BlinkAction, reducer: BlinkReducer } = createSlice({
-  initialState,
+  initialState: BlinkInitialState,
   reducers,
   name: REDUCER.BLINK,
 });
