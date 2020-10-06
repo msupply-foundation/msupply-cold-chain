@@ -8,4 +8,15 @@ const AVAILABLE_TRANSLATIONS = { en: require('./en.json') };
 i18n.fallbacks = true;
 i18n.translations = AVAILABLE_TRANSLATIONS;
 
-export const t = (scope, options) => i18n.t(scope, { languageTag, ...options });
+export const t = (scope, options) => {
+  const translation = i18n.t(scope, { languageTag, ...options });
+
+  // Catch missing translations - throw errors in dev, but return an empty string in
+  // production.
+  if (translation.match(/missing/)) {
+    if (__DEV__) throw new Error(translation);
+    return '';
+  }
+
+  return translation;
+};
