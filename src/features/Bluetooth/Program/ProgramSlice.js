@@ -15,22 +15,25 @@ const reducers = {
     prepare: (macAddress, logDelay) => ({ payload: { macAddress, logDelay } }),
     reducer: (draftState, { payload: { macAddress } }) => {
       draftState.programmingByMac[macAddress] = true;
+      draftState.isProgramming = true;
     },
   },
   programNewSensorSuccess: {
     prepare: (macAddress, logDelay) => ({ payload: { macAddress, logDelay } }),
     reducer: (draftState, { payload: { macAddress } }) => {
       draftState.programmingByMac[macAddress] = false;
+      draftState.isProgramming = false;
     },
   },
   programNewSensorFail: {
     prepare: (macAddress, errorMessage) => ({ payload: { macAddress, errorMessage } }),
     reducer: (draftState, { payload: { macAddress } }) => {
       draftState.programmingByMac[macAddress] = false;
+      draftState.isProgramming = false;
     },
   },
   tryUpdateLogInterval: {
-    prepare: (id, logInterval) => ({ payload: { id, logInterval } }),
+    prepare: (macAddress, logInterval) => ({ payload: { macAddress, logInterval } }),
     reducer: draftState => {
       draftState.isProgramming = true;
     },
@@ -77,7 +80,7 @@ export function* tryProgramNewSensor({ payload: { macAddress, logDelay } }) {
   }
 }
 
-export function* tryUpdateLogInterval({ payload: { id, logInterval } }) {
+export function* tryUpdateLogInterval({ payload: { macAddress, logInterval } }) {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const [btService, sensorManager] = yield call(DependencyLocator.get, [
     DEPENDENCY.BLUETOOTH,
@@ -85,10 +88,10 @@ export function* tryUpdateLogInterval({ payload: { id, logInterval } }) {
   ]);
 
   try {
-    const sensor = yield call(sensorManager.getSensorById, id);
+    const sensor = yield call(sensorManager.getSensorByMac, macAddress);
     yield call(btService.updateLogIntervalWithRetries, sensor.macAddress, logInterval, 10);
-    yield put(ProgramAction.updateLogIntervalSuccess(id));
-    yield put(SensorAction.update(id, 'logInterval', logInterval));
+    yield put(ProgramAction.updateLogIntervalSuccess(sensor.id));
+    yield put(SensorAction.update(sensor.id, 'logInterval', logInterval));
     ToastAndroid.show('Updated log interval', ToastAndroid.SHORT);
   } catch (e) {
     yield put(ProgramAction.updateLogIntervalFail());

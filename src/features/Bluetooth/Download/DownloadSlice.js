@@ -1,7 +1,17 @@
-import { call, getContext, put, takeEvery, fork, take, race, all, delay } from 'redux-saga/effects';
+import {
+  call,
+  getContext,
+  put,
+  takeEvery,
+  take,
+  race,
+  all,
+  delay,
+  takeLeading,
+} from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
 
-import { DEPENDENCY, REDUCER } from '~constants';
+import { MILLISECONDS, DEPENDENCY, REDUCER } from '~constants';
 
 import { CumulativeBreachAction, ConsecutiveBreachAction } from '../../Breach';
 
@@ -129,7 +139,7 @@ function* downloadTemperatures() {
 function* startPassiveDownloading() {
   while (true) {
     yield call(downloadTemperatures);
-    yield delay(60000);
+    yield delay(MILLISECONDS.SIXTY_SECONDS);
   }
 }
 
@@ -144,7 +154,7 @@ function* watchPassiveDownloading() {
 function* root() {
   yield takeEvery(DownloadAction.tryManualDownloadForSensor, tryDownloadForSensor);
   yield takeEvery(DownloadAction.tryPassiveDownloadForSensor, tryDownloadForSensor);
-  yield fork(watchPassiveDownloading);
+  yield takeLeading(DownloadAction.passiveDownloadingStart, watchPassiveDownloading);
 }
 
 const DownloadSaga = {

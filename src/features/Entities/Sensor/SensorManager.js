@@ -189,6 +189,11 @@ export class SensorManager {
     return sensor[0];
   };
 
+  getSensorByMac = async macAddress => {
+    const sensor = await this.databaseService.queryWith(ENTITIES.SENSOR, { macAddress });
+    return sensor[0];
+  };
+
   updateLastDownloadTime = async sensor => {
     const { id, logInterval } = sensor;
     const lastDownloadTime = moment().unix();

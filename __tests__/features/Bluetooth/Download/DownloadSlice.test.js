@@ -13,7 +13,11 @@ import { ConsecutiveBreachAction, CumulativeBreachAction } from '~features/Breac
 describe('DownloadReducer', () => {
   it('passiveDownloadingState', () => {
     const state = DownloadReducer(DownloadInitialState, DownloadAction.passiveDownloadingStart());
-    expect(state).toEqual({ downloadingById: {}, passiveDownloadEnabled: false, enabled: true });
+    expect(state).toEqual({
+      downloadingById: {},
+      passiveDownloadEnabled: false,
+      enabled: true,
+    });
   });
   it('passiveDownloadingStop', () => {
     const state = DownloadReducer(DownloadInitialState, DownloadAction.passiveDownloadingStop());
