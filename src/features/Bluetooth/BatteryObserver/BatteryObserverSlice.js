@@ -2,9 +2,10 @@ import { NativeModules } from 'react-native';
 import { take, delay, getContext, call, all, put, takeLeading, race } from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
 
-import { DEPENDENCY, REDUCER } from '~constants';
+import { DEPENDENCY, REDUCER , MILLISECONDS } from '~constants';
 
 import { SensorAction } from '../../Entities';
+
 
 export const BatteryObserverInitialState = {
   isWatching: false,
@@ -61,7 +62,7 @@ function* updateBatteryLevels() {
 function* start() {
   while (true) {
     yield call(updateBatteryLevels);
-    yield delay(30000);
+    yield delay(MILLISECONDS.THIRTY_SECONDS);
   }
 }
 

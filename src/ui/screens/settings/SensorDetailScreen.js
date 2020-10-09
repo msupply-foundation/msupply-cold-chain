@@ -21,11 +21,13 @@ export const SensorDetailScreen = () => {
   const { id } = useRouteProps();
 
   const sensor = useSelector(state => state.entities.sensor.byId[id]);
-  const { [sensor.macAddress]: isBlinking } = useSelector(BlinkSelector.isBlinking);
 
   const dispatch = useDispatch();
 
   const { name, logInterval, macAddress } = sensor;
+
+  const { [macAddress]: isBlinking } = useSelector(BlinkSelector.isBlinking);
+
   return (
     <SettingsList>
       <SettingsLoadingIndicatorRow
@@ -38,7 +40,7 @@ export const SensorDetailScreen = () => {
         onPress={() => dispatch(DownloadAction.tryManualDownloadForSensor(id))}
       />
       <SettingsGroup title="SENSOR DETAILS">
-        <SettingsItem label={sensor.macAddress} subtext="This sensors mac address" isDisabled />
+        <SettingsItem label={macAddress} subtext="This sensors mac address" isDisabled />
         <SettingsItem
           label={`${sensor.batteryLevel}%`}
           subtext="This sensors battery level"
@@ -66,7 +68,7 @@ export const SensorDetailScreen = () => {
           metric={t('MINUTES')}
           onConfirm={({ value }) => {
             const newLogInterval = value * 60;
-            dispatch(ProgramAction.tryUpdateLogInterval(id, newLogInterval));
+            dispatch(ProgramAction.tryUpdateLogInterval(macAddress, newLogInterval));
           }}
           editDescription={t('EDIT_LOG_INTERVAL')}
         />
