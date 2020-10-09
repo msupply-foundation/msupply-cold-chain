@@ -5,7 +5,9 @@
   "author": "mSupply Foundation",
   "main": "index.js",
   "license": "GPL-3.0-or-later",
-  "engines": {"node": ">=12.8.4"},
+  "engines": {
+    "node": ">=12.8.4"
+  },
   "private": true,
   "scripts": {
     "reset": "yarn start-no-options --reset-cache",
