@@ -47,6 +47,8 @@ buck-out/
 
 android/app/libs
 android/keystores/debug.keystore
+# Keeping keystore changes out
+android/gradle.properties 
 
 # VScode
 .vscode/
