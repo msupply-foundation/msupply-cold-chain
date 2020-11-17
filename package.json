@@ -10,6 +10,7 @@
     "madge": "node ./madge-tree",
     "build": "cd ./android && ./gradlew assembleRelease",
     "start": "react-native run-android",
+    "make-debug-keystore": "keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000",
     "test": "jest",
     "storybook": "(adb reverse tcp:7007 tcp:7007 || true) && start-storybook",
     "prepare": "patch-package",
