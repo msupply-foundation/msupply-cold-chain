@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProgramAction has matching snapshots 1`] = `
+Array [
+  Object {
+    "payload": Object {
+      "logDelay": undefined,
+      "macAddress": undefined,
+    },
+    "type": "program/tryProgramNewSensor",
+  },
+  Object {
+    "payload": Object {
+      "batteryLevel": undefined,
+      "logDelay": undefined,
+      "logInterval": undefined,
+      "macAddress": undefined,
+    },
+    "type": "program/programNewSensorSuccess",
+  },
+  Object {
+    "payload": Object {
+      "errorMessage": undefined,
+      "macAddress": undefined,
+    },
+    "type": "program/programNewSensorFail",
+  },
+  Object {
+    "payload": Object {
+      "logInterval": undefined,
+      "macAddress": undefined,
+    },
+    "type": "program/tryUpdateLogInterval",
+  },
+  Object {
+    "payload": Object {
+      "id": undefined,
+      "logInterval": undefined,
+    },
+    "type": "program/updateLogIntervalSuccess",
+  },
+  Object {
+    "payload": undefined,
+    "type": "program/updateLogIntervalFail",
+  },
+]
+`;

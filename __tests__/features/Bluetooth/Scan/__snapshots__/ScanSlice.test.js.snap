@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ScanAction has matching snapshots 1`] = `
+Array [
+  Object {
+    "payload": undefined,
+    "type": "scan/tryStart",
+  },
+  Object {
+    "payload": undefined,
+    "type": "scan/startSuccess",
+  },
+  Object {
+    "payload": undefined,
+    "type": "scan/startFail",
+  },
+  Object {
+    "payload": undefined,
+    "type": "scan/tryStop",
+  },
+  Object {
+    "payload": undefined,
+    "type": "scan/stopSuccess",
+  },
+  Object {
+    "payload": undefined,
+    "type": "scan/stopFail",
+  },
+  Object {
+    "payload": Object {
+      "mac": undefined,
+    },
+    "type": "scan/foundSensor",
+  },
+]
+`;
