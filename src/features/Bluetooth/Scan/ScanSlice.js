@@ -102,7 +102,7 @@ export function callback(btService) {
   });
 }
 
-export function* start() {
+function* start() {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const btService = yield call(DependencyLocator.get, DEPENDENCY.BLUETOOTH);
 
@@ -130,7 +130,7 @@ export function* start() {
   }
 }
 
-export function* stopOrStart() {
+function* stopOrStart() {
   yield race({ start: call(start), end: call(stop) });
 }
 
@@ -138,6 +138,6 @@ function* root() {
   yield takeLeading(ScanAction.tryStart, stopOrStart);
 }
 
-const ScanSaga = { root };
+const ScanSaga = { root, stopOrStart, start };
 
 export { ScanAction, ScanReducer, ScanSaga, ScanSelector };
