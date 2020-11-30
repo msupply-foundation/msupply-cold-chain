@@ -125,6 +125,7 @@ with cumulativeBreachFields as (
   left join temperatureBreach tb on tb.id = tl.temperatureBreachId
   left join temperaturebreachconfiguration tbc on tbc.id = tb.temperatureBreachConfigurationId
   where tl.sensorId = ?
+  order by tl.timestamp
 `;
 
 const REPORT = `

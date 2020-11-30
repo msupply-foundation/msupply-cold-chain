@@ -47,6 +47,8 @@ buck-out/
 
 android/app/libs
 android/keystores/debug.keystore
+# Keeping keystore changes out
+android/gradle.properties 
 
 # VScode
 .vscode/
@@ -64,6 +66,3 @@ android/keystores/debug.keystore
 
 # Bundle artifact
 *.jsbundle
-
-# Extras
-.env.json

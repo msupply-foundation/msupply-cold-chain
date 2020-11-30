@@ -1,4 +1,4 @@
-package com.cce;
+package com.msupplycoldchain;
 
 // Used for overriding onCreate
 import android.os.Bundle;
@@ -19,7 +19,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "cce";
+    return "mSupplyColdChain";
   }
 
   @Override

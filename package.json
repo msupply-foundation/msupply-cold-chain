@@ -1,6 +1,6 @@
 {
-  "name": "cce",
-  "version": "0.0.1",
+  "name": "mSupplyColdChain",
+  "version": "0.0.2",
   "description": "Cold chain temperature monitoring",
   "author": "mSupply Foundation",
   "main": "index.js",
@@ -15,6 +15,8 @@
     "start-no-options": "react-native run-android",
     "start": "node ./scripts/setup.js --mock-ble --redux-logger --query-logger --dev-logger && react-native run-android",
     "setup": "node ./scripts/setup.js",
+    "madge": "node ./madge-tree",
+    "make-debug-keystore": "keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000",
     "test": "jest",
     "storybook": "(adb reverse tcp:7007 tcp:7007 || true) && start-storybook",
     "prepare": "patch-package",

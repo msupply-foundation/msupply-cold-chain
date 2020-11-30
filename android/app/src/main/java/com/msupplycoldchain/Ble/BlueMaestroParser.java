@@ -1,4 +1,4 @@
-package com.cce;
+package com.msupplycoldchain;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableArray;
@@ -29,7 +29,7 @@ public class BlueMaestroParser extends BleParser{
         ByteBuffer byteBuffer = ByteBuffer.wrap(advertisementBytes,ADVERTISEMENT_OFFSET,bufferLength).asReadOnlyBuffer();
 
         for (int index = 0; index < advertisementBytes.length; index++){
-            Log.i("com.cce", String.format("0x%20x", advertisementBytes[index]));
+            Log.i("com.msupplycoldchain", String.format("0x%20x", advertisementBytes[index]));
            }
 
         // Get Index: 7
