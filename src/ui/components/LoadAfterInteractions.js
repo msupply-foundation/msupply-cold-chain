@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { ActivityIndicator } from 'react-native';
 
 import { COLOUR } from '~constants';
@@ -8,8 +9,22 @@ const styles = { loading: { flex: 1, justifyContent: 'center', alignItems: 'cent
 export const LoadAfterInteractions = ({
   children,
   Loading = <ActivityIndicator size="large" color={COLOUR.PRIMARY} style={styles.loading} />,
+  withDelay = true,
 }) => {
+  const [delay, setDelay] = useState(withDelay);
   const load = useLoadAfterInteractions();
 
-  return load && children ? children : Loading;
+  useEffect(() => {
+    setTimeout(() => setDelay(false), 500);
+  }, []);
+
+  if (load && children) {
+    return children;
+  }
+
+  if (delay) {
+    return null;
+  }
+
+  return Loading;
 };
