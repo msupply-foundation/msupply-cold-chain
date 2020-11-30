@@ -1,9 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { ToastAndroid } from 'react-native';
-import { call, getContext, put, takeEvery, takeLeading } from 'redux-saga/effects';
+import { call, getContext, put, retry, takeEvery, takeLeading } from 'redux-saga/effects';
 
 import { DEPENDENCY, SETTING, REDUCER } from '~constants';
-import { SensorAction } from '../../Entities';
 
 export const ProgramInitialState = {
   programmingByMac: {},
@@ -19,7 +18,9 @@ const reducers = {
     },
   },
   programNewSensorSuccess: {
-    prepare: (macAddress, logDelay) => ({ payload: { macAddress, logDelay } }),
+    prepare: (macAddress, logInterval, logDelay, batteryLevel) => ({
+      payload: { macAddress, logInterval, logDelay, batteryLevel },
+    }),
     reducer: (draftState, { payload: { macAddress } }) => {
       draftState.programmingByMac[macAddress] = false;
       draftState.isProgramming = false;
@@ -38,8 +39,11 @@ const reducers = {
       draftState.isProgramming = true;
     },
   },
-  updateLogIntervalSuccess: draftState => {
-    draftState.isProgramming = false;
+  updateLogIntervalSuccess: {
+    prepare: (id, logInterval) => ({ payload: { id, logInterval } }),
+    reducer: draftState => {
+      draftState.isProgramming = false;
+    },
   },
   updateLogIntervalFail: draftState => {
     draftState.isProgramming = false;
@@ -64,18 +68,19 @@ export function* tryProgramNewSensor({ payload: { macAddress, logDelay } }) {
       settingManager.getSetting,
       SETTING.INT.DEFAULT_LOG_INTERVAL
     );
-    const { batteryLevel, isDisabled } = yield call(btService.getInfoWithRetries, macAddress, 10);
-    yield call(btService.updateLogIntervalWithRetries, macAddress, logInterval, 10);
+    const { batteryLevel, isDisabled } = yield retry(10, 0, btService.getInfo, macAddress);
+    yield retry(10, 0, btService.updateLogInterval, macAddress, logInterval);
 
     if (!isDisabled) {
-      yield call(btService.toggleButtonWithRetries, macAddress, 10);
+      yield retry(10, 0, btService.toggleButton, macAddress);
     }
 
-    yield put(ProgramAction.programNewSensorSuccess(macAddress));
-    yield put(SensorAction.create(macAddress, logInterval, logDelay, batteryLevel));
+    yield put(
+      ProgramAction.programNewSensorSuccess(macAddress, logInterval, logDelay, batteryLevel)
+    );
     ToastAndroid.show(`Connected and setup ${macAddress}`, ToastAndroid.SHORT);
   } catch (e) {
-    yield put(ProgramAction.programNewSensorFail(macAddress, e?.message));
+    yield put(ProgramAction.programNewSensorFail(macAddress));
     ToastAndroid.show(`Could not connect with ${macAddress}`, ToastAndroid.SHORT);
   }
 }
@@ -89,9 +94,8 @@ export function* tryUpdateLogInterval({ payload: { macAddress, logInterval } }) 
 
   try {
     const sensor = yield call(sensorManager.getSensorByMac, macAddress);
-    yield call(btService.updateLogIntervalWithRetries, sensor.macAddress, logInterval, 10);
-    yield put(ProgramAction.updateLogIntervalSuccess(sensor.id));
-    yield put(SensorAction.update(sensor.id, 'logInterval', logInterval));
+    yield retry(10, 0, btService.updateLogInterval, sensor.macAddress, logInterval);
+    yield put(ProgramAction.updateLogIntervalSuccess(sensor.id, logInterval));
     ToastAndroid.show('Updated log interval', ToastAndroid.SHORT);
   } catch (e) {
     yield put(ProgramAction.updateLogIntervalFail());
@@ -104,7 +108,7 @@ function* root() {
   yield takeEvery(ProgramAction.tryUpdateLogInterval, tryUpdateLogInterval);
 }
 
-const ProgramSaga = { root };
+const ProgramSaga = { root, tryUpdateLogInterval, tryProgramNewSensor };
 
 const ProgramSelector = {
   programmingByMac: ({

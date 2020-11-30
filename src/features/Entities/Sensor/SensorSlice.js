@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { getContext, call, put, takeEvery } from 'redux-saga/effects';
 
 import { REDUCER, DEPENDENCY } from '~constants';
+import { ProgramAction } from '../../Bluetooth';
 
 const initialState = {
   byId: {
@@ -105,10 +106,20 @@ function* create({ payload: { macAddress, logInterval, logDelay, batteryLevel } 
   }
 }
 
+function* updateLogInterval({ payload: { id, logInterval } }) {
+  yield put(SensorAction.update(id, 'logInterval', logInterval));
+}
+
+function* createNewSensor({ payload: { macAddress, logDelay, logInterval, batteryLevel } }) {
+  yield put(SensorAction.create(macAddress, logInterval, logDelay, batteryLevel));
+}
+
 function* root() {
   yield takeEvery(SensorAction.fetchAll, fetchAll);
   yield takeEvery(SensorAction.create, create);
   yield takeEvery(SensorAction.update, update);
+  yield takeEvery(ProgramAction.updateLogIntervalSuccess, updateLogInterval);
+  yield takeEvery(ProgramAction.programNewSensorSuccess, createNewSensor);
 }
 
 const getById = ({ entities: { sensor } }) => {
