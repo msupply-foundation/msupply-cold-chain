@@ -14,6 +14,8 @@ export const LoadAfterInteractions = ({
   const [delay, setDelay] = useState(withDelay);
   const load = useLoadAfterInteractions();
 
+  // Only show a spinner if the interactions take longer than
+  // 500ms
   useEffect(() => {
     setTimeout(() => setDelay(false), 500);
   }, []);

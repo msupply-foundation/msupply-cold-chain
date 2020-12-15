@@ -1,15 +1,14 @@
-import { put, getContext } from 'redux-saga/effects';
 import { expectSaga } from 'redux-saga-test-plan';
-
+import { put, getContext } from 'redux-saga/effects';
 import {
   BatteryObserverInitialState,
   BatteryObserverReducer,
   BatteryObserverAction,
   BatteryObserverSaga,
-} from '~features/Bluetooth/BatteryObserver';
+} from '~features/Bluetooth';
 
 import { DEPENDENCY } from '~constants';
-import { SensorAction } from '~features/Entities';
+import { SensorAction } from '../../../../src/features/Entities';
 
 describe('BatteryObserverSlice: BatteryObserverSaga', () => {
   it('Does not manipulate state', () => {

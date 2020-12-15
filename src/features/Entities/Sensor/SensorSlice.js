@@ -4,7 +4,7 @@ import { getContext, call, put, takeEvery } from 'redux-saga/effects';
 import { REDUCER, DEPENDENCY } from '~constants';
 import { ProgramAction } from '../../Bluetooth';
 
-const initialState = {
+const SensorInitialState = {
   byId: {
     // exampleId: {
     //   id: '',
@@ -62,7 +62,7 @@ const reducers = {
 
 const { actions: SensorAction, reducer: SensorReducer } = createSlice({
   name: REDUCER.SENSOR,
-  initialState,
+  SensorInitialState,
   reducers,
 });
 
@@ -175,4 +175,4 @@ const SensorSaga = {
   fetchAll,
 };
 
-export { SensorSaga, SensorSelector, SensorReducer, SensorAction };
+export { SensorSaga, SensorSelector, SensorReducer, SensorAction, SensorInitialState };

@@ -110,11 +110,11 @@ function* start() {
 
   try {
     const channel = yield call(callback, btService);
+
     while (true) {
       const device = yield take(channel);
       const foundSensors = yield select(ScanSelector.foundSensors);
       const macs = yield select(SensorSelector.macs);
-
       const alreadyFound = foundSensors.includes(device?.id) || macs.includes(device?.id);
 
       if (!alreadyFound) {
@@ -138,6 +138,6 @@ function* root() {
   yield takeLeading(ScanAction.tryStart, stopOrStart);
 }
 
-const ScanSaga = { root, stopOrStart, start };
+const ScanSaga = { root, stopOrStart, start, stop };
 
 export { ScanAction, ScanReducer, ScanSaga, ScanSelector };

@@ -37,7 +37,7 @@ const dispatchToProps = (dispatch, props) => {
 };
 
 export const SensorDetailScreenComponent = ({ name, id, fetch, flush }) => {
-  useOnMount(fetch, flush);
+  useOnMount(flush, fetch);
   useHideTabBar();
 
   return (

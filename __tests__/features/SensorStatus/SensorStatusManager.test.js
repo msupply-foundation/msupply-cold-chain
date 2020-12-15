@@ -1,4 +1,4 @@
-import { SensorStatusManager } from '~features/SensorStatus';
+import { SensorStatusManager } from '~features/SensorStatus/SensorStatusManager';
 
 const SENSOR_STATUS = `
 with breach as (

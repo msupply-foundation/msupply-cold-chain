@@ -6,7 +6,14 @@ export {
   BreachConfigurationManager,
 } from './BreachConfiguration';
 
-export { SensorReducer, SensorAction, SensorSelector, SensorSaga, SensorManager } from './Sensor';
+export {
+  SensorInitialState,
+  SensorReducer,
+  SensorAction,
+  SensorSelector,
+  SensorSaga,
+  SensorManager,
+} from './Sensor';
 
 export {
   SettingReducer,

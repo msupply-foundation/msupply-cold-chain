@@ -18,6 +18,7 @@ export {
   BlinkSelector,
   BlinkSaga,
   BlinkReducer,
+  BatteryObserverInitialState,
   BatteryObserverAction,
   BatteryObserverSelector,
   BatteryObserverSaga,
