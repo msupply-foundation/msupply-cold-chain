@@ -22,4 +22,4 @@ const options = args
   .filter(option => OPTIONS_LOOKUP[option])
   .reduce((acc, option) => ({ ...acc, [OPTIONS_LOOKUP[option]]: true }), DEFAULT_OPTIONS);
 
-fs.writeFileSync('.env.json', JSON.stringify(options, null, 2));
+fs.writeFileSync('env.json', JSON.stringify(options, null, 2));
