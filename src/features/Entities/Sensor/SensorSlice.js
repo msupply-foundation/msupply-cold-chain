@@ -62,7 +62,7 @@ const reducers = {
 
 const { actions: SensorAction, reducer: SensorReducer } = createSlice({
   name: REDUCER.SENSOR,
-  SensorInitialState,
+  initialState: SensorInitialState,
   reducers,
 });
 

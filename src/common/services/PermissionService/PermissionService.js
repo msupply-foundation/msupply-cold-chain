@@ -35,7 +35,9 @@ export class PermissionService {
   };
 
   requestBluetoothEnabled = async () => {
-    if (await this.checkBluetoothStatus) return true;
+    const isBluetoothEnabled = await this.checkBluetoothStatus();
+    if (isBluetoothEnabled) return true;
+
     await this.settings.switchBluetooth();
     return this.checkBluetoothStatus();
   };

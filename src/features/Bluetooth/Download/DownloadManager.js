@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { ENTITIES, MILLISECONDS } from '~constants';
+import { ENTITIES } from '~constants';
 
 export class DownloadManager {
   constructor(databaseService, utils) {
@@ -9,14 +9,13 @@ export class DownloadManager {
 
   // Calculates the number of sensor logs that should be saved from some given starting
   // point. Where the starting point is the timestamp for the next log.
-  // TODO: Do this in SQL
   calculateNumberOfLogsToSave = (
     nextPossibleLogTime = 0,
     logInterval,
     timeNow = moment().unix()
   ) => {
-    const now = moment(timeNow * MILLISECONDS.ONE_SECOND);
-    const startingMoment = moment(nextPossibleLogTime * MILLISECONDS.ONE_SECOND);
+    const now = moment.unix(timeNow);
+    const startingMoment = moment.unix(nextPossibleLogTime);
     // If the time for the next log is in the future, then don't save any.
     if (startingMoment.isAfter(now)) return 0;
     // Calculate the seconds between the starting time and now.
@@ -36,20 +35,10 @@ export class DownloadManager {
     const logsToSave = logs.slice(sliceIndex);
 
     let initial;
-    if (!mostRecentLogTime) {
-      initial = moment(timeNow * MILLISECONDS.ONE_SECOND);
-      initial.subtract((logsToSave.length - 1) * logInterval, 'seconds');
+    if (mostRecentLogTime == null) {
+      initial = moment.unix(timeNow).subtract((logsToSave.length - 1) * logInterval, 'seconds');
     } else {
-      const now = moment().unix();
-      const numberOfLogIntervalsUntilNow = Math.floor((now - mostRecentLogTime) / logInterval) + 1;
-      // Take the most recent log timestamp and count log intervals until now, then, remove the log intervals
-      // for the number we are saving up to.
-
-      initial = moment(
-        (mostRecentLogTime +
-          (numberOfLogIntervalsUntilNow * logInterval - maxNumberToSave * logInterval)) *
-          1000
-      );
+      initial = moment.unix(mostRecentLogTime).add(logInterval, 's');
     }
 
     return logsToSave.map(({ temperature }, i) => {

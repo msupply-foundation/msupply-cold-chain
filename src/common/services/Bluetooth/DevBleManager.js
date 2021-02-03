@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 const COMMAND_TO_RESULT_LOOKUP = {
   // *logall
   'KmxvZ2FsbA==': callback => {

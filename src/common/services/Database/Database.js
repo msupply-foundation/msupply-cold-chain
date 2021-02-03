@@ -1,4 +1,4 @@
-import { createConnection, getConnectionManager } from 'typeorm/browser';
+import { createConnection } from 'typeorm/browser';
 import {
   SensorLog,
   TemperatureBreach,
@@ -9,7 +9,7 @@ import {
 } from './entities';
 import { ENVIRONMENT } from '~constants';
 
-const DEFAULT_DATABASE_CONFIG = {
+export const getDefaultDatabaseConfig = () => ({
   type: 'react-native',
   database: 'josh52.sqlite',
   location: 'default',
@@ -28,7 +28,7 @@ const DEFAULT_DATABASE_CONFIG = {
     TemperatureBreachConfiguration,
     Setting,
   ],
-};
+});
 
 /**
  * Interface for connections to a database. If there is a connection ...
@@ -40,7 +40,7 @@ const DEFAULT_DATABASE_CONFIG = {
  *
  */
 export class Database {
-  constructor(config = DEFAULT_DATABASE_CONFIG) {
+  constructor(config = getDefaultDatabaseConfig()) {
     this.config = config;
     this.connection = null;
   }
@@ -52,8 +52,6 @@ export class Database {
   };
 
   getConnection = async () => {
-    const connectionManager = getConnectionManager();
-    if (connectionManager.has('default')) return connectionManager.get('default');
     if (!this.connection) await this.createConnection();
     return this.connection;
   };
