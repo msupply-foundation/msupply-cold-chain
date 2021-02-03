@@ -64,44 +64,46 @@ describe('DownloadManager: calculateNumberOfLogsToSave', () => {
 });
 
 describe('DownloadManager: createLogs', () => {
-  it('Creates logs with the correct timestamps', () => {
+  it('Creates the correct logs starting from no existing logs.', () => {
     const utils = new UtilService();
     const downloadManager = new DownloadManager({}, utils);
 
     const sensor = { id: 'a', logInterval: 300 };
     const maxNumberToSave = 3;
-    const mostRecentLogTime = 0;
+    const mostRecentLogTime = null;
     const timeNow = 600;
 
-    const logs = [{ temperature: 10 }, { temperature: 10 }, { temperature: 10 }];
+    const logs = [{ temperature: 10 }, { temperature: 11 }, { temperature: 12 }];
     const shouldBe = [
       { id: '1', temperature: 10, timestamp: 0, sensorId: 'a', logInterval: 300 },
-      { id: '1', temperature: 10, timestamp: 300, sensorId: 'a', logInterval: 300 },
-      { id: '1', temperature: 10, timestamp: 600, sensorId: 'a', logInterval: 300 },
+      { id: '1', temperature: 11, timestamp: 300, sensorId: 'a', logInterval: 300 },
+      { id: '1', temperature: 12, timestamp: 600, sensorId: 'a', logInterval: 300 },
     ];
 
     expect(
       downloadManager.createLogs(logs, sensor, maxNumberToSave, mostRecentLogTime, timeNow)
     ).toEqual(shouldBe);
   });
-  it('Creates the correct number of logs', () => {
+  it('Creates the correct logs when there are existing logs', () => {
     const utils = new UtilService();
     const downloadManager = new DownloadManager({}, utils);
 
     const sensor = { id: 'a', logInterval: 300 };
-    const maxNumberToSave = 1;
+    const maxNumberToSave = 2;
     const mostRecentLogTime = 0;
     const timeNow = 600;
 
-    const logs = [{ temperature: 10 }, { temperature: 10 }, { temperature: 10 }];
+    const logs = [{ temperature: 10 }, { temperature: 11 }, { temperature: 12 }];
     const shouldBe = [
-      { id: '1', temperature: 10, timestamp: 600, sensorId: 'a', logInterval: 300 },
+      { id: '1', temperature: 11, timestamp: 300, sensorId: 'a', logInterval: 300 },
+      { id: '1', temperature: 12, timestamp: 600, sensorId: 'a', logInterval: 300 },
     ];
 
     expect(
       downloadManager.createLogs(logs, sensor, maxNumberToSave, mostRecentLogTime, timeNow)
     ).toEqual(shouldBe);
   });
+
   it('Calls the db service with the passed logs', async () => {
     const mockUpsert = jest.fn((_, entities) => {
       return entities;

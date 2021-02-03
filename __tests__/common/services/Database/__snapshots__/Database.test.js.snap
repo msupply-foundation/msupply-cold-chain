@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[` 1`] = `
+Object {
+  "database": "josh52.sqlite",
+  "entities": Array [
+    [Function],
+    [Function],
+    [Function],
+    [Function],
+    [Function],
+    [Function],
+  ],
+  "location": "default",
+  "logging": Array [
+    "error",
+    "query",
+    "schema",
+  ],
+  "maxQueryExecutionTime": 3000,
+  "synchronize": true,
+  "type": "react-native",
+}
+`;
+
+exports[` 2`] = `
+Object {
+  "database": "josh52.sqlite",
+  "entities": Array [
+    [Function],
+    [Function],
+    [Function],
+    [Function],
+    [Function],
+    [Function],
+  ],
+  "location": "default",
+  "logging": Array [],
+  "maxQueryExecutionTime": 3000,
+  "synchronize": true,
+  "type": "react-native",
+}
+`;

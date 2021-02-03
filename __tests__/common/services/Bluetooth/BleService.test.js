@@ -1,5 +1,7 @@
+import { BleManager } from 'react-native-ble-plx';
 import { BleService } from '~common/services';
-import { BLUETOOTH } from '~constants';
+import { BLUETOOTH , BLUE_MAESTRO } from '~constants';
+
 
 const createMockDevice = () => {
   const mockOnDisconnected = jest.fn(callback => {
@@ -32,8 +34,9 @@ const createMockBleManager = ({
   const mockMonitorCharacteristicForDevice = jest.fn(mockMonitorCharacteristicForDeviceCallback);
   const mockConnectToDevice = jest.fn(() => device);
   const mockStopDeviceScan = jest.fn();
-  const mockStartDeviceScan = jest.fn((_, __, ____, callback) => {
-    callback({ manufacturerData: 'MwEBDAN0AFkBtwEMA3QAWQG3AMwCrAAAAAAA', id: '1' });
+  const mockStartDeviceScan = jest.fn((_, __, callback) => {
+    callback(null, { manufacturerData: 'not right', id: '2' });
+    callback(null, { manufacturerData: 'MwEBDAN0AFkBtwEMA3QAWQG3AMwCrAAAAAAA', id: '1' });
   });
 
   const manager = {
@@ -60,6 +63,14 @@ const createMockBleManager = ({
     mockDiscoverAllServicesAndCharacteristicsForDevice,
   };
 };
+
+describe('BleService: constructor', () => {
+  it('Is constructed with a default manager when none is provided', () => {
+    const ble = new BleService();
+
+    expect(ble.manager).toEqual(new BleManager());
+  });
+});
 
 describe('BleService: connectToDevice', () => {
   it('Calls to connect to a device with the mac address passed', async () => {
@@ -139,6 +150,20 @@ describe('BleService: stopScan', () => {
   });
 });
 
+describe('BleService: setScanCallback', () => {
+  it('Correctly sets the passed callback', () => {
+    const { manager } = createMockBleManager();
+
+    const btService = new BleService(manager);
+
+    const callback = () => {};
+    btService.scanCallback = callback;
+
+    // eslint-disable-next-line no-underscore-dangle
+    expect(btService._scanCallback).toBe(callback);
+  });
+});
+
 describe('BleService: scanForSensors', () => {
   it('Correctly starts a scan for sensors through the passed manager', () => {
     const { manager, mockStartDeviceScan } = createMockBleManager();
@@ -158,8 +183,27 @@ describe('BleService: scanForSensors', () => {
     const callback = jest.fn();
     btService.scanForSensors(callback);
 
-    expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith({
+    expect(callback).toBeCalledWith(null, {
+      manufacturerData: 'MwEBDAN0AFkBtwEMA3QAWQG3AMwCrAAAAAAA',
+      id: '1',
+    });
+  });
+  it('Correctly filters any device scanned', () => {
+    const { manager } = createMockBleManager();
+    const btService = new BleService(manager);
+
+    let foundDevice = null;
+    const bufferFromBase64 = base64 => Buffer.from(base64, 'base64');
+    const callback = jest.fn((_, device) => {
+      const { manufacturerData } = device;
+      if (bufferFromBase64(manufacturerData).readInt16LE(0) === BLUE_MAESTRO.MANUFACTURER_ID) {
+        foundDevice = device;
+      }
+    });
+
+    btService.scanForSensors(callback);
+
+    expect(foundDevice).toEqual({
       manufacturerData: 'MwEBDAN0AFkBtwEMA3QAWQG3AMwCrAAAAAAA',
       id: '1',
     });
@@ -216,6 +260,18 @@ describe('BleService: writeAndMonitor', () => {
 
     expect(callback).toBeCalledTimes(1);
   });
+  it('Rejects with the error message when parsing fails.', async () => {
+    const { manager } = createMockBleManager();
+    const btService = new BleService(manager);
+
+    const callback = () => {
+      throw new Error('Error');
+    };
+
+    return expect(btService.writeAndMonitor('josh', 'blink', callback)).rejects.toEqual(
+      new Error('Parsing failed: Error')
+    );
+  });
   it('Resolves to the value the passed callback resolves', async () => {
     const { manager } = createMockBleManager();
     const btService = new BleService(manager);
@@ -243,6 +299,40 @@ describe('BleService: writeWithSingleResponse', () => {
     const result = await btService.writeWithSingleResponse('josh', 'blink', parser);
 
     expect(result).toBe(resultShouldBe);
+  });
+  it('rejects with the thrown error when parsing fails', async () => {
+    const { manager } = createMockBleManager({
+      mockMonitorCharacteristicForDeviceCallback: (_, __, ___, callback) => {
+        callback(null, { value: 'T2sA' });
+      },
+    });
+
+    const btService = new BleService(manager);
+
+    const parser = () => {
+      throw new Error('Error');
+    };
+
+    return expect(btService.writeWithSingleResponse('josh', 'blink', parser)).rejects.toEqual(
+      new Error('Parsing failed: Error')
+    );
+  });
+  it('rejects with the thrown error when the command fails', async () => {
+    const { manager } = createMockBleManager({
+      mockMonitorCharacteristicForDeviceCallback: (_, __, ___, callback) => {
+        callback(null, null);
+      },
+    });
+
+    const btService = new BleService(manager);
+
+    const parser = () => {
+      throw new Error('Error');
+    };
+
+    return expect(btService.writeWithSingleResponse('josh', 'blink', parser)).rejects.toEqual(
+      new Error('Command Failed')
+    );
   });
   it('Calls connect and discover, then write and monitor', async () => {
     const {

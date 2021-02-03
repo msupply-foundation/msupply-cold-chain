@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { BleManager } from 'react-native-ble-plx';
 import { Buffer } from 'buffer';
 import { BLUE_MAESTRO, BLUETOOTH } from '~constants';
@@ -9,6 +10,10 @@ const base64FromString = string => Buffer.from(string, 'utf-8').toString('base64
 export class BleService {
   constructor(manager = new BleManager()) {
     this.manager = manager;
+  }
+
+  set scanCallback(callback) {
+    this._scanCallback = callback;
   }
 
   connectToDevice = async macAddress => {
@@ -31,17 +36,7 @@ export class BleService {
   };
 
   scanForSensors = callback => {
-    this.manager.startDeviceScan(
-      null,
-      { scanMode: BLUETOOTH.SCAN_MODE_LOW_LATENCY },
-      (_, device) => {
-        const { manufacturerData } = device;
-        if (bufferFromBase64(manufacturerData).readInt16LE(0) === BLUE_MAESTRO.MANUFACTURER_ID) {
-          callback(device);
-        }
-      },
-      callback
-    );
+    this.manager.startDeviceScan(null, { scanMode: BLUETOOTH.SCAN_MODE_LOW_LATENCY }, callback);
   };
 
   writeCharacteristic = (macAddress, command) => {
@@ -78,7 +73,7 @@ export class BleService {
             try {
               resolve(parser(data));
             } catch (e) {
-              reject(new Error(`Parsing failed:  ${e.message}`));
+              reject(new Error(`Parsing failed: ${e.message}`));
             }
           }
         };
@@ -96,7 +91,7 @@ export class BleService {
         try {
           resolve(parser(result.value));
         } catch (e) {
-          reject(new Error(`Parsing failed:  ${e.message}`));
+          reject(new Error(`Parsing failed: ${e.message}`));
         }
       } else reject(new Error(`Command Failed`));
     });

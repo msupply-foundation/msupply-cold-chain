@@ -12,6 +12,15 @@ describe('PermissionService: requestBluetoothEnabled', () => {
     const permissionsService = new PermissionService();
     expect(permissionsService.requestBluetoothEnabled()).resolves.toBe(true);
   });
+  it('Returns true when bluetooth is enabled', () => {
+    const settings = {
+      isBluetoothEnabled: async () => false,
+      switchBluetooth: async () => true,
+    };
+    const permissionsService = new PermissionService(settings);
+
+    return expect(permissionsService.requestBluetoothEnabled()).resolves.toBe(false);
+  });
 });
 
 describe('PermissionService: hasLocationPermission', () => {
