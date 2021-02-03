@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /* eslint-disable import/no-cycle */
 import { OneToMany, Entity, Column, PrimaryGeneratedColumn } from 'typeorm/browser';
 import { SensorLog } from './SensorLog';

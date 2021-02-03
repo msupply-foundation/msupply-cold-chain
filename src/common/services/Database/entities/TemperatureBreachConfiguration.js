@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /* eslint-disable import/no-cycle */
 import { Entity, Column, OneToMany } from 'typeorm/browser';
 import { Base } from './Base';

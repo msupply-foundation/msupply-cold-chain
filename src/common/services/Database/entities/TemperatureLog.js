@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /* eslint-disable import/no-cycle */
 import { PrimaryColumn, ManyToOne, Entity, Column, JoinColumn, Index } from 'typeorm/browser';
 import { TemperatureBreach } from './TemperatureBreach';

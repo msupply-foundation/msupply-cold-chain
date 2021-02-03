@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /* eslint-disable import/no-cycle */
 import { JoinColumn, ManyToOne, Entity, Column, OneToMany, PrimaryColumn } from 'typeorm/browser';
 import { TemperatureLog } from './TemperatureLog';
