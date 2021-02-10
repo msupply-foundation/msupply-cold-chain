@@ -37,9 +37,8 @@ export const SensorSettingsScreen = React.memo(({ navigation }) => {
   );
 
   useEffect(() => {
-    const reset = () => {
-      dispatch(ScanAction.tryStop());
-    };
+    const reset = () => dispatch(ScanAction.tryStop());
+
     if (isFocused) dispatch(ScanAction.tryStart());
     else reset();
     return reset;

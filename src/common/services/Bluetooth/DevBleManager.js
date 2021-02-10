@@ -84,7 +84,7 @@ export class DevBleManager {
   async startDeviceScan(_, __, callback) {
     this.isScanning = true;
 
-    setInterval(
+    this.scannerInterval = setInterval(
       () =>
         callback(_, {
           id: 'AB:CD:EF:GH:IJ:KL',
