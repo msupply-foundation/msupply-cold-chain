@@ -1,8 +1,10 @@
+import { StoreEnhancer } from 'redux';
+
 /**
  * Redux enhancer config
  */
 
-const enhancers = [];
+const enhancers: StoreEnhancer[] = [];
 
 if (__DEV__) {
   const { reactotron } = require('../../../Reactotron.config');

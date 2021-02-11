@@ -11,17 +11,16 @@ const store = configureStore({
   enhancers,
 });
 
+export type RootState = ReturnType<typeof store.getState>;
+
 SagaMiddleware.run(RootSaga);
 
 // Sets up hot module reloading for reducers.
 if (__DEV__ && module.hot) {
-  module.hot.accept(
-    () => './RootReducer',
-    () => {
-      const nextReducer = require('./RootReducer').default;
-      store.replaceReducer(nextReducer);
-    }
-  );
+  module.hot.accept(() => {
+    const { RootReducer } = require('./RootReducer');
+    store.replaceReducer(RootReducer);
+  });
 }
 
 export { store };

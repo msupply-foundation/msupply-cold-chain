@@ -1,13 +1,15 @@
 import { combineReducers } from 'redux';
-import { EntitiesReducer } from '~features/Entities';
+
+import { REDUCER } from '../constants';
+
+import { EntitiesReducer } from '../../features/Entities';
 import { ChartReducer } from '../../features/Chart';
 import { BreachReducer } from '../../features/Breach';
 import { SensorDetailReducer } from '../../features/SensorDetail';
 import { BluetoothReducer } from '../../features/Bluetooth';
-import { REDUCER } from '../constants';
 import { ReportReducer } from '../../features/Report';
 import { SensorStatusReducer } from '../../features/SensorStatus';
-import { PermissionReducer } from '~features/Permission';
+import { PermissionReducer } from '../../features/Permission';
 
 export const RootReducer = combineReducers({
   [REDUCER.ENTITIES]: EntitiesReducer,
