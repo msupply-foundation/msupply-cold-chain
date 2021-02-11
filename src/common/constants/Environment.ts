@@ -1,4 +1,4 @@
-import env from '~/env.json';
+import * as env from '../../../env.json';
 
 const ENVIRONMENT = env;
 
