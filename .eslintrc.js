@@ -1,6 +1,11 @@
 module.exports = {
-  extends: ['airbnb', 'prettier', 'plugin:import/errors', 'plugin:import/warnings'],
-  parser: 'babel-eslint',
+  extends: [
+    'airbnb',
+    'prettier',
+    'plugin:import/errors',
+    'plugin:import/warnings',
+    'plugin:@typescript-eslint/recommended',
+  ],
   settings: {
     'import/resolver': {
       'babel-module': {
@@ -8,6 +13,16 @@ module.exports = {
       },
     },
   },
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
+    },
+    useJSXTextNode: true,
+
+    tsconfigRootDir: '.',
+  },
+
   env: {
     jest: true,
   },
