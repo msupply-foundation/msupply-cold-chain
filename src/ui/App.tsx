@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { StatusBar } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 
-import { NAVIGATION } from '~constants';
+import { NAVIGATION } from '../common/constants';
 
 import { MainHeader } from './components';
-import { Settings } from '~screens/settings';
-import { Sensors } from '~screens/sensors';
+import { Settings } from './screens/settings';
+import { Sensors } from './screens/sensors';
 
 import {
   StorybookContainer,
@@ -19,15 +19,13 @@ import {
   PermissionsContainer,
   ErrorBoundary,
 } from './containers';
-import { LargeText } from './presentation/typography';
 
-const App = () => {
+const App: FC = () => {
   return (
     <ErrorBoundary>
       <StorybookContainer>
         <ReduxContainer>
           <KeepAwakeContainer>
-            <LargeText colour="white">{!!global.HermesInternal}</LargeText>
             <DependencyContainer>
               <PermissionsContainer>
                 <NavigationContainer>
