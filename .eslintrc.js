@@ -19,7 +19,7 @@ module.exports = {
       jsx: true,
     },
     useJSXTextNode: true,
-
+    project: './tsconfig.json',
     tsconfigRootDir: '.',
   },
 
@@ -39,6 +39,20 @@ module.exports = {
     'object-curly-newline': 'off',
     'react/react-in-jsx-scope': 'off',
     'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['draftState'] }],
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        js: 'never',
+        jsx: 'never',
+        ts: 'never',
+        tsx: 'never',
+      },
+    ],
+    // note you must disable the base rule as it can report incorrect errors
+    'no-use-before-define': 'off',
+    '@typescript-eslint/no-use-before-define': ['error'],
+    '@typescript-eslint/no-empty-function': 'off',
   },
   globals: {
     fetch: false,

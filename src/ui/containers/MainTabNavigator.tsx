@@ -1,9 +1,14 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React, { FC } from 'react';
+import { ParamListBase, RouteProp } from '@react-navigation/core';
+import {
+  BottomTabBarOptions,
+  BottomTabNavigationOptions,
+  createBottomTabNavigator,
+} from '@react-navigation/bottom-tabs';
 
-import { NAVIGATION, COLOUR, FONT } from '~constants';
-import { t } from '~translations';
-
-import { Cog, Map, Sensors } from '~presentation/icons';
+import { NAVIGATION, COLOUR, FONT } from '../../common/constants';
+import { t } from '../../common/translations';
+import { Cog, Map, Sensors } from '../presentation/icons';
 
 export const ICON_LOOKUP = {
   [NAVIGATION.SCREENS.MAIN_TABS.SETTINGS]: <Cog />,
@@ -15,13 +20,19 @@ export const ICON_LOOKUP = {
 const Tab = createBottomTabNavigator();
 
 // Default screen options for each page. Fetch an icon given the route name.
-const screenOptions = ({ route: { name: routeName } }) => ({
+interface ScreenOptionsParams {
+  route: RouteProp<ParamListBase, string>;
+}
+
+const screenOptions = ({
+  route: { name: routeName },
+}: ScreenOptionsParams): BottomTabNavigationOptions => ({
   tabBarIcon: () => ICON_LOOKUP[routeName],
   title: t(routeName),
 });
 
 // TabBar styling options
-const tabBarOptions = {
+const tabBarOptions: BottomTabBarOptions = {
   activeTintColor: COLOUR.WHITE,
   inactiveTintColor: COLOUR.OFF_WHITE,
   activeBackgroundColor: COLOUR.HIGHLIGHT,
@@ -38,7 +49,7 @@ const tabBarOptions = {
 };
 
 // Export a TabNavigator component with configuration set.
-export const MainTabNavigator = ({ children }) => (
+export const MainTabNavigator: FC = ({ children }) => (
   <Tab.Navigator screenOptions={screenOptions} tabBarOptions={tabBarOptions}>
     {children}
   </Tab.Navigator>

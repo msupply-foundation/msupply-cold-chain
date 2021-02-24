@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 
 import * as SplashScreen from 'expo-splash-screen';
 
-import { DEPENDENCY, ENVIRONMENT } from '~constants';
+import { DEPENDENCY, ENVIRONMENT } from '../../common/constants';
 
 import {
   Database,
@@ -17,7 +17,7 @@ import {
   DevLoggerService,
   DevBleManager,
   DependencyLocatorContext,
-} from '~common/services';
+} from '../../common/services';
 
 import {
   SensorStatusManager,
@@ -31,9 +31,9 @@ import {
   BreachConfigurationManager,
   SettingManager,
   SensorManager,
-} from '~features';
+} from '../../features';
 
-export const DependencyContainer = props => {
+export const DependencyContainer: FC = ({ children }) => {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -94,8 +94,6 @@ export const DependencyContainer = props => {
       SplashScreen.hideAsync();
     })();
   }, []);
-
-  const { children } = props;
 
   return ready ? (
     <DependencyLocatorContext.Provider value={DependencyLocator}>

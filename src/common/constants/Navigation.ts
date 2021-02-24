@@ -1,3 +1,15 @@
+/* eslint-disable no-shadow */
+export enum SETTINGS_STACK {
+  'MENU' = 'SETTINGS_STACK/Menu',
+  'SENSORS' = 'SETTINGS_STACK/Sensors',
+  'BLUETOOTH' = 'SETTINGS_STACK/Bluetooth',
+  'TEMPERATURE_BREACH' = 'SETTINGS_STACK/TemperatureBreach',
+  'SENSOR_DETAIL' = 'SETTINGS_STACK/SensorDetail',
+  'TEMPERATURE_BREACH_DETAIL' = 'SETTINGS_STACK/TemperatureBreachDetail',
+  'TEMPERATURE_CUMULATIVE_DETAIL' = 'SETTINGS_STACK/TemperatureCumulativeDetail',
+  'DEVELOPER' = 'SETTINGS_STACK/Developer',
+}
+
 export const NAVIGATION = {
   SCREENS: {
     MAIN_TABS: {

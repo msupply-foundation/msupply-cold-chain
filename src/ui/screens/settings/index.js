@@ -1,6 +1,6 @@
 export { MainSettingsScreen } from './MainSettingsScreen';
 export { BluetoothSettingsScreen } from './BluetoothSettingsScreen';
-export { SensorDetailScreen } from './SensorDetailScreen';
+export { SensorDetailSettingsScreen } from './SensorDetailSettingsScreen';
 export { SensorSettingsScreen } from './SensorSettingsScreen';
 export { TemperatureBreachDetailScreen } from './TemperatureBreachDetailScreen';
 export { TemperatureBreachSettingsScreen } from './TemperatureBreachSettingsScreen';

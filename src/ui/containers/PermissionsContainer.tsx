@@ -1,11 +1,11 @@
-import { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { DeviceServiceModal } from '~presentation';
-import { Location, Bluetooth, Storage } from '~presentation/icons';
+import { DeviceServiceModal } from '../presentation';
+import { Location, Bluetooth, Storage } from '../presentation/icons';
 import { PermissionAction, PermissionSelector } from '../../features/Permission';
 
-export const PermissionsContainer = ({ children }) => {
+export const PermissionsContainer: FC = ({ children }) => {
   const showLocationServicesModal = useSelector(PermissionSelector.showLocationServicesModal);
   const showBluetoothModal = useSelector(PermissionSelector.showBluetoothModal);
   const showLocationPermissionModal = useSelector(PermissionSelector.showLocationPermissionModal);

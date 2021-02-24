@@ -9,7 +9,7 @@ import { TemperatureBreachSettingsScreen } from './TemperatureBreachSettingsScre
 import { TemperatureBreachDetailScreen } from './TemperatureBreachDetailScreen';
 import { DevSettingsScreen } from './DevSettingsScreen';
 import { CumulativeDetailSettingScreen } from './CumulativeDetailSettingScreen';
-import { SensorDetailScreen } from './SensorDetailScreen';
+import { SensorDetailSettingsScreen } from './SensorDetailSettingsScreen';
 
 export const Settings = () => (
   <SettingsStackNavigator>
@@ -31,7 +31,7 @@ export const Settings = () => (
     />
     <SettingsStackScreen
       name={NAVIGATION.SCREENS.SETTINGS_STACK.SENSOR_DETAIL}
-      component={SensorDetailScreen}
+      component={SensorDetailSettingsScreen}
     />
     <SettingsStackScreen
       name={NAVIGATION.SCREENS.SETTINGS_STACK.TEMPERATURE_BREACH_DETAIL}

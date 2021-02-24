@@ -95,7 +95,7 @@ export function* stop() {
 
 export function callback(btService) {
   return eventChannel(emitter => {
-    btService.scanForSensors(device => {
+    btService.scanForSensors((_, device) => {
       emitter(device);
     });
     return () => {};

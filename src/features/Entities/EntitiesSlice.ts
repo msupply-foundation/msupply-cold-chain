@@ -1,13 +1,12 @@
+import { SagaIterator } from '@redux-saga/types';
 import { combineReducers } from '@reduxjs/toolkit';
 import { fork } from 'redux-saga/effects';
-
+import { REDUCER } from '../../common/constants/Reducer';
 import { BreachConfigurationReducer, BreachConfigurationSaga } from './BreachConfiguration';
 import { SensorReducer, SensorSaga } from './Sensor';
 import { SettingReducer, SettingSaga } from './Setting';
 
-import { REDUCER } from '~constants';
-
-export function* root() {
+export function* root(): SagaIterator {
   yield fork(SensorSaga.root);
   yield fork(SettingSaga.root);
   yield fork(BreachConfigurationSaga.root);

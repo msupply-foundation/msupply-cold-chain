@@ -1,10 +1,24 @@
+import { RootState } from './../../common/store/store';
+import { SagaIterator } from '@redux-saga/types';
 import { createSlice } from '@reduxjs/toolkit';
 
 import { eventChannel } from 'redux-saga';
 import { take, call, delay, getContext, put, takeLatest, takeLeading } from 'redux-saga/effects';
-import { DEPENDENCY, MILLISECONDS, REDUCER } from '~constants';
+import { DEPENDENCY, MILLISECONDS, REDUCER } from '../../common/constants';
 
-const initialState = {
+interface PermissionSliceState {
+  hasStoragePermission: boolean;
+  hasLocationPermission: boolean;
+  isLocationServicesOn: boolean;
+  isBluetoothOn: boolean;
+  initialRequestsComplete: boolean;
+}
+
+interface UpdatePermissionAction {
+  payload: { newState: boolean };
+}
+
+const initialState: PermissionSliceState = {
   hasStoragePermission: false,
   hasLocationPermission: false,
   isLocationServicesOn: false,
@@ -14,7 +28,7 @@ const initialState = {
 
 const reducers = {
   requestAndWatchPermissions: () => {},
-  requestInitialPermissionsSuccess: draftState => {
+  requestInitialPermissionsSuccess: (draftState: PermissionSliceState) => {
     draftState.initialRequestsComplete = true;
   },
   requestInitialPermissionsFail: () => {},
@@ -22,104 +36,119 @@ const reducers = {
   requestStoragePermission: () => {},
   checkStoragePermission: () => {},
   updateStoragePermission: {
-    prepare: newState => ({ payload: { newState } }),
-    reducer: (draftState, { payload: { newState } }) => {
+    prepare: (newState: boolean): UpdatePermissionAction => ({ payload: { newState } }),
+    reducer: (
+      draftState: PermissionSliceState,
+      { payload: { newState } }: UpdatePermissionAction
+    ) => {
       draftState.hasStoragePermission = newState;
     },
   },
-  watchLocationPermission: { prepare: () => ({}), reducer: () => {} },
-  requestLocationPermission: { prepare: () => ({}), reducer: () => {} },
-  checkLocationPermission: { prepare: () => ({}), reducer: () => {} },
+  watchLocationPermission: () => {},
+  requestLocationPermission: () => {},
+  checkLocationPermission: () => {},
   updateLocationPermission: {
-    prepare: newState => ({ payload: { newState } }),
-    reducer: (draftState, { payload: { newState } }) => {
+    prepare: (newState: boolean): UpdatePermissionAction => ({ payload: { newState } }),
+    reducer: (
+      draftState: PermissionSliceState,
+      { payload: { newState } }: UpdatePermissionAction
+    ) => {
       draftState.hasLocationPermission = newState;
     },
   },
-  watchBluetoothStatus: { prepare: () => ({}), reducer: () => {} },
-  requestBluetoothEnabled: { prepare: () => ({}), reducer: () => {} },
-  checkBluetoothStatus: { prepare: () => ({}), reducer: () => {} },
+  watchBluetoothStatus: () => {},
+  requestBluetoothEnabled: () => {},
+  checkBluetoothStatus: () => {},
   updateBluetoothStatus: {
-    prepare: newStatus => ({ payload: { newStatus } }),
-    reducer: (draftState, { payload: { newStatus } }) => {
-      draftState.isBluetoothOn = newStatus;
+    prepare: (newState: boolean): UpdatePermissionAction => ({ payload: { newState } }),
+    reducer: (
+      draftState: PermissionSliceState,
+      { payload: { newState } }: UpdatePermissionAction
+    ) => {
+      draftState.isBluetoothOn = newState;
     },
   },
-  watchLocationServicesStatus: { prepare: () => ({}), reducer: () => {} },
-  requestLocationServicesEnabled: { prepare: () => ({}), reducer: () => {} },
-  checkLocationServicesStatus: { prepare: () => ({}), reducer: () => {} },
+  watchLocationServicesStatus: () => {},
+  requestLocationServicesEnabled: () => {},
+  checkLocationServicesStatus: () => {},
   updateLocationServicesStatus: {
-    prepare: newStatus => ({ payload: { newStatus } }),
-    reducer: (draftState, { payload: { newStatus } }) => {
-      draftState.isLocationServicesOn = newStatus;
+    prepare: (newState: boolean): UpdatePermissionAction => ({ payload: { newState } }),
+    reducer: (
+      draftState: PermissionSliceState,
+      { payload: { newState } }: UpdatePermissionAction
+    ) => {
+      draftState.isLocationServicesOn = newState;
     },
   },
 };
 
 const { actions: PermissionAction, reducer: PermissionReducer } = createSlice({
+  name: REDUCER.PERMISSION,
   initialState,
   reducers,
-  name: REDUCER.PERMISSION,
 });
 
-function* requestLocationPermission() {
+function* requestLocationPermission(): SagaIterator {
   const dependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const permissionService = yield call(dependencyLocator.get, DEPENDENCY.PERMISSION_SERVICE);
   const result = yield call(permissionService.requestLocationPermission);
   yield put(PermissionAction.updateLocationPermission(result));
 }
 
-function* checkLocationPermission() {
+function* checkLocationPermission(): SagaIterator {
   const dependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const permissionService = yield call(dependencyLocator.get, DEPENDENCY.PERMISSION_SERVICE);
   const result = yield call(permissionService.hasLocationPermission);
   yield put(PermissionAction.updateLocationPermission(result));
 }
 
-function* watchLocationPermission() {
+function* watchLocationPermission(): SagaIterator {
   while (true) {
     yield put(PermissionAction.checkLocationPermission());
     yield delay(MILLISECONDS.TEN_SECONDS);
   }
 }
 
-function* requestStoragePermission() {
+function* requestStoragePermission(): SagaIterator {
   const dependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const permissionService = yield call(dependencyLocator.get, DEPENDENCY.PERMISSION_SERVICE);
   const result = yield call(permissionService.requestStoragePermission);
   yield put(PermissionAction.updateStoragePermission(result));
 }
 
-function* checkStoragePermission() {
+function* checkStoragePermission(): SagaIterator {
   const dependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const permissionService = yield call(dependencyLocator.get, DEPENDENCY.PERMISSION_SERVICE);
   const result = yield call(permissionService.hasStoragePermission);
   yield put(PermissionAction.updateStoragePermission(result));
 }
 
-function* watchStoragePermission() {
+function* watchStoragePermission(): SagaIterator {
   while (true) {
     yield put(PermissionAction.checkStoragePermission());
     yield delay(MILLISECONDS.TEN_SECONDS);
   }
 }
 
-function* checkLocationServicesStatus() {
+function* checkLocationServicesStatus(): SagaIterator {
   const dependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const permissionService = yield call(dependencyLocator.get, DEPENDENCY.PERMISSION_SERVICE);
   const result = yield call(permissionService.checkLocationServicesStatus);
   yield put(PermissionAction.updateLocationServicesStatus(result));
 }
 
-function* watchLocationServicesStatus() {
+function* watchLocationServicesStatus(): SagaIterator {
   const dependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const permissionService = yield call(dependencyLocator.get, DEPENDENCY.PERMISSION_SERVICE);
 
   const eventStream = () => {
     return eventChannel(emitter => {
-      const subscription = permissionService.addFeatureStatusListener('location', newStatus => {
-        emitter(newStatus);
-      });
+      const subscription = permissionService.addFeatureStatusListener(
+        'location',
+        (newStatus: boolean) => {
+          emitter(newStatus);
+        }
+      );
 
       return () => subscription?.remove();
     });
@@ -134,36 +163,39 @@ function* watchLocationServicesStatus() {
   }
 }
 
-function* requestBluetoothEnabled() {
+function* requestBluetoothEnabled(): SagaIterator {
   const dependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const permissionService = yield call(dependencyLocator.get, DEPENDENCY.PERMISSION_SERVICE);
   const result = yield call(permissionService.requestBluetoothEnabled);
   yield put(PermissionAction.updateBluetoothStatus(result));
 }
 
-function* requestLocationServicesEnabled() {
+function* requestLocationServicesEnabled(): SagaIterator {
   const dependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const permissionService = yield call(dependencyLocator.get, DEPENDENCY.PERMISSION_SERVICE);
   const result = yield call(permissionService.requestLocationServicesEnabled);
   yield put(PermissionAction.updateLocationServicesStatus(result));
 }
 
-function* checkBluetoothStatus() {
+function* checkBluetoothStatus(): SagaIterator {
   const dependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const permissionService = yield call(dependencyLocator.get, DEPENDENCY.PERMISSION_SERVICE);
   const result = yield call(permissionService.checkBluetoothStatus);
   yield put(PermissionAction.updateBluetoothStatus(result));
 }
 
-function* watchBluetoothStatus() {
+function* watchBluetoothStatus(): SagaIterator {
   const dependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const permissionService = yield call(dependencyLocator.get, DEPENDENCY.PERMISSION_SERVICE);
 
   const eventStream = () => {
     return eventChannel(emitter => {
-      const subscription = permissionService.addFeatureStatusListener('bluetooth', newStatus => {
-        emitter(newStatus);
-      });
+      const subscription = permissionService.addFeatureStatusListener(
+        'bluetooth',
+        (newStatus: boolean) => {
+          emitter(newStatus);
+        }
+      );
       return () => subscription?.remove();
     });
   };
@@ -177,7 +209,7 @@ function* watchBluetoothStatus() {
   }
 }
 
-function* requestAndWatchPermissions() {
+function* requestAndWatchPermissions(): SagaIterator {
   const dependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const permissionService = yield call(dependencyLocator.get, DEPENDENCY.PERMISSION_SERVICE);
 
@@ -201,7 +233,7 @@ function* requestAndWatchPermissions() {
   yield put(PermissionAction.watchLocationServicesStatus());
 }
 
-function* root() {
+function* root(): SagaIterator {
   yield takeLatest(PermissionAction.watchStoragePermission, watchStoragePermission);
   yield takeLeading(PermissionAction.checkStoragePermission, checkStoragePermission);
   yield takeLeading(PermissionAction.requestStoragePermission, requestStoragePermission);
@@ -229,20 +261,20 @@ const PermissionSaga = {
 };
 
 const PermissionSelector = {
-  showLocationServicesModal: ({ permission }) => {
-    const { isLocationServicesOn, initialRequestsComplete } = permission;
+  showLocationServicesModal: ({ permission }: RootState): boolean => {
+    const { isLocationServicesOn, initialRequestsComplete } = permission as PermissionSliceState;
     return !isLocationServicesOn && initialRequestsComplete;
   },
-  showBluetoothModal: ({ permission }) => {
-    const { isBluetoothOn, initialRequestsComplete } = permission;
+  showBluetoothModal: ({ permission }: RootState): boolean => {
+    const { isBluetoothOn, initialRequestsComplete } = permission as PermissionSliceState;
     return !isBluetoothOn && initialRequestsComplete;
   },
-  showLocationPermissionModal: ({ permission }) => {
-    const { hasLocationPermission, initialRequestsComplete } = permission;
+  showLocationPermissionModal: ({ permission }: RootState): boolean => {
+    const { hasLocationPermission, initialRequestsComplete } = permission as PermissionSliceState;
     return !hasLocationPermission && initialRequestsComplete;
   },
-  showStoragePermissionModal: ({ permission }) => {
-    const { hasStoragePermission, initialRequestsComplete } = permission;
+  showStoragePermissionModal: ({ permission }: RootState): boolean => {
+    const { hasStoragePermission, initialRequestsComplete } = permission as PermissionSliceState;
     return !hasStoragePermission && initialRequestsComplete;
   },
 };

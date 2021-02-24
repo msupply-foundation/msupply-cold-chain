@@ -8,7 +8,7 @@ const AVAILABLE_TRANSLATIONS = { en: require('./en.json') };
 i18n.fallbacks = true;
 i18n.translations = AVAILABLE_TRANSLATIONS;
 
-export const t = (scope: i18n.Scope, options: i18n.TranslateOptions) => {
+export const t = (scope: i18n.Scope, options: i18n.TranslateOptions = {}): string => {
   const translation = i18n.t(scope, { languageTag, ...options });
 
   // Catch missing translations - throw errors in dev, but return an empty string in

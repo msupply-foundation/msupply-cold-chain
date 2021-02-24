@@ -1,4 +1,4 @@
-import { createConnection } from 'typeorm/browser';
+import { createConnection, getConnection } from 'typeorm/browser';
 import {
   SensorLog,
   TemperatureBreach,
@@ -46,9 +46,16 @@ export class Database {
   }
 
   createConnection = async () => {
-    this.connection = await createConnection(this.config);
-
-    return this.connection;
+    try {
+      this.connection = await getConnection('default');
+      return this.connection;
+    } catch (e) {
+      console.log('-------------------------------------------');
+      console.log('caught!');
+      console.log('-------------------------------------------');
+      this.connection = await createConnection(this.config);
+      return this.connection;
+    }
   };
 
   getConnection = async () => {
@@ -57,6 +64,6 @@ export class Database {
   };
 
   getRepository = async repo => {
-    return (await this.getConnection()).getRepository(repo);
+    return (await this.getConnection('default')).getRepository(repo);
   };
 }
