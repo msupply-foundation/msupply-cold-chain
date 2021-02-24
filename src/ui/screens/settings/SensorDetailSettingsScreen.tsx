@@ -1,5 +1,5 @@
-import { RootState } from './../../../common/store/store';
-import { SettingsStackParameters } from './../../containers/SettingsStackNavigator';
+import { RootState } from '../../../common/store/store';
+import { SettingsStackParameters } from '../../containers/SettingsStackNavigator';
 import { FC } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -27,8 +27,9 @@ import {
   SensorAction,
 } from '../../../features';
 import { RouteProp } from '@react-navigation/core';
-import { SETTINGS_STACK } from '../../../common/constants';
+
 import { StackNavigationProp } from '@react-navigation/stack';
+import { SETTINGS_STACK } from '../../../common/constants';
 
 export type SensorDetailSettingsScreenRouteProp = RouteProp<
   SettingsStackParameters,
@@ -48,7 +49,7 @@ type SensorDetailSettingsScreenProps = {
 export const SensorDetailSettingsScreen: FC<SensorDetailSettingsScreenProps> = () => {
   const { id } = useRouteProps<SettingsStackParameters, SETTINGS_STACK.SENSOR_DETAIL>();
 
-  const sensor = useSelector((state: RootState): any => state.entities.sensor.byId[id]);
+  const sensor = useSelector((state: RootState): string => state.entities.sensor.byId[id]);
 
   return null;
   // const dispatch = useDispatch();

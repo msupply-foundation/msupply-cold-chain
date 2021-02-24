@@ -10,14 +10,14 @@ import { NAVIGATION, SETTINGS_STACK } from '../../common/constants';
 import { SettingsStackHeader } from '../components/settings';
 
 export type SettingsStackParameters = {
-  [SETTINGS_STACK.MENU]: undefined;
-  [SETTINGS_STACK.SENSORS]: undefined;
-  [SETTINGS_STACK.BLUETOOTH]: undefined;
-  [SETTINGS_STACK.TEMPERATURE_BREACH]: undefined;
+  [SETTINGS_STACK.MENU]: Record<string, unknown>;
+  [SETTINGS_STACK.SENSORS]: Record<string, unknown>;
+  [SETTINGS_STACK.BLUETOOTH]: Record<string, unknown>;
+  [SETTINGS_STACK.TEMPERATURE_BREACH]: Record<string, unknown>;
   [SETTINGS_STACK.SENSOR_DETAIL]: { id: string };
-  [SETTINGS_STACK.TEMPERATURE_BREACH_DETAIL]: undefined;
-  [SETTINGS_STACK.TEMPERATURE_CUMULATIVE_DETAIL]: undefined;
-  [SETTINGS_STACK.DEVELOPER]: undefined;
+  [SETTINGS_STACK.TEMPERATURE_BREACH_DETAIL]: Record<string, unknown>;
+  [SETTINGS_STACK.TEMPERATURE_CUMULATIVE_DETAIL]: Record<string, unknown>;
+  [SETTINGS_STACK.DEVELOPER]: Record<string, unknown>;
 };
 
 // Create a stack navigator

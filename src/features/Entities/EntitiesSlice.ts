@@ -18,4 +18,6 @@ export const EntitiesReducer = combineReducers({
   [REDUCER.SETTING]: SettingReducer,
 });
 
+export type EntitiesState = ReturnType<typeof EntitiesReducer>;
+
 export const EntitiesSaga = { root };

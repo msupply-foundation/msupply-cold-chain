@@ -1,4 +1,4 @@
-export { REDUCER } from './Reducer';
+export * from './Reducer';
 export { MILLISECONDS } from './Milliseconds';
 export { DEPENDENCY, BLUETOOTH_SERVICE } from './Dependency';
 export { ENTITIES } from './Entities';
