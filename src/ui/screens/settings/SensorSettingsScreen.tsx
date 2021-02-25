@@ -1,43 +1,52 @@
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { ActivityIndicator, InteractionManager } from 'react-native';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { useIsFocused } from '@react-navigation/native';
+import { t } from '../../../common/translations';
+import { COLOUR, SETTING, SETTINGS_STACK } from '../../../common/constants';
+import { SettingAction, SensorSelector } from '../../../features/Entities';
 
-import { t } from '~translations';
-import { COLOUR, NAVIGATION, SETTING } from '~constants';
-import { SettingAction, SensorSelector } from '~features/Entities';
-
-import { SettingsList } from '~layouts';
-import { UpdatingSensorModal } from '~components/modal';
+import { SettingsList } from '../../layouts';
+import { UpdatingSensorModal } from '../../components/modal';
 import {
   SettingsNumberInputRow,
   SettingsGroup,
   SettingsNavigationRow,
   SettingsAddSensorRow,
-} from '~components/settings';
+} from '../../components/settings';
 import { ScanAction, ScanSelector } from '../../../features/Bluetooth';
 
-export const SensorSettingsScreen = React.memo(({ navigation }) => {
+import { SettingsStackParameters } from '../../containers/SettingsStackNavigator';
+import { RootState } from '../../../common/store/store';
+
+type SensorSettingsScreenProps = {
+  navigation: StackNavigationProp<SettingsStackParameters, SETTINGS_STACK.MENU>;
+};
+
+export const SensorSettingsScreen: FC<SensorSettingsScreenProps> = React.memo(({ navigation }) => {
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
 
-  const [load, setLoad] = useState();
+  const [load, setLoad] = useState(false);
 
   const availableSensors = useSelector(SensorSelector.availableSensorsList, shallowEqual);
   const foundSensors = useSelector(ScanSelector.foundSensors, shallowEqual);
   const isScanning = useSelector(ScanSelector.isScanning);
 
   useEffect(() => {
-    InteractionManager.runAfterInteractions(setLoad(true));
+    InteractionManager.runAfterInteractions(() => setLoad(true));
   }, []);
 
   const defaultLoggingInterval = useSelector(
-    state => state.entities.setting[SETTING.INT.DEFAULT_LOG_INTERVAL],
+    (state: RootState) => state.entities.setting[SETTING.INT.DEFAULT_LOG_INTERVAL],
     shallowEqual
   );
 
   useEffect(() => {
-    const reset = () => dispatch(ScanAction.tryStop());
+    const reset = () => {
+      dispatch(ScanAction.tryStop());
+    };
 
     if (isFocused) dispatch(ScanAction.tryStart());
     else reset();
@@ -51,9 +60,10 @@ export const SensorSettingsScreen = React.memo(({ navigation }) => {
           {availableSensors.map(({ name, id }) => (
             <SettingsNavigationRow
               key={id}
+              subtext=""
+              Icon={null}
               label={name}
-              onPress={() =>
-                navigation.navigate(NAVIGATION.SCREENS.SETTINGS_STACK.SENSOR_DETAIL, { id })}
+              onPress={() => navigation.navigate(SETTINGS_STACK.SENSOR_DETAIL, { id })}
             />
           ))}
         </SettingsGroup>
@@ -63,9 +73,10 @@ export const SensorSettingsScreen = React.memo(({ navigation }) => {
         <SettingsNumberInputRow
           label={t('DEFAULT_LOG_INTERVAL')}
           subtext={t('DEFAULT_LOG_INTERVAL_SUBTEXT')}
-          onConfirm={({ value }) =>
-            dispatch(SettingAction.update(SETTING.INT.DEFAULT_LOG_INTERVAL, value * 60))}
-          initialValue={defaultLoggingInterval / 60}
+          onConfirm={({ value }: { value: number }) =>
+            dispatch(SettingAction.update(SETTING.INT.DEFAULT_LOG_INTERVAL, value * 60))
+          }
+          initialValue={Number(defaultLoggingInterval) / 60}
           editDescription={t('DEFAULT_LOG_INTERVAL')}
           maximumValue={30}
           minimumValue={1}

@@ -1,4 +1,5 @@
-import { NAVIGATION } from '~constants';
+import React, { FC } from 'react';
+import { SETTINGS_STACK } from '../../../common/constants';
 
 import { SettingsStackNavigator, SettingsStackScreen } from '../../containers';
 
@@ -11,38 +12,26 @@ import { DevSettingsScreen } from './DevSettingsScreen';
 import { CumulativeDetailSettingScreen } from './CumulativeDetailSettingScreen';
 import { SensorDetailSettingsScreen } from './SensorDetailSettingsScreen';
 
-export const Settings = () => (
+export const Settings: FC = () => (
   <SettingsStackNavigator>
+    <SettingsStackScreen name={SETTINGS_STACK.MENU} component={MainSettingsScreen} />
+    <SettingsStackScreen name={SETTINGS_STACK.BLUETOOTH} component={BluetoothSettingsScreen} />
+    <SettingsStackScreen name={SETTINGS_STACK.SENSORS} component={SensorSettingsScreen} />
     <SettingsStackScreen
-      name={NAVIGATION.SCREENS.SETTINGS_STACK.MENU}
-      component={MainSettingsScreen}
-    />
-    <SettingsStackScreen
-      name={NAVIGATION.SCREENS.SETTINGS_STACK.BLUETOOTH}
-      component={BluetoothSettingsScreen}
-    />
-    <SettingsStackScreen
-      name={NAVIGATION.SCREENS.SETTINGS_STACK.SENSORS}
-      component={SensorSettingsScreen}
-    />
-    <SettingsStackScreen
-      name={NAVIGATION.SCREENS.SETTINGS_STACK.TEMPERATURE_BREACH}
+      name={SETTINGS_STACK.TEMPERATURE_BREACH}
       component={TemperatureBreachSettingsScreen}
     />
     <SettingsStackScreen
-      name={NAVIGATION.SCREENS.SETTINGS_STACK.SENSOR_DETAIL}
+      name={SETTINGS_STACK.SENSOR_DETAIL}
       component={SensorDetailSettingsScreen}
     />
     <SettingsStackScreen
-      name={NAVIGATION.SCREENS.SETTINGS_STACK.TEMPERATURE_BREACH_DETAIL}
+      name={SETTINGS_STACK.TEMPERATURE_BREACH_DETAIL}
       component={TemperatureBreachDetailScreen}
     />
+    <SettingsStackScreen name={SETTINGS_STACK.DEVELOPER} component={DevSettingsScreen} />
     <SettingsStackScreen
-      name={NAVIGATION.SCREENS.SETTINGS_STACK.DEVELOPER}
-      component={DevSettingsScreen}
-    />
-    <SettingsStackScreen
-      name={NAVIGATION.SCREENS.SETTINGS_STACK.TEMPERATURE_CUMULATIVE_DETAIL}
+      name={SETTINGS_STACK.TEMPERATURE_CUMULATIVE_DETAIL}
       component={CumulativeDetailSettingScreen}
     />
   </SettingsStackNavigator>

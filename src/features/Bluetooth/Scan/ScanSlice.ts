@@ -1,5 +1,6 @@
 import { eventChannel } from 'redux-saga';
-import { createSlice } from '@reduxjs/toolkit';
+import { SagaIterator } from '@redux-saga/types';
+import { ActionReducerMapBuilder, createSlice } from '@reduxjs/toolkit';
 import {
   take,
   getContext,
@@ -10,49 +11,61 @@ import {
   takeLeading,
   select,
 } from 'redux-saga/effects';
-import { DEPENDENCY, REDUCER } from '~constants';
+import { DEPENDENCY, REDUCER } from '../../../common/constants';
 import { SensorSelector, SensorAction } from '../../Entities';
+import { RootState } from '../../../common/store/store';
+import { SensorState } from '../../Entities/Sensor/SensorSlice';
+import { BleService } from '../../../common/services/Bluetooth';
 
-export const ScanInitialState = {
+interface ScanSlice {
+  foundSensors: string[];
+  isScanning: boolean;
+}
+
+export const ScanInitialState: ScanSlice = {
   foundSensors: [],
   isScanning: false,
 };
 const reducers = {
   tryStart: () => {},
-  startSuccess: draftState => {
+  startSuccess: (draftState: ScanSlice) => {
     draftState.isScanning = true;
   },
-  startFail: draftState => {
+  startFail: (draftState: ScanSlice) => {
     draftState.isScanning = false;
   },
   tryStop: () => {},
-  stopSuccess: draftState => {
+  stopSuccess: (draftState: ScanSlice) => {
     draftState.foundSensors = [];
     draftState.isScanning = false;
   },
-  stopFail: draftState => {
+  stopFail: (draftState: ScanSlice) => {
     draftState.foundSensors = [];
     draftState.isScanning = false;
   },
   foundSensor: {
-    prepare: mac => ({ payload: { mac } }),
-    reducer: (draftState, { payload: { mac } }) => {
+    prepare: (mac: string) => ({ payload: { mac } }),
+    reducer: (draftState: ScanSlice, { payload: { mac } }: { payload: { mac: string } }) => {
       draftState.foundSensors.push(mac);
     },
   },
 };
 
-const extraReducers = {
-  [SensorAction.createSuccess]: (
-    draftState,
-    {
-      payload: {
-        sensor: { macAddress },
-      },
+const extraReducers = (builder: ActionReducerMapBuilder<ScanSlice>) => {
+  builder.addCase(
+    SensorAction.createSuccess,
+
+    (
+      draftState: ScanSlice,
+      {
+        payload: {
+          sensor: { macAddress },
+        },
+      }: { payload: { sensor: SensorState } }
+    ) => {
+      draftState.foundSensors = draftState.foundSensors.filter(mac => macAddress !== mac);
     }
-  ) => {
-    draftState.foundSensors = draftState.foundSensors.filter(mac => macAddress !== mac);
-  },
+  );
 };
 
 const { actions: ScanAction, reducer: ScanReducer } = createSlice({
@@ -67,19 +80,19 @@ const ScanSelector = {
     bluetooth: {
       scan: { foundSensors },
     },
-  }) => {
+  }: RootState): string[] => {
     return foundSensors;
   },
   isScanning: ({
     bluetooth: {
       scan: { isScanning },
     },
-  }) => {
+  }: RootState): boolean => {
     return isScanning;
   },
 };
 
-export function* stop() {
+export function* stop(): SagaIterator {
   yield take(ScanAction.tryStop);
 
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
@@ -89,11 +102,12 @@ export function* stop() {
     yield call(btService.stopScan);
     yield put(ScanAction.stopSuccess());
   } catch (error) {
-    yield put(ScanAction.stopFail(error.message));
+    yield put(ScanAction.stopFail());
   }
 }
 
-export function callback(btService) {
+// TODO: Fix type
+export function callback(btService: BleService): any {
   return eventChannel(emitter => {
     btService.scanForSensors((_, device) => {
       emitter(device);
@@ -102,7 +116,7 @@ export function callback(btService) {
   });
 }
 
-function* start() {
+function* start(): SagaIterator {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const btService = yield call(DependencyLocator.get, DEPENDENCY.BLUETOOTH);
 
@@ -130,11 +144,11 @@ function* start() {
   }
 }
 
-function* stopOrStart() {
+function* stopOrStart(): SagaIterator {
   yield race({ start: call(start), end: call(stop) });
 }
 
-function* root() {
+function* root(): SagaIterator {
   yield takeLeading(ScanAction.tryStart, stopOrStart);
 }
 

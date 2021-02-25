@@ -20,7 +20,7 @@ interface PrepareActionReturn<SomePayload> {
 
 interface SettingUpdateAction {
   type: string;
-  payload: { key: string; value: string };
+  payload: { key: string; value: string | number };
 }
 
 const initialState: SettingSliceState = {
@@ -43,7 +43,7 @@ const reducers = {
   fetchAllFail: () => {},
 
   update: {
-    prepare: (key: string, value: string) => ({ payload: { key, value } }),
+    prepare: (key: string, value: string | number) => ({ payload: { key, value } }),
     reducer: () => {},
   },
   updateSuccess: {
