@@ -4,7 +4,6 @@ import { SETTINGS_STACK } from '../../../common/constants';
 import { SettingsStackNavigator, SettingsStackScreen } from '../../containers';
 
 import { MainSettingsScreen } from './MainSettingsScreen';
-import { BluetoothSettingsScreen } from './BluetoothSettingsScreen';
 import { SensorSettingsScreen } from './SensorSettingsScreen';
 import { TemperatureBreachSettingsScreen } from './TemperatureBreachSettingsScreen';
 import { TemperatureBreachDetailScreen } from './TemperatureBreachDetailScreen';
@@ -15,7 +14,6 @@ import { SensorDetailSettingsScreen } from './SensorDetailSettingsScreen';
 export const Settings: FC = () => (
   <SettingsStackNavigator>
     <SettingsStackScreen name={SETTINGS_STACK.MENU} component={MainSettingsScreen} />
-    <SettingsStackScreen name={SETTINGS_STACK.BLUETOOTH} component={BluetoothSettingsScreen} />
     <SettingsStackScreen name={SETTINGS_STACK.SENSORS} component={SensorSettingsScreen} />
     <SettingsStackScreen
       name={SETTINGS_STACK.TEMPERATURE_BREACH}
