@@ -7,7 +7,7 @@ export const SettingsItem = ({
   subtext = '',
   LeftIcon = null,
   RightComponent = null,
-  onPress,
+  onPress = null,
   isDisabled = false,
 }) => (
   <MaybeTouchableContainer isDisabled={isDisabled} onPress={onPress}>

@@ -59,6 +59,7 @@ export const SensorDetailSettingsScreen: FC<SensorDetailSettingsScreenProps> = (
         isLoading={isBlinking}
       />
       <SettingsButtonRow
+        subtext=""
         label="Download"
         onPress={() => dispatch(DownloadAction.tryManualDownloadForSensor(id))}
       />
@@ -78,7 +79,9 @@ export const SensorDetailSettingsScreen: FC<SensorDetailSettingsScreenProps> = (
           validation={Yup.string()
             .required(t('REQUIRED'))
             .max(20, t('MAX_CHARACTERS', { number: 20 }))}
-          onConfirm={({ inputValue }) => dispatch(SensorAction.update(id, 'name', inputValue))}
+          onConfirm={({ inputValue }: { inputValue: number }) =>
+            dispatch(SensorAction.update(id, 'name', inputValue))
+          }
           editDescription={t('EDIT_SENSOR_NAME')}
         />
         <SettingsNumberInputRow
@@ -89,7 +92,7 @@ export const SensorDetailSettingsScreen: FC<SensorDetailSettingsScreenProps> = (
           minimumValue={1}
           step={1}
           metric={t('MINUTES')}
-          onConfirm={({ value }) => {
+          onConfirm={({ value }: { value: number }) => {
             const newLogInterval = value * 60;
             dispatch(ProgramAction.tryUpdateLogInterval(macAddress, newLogInterval));
           }}

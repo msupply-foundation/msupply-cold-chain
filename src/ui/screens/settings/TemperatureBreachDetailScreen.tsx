@@ -1,17 +1,23 @@
+import React, { FC } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 
-import { t } from '~translations';
-import { SettingsList } from '~layouts';
-import { useRouteProps } from '~hooks';
+import { t } from '../../../common/translations';
+import { SettingsList } from '../../layouts';
+import { useRouteProps } from '../../hooks';
 
-import { SettingsTextInputRow, SettingsGroup, SettingsNumberInputRow } from '~components/settings';
-import { BreachConfigurationAction } from '~features/Entities';
-import { MILLISECONDS } from '../../../common/constants';
+import {
+  SettingsTextInputRow,
+  SettingsGroup,
+  SettingsNumberInputRow,
+} from '../../components/settings';
+import { BreachConfigurationAction } from '../../../features/Entities';
+import { MILLISECONDS, SETTINGS_STACK } from '../../../common/constants';
 import { BreachConfigurationSelector } from '../../../features';
+import { SettingsStackParameters } from '../../containers/SettingsStackNavigator';
 
-export const TemperatureBreachDetailScreen = () => {
-  const { id } = useRouteProps();
+export const TemperatureBreachDetailScreen: FC = () => {
+  const { id } = useRouteProps<SettingsStackParameters, SETTINGS_STACK.SENSOR_DETAIL>();
   const { [id]: config } = useSelector(BreachConfigurationSelector.byId);
 
   const dispatch = useDispatch();
@@ -27,8 +33,9 @@ export const TemperatureBreachDetailScreen = () => {
         <SettingsTextInputRow
           label={t('TEMPERATURE_BREACH_DESCRIPTION')}
           subtext={t('TEMPERATURE_BREACH_DESCRIPTION_SUBTEXT')}
-          onConfirm={({ inputValue }) =>
-            dispatch(BreachConfigurationAction.update(id, 'description', inputValue))}
+          onConfirm={({ inputValue }: { inputValue: string }) =>
+            dispatch(BreachConfigurationAction.update(id, 'description', inputValue))
+          }
           value={description}
           editDescription={t('TEMPERATURE_BREACH_DESCRIPTION_EDIT')}
           validation={Yup.string()
@@ -43,10 +50,11 @@ export const TemperatureBreachDetailScreen = () => {
           minimumValue={1}
           step={1}
           metric={t('MINUTES')}
-          onConfirm={({ value }) =>
+          onConfirm={({ value }: { value: number }) =>
             dispatch(
               BreachConfigurationAction.update(id, 'duration', value * MILLISECONDS.ONE_MINUTE)
-            )}
+            )
+          }
           editDescription={t('EDIT_TEMPERATURE_BREACH_DURATION')}
         />
         <SettingsNumberInputRow
@@ -57,14 +65,15 @@ export const TemperatureBreachDetailScreen = () => {
           minimumValue={-30}
           step={1}
           metric={`°${t('CELSIUS')}`}
-          onConfirm={({ value }) =>
+          onConfirm={({ value }: { value: number }) =>
             dispatch(
               BreachConfigurationAction.update(
                 id,
                 isHotBreach ? 'minimumTemperature' : 'maximumTemperature',
                 value
               )
-            )}
+            )
+          }
           editDescription={isHotBreach ? t('HOT_BREACH_SUBTEXT') : t('COLD_BREACH_SUBTEXT')}
         />
       </SettingsGroup>
