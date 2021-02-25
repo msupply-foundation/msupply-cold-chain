@@ -5,6 +5,12 @@ import {
   StackNavigationOptions,
 } from '@react-navigation/stack';
 import { COLOUR, NAVIGATION } from '../../common/constants';
+import { SENSOR_STACK } from '../../common/constants/Navigation';
+
+export type SensorStackNavigatorParameters = {
+  [SENSOR_STACK.TABS]: undefined;
+  [SENSOR_STACK.SENSOR_DETAIL]: { id: string };
+};
 
 // Create a stack navigator
 const SensorStack = createStackNavigator();

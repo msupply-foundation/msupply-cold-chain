@@ -1,23 +1,40 @@
-import React, { useCallback } from 'react';
-import { FlatList, View, Text, ActivityIndicator } from 'react-native';
+import React, { FC, useCallback } from 'react';
+import { FlatList, View, Text, ActivityIndicator, TextStyle } from 'react-native';
 import moment from 'moment';
 import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 import { useSelector, useDispatch } from 'react-redux';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-import { COLOUR } from '~constants';
+import { COLOUR } from '../../common/constants';
 
 import { Row } from './Row';
 import { Centered } from './Centered';
-import { LogTableAction, LogTableSelector } from '~features';
+import { LogTableAction, LogTableSelector } from '../../features';
 
-const COLUMNS = [
+const COLUMNS: Column[] = [
   { header: 'Timestamp', flex: 1, key: 'time', textAlign: 'left' },
   { header: 'Temperature', flex: 1, key: 'temperature', textAlign: 'right' },
   { header: 'Exposure', flex: 1, key: 'isInBreach', textAlign: 'left' },
 ];
 
-const SensorLogsCell = ({ data, flex, isLast, textAlign, columnKey, breachType }) => {
+type X = Pick<TextStyle, 'textAlign'>;
+
+interface SensorLogsCellProps extends Pick<TextStyle, 'textAlign'> {
+  data: string;
+  flex?: number;
+  isLast?: boolean;
+  columnKey?: string;
+  breachType?: string;
+}
+
+const SensorLogsCell: FC<SensorLogsCellProps> = ({
+  data,
+  flex,
+  isLast,
+  textAlign,
+  columnKey,
+  breachType,
+}) => {
   if (columnKey === 'isInBreach') {
     return (
       <Centered
@@ -47,11 +64,19 @@ const SensorLogsCell = ({ data, flex, isLast, textAlign, columnKey, breachType }
   );
 };
 
-const keyExtractor = item => {
+const keyExtractor = (item: { id: string }) => {
   return item.id;
 };
 
-export const SensorLogsRow = React.memo(
+interface SensorLogsRowProps {
+  i: number;
+  isInHotBreach: boolean;
+  isInColdBreach: boolean;
+  temperature: number;
+  timestamp: number;
+}
+
+export const SensorLogsRow: FC<SensorLogsRowProps> = React.memo(
   ({ i, isInHotBreach, isInColdBreach, temperature, timestamp }) => {
     const even = i % 2 === 0;
 
@@ -87,7 +112,17 @@ export const SensorLogsRow = React.memo(
   }
 );
 
-const Header = ({ columns }) => {
+interface Column extends Pick<TextStyle, 'textAlign'> {
+  header: string;
+  flex: number;
+  key: string;
+}
+
+interface HeaderProps {
+  columns: Column[];
+}
+
+const Header = ({ columns }: HeaderProps) => {
   return (
     <Row
       justifyContent="space-between"
@@ -97,32 +132,30 @@ const Header = ({ columns }) => {
         borderTopWidth: 5,
       }}
     >
-      {columns.map((column, ind) => (
+      {columns.map(column => (
         <Row flex={column.flex} justifyContent="center">
-          <SensorLogsCell
-            data={column.header}
-            isLast
-            // eslint-disable-next-line react/no-array-index-key
-            key={`${ind}${column.key}`}
-          />
+          <SensorLogsCell data={column.header} isLast key={column.key} />
         </Row>
       ))}
     </Row>
   );
 };
 
-export const SensorLogsTable = React.memo(({ id }) => {
+interface SensorLogsTableProps {
+  id: string;
+}
+
+export const SensorLogsTable: FC<SensorLogsTableProps> = React.memo(({ id }) => {
   const data = useSelector(LogTableSelector.data);
   const isLoading = useSelector(LogTableSelector.isLoading);
   const dispatch = useDispatch();
 
   const renderItem = useCallback(
     ({ item, index }) => {
-      const { id: sid, isInHotBreach, isInColdBreach, temperature, timestamp } = item;
+      const { isInHotBreach, isInColdBreach, temperature, timestamp } = item;
       return (
         <SensorLogsRow
           i={index}
-          id={sid}
           isInHotBreach={isInHotBreach}
           isInColdBreach={isInColdBreach}
           temperature={temperature}
@@ -150,7 +183,7 @@ export const SensorLogsTable = React.memo(({ id }) => {
       data={data}
       getItemLayout={(_, index) => ({ length: data.length, offset: 50 * index, index })}
       initialNumToRender={5}
-      ListHeaderComponent={<Header columns={COLUMNS} sortedBy="endDate" sortedDirection="desc" />}
+      ListHeaderComponent={<Header columns={COLUMNS} />}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
       maxToRenderPerBatch={20}

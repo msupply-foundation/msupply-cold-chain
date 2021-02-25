@@ -13,7 +13,7 @@ const stateToProps = state => {
   return { data, isLoading };
 };
 
-export const SensorDetailChartWrapper = ({ data, isLoading }) => {
+export const SensorDetailChartWrapper = ({ data = [], isLoading = true, id }) => {
   const { height, width } = useWindowDimensions();
 
   return (

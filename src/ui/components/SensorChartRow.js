@@ -20,7 +20,7 @@ const stateToProps = (state, props) => {
   const isLoadingChartData = ChartSelector.isLoading(state, props);
   const isLoadingStatus = SensorStatusSelector.isLoading(state, props);
   const data = ChartSelector.listData(state, props);
-  const name = SensorSelector.getName(state, props);
+  const name = SensorSelector.getName(state, props.id);
   const hasData = SensorStatusSelector.hasData(state, props);
 
   return { data, isLoadingChartData, name, hasData, isLoadingStatus };

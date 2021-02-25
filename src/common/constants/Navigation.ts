@@ -10,6 +10,11 @@ export enum SETTINGS_STACK {
   'DEVELOPER' = 'SETTINGS_STACK/Developer',
 }
 
+export enum SENSOR_STACK {
+  TABS = 'SENSOR_STACK/Tabs',
+  SENSOR_DETAIL = 'SENSOR_STACK/SensorDetail',
+}
+
 export const NAVIGATION = {
   SCREENS: {
     MAIN_TABS: {
