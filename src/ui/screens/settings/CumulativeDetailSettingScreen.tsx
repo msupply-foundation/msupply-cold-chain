@@ -1,16 +1,24 @@
+import React, { FC } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 
-import { t } from '~translations';
-import { SettingsList } from '~layouts';
-import { useRouteProps } from '~hooks';
+import { t } from '../../../common/translations';
+import { SettingsList } from '../../layouts';
+import { useRouteProps } from '../../hooks';
 
-import { SettingsTextInputRow, SettingsGroup, SettingsNumberInputRow } from '~components/settings';
-import { BreachConfigurationAction } from '~features/Entities';
+import {
+  SettingsTextInputRow,
+  SettingsGroup,
+  SettingsNumberInputRow,
+} from '../../components/settings';
+import { BreachConfigurationAction } from '../../../features/Entities';
+import { RootState } from '../../../common/store/store';
+import { SETTINGS_STACK } from '../../../common/constants';
+import { SettingsStackParameters } from '../../containers/SettingsStackNavigator';
 
-export const CumulativeDetailSettingScreen = () => {
-  const { id } = useRouteProps();
-  const config = useSelector(({ breachConfiguration }) => {
+export const CumulativeDetailSettingScreen: FC = () => {
+  const { id } = useRouteProps<SettingsStackParameters, SETTINGS_STACK.SENSOR_DETAIL>();
+  const config = useSelector(({ entities: { breachConfiguration } }: RootState) => {
     const { byId } = breachConfiguration;
     return byId[id];
   });
@@ -28,8 +36,9 @@ export const CumulativeDetailSettingScreen = () => {
         <SettingsTextInputRow
           label={t('TEMPERATURE_CUMULATIVE_DESCRIPTION')}
           subtext={t('TEMPERATURE_CUMULATIVE_DESCRIPTION_SUBTEXT')}
-          onConfirm={({ inputValue }) =>
-            dispatch(BreachConfigurationAction.update(id, 'description', inputValue))}
+          onConfirm={({ inputValue }: { inputValue: string }) =>
+            dispatch(BreachConfigurationAction.update(id, 'description', inputValue))
+          }
           value={description}
           editDescription={t('TEMPERATURE_CUMULATIVE_DESCRIPTION_EDIT')}
           validation={Yup.string()
@@ -44,8 +53,9 @@ export const CumulativeDetailSettingScreen = () => {
           minimumValue={1}
           step={1}
           metric={t('MINUTES')}
-          onConfirm={({ value }) =>
-            dispatch(BreachConfigurationAction.update(id, 'duration', value * 60 * 1000))}
+          onConfirm={({ value }: { value: number }) =>
+            dispatch(BreachConfigurationAction.update(id, 'duration', value * 60 * 1000))
+          }
           editDescription={t('EDIT_TEMPERATURE_BREACH_DURATION')}
         />
         <SettingsNumberInputRow
@@ -56,14 +66,15 @@ export const CumulativeDetailSettingScreen = () => {
           minimumValue={-30}
           step={1}
           metric={`°${t('CELSIUS')}`}
-          onConfirm={({ value }) =>
+          onConfirm={({ value }: { value: number }) =>
             dispatch(
               BreachConfigurationAction.update(
                 id,
                 isHotCumulative ? 'minimumTemperature' : 'maximumTemperature',
                 value
               )
-            )}
+            )
+          }
           editDescription={
             isHotCumulative ? t('HOT_CUMULATIVE_SUBTEXT') : t('COLD_CUMULATIVE_SUBTEXT')
           }
