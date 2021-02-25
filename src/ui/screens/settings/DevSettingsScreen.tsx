@@ -1,9 +1,10 @@
-import { useDispatch, useSelector } from 'react-redux';
+import React, { FC } from 'react';
+import { useDispatch } from 'react-redux';
 
-import { SensorAction, SensorSelector } from '~features/Entities';
+import { SensorAction } from '../../../features/Entities';
 
-import { SettingsButtonRow, SettingsGroup } from '~components/settings';
-import { SettingsList } from '~layouts';
+import { SettingsButtonRow, SettingsGroup } from '../../components/settings';
+import { SettingsList } from '../../layouts';
 
 const randomMacAddress = () => {
   return 'XX:XX:XX:XX:XX:XX'.replace(/X/g, () => {
@@ -11,9 +12,9 @@ const randomMacAddress = () => {
   });
 };
 
-export const DevSettingsScreen = () => {
+export const DevSettingsScreen: FC = () => {
   const dispatch = useDispatch();
-  const availableSensors = useSelector(SensorSelector.sensorsList);
+  // const availableSensors = useSelector(SensorSelector.sensorsList);
 
   return (
     <SettingsList>
@@ -21,15 +22,14 @@ export const DevSettingsScreen = () => {
         <SettingsButtonRow
           label="Add random sensor"
           subtext="Adds a random sensor with a random mac address and default values"
-          onPress={() => dispatch(SensorAction.create(randomMacAddress(), 300))}
+          onPress={() => dispatch(SensorAction.create(randomMacAddress(), 300, 0, 100))}
         />
-        {availableSensors.map(sensor => (
+        {/* {availableSensors.map(sensor => (
           <SettingsButtonRow
             key={sensor?.id}
             label={`Add logs for ${sensor?.name ?? sensor.macAddress}`}
-            // onPress={() => dispatch(TemperatureLogActions.addRandomLogs(sensor.id))}
           />
-        ))}
+        ))} */}
       </SettingsGroup>
     </SettingsList>
   );
