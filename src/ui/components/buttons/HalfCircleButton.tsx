@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
 
-import { STYLE, COLOUR } from '~constants';
-import { Centered } from '~layouts';
+import { STYLE, COLOUR } from '../../../common/constants';
+import { Centered } from '../../layouts';
+import { Icon as AppIcon } from '../../presentation/icons/Icon';
 
 const style = {
   width: STYLE.WIDTH.HALF_CIRCLE,
@@ -20,7 +21,13 @@ const leftStyle = {
   borderTopRightRadius: 50,
 };
 
-export const HalfCircleButton = ({ direction, onPress, Icon }) => {
+interface HalfCircleButtonProps {
+  direction: 'left' | 'right';
+  onPress: () => void;
+  Icon: typeof AppIcon;
+}
+
+export const HalfCircleButton: FC<HalfCircleButtonProps> = ({ direction, onPress, Icon }) => {
   const directionStyle = direction === 'left' ? leftStyle : rightStyle;
   const internalStyle = { ...style, ...directionStyle };
 

@@ -1,9 +1,10 @@
+import React, { FC } from 'react';
 import { Pressable } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 
-import { STYLE, COLOUR } from '~constants';
-import { BoldText } from '~presentation/typography';
-import { Centered } from '~layouts';
+import { STYLE, COLOUR } from '../../../common/constants';
+import { BoldText } from '../../presentation/typography';
+import { Centered } from '../../layouts';
 
 const style = {
   container: {
@@ -24,7 +25,19 @@ const style = {
   },
 };
 
-export const Button = ({ text, onPress, isInModal = false, variant = 'standard' }) => {
+interface ButtonProps {
+  text: string;
+  onPress: () => void;
+  isInModal: boolean;
+  variant: 'standard' | 'dark';
+}
+
+export const Button: FC<ButtonProps> = ({
+  text,
+  onPress,
+  isInModal = false,
+  variant = 'standard',
+}) => {
   const Container = isInModal ? BorderlessButton : Pressable;
 
   return (

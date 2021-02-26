@@ -4,7 +4,12 @@ import { FONT, COLOUR } from '~constants';
 
 const baseStyle = { fontSize: FONT.SIZE.MS, fontFamily: FONT.FAMILY.BOLD };
 
-export const BoldText = ({ children = '', colour = COLOUR.PRIMARY, textAlign, style }) => {
+export const BoldText = ({
+  children = '',
+  colour = COLOUR.PRIMARY,
+  textAlign = 'left',
+  style = {},
+}) => {
   const internalStyle = { ...style, textAlign, color: colour, ...baseStyle };
   return <Text style={internalStyle}>{children}</Text>;
 };
