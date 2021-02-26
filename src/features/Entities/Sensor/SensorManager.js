@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { classToPlain } from 'class-transformer';
 import { ENTITIES } from '~constants';
 
 const SENSOR_STATE = `
@@ -187,7 +188,7 @@ export class SensorManager {
 
   getSensorById = async id => {
     const sensor = await this.databaseService.queryWith(ENTITIES.SENSOR, { id });
-    return sensor[0];
+    return classToPlain(sensor[0]);
   };
 
   getSensorByMac = async macAddress => {

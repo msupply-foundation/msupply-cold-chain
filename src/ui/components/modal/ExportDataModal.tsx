@@ -1,19 +1,33 @@
 /* eslint-disable react/jsx-wrap-multilines */
+import React, { useEffect, useRef, useCallback, FC } from 'react';
 import { useDispatch } from 'react-redux';
 import { Input } from 'react-native-elements';
-import { useEffect, useRef, useCallback } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
-import { t } from '~translations';
-import { Column } from '~layouts';
+import { t } from '../../../common/translations';
+import { Column } from '../../layouts';
 
 import { SettingsEditModal } from '../settings/SettingsEditModal';
 
 import { ReportAction } from '../../../features/Report';
 
-export const ExportDataModal = ({ id, onConfirm, isOpen, onClose, variant = 'export' }) => {
+interface ExportDataModalProps {
+  id: string;
+  onConfirm: () => void;
+  isOpen: boolean;
+  onClose: () => void;
+  variant: 'export' | 'email';
+}
+
+export const ExportDataModal: FC<ExportDataModalProps> = ({
+  id,
+  onConfirm,
+  isOpen = false,
+  onClose,
+  variant = 'export',
+}) => {
   const { width } = useWindowDimensions();
   const dispatch = useDispatch();
 
@@ -32,6 +46,8 @@ export const ExportDataModal = ({ id, onConfirm, isOpen, onClose, variant = 'exp
 
   return (
     <Formik
+      // TODO: Fix onSubmit is required for typescript
+      onSubmit={() => {}}
       isInitialValid={false}
       initialValues={{ username: '', comment: '' }}
       validationSchema={Yup.object().shape({
@@ -45,8 +61,8 @@ export const ExportDataModal = ({ id, onConfirm, isOpen, onClose, variant = 'exp
           () => isValid && onConfirmModal({ username, comment }),
           [username, comment]
         );
-        const usernameRef = useRef();
-        const commentRef = useRef();
+        const usernameRef = useRef<Input>(null);
+        const commentRef = useRef<Input>(null);
 
         useEffect(() => {
           setTimeout(() => usernameRef.current?.focus(), 100);
@@ -62,9 +78,7 @@ export const ExportDataModal = ({ id, onConfirm, isOpen, onClose, variant = 'exp
             Content={
               <Column alignItems="center" flex={1} justifyContent="center">
                 <Input
-                  ref={ref => {
-                    usernameRef.current = ref;
-                  }}
+                  ref={usernameRef}
                   value={values.username}
                   label="Username"
                   placeholder="Enter your name"
@@ -77,9 +91,7 @@ export const ExportDataModal = ({ id, onConfirm, isOpen, onClose, variant = 'exp
                   errorMessage={errors.username}
                 />
                 <Input
-                  ref={ref => {
-                    commentRef.current = ref;
-                  }}
+                  ref={commentRef}
                   value={comment}
                   label="Comment"
                   placeholder="Enter a comment"

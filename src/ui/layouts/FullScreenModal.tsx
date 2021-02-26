@@ -1,7 +1,8 @@
-import { Pressable } from 'react-native';
-import Modal from 'react-native-modal';
+import React, { FC, ReactNode } from 'react';
+import { Pressable, ViewProps } from 'react-native';
+import Modal, { ModalProps } from 'react-native-modal';
 
-import { COLOUR } from '~constants';
+import { COLOUR } from '../../common/constants';
 
 const styles = {
   container: {
@@ -12,7 +13,14 @@ const styles = {
   },
 };
 
-export const FullScreenModal = ({
+interface FullScreenModalProps extends Partial<ModalProps> {
+  isOpen: boolean;
+  onClose?: boolean;
+  children: ReactNode;
+  style?: ViewProps;
+}
+
+export const FullScreenModal: FC<FullScreenModalProps> = ({
   isOpen,
   onClose,
   children,

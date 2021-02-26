@@ -1,22 +1,34 @@
 /* eslint-disable react/jsx-wrap-multilines */
+import React, { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import { ActivityIndicator, FlatList } from 'react-native';
 
-import { SettingsEditButtonGroup, SettingsEditModalLayout, Column, Centered } from '~layouts';
+import { SettingsEditButtonGroup, SettingsEditModalLayout, Column, Centered } from '../../layouts';
 
-import { t } from '~translations';
-import { AcknowledgeBreachAction } from '~features';
+import { t } from '../../../common/translations';
+import { AcknowledgeBreachAction } from '../../../features';
 import { NormalText } from '../../presentation/typography';
 import { Divider } from '../../presentation';
 import { COLOUR } from '../../../common/constants';
 import { SettingsEditButton } from '../buttons';
+import { RootState } from '../../../common/store/store';
 
-export const AcknowledgeBreachModal = ({ id }) => {
+interface AcknowledgeBreachModalProps {
+  id: string;
+}
+
+export const AcknowledgeBreachModal: FC<AcknowledgeBreachModalProps> = ({ id }) => {
   const dispatch = useDispatch();
-  const handlingBreaches = useSelector(state => state.breach.acknowledgeBreach.acknowledging);
-  const fetchingUnhandledBreaches = useSelector(state => state.breach.acknowledgeBreach.fetching);
-  const unhandledBreaches = useSelector(state => state.breach.acknowledgeBreach.unacknowledged);
+  const handlingBreaches = useSelector(
+    (state: RootState) => state.breach.acknowledgeBreach.acknowledging
+  );
+  const fetchingUnhandledBreaches = useSelector(
+    (state: RootState) => state.breach.acknowledgeBreach.fetching
+  );
+  const unhandledBreaches = useSelector(
+    (state: RootState) => state.breach.acknowledgeBreach.unacknowledged
+  );
 
   return (
     <SettingsEditModalLayout

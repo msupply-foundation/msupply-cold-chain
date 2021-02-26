@@ -1,32 +1,67 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { SagaIterator } from '@redux-saga/types';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { call, getContext, put, takeEvery } from 'redux-saga/effects';
 
-import { DEPENDENCY, REDUCER } from '~constants';
+import { DEPENDENCY, REDUCER } from '../../../common/constants';
+import {
+  Sensor,
+  TemperatureBreach,
+  TemperatureLog,
+} from '../../../common/services/Database/entities';
 import { ChartAction } from '../../Chart';
 
-const initialState = {
+interface ConsecutiveBreachSliceState {
+  creatingById: Record<string, boolean>;
+}
+
+const initialState: ConsecutiveBreachSliceState = {
   creatingById: {},
 };
 
+interface CreatePayload {
+  sensor: Sensor;
+}
+
+interface CreateSuccessPayload {
+  sensorId: string;
+}
+
+interface CreateFailPayload {
+  sensor: Sensor;
+}
+
 const reducers = {
   create: {
-    prepare: sensor => ({ payload: { sensor } }),
-    reducer: (draftState, { payload: { sensor } }) => {
+    prepare: (sensor: Sensor) => ({ payload: { sensor } }),
+    reducer: (
+      draftState: ConsecutiveBreachSliceState,
+      { payload: { sensor } }: PayloadAction<CreatePayload>
+    ) => {
       const { id } = sensor;
       draftState.creatingById[id] = true;
     },
   },
   createSuccess: {
-    prepare: (sensorId, updatedBreaches, updatedLogs) => ({
+    prepare: (
+      sensorId: string,
+      updatedBreaches: TemperatureBreach[],
+      updatedLogs: TemperatureLog[]
+    ) => ({
       payload: { sensorId, updatedBreaches, updatedLogs },
     }),
-    reducer: (draftState, { payload: { sensorId } }) => {
+    reducer: (
+      draftState: ConsecutiveBreachSliceState,
+      { payload: { sensorId } }: PayloadAction<CreateSuccessPayload>
+    ) => {
       draftState.creatingById[sensorId] = true;
     },
   },
   createFail: {
-    prepare: sensor => ({ payload: { sensor } }),
-    reducer: (draftState, { payload: { sensor } }) => {
+    prepare: (sensor: Sensor) => ({ payload: { sensor } }),
+    reducer: (
+      draftState: ConsecutiveBreachSliceState,
+      { payload: { sensor } }: PayloadAction<CreateFailPayload>
+    ) => {
       const { id } = sensor;
       draftState.creatingById[id] = true;
     },
@@ -39,7 +74,7 @@ const { actions: ConsecutiveBreachAction, reducer: ConsecutiveBreachReducer } = 
   name: REDUCER.CONSECUTIVE_BREACH,
 });
 
-function* create({ payload: { sensor } }) {
+function* create({ payload: { sensor } }: PayloadAction<CreatePayload>): SagaIterator {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const breachManager = yield call(DependencyLocator.get, DEPENDENCY.CONSECUTIVE_BREACH_MANAGER);
 
@@ -66,7 +101,7 @@ function* create({ payload: { sensor } }) {
   }
 }
 
-function* root() {
+function* root(): SagaIterator {
   yield takeEvery(ConsecutiveBreachAction.create, create);
 }
 

@@ -4,7 +4,7 @@ import { FONT, COLOUR } from '~constants';
 
 const baseStyle = { fontSize: FONT.SIZE.MS, fontFamily: FONT.FAMILY.REGULAR };
 
-export const NormalText = ({ children = '', colour = COLOUR.WHITE, marginRight }) => {
+export const NormalText = ({ children = '', colour = COLOUR.WHITE, marginRight = 0 }) => {
   const internalStyle = { ...baseStyle, marginRight, color: colour };
 
   return <Text style={internalStyle}>{children}</Text>;

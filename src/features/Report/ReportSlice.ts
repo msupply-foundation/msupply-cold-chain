@@ -1,39 +1,55 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { SagaIterator } from '@redux-saga/types';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ToastAndroid } from 'react-native';
 import { call, getContext, put, takeEvery } from 'redux-saga/effects';
 
-import { REDUCER, DEPENDENCY } from '~constants';
+import { REDUCER, DEPENDENCY } from '../../common/constants';
 
-const initialState = { creatingReport: false };
+interface ReportSliceState {
+  creating: boolean;
+}
+
+interface TryCreatePayload {
+  sensorId: string;
+  username: string;
+  comment: string;
+}
+
+interface TryCreateAndEmailPayload {
+  sensorId: string;
+  username: string;
+  comment: string;
+}
+
+const initialState: ReportSliceState = { creating: false };
+
 const reducers = {
   tryCreate: {
-    prepare: (sensorId, username, comment) => ({ payload: { sensorId, username, comment } }),
-    reducer: draftState => {
+    prepare: (sensorId: string, username: string, comment: string) => ({
+      payload: { sensorId, username, comment },
+    }),
+    reducer: (draftState: ReportSliceState) => {
       draftState.creating = true;
     },
   },
-  createSuccessful: {
-    prepare: () => {},
-    reducer: draftState => {
-      draftState.creating = false;
-    },
+  createSuccessful: (draftState: ReportSliceState) => {
+    draftState.creating = false;
   },
-  createFailed: draftState => {
+  createFailed: (draftState: ReportSliceState) => {
     draftState.creating = false;
   },
   tryCreateAndEmail: {
-    prepare: (sensorId, username, comment) => ({ payload: { sensorId, username, comment } }),
-    reducer: draftState => {
+    prepare: (sensorId: string, username: string, comment: string) => ({
+      payload: { sensorId, username, comment },
+    }),
+    reducer: (draftState: ReportSliceState) => {
       draftState.creating = true;
     },
   },
-  createAndEmailSuccessful: {
-    prepare: () => {},
-    reducer: draftState => {
-      draftState.creating = false;
-    },
+  createAndEmailSuccessful: (draftState: ReportSliceState) => {
+    draftState.creating = false;
   },
-  createAndEmailFailed: draftState => {
+  createAndEmailFailed: (draftState: ReportSliceState) => {
     draftState.creating = false;
   },
 };
@@ -44,7 +60,9 @@ const { actions: ReportAction, reducer: ReportReducer } = createSlice({
   name: REDUCER.REPORT,
 });
 
-function* tryCreate({ payload: { sensorId, username, comment } }) {
+function* tryCreate({
+  payload: { sensorId, username, comment },
+}: PayloadAction<TryCreatePayload>): SagaIterator {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const reportManager = yield call(DependencyLocator.get, DEPENDENCY.REPORT_MANAGER);
 
@@ -75,7 +93,9 @@ function* tryCreate({ payload: { sensorId, username, comment } }) {
   }
 }
 
-function* tryCreateAndEmail({ payload: { sensorId, username, comment } }) {
+function* tryCreateAndEmail({
+  payload: { sensorId, username, comment },
+}: PayloadAction<TryCreateAndEmailPayload>): SagaIterator {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const reportManager = yield call(DependencyLocator.get, DEPENDENCY.REPORT_MANAGER);
 
@@ -104,7 +124,7 @@ function* tryCreateAndEmail({ payload: { sensorId, username, comment } }) {
   }
 }
 
-function* root() {
+function* root(): SagaIterator {
   yield takeEvery(ReportAction.tryCreate, tryCreate);
   yield takeEvery(ReportAction.tryCreateAndEmail, tryCreateAndEmail);
 }

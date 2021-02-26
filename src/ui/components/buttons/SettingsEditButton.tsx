@@ -16,15 +16,15 @@ const style: { container: ViewStyle } = {
 interface SettingsEditButtonProps {
   text: string;
   onPress: () => void;
-  isDisabled: boolean;
-  border: boolean;
+  isDisabled?: boolean;
+  border?: boolean;
 }
 
 export const SettingsEditButton: FC<SettingsEditButtonProps> = ({
   text,
   onPress,
   isDisabled = false,
-  border,
+  border = false,
 }) => {
   const internalStyle = { ...style.container, borderRightWidth: border ? 2 : 0 };
   const Container = isDisabled ? View : Pressable;
