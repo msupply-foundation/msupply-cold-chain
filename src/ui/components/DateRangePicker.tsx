@@ -1,20 +1,21 @@
-import React, { useCallback, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 
-import { t } from '~translations';
+import { t } from '../../common/translations';
 import { Button } from './buttons';
-import { Centered, FullScreenModal, Row } from '~layouts';
-import { COLOUR } from '~constants';
+import { Centered, FullScreenModal, Row } from '../layouts';
+import { COLOUR } from '../../common/constants';
 import { LoadAfterInteractions } from './LoadAfterInteractions';
 
-const rangeToMarked = range => {
+// TODO: Fix types
+const rangeToMarked = (range: any) => {
   return range
     .toArray('days')
-    .map(date => date.format('YYYY-MM-DD'))
+    .map((date: any) => date.format('YYYY-MM-DD'))
     .reduce(
-      (acc, value, index, source) => ({
+      (acc: any, value: any, index: number, source: any) => ({
         ...acc,
         [value]: {
           selected: true,
@@ -27,7 +28,17 @@ const rangeToMarked = range => {
     );
 };
 
-export const DateRangePicker = ({
+interface DateRangePickerProps {
+  initialStart: number;
+  initialEnd: number;
+  onConfirm: (start: number, end: number) => void;
+  onCancel: () => void;
+  maximumDate: number;
+  minimumDate: number;
+  isOpen: boolean;
+}
+
+export const DateRangePicker: FC<DateRangePickerProps> = ({
   initialStart,
   initialEnd,
   onConfirm,
@@ -36,17 +47,17 @@ export const DateRangePicker = ({
   minimumDate,
   isOpen,
 }) => {
-  const [range, setRange] = useState(moment(initialStart).twix(initialEnd));
+  const [range, setRange] = useState((moment(initialStart) as any).twix(initialEnd));
   const onDayPress = useCallback(
     ({ dateString, timestamp }) => {
       if (range.contains(timestamp)) {
-        const newRange = moment(timestamp).twix(dateString);
+        const newRange = (moment(timestamp) as any).twix(dateString);
         setRange(newRange);
       } else if (moment(timestamp).isAfter(range.end())) {
-        const newRange = range.union(moment(timestamp).twix(timestamp));
+        const newRange = range.union((moment(timestamp) as any).twix(timestamp));
         setRange(newRange);
       } else {
-        const newRange = moment(timestamp).twix(timestamp);
+        const newRange = (moment(timestamp) as any).twix(timestamp);
         setRange(newRange);
       }
     },
@@ -79,7 +90,9 @@ export const DateRangePicker = ({
           <Button
             variant="dark"
             text={t('OK')}
-            onPress={() => onConfirm(range.start().unix(), range.end().endOf('day').unix())}
+            onPress={() =>
+              onConfirm(range.start().unix() as number, range.end().endOf('day').unix() as number)
+            }
           />
           <Button variant="dark" text={t('CANCEL')} onPress={onCancel} />
         </Row>

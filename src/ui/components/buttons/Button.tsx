@@ -28,7 +28,7 @@ const style = {
 interface ButtonProps {
   text: string;
   onPress: () => void;
-  isInModal: boolean;
+  isInModal?: boolean;
   variant: 'standard' | 'dark';
 }
 
