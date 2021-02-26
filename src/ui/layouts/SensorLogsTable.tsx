@@ -3,13 +3,13 @@ import { FlatList, View, Text, ActivityIndicator, TextStyle } from 'react-native
 import moment from 'moment';
 import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 import { useSelector, useDispatch } from 'react-redux';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { COLOUR } from '../../common/constants';
 
 import { Row } from './Row';
 import { Centered } from './Centered';
 import { LogTableAction, LogTableSelector } from '../../features';
+import { Icon, ICON_SIZE } from '../presentation/icons';
 
 const COLUMNS: Column[] = [
   { header: 'Timestamp', flex: 1, key: 'time', textAlign: 'left' },
@@ -43,9 +43,9 @@ const SensorLogsCell: FC<SensorLogsCellProps> = ({
       >
         {(!!data &&
           (breachType === 'cold' ? (
-            <FontAwesome name="snowflake-o" size={20} color={COLOUR.PRIMARY} />
+            <Icon.ColdBreach size={ICON_SIZE.S} color={COLOUR.PRIMARY} />
           ) : (
-            <FontAwesome name="thermometer" size={20} color={COLOUR.DANGER} />
+            <Icon.HotBreach size={ICON_SIZE.S} color={COLOUR.DANGER} />
           ))) ||
           null}
       </Centered>

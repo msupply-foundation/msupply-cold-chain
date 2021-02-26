@@ -1,8 +1,8 @@
 import { Pressable } from 'react-native';
 import { Cell } from './Cell';
 
-import { Sort } from '~presentation/icons';
 import { MediumText } from '~presentation/typography';
+import { Icon } from '../../presentation/icons';
 
 export const TableHeaderCell = ({
   cellStyle = { paddingRight: 10 },
@@ -21,7 +21,7 @@ export const TableHeaderCell = ({
     <Cell viewStyle={cellStyle}>
       <Pressable onPress={onPress} style={contentContainerStyle}>
         <MediumText>{title}</MediumText>
-        <Sort isSorted={isSorted} isAscending={isAscending} />
+        <Icon.Sort isSorted={isSorted} isAscending={isAscending} />
       </Pressable>
     </Cell>
   );

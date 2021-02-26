@@ -1,6 +1,7 @@
+import React, { FC } from 'react';
 import Svg, { Path } from 'react-native-svg';
 
-export const MsupplyMan = () => {
+export const MsupplyMan: FC = () => {
   return (
     <Svg viewBox="0 0 243 359" width={50} height={100}>
       <Path

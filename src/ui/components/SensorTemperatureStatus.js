@@ -7,7 +7,8 @@ import { SensorStatusSelector, AcknowledgeBreachAction } from '~features';
 
 import { Row, Centered, LargeRectangle } from '~layouts';
 import { Header, LargeText } from '~presentation/typography';
-import { LowBattery, HotBreach, ColdBreach } from '~presentation/icons';
+
+import { Icon } from '../presentation/icons';
 
 const stateToProps = (state, ownProps) => {
   const hasHotBreach = SensorStatusSelector.hasHotBreach(state, ownProps);
@@ -87,15 +88,15 @@ export const SensorTemperatureStatusComponent = ({
 
           <Centered>
             <Animated.View style={styles.icon} opacity={fadeAnim1}>
-              <HotBreach />
+              <Icon.HotBreach />
             </Animated.View>
 
             <Animated.View style={styles.icon} opacity={fadeAnim2}>
-              <ColdBreach />
+              <Icon.ColdBreach />
             </Animated.View>
 
             <Animated.View style={styles.icon} opacity={fadeAnim3}>
-              <LowBattery />
+              <Icon.LowBattery />
             </Animated.View>
           </Centered>
         </Row>

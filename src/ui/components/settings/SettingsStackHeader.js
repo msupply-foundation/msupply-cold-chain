@@ -4,13 +4,14 @@ import { COLOUR } from '~constants';
 import { t } from '~translations';
 
 import { Centered, SettingsRowLayout } from '~layouts';
-import { Chevron } from '~presentation/icons';
+
 import { LargeText } from '~presentation/typography';
+import { Icon } from '../../presentation/icons/Icon';
 
 const LeftIcon = ({ goBack }) => (
   <Pressable hitSlop={100} onPress={goBack}>
     <Centered style={{ marginTop: 10 }}>
-      <Chevron direction="left" color={COLOUR.GREY_ONE} />
+      <Icon.Chevron direction="left" color={COLOUR.GREY_ONE} />
     </Centered>
   </Pressable>
 );

@@ -15,4 +15,5 @@ export const COLOUR = {
   BACKGROUND_GRADIENT: ['#282F46', '#4C68A3'],
   DANGER: '#FA6400',
   TRANSPARENT: 'transparent',
+  GOOD: 'green',
 };

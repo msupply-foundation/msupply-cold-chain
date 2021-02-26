@@ -4,10 +4,10 @@ import { useToggle } from '~hooks';
 
 import { Row } from '~layouts';
 import { NormalText } from '~presentation/typography';
-import { Pencil, Chevron } from '~presentation/icons';
 
 import { SettingsItem } from './SettingsItem';
 import { SettingsNumberInputModal } from './SettingsNumberInputModal';
+import { Icon } from '../../presentation/icons/Icon';
 
 export const SettingsNumberInputRow = ({
   label,
@@ -28,13 +28,13 @@ export const SettingsNumberInputRow = ({
         label={label}
         subtext={subtext}
         onPress={toggleModal}
-        LeftIcon={<Pencil />}
+        LeftIcon={<Icon.Pencil />}
         RightComponent={
           <Row justifyContent="space-between" alignItems="center">
             <NormalText marginRight={30} color={COLOUR.GREY_ONE}>
               {initialValue}
             </NormalText>
-            <Chevron direction="right" color={COLOUR.GREY_ONE} />
+            <Icon.Chevron direction="right" color={COLOUR.GREY_ONE} />
           </Row>
         }
       />

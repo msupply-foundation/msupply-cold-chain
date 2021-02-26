@@ -1,7 +1,12 @@
 import React, { FC } from 'react';
-import { STYLE, COLOUR } from '../../../common/constants';
-import { Icon, ICON_NAME } from './Icon';
+import { COLOUR } from '../../../common/constants';
+import { Icon, ICON_NAME, ICON_SIZE } from './Icon';
 
-export const HotBreach: FC = () => {
-  return <Icon size={STYLE.ICON.SIZE.L} name={ICON_NAME.HOT_BREACH} color={COLOUR.WHITE} />;
+interface HotBreachProps {
+  size: ICON_SIZE;
+  color: string;
+}
+
+export const HotBreach: FC<HotBreachProps> = ({ size = ICON_SIZE.L, color = COLOUR.WHITE }) => {
+  return <Icon size={size} name={ICON_NAME.HOT_BREACH} color={color} />;
 };

@@ -18,6 +18,7 @@ import { Button } from '~components/buttons';
 
 import { SettingsEditModal } from './SettingsEditModal';
 import { BlinkSelector } from '../../../features/Bluetooth';
+import { Icon } from '../../presentation/icons/Icon';
 
 const styles = {
   column: { maxHeight: STYLE.HEIGHT.SENSOR_ROW },
@@ -87,7 +88,7 @@ export const SettingsAddSensorModal = ({ macAddress, onClose, isOpen, onConfirm,
                   <NormalText colour={COLOUR.GREY_ONE}>
                     {moment(date).format(FORMAT.DATE.STANDARD_DATE)}
                   </NormalText>
-                  <Calendar />
+                  <Icon.Calendar />
                 </Row>
               </Pressable>
 
@@ -96,7 +97,7 @@ export const SettingsAddSensorModal = ({ macAddress, onClose, isOpen, onConfirm,
                   <NormalText colour={COLOUR.GREY_ONE}>
                     {moment(date).format(FORMAT.DATE.STANDARD_TIME)}
                   </NormalText>
-                  <Calendar />
+                  <Icon.Calendar />
                 </Row>
               </Pressable>
             </Row>

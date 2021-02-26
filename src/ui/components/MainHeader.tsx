@@ -4,7 +4,7 @@ import { useBatteryLevel, usePowerState } from 'react-native-device-info';
 import { COLOUR } from '../../common/constants';
 
 import { Row } from '../layouts';
-import { MsupplyMan } from '../presentation/icons';
+import { Icon } from '../presentation/icons';
 import { BatteryStatus } from '../presentation/BatteryStatus';
 import { withFormatService } from '../hoc/withFormatService';
 import { useTime } from '../hooks/useTime';
@@ -24,7 +24,7 @@ export const MainHeader: FC = withFormatService(({ formatter }: MainHeaderProps)
 
   return (
     <Row style={style.container} justifyContent="space-between">
-      <MsupplyMan />
+      <Icon.MsupplyMan />
 
       <Row>
         <BatteryStatus

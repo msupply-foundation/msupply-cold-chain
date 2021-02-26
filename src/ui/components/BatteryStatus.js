@@ -1,4 +1,4 @@
-import { Battery } from '../presentation/icons';
+import { Icon } from '../presentation/icons';
 import { Row } from '../layouts';
 import { LargeText, SmallText } from '../presentation/typography';
 
@@ -8,7 +8,7 @@ export const BatteryStatus = ({ batteryLevel, isCharging, variant = 'large' }) =
 
   return batteryLevel ? (
     <Row alignItems="center" flex={1}>
-      <Battery isCharging={isCharging} batteryLevel={batteryLevel} size={iconSize} />
+      <Icon.Battery isCharging={isCharging} batteryLevel={batteryLevel} size={iconSize} />
       <Text>{batteryLevel}</Text>
     </Row>
   ) : null;

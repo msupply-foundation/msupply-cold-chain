@@ -5,12 +5,12 @@ import { useDispatch } from 'react-redux';
 import { SettingsList } from '../../layouts';
 import { COLOUR, SETTINGS_STACK } from '../../../common/constants';
 import { t } from '../../../common/translations';
-import { Chevron } from '../../presentation/icons';
+import { Icon } from '../../presentation/icons';
 import { SettingsGroup, SettingsItem } from '../../components/settings';
 import { SettingAction } from '../../../features/Entities';
 import { SettingsStackParameters } from '../../containers/SettingsStackNavigator';
 
-const ChevronIcon = <Chevron direction="right" color={COLOUR.GREY_ONE} />;
+const ChevronIcon = <Icon.Chevron direction="right" color={COLOUR.GREY_ONE} />;
 
 interface MainSettingsScreenProps {
   navigation: StackNavigationProp<SettingsStackParameters, SETTINGS_STACK.MENU>;

@@ -5,7 +5,7 @@ import { STYLE } from '~constants';
 import { Column } from './Column';
 import { Row } from './Row';
 import { HalfCircleButton } from '~components/buttons';
-import { Chevron } from '~presentation/icons';
+import { Icon } from '../presentation/icons';
 
 const styles = {
   row: {
@@ -22,7 +22,7 @@ export const SensorRowLayout = ({ Chart, SensorStatus, onPress, direction }) => 
         <Column justifyContent="center">{SensorStatus}</Column>
         <Column justifyContent="center">
           {!!onPress && (
-            <HalfCircleButton direction={direction} Icon={<Chevron direction={direction} />} />
+            <HalfCircleButton direction={direction} Icon={<Icon.Chevron direction={direction} />} />
           )}
         </Column>
       </Row>

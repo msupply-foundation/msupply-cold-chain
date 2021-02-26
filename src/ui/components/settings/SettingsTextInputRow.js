@@ -7,7 +7,8 @@ import { SettingsTextEditModal } from './SettingsTextEditModal';
 
 import { useToggle, useCombinedCallback } from '~hooks';
 import { NormalText } from '~presentation/typography';
-import { Pencil, Chevron } from '~presentation/icons';
+
+import { Icon } from '../../presentation/icons';
 
 export const SettingsTextInputRow = ({
   label,
@@ -26,13 +27,13 @@ export const SettingsTextInputRow = ({
         label={label}
         subtext={subtext}
         onPress={toggleModal}
-        LeftIcon={<Pencil />}
+        LeftIcon={<Icon.Pencil />}
         RightComponent={
           <Row justifyContent="space-between" alignItems="center">
             <NormalText marginRight={30} color={COLOUR.GREY_ONE}>
               {value}
             </NormalText>
-            <Chevron direction="right" color={COLOUR.GREY_ONE} />
+            <Icon.Chevron direction="right" color={COLOUR.GREY_ONE} />
           </Row>
         }
       />

@@ -3,7 +3,7 @@ import React from 'react';
 import { COLOUR } from '~constants';
 import { useToggle, useCombinedCallback } from '../hooks';
 
-import { Calendar } from '../presentation/icons';
+import { Icon } from '../presentation/icons';
 import { NormalText } from '../presentation/typography';
 import { IconButton } from './buttons';
 import { DateRangePicker } from './DateRangePicker';
@@ -18,7 +18,7 @@ export const DateRangeFilter = React.memo(
       <>
         <IconButton
           onPress={toggle}
-          Icon={<Calendar />}
+          Icon={<Icon.Calendar />}
           Text={<NormalText colour={COLOUR.GREY_ONE}>{initialRange.format()}</NormalText>}
         />
 

@@ -8,12 +8,12 @@ import {
 
 import { NAVIGATION, COLOUR, FONT } from '../../common/constants';
 import { t } from '../../common/translations';
-import { Cog, Map, Sensors } from '../presentation/icons';
+import { Icon } from '../presentation/icons';
 
 export const ICON_LOOKUP = {
-  [NAVIGATION.SCREENS.MAIN_TABS.SETTINGS]: <Cog />,
-  [NAVIGATION.SCREENS.MAIN_TABS.MAP]: <Map />,
-  [NAVIGATION.SCREENS.MAIN_TABS.SENSORS]: <Sensors />,
+  [NAVIGATION.SCREENS.MAIN_TABS.SETTINGS]: <Icon.Cog />,
+  [NAVIGATION.SCREENS.MAIN_TABS.MAP]: <Icon.Map />,
+  [NAVIGATION.SCREENS.MAIN_TABS.SENSORS]: <Icon.Sensors />,
 };
 
 // Create a TabNavigator

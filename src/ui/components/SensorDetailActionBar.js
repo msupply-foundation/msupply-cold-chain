@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 
 import { DetailAction, DetailSelector } from '~features';
 
-import { Download, Email } from '~presentation/icons';
 import { SensorDetailActionBarLayout } from '~layouts';
 import { ExportDataModal, WritingLogsModal } from './modal';
 import { IconButton } from './buttons';
 import { DateRangeFilter } from './DateRangeFilter';
+import { Icon } from '../presentation/icons';
 
 const stateToProps = state => {
   const from = DetailSelector.from(state);
@@ -50,8 +50,8 @@ export const SensorDetailActionBarComponent = ({
         Actions={
           // eslint-disable-next-line react/jsx-wrap-multilines
           <>
-            <IconButton Icon={<Download />} onPress={() => setExportModalVariant('export')} />
-            <IconButton Icon={<Email />} onPress={() => setExportModalVariant('email')} />
+            <IconButton Icon={<Icon.Download />} onPress={() => setExportModalVariant('export')} />
+            <IconButton Icon={<Icon.Email />} onPress={() => setExportModalVariant('email')} />
           </>
         }
       />

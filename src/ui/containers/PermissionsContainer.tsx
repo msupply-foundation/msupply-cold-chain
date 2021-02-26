@@ -2,7 +2,7 @@ import React, { useMemo, useEffect, FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { DeviceServiceModal } from '../presentation';
-import { Location, Bluetooth, Storage } from '../presentation/icons';
+import { Icon } from '../presentation/icons';
 import { PermissionAction, PermissionSelector } from '../../features/Permission';
 
 export const PermissionsContainer: FC = ({ children }) => {
@@ -26,7 +26,7 @@ export const PermissionsContainer: FC = ({ children }) => {
           isOpen={!showLocationServicesModal}
           onPress={async () => dispatch(PermissionAction.requestLocationServicesEnabled())}
           title="Enable Location Services"
-          Icon={<Location />}
+          Icon={<Icon.Location />}
           body="Please enable location services for bluetooth to function"
         />
       );
@@ -37,7 +37,7 @@ export const PermissionsContainer: FC = ({ children }) => {
           isOpen={!showBluetoothModal}
           onPress={async () => dispatch(PermissionAction.requestBluetoothEnabled())}
           title="Enable Bluetooth"
-          Icon={<Bluetooth />}
+          Icon={<Icon.Bluetooth />}
           body="Please enable bluetooth"
         />
       );
@@ -48,7 +48,7 @@ export const PermissionsContainer: FC = ({ children }) => {
           isOpen={!showLocationPermissionModal}
           onPress={async () => dispatch(PermissionAction.requestLocationPermission())}
           title="Grant Location Permission"
-          Icon={<Location />}
+          Icon={<Icon.Location />}
           body="Please grant access to location permissions for bluetooth to function."
         />
       );
@@ -59,7 +59,7 @@ export const PermissionsContainer: FC = ({ children }) => {
           isOpen={!showStoragePermissionModal}
           onPress={async () => dispatch(PermissionAction.requestStoragePermission())}
           title="Grant Storage Permission"
-          Icon={<Storage />}
+          Icon={<Icon.Storage />}
           body="Please grant access to device storage."
         />
       );
