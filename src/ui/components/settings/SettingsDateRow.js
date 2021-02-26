@@ -22,7 +22,7 @@ export const SettingsDateRow = ({
         label={label}
         subtext={subtext}
         LeftIcon={<Calendar />}
-        RightComponent={<Chevron direction="right" colour={COLOUR.GREY_ONE} />}
+        RightComponent={<Chevron direction="right" color={COLOUR.GREY_ONE} />}
         onPress={toggleDatePicker}
         isDisabled={isDisabled}
       />

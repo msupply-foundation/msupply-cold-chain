@@ -31,10 +31,10 @@ export const SettingsNumberInputRow = ({
         LeftIcon={<Pencil />}
         RightComponent={
           <Row justifyContent="space-between" alignItems="center">
-            <NormalText marginRight={30} colour={COLOUR.GREY_ONE}>
+            <NormalText marginRight={30} color={COLOUR.GREY_ONE}>
               {initialValue}
             </NormalText>
-            <Chevron direction="right" colour={COLOUR.GREY_ONE} />
+            <Chevron direction="right" color={COLOUR.GREY_ONE} />
           </Row>
         }
       />

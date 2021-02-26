@@ -10,11 +10,11 @@ import { SettingsGroup, SettingsItem } from '../../components/settings';
 import { SettingAction } from '../../../features/Entities';
 import { SettingsStackParameters } from '../../containers/SettingsStackNavigator';
 
-const ChevronIcon = <Chevron direction="right" colour={COLOUR.GREY_ONE} />;
+const ChevronIcon = <Chevron direction="right" color={COLOUR.GREY_ONE} />;
 
-type MainSettingsScreenProps = {
+interface MainSettingsScreenProps {
   navigation: StackNavigationProp<SettingsStackParameters, SETTINGS_STACK.MENU>;
-};
+}
 
 export const MainSettingsScreen: FC<MainSettingsScreenProps> = ({ navigation }) => {
   const dispatch = useDispatch();

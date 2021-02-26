@@ -215,7 +215,7 @@ Object.entries(SettingsRowLayoutStories).forEach(([key, value]) => {
 });
 
 const MockTextComponent = <MediumText colour={COLOUR.GREY_ONE}>Hello!</MediumText>;
-const MockIcon = <Chevron direction="right" colour={COLOUR.GREY_ONE} />;
+const MockIcon = <Chevron direction="right" color={COLOUR.GREY_ONE} />;
 const MockSubtextComponent = (
   <View style={{}}>
     <NormalText colour={COLOUR.GREY_ONE}>Hello!</NormalText>

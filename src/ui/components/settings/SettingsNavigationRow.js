@@ -8,7 +8,7 @@ export const SettingsNavigationRow = ({ label, subtext, Icon, onPress }) => {
       LeftIcon={Icon}
       label={label}
       subtext={subtext}
-      RightComponent={<Chevron colour={COLOUR.GREY_ONE} direction="right" />}
+      RightComponent={<Chevron color={COLOUR.GREY_ONE} direction="right" />}
       onPress={onPress}
     />
   );

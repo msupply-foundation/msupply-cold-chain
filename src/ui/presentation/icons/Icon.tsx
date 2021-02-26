@@ -5,6 +5,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TextProps } from 'react-native';
+import { COLOUR } from '../../../common/constants';
 
 export enum ICON_NAME {
   HOT_BREACH = 'thermometer',
@@ -15,6 +16,7 @@ export enum ICON_NAME {
   CALENDAR = 'calendar',
   SETTINGS = 'cog',
   MAP = 'map',
+  LOCATION = 'map-marker',
   SENSORS = 'line-chart',
   PENCIL = 'pencil',
   CLOSE = 'close',
@@ -42,7 +44,10 @@ export enum ICON_NAME {
 }
 
 export enum ICON_SIZE {
+  XXL = 150,
+  XL = 100,
   L = 60,
+  MS = 30,
   S = 20,
 }
 
@@ -68,13 +73,18 @@ const iconComponentFromIconName = (name: ICON_NAME): typeof FontAwesome => {
 
 interface IconProps {
   name: ICON_NAME;
-  size: ICON_SIZE;
-  style: TextProps;
-  color: string;
+  size?: ICON_SIZE;
+  style?: TextProps;
+  color?: string;
 }
 
-export const Icon: FC<IconProps> = ({ name, size = ICON_SIZE.S, style = {} }) => {
+export const Icon: FC<IconProps> = ({
+  name,
+  size = ICON_SIZE.S,
+  style = {},
+  color = COLOUR.GREY_ONE,
+}) => {
   const Component = iconComponentFromIconName(name);
 
-  return <Component name={name} size={size} style={style} />;
+  return <Component name={name} size={size} style={style} color={color} />;
 };

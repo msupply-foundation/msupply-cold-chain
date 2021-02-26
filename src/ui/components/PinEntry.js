@@ -69,7 +69,7 @@ export const PinEntry = ({ onComplete, onCancel }) => {
                 fontFamily: FONT.FAMILY.REGULAR,
               }}
               onButtonPress={onKeyPress}
-              customLeftButton={<Chevron direction="left" colour={COLOUR.WHITE} />}
+              customLeftButton={<Chevron direction="left" color={COLOUR.WHITE} />}
             />
           </Column>
           <Column flex={2} />
