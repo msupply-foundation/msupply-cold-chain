@@ -7,7 +7,7 @@ interface BatteryProps extends TextStyle {
   batteryLevel: number;
   isCharging: boolean;
   size: ICON_SIZE;
-  style: TextStyle;
+  style?: TextStyle;
 }
 
 export const Battery: FC<BatteryProps> = ({

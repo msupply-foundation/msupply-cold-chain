@@ -1,6 +1,6 @@
-import React, { FC } from 'react';
-import { Pressable, Text as RNText, ViewStyle } from 'react-native';
-import { Icon as AppIcon } from '../../presentation/icons/Icon';
+import React, { FC, ReactElement } from 'react';
+import { Pressable, Text as RNText, TextProps, ViewStyle } from 'react-native';
+import { IconProps } from '../../presentation/icons/Icon';
 
 const style: ViewStyle = {
   marginHorizontal: 30,
@@ -10,8 +10,8 @@ const style: ViewStyle = {
 
 interface IconButtonProps {
   onPress: () => void;
-  Icon: typeof AppIcon;
-  Text: typeof RNText;
+  Icon: ReactElement<IconProps>;
+  Text: ReactElement<TextProps>;
 }
 
 export const IconButton: FC<IconButtonProps> = ({ onPress, Icon, Text }) => {

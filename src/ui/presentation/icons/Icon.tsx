@@ -73,7 +73,7 @@ const iconComponentFromIconName = (name: ICON_NAME): typeof FontAwesome => {
   return lookup[name] ?? DefaultIconComponent;
 };
 
-interface IconProps {
+export interface IconProps {
   name: ICON_NAME;
   size?: ICON_SIZE;
   style?: TextProps;
