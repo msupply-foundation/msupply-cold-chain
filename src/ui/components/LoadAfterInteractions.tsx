@@ -10,8 +10,8 @@ const styles: StyleProp<ViewStyle> = {
 };
 
 interface LoadAfterInteractionsProps {
-  Loading: ReactNode;
-  withDelay: boolean;
+  Loading?: ReactNode;
+  withDelay?: boolean;
 }
 
 export const LoadAfterInteractions: FC<LoadAfterInteractionsProps> = ({

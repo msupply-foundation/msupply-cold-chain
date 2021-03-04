@@ -1,3 +1,5 @@
+import { DatabaseService } from '../../common/services';
+
 const GET_CHART_DATA = `
 select 
   avg(temperature) temperature, 
@@ -41,12 +43,29 @@ WHERE s.id = ?
 GROUP  BY s.id  
 `;
 
+export interface ChartDataPoint {
+  temperature: number;
+  timestamp: number;
+}
+
+export interface ChartTimestamp {
+  from?: number;
+  to?: number;
+}
+
 export class ChartManager {
-  constructor(databaseService) {
+  databaseService: DatabaseService;
+
+  constructor(databaseService: DatabaseService) {
     this.databaseService = databaseService;
   }
 
-  getLogs = async (from, to, sensorId, maxPoints) => {
+  getLogs = async (
+    from: number,
+    to: number,
+    sensorId: string,
+    maxPoints: number
+  ): Promise<ChartDataPoint[]> => {
     return this.databaseService.query(GET_CHART_DATA, [
       sensorId,
       from,
@@ -58,7 +77,7 @@ export class ChartManager {
     ]);
   };
 
-  getChartTimestamps = async sensorId => {
+  getChartTimestamps = async (sensorId: string): Promise<ChartTimestamp> => {
     const [result = {}] = await this.databaseService.query(GET_CHART_TIMESTAMPS, [sensorId]);
     return result;
   };
