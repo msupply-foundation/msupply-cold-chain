@@ -11,7 +11,7 @@ interface SettingsEditModalProps {
   title: string;
   Content: ReactNode;
   onConfirm: () => void;
-  isDisabled: boolean;
+  isDisabled?: boolean;
   isOpen: boolean;
   onClose: () => void;
 }

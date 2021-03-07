@@ -1,20 +1,17 @@
 /* eslint-disable react/jsx-wrap-multilines */
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback, FC } from 'react';
 import { useSelector } from 'react-redux';
 import { Pressable, ActivityIndicator } from 'react-native';
-
 import moment from 'moment';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import { useDatePicker } from '~hooks';
-import { FORMAT, COLOUR, STYLE } from '~constants';
-import { t } from '~translations';
-
-import { Column, Row } from '~layouts';
-import { Calendar } from '~presentation/icons';
-import { NormalText } from '~presentation/typography';
-import { Button } from '~components/buttons';
+import { useDatePicker } from '../../hooks';
+import { FORMAT, COLOUR, STYLE } from '../../../common/constants';
+import { t } from '../../../common/translations';
+import { Column, Row } from '../../layouts';
+import { NormalText } from '../../presentation/typography';
+import { Button } from '../buttons';
 
 import { SettingsEditModal } from './SettingsEditModal';
 import { BlinkSelector } from '../../../features/Bluetooth';
@@ -29,7 +26,21 @@ const styles = {
   },
 };
 
-export const SettingsAddSensorModal = ({ macAddress, onClose, isOpen, onConfirm, onBlink }) => {
+interface SettingsAddSensorModalProps {
+  macAddress: string;
+  onClose(): void;
+  isOpen: boolean;
+  onConfirm(date: Date): void;
+  onBlink(): void;
+}
+
+export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
+  macAddress,
+  onClose,
+  isOpen,
+  onConfirm,
+  onBlink,
+}) => {
   const [date, setDate] = useState(new Date());
 
   const validator = useCallback(
@@ -83,7 +94,7 @@ export const SettingsAddSensorModal = ({ macAddress, onClose, isOpen, onConfirm,
                 <NormalText colour={COLOUR.GREY_ONE}>{t('START_LOGGING_FROM')}</NormalText>
               </Column>
 
-              <Pressable style={styles.loggingColumns.two} onPress={toggleDatePicker}>
+              <Pressable style={styles.loggingColumns.two} onPress={() => toggleDatePicker()}>
                 <Row justifyContent="space-between">
                   <NormalText colour={COLOUR.GREY_ONE}>
                     {moment(date).format(FORMAT.DATE.STANDARD_DATE)}

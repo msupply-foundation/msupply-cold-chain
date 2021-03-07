@@ -1,4 +1,3 @@
-import { ICON_SIZE } from './Icon';
 import { Chevron } from './Chevron';
 import { HotBreach } from './HotBreach';
 import { ColdBreach } from './ColdBreach';

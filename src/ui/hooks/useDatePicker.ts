@@ -1,6 +1,10 @@
 import { useState, useCallback } from 'react';
 
-export const useDatePicker = onChangeDate => {
+interface OnChangeDateCallback {
+  (date: Date): void;
+}
+
+export const useDatePicker = (onChangeDate: OnChangeDateCallback) => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const onChange = useCallback(
