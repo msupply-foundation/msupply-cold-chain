@@ -1,14 +1,15 @@
+import { SagaIterator } from '@redux-saga/types';
 import { combineReducers } from '@reduxjs/toolkit';
 import { fork } from 'redux-saga/effects';
 
-import { REDUCER } from '~constants';
+import { REDUCER } from '../../common/constants';
 
 import { DetailReducer, DetailSaga } from './Detail';
 import { LogTableReducer, LogTableSaga } from './LogTable';
 import { DetailCumulativeReducer, DetailCumulativeSaga } from './DetailCumulativeBreach';
 import { DetailChartReducer, DetailChartSaga } from './DetailChart';
 
-export function* root() {
+export function* root(): SagaIterator {
   yield fork(LogTableSaga.root);
   yield fork(DetailSaga.root);
   yield fork(DetailCumulativeSaga.root);

@@ -54,7 +54,6 @@ const reducers = {
 const extraReducers = (builder: ActionReducerMapBuilder<ScanSlice>) => {
   builder.addCase(
     SensorAction.createSuccess,
-
     (
       draftState: ScanSlice,
       {

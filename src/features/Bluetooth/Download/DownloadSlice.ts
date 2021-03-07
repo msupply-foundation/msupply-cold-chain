@@ -1,3 +1,5 @@
+import { SensorState } from './../../Entities/Sensor/SensorSlice';
+import { SagaIterator } from '@redux-saga/types';
 import {
   call,
   getContext,
@@ -9,59 +11,73 @@ import {
   delay,
   takeLeading,
 } from 'redux-saga/effects';
-import { createSlice } from '@reduxjs/toolkit';
-
-import { MILLISECONDS, DEPENDENCY, REDUCER } from '~constants';
-
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { MILLISECONDS, DEPENDENCY, REDUCER } from '../../../common/constants';
 import { CumulativeBreachAction, ConsecutiveBreachAction } from '../../Breach';
 
-export const DownloadInitialState = {
+interface DownloadSliceState {
+  downloadingById: Record<string, boolean>;
+  passiveDownloadEnabled: boolean;
+  enabled: boolean;
+}
+
+export const DownloadInitialState: DownloadSliceState = {
   downloadingById: {},
   passiveDownloadEnabled: false,
   enabled: false,
 };
 
+interface DownloadStartPayload {
+  sensorId: string;
+}
+
 const reducers = {
-  passiveDownloadingStart: draftState => {
+  passiveDownloadingStart: (draftState: DownloadSliceState) => {
     draftState.enabled = true;
   },
-  passiveDownloadingStop: draftState => {
+  passiveDownloadingStop: (draftState: DownloadSliceState) => {
     draftState.enabled = false;
   },
   downloadStart: {
-    prepare: sensorId => ({ payload: { sensorId } }),
-    reducer: (draftState, { payload: { sensorId } }) => {
+    prepare: (sensorId: string) => ({ payload: { sensorId } }),
+    reducer: (
+      draftState: DownloadSliceState,
+      { payload: { sensorId } }: PayloadAction<DownloadStartPayload>
+    ) => {
       draftState.downloadingById[sensorId] = true;
     },
   },
   downloadComplete: {
-    prepare: sensorId => ({ payload: { sensorId } }),
-    reducer: (draftState, { payload: { sensorId } }) => {
+    prepare: (sensorId: string) => ({ payload: { sensorId } }),
+    reducer: (
+      draftState: DownloadSliceState,
+      { payload: { sensorId } }: PayloadAction<DownloadStartPayload>
+    ) => {
       draftState.downloadingById[sensorId] = false;
     },
   },
   tryManualDownloadForSensor: {
-    prepare: sensorId => ({ payload: { sensorId } }),
+    prepare: (sensorId: string) => ({ payload: { sensorId } }),
     reducer: () => {},
   },
   manualDownloadForSensorSuccess: {
-    prepare: sensorId => ({ payload: { sensorId } }),
+    prepare: (sensorId: string) => ({ payload: { sensorId } }),
     reducer: () => {},
   },
   manualDownloadForSensorFail: {
-    prepare: sensorId => ({ payload: { sensorId } }),
+    prepare: (sensorId: string) => ({ payload: { sensorId } }),
     reducer: () => {},
   },
   tryPassiveDownloadForSensor: {
-    prepare: sensorId => ({ payload: { sensorId } }),
+    prepare: (sensorId: string) => ({ payload: { sensorId } }),
     reducer: () => {},
   },
   passiveDownloadForSensorSuccess: {
-    prepare: sensorId => ({ payload: { sensorId } }),
+    prepare: (sensorId: string) => ({ payload: { sensorId } }),
     reducer: () => {},
   },
   passiveDownloadForSensorFail: {
-    prepare: sensorId => ({ payload: { sensorId } }),
+    prepare: (sensorId: string) => ({ payload: { sensorId } }),
     reducer: () => {},
   },
 };
@@ -72,7 +88,9 @@ const { actions: DownloadAction, reducer: DownloadReducer } = createSlice({
   name: REDUCER.DOWNLOAD,
 });
 
-function* tryDownloadForSensor({ payload: { sensorId } }) {
+function* tryDownloadForSensor({
+  payload: { sensorId },
+}: PayloadAction<DownloadStartPayload>): SagaIterator {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const [btService, sensorManager, downloadManager] = yield call(DependencyLocator.get, [
     DEPENDENCY.BLUETOOTH,
@@ -111,10 +129,10 @@ function* tryDownloadForSensor({ payload: { sensorId } }) {
         yield call(btService.updateLogIntervalWithRetries, macAddress, logInterval, 10);
       }
       yield put(ConsecutiveBreachAction.create(sensor));
-      yield put(DownloadAction.passiveDownloadForSensorSuccess());
+      yield put(DownloadAction.passiveDownloadForSensorSuccess(sensor.id));
       yield put(CumulativeBreachAction.fetchListForSensor(sensorId));
     } else {
-      yield put(DownloadAction.passiveDownloadForSensorFail());
+      yield put(DownloadAction.passiveDownloadForSensorFail(sensor.id));
     }
   } catch (error) {
     yield put(DownloadAction.passiveDownloadForSensorFail(error.message));
@@ -123,27 +141,27 @@ function* tryDownloadForSensor({ payload: { sensorId } }) {
   yield put(DownloadAction.downloadComplete(sensorId));
 }
 
-function* downloadTemperatures() {
+function* downloadTemperatures(): SagaIterator {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
 
   try {
     const sensors = yield call(sensorManager.getSensors);
-    const mapper = ({ id }) => put(DownloadAction.tryPassiveDownloadForSensor(id));
-    const actions = sensors.map(mapper);
+    const mapper = ({ id }: SensorState) => put(DownloadAction.tryPassiveDownloadForSensor(id));
+    const actions = (sensors as SensorState[]).map(mapper);
     yield all(actions);
     // eslint-disable-next-line no-empty
   } catch (error) {}
 }
 
-function* startPassiveDownloading() {
+function* startPassiveDownloading(): SagaIterator {
   while (true) {
     yield call(downloadTemperatures);
     yield delay(MILLISECONDS.SIXTY_SECONDS);
   }
 }
 
-function* watchPassiveDownloading() {
+function* watchPassiveDownloading(): SagaIterator {
   yield take(DownloadAction.passiveDownloadingStart);
   yield race({
     start: call(startPassiveDownloading),
@@ -151,7 +169,7 @@ function* watchPassiveDownloading() {
   });
 }
 
-function* root() {
+function* root(): SagaIterator {
   yield takeEvery(DownloadAction.tryManualDownloadForSensor, tryDownloadForSensor);
   yield takeEvery(DownloadAction.tryPassiveDownloadForSensor, tryDownloadForSensor);
   yield takeLeading(DownloadAction.passiveDownloadingStart, watchPassiveDownloading);

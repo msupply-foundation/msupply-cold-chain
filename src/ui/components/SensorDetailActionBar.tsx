@@ -1,38 +1,30 @@
-import React, { useState } from 'react';
-
-import { connect } from 'react-redux';
-
-import { DetailAction, DetailSelector } from '~features';
-
-import { SensorDetailActionBarLayout } from '~layouts';
+/* eslint-disable react/jsx-wrap-multilines */
+import React, { FC, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { DetailAction, DetailSelector } from '../../features';
+import { SensorDetailActionBarLayout } from '../layouts';
 import { ExportDataModal, WritingLogsModal } from './modal';
 import { IconButton } from './buttons';
 import { DateRangeFilter } from './DateRangeFilter';
 import { Icon } from '../presentation/icons';
+import { RootState } from '../../common/store/store';
 
-const stateToProps = state => {
-  const from = DetailSelector.from(state);
-  const to = DetailSelector.to(state);
-  const { possibleFrom, possibleTo } = DetailSelector.possibleFromTo(state);
-  const fromToRange = DetailSelector.fromToRange(state);
-  const isLoading = DetailSelector.isLoading(state);
-  return { fromToRange, possibleFrom, possibleTo, from, to, isLoading };
-};
+interface SensorDetailActionBarProps {
+  id: string;
+}
 
-const dispatchToProps = dispatch => {
-  const updateDateRange = (from, to) => dispatch(DetailAction.updateDateRange(from, to));
-  return { updateDateRange };
-};
-
-export const SensorDetailActionBarComponent = ({
-  id,
-  isLoading,
-  fromToRange,
-  possibleFrom,
-  possibleTo,
-  updateDateRange,
-}) => {
+export const SensorDetailActionBar: FC<SensorDetailActionBarProps> = ({ id }) => {
+  const dispatch = useDispatch();
   const [exportModalVariant, setExportModalVariant] = useState(null);
+  const updateDateRange = (from: number, to: number) =>
+    dispatch(DetailAction.updateDateRange(from, to));
+
+  const { possibleFrom, possibleTo } = useSelector((state: RootState) =>
+    DetailSelector.possibleFromTo(state)
+  );
+
+  const fromToRange = useSelector((state: RootState) => DetailSelector.fromToRange(state));
+  const isLoading = useSelector((state: RootState) => DetailSelector.isLoading(state));
 
   return (
     <>
@@ -48,7 +40,6 @@ export const SensorDetailActionBarComponent = ({
           ) : null
         }
         Actions={
-          // eslint-disable-next-line react/jsx-wrap-multilines
           <>
             <IconButton Icon={<Icon.Download />} onPress={() => setExportModalVariant('export')} />
             <IconButton Icon={<Icon.Email />} onPress={() => setExportModalVariant('email')} />
@@ -66,8 +57,3 @@ export const SensorDetailActionBarComponent = ({
     </>
   );
 };
-
-export const SensorDetailActionBar = connect(
-  stateToProps,
-  dispatchToProps
-)(SensorDetailActionBarComponent);

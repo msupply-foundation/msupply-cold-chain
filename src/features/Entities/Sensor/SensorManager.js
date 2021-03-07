@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { classToPlain } from 'class-transformer';
-import { ENTITIES } from '~constants';
+import { ENTITIES } from '../../../common/constants';
 
 const SENSOR_STATE = `
 with breach as (

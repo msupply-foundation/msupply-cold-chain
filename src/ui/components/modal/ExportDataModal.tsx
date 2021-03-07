@@ -18,7 +18,7 @@ interface ExportDataModalProps {
   onConfirm: () => void;
   isOpen: boolean;
   onClose: () => void;
-  variant: 'export' | 'email';
+  variant: 'export' | 'email' | null;
 }
 
 export const ExportDataModal: FC<ExportDataModalProps> = ({

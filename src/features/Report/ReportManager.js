@@ -2,7 +2,7 @@ import RNFS from 'react-native-fs';
 import Mailer from 'react-native-mail';
 import moment from 'moment';
 import { Parser } from 'json2csv';
-import { ENTITIES } from '~constants';
+import { ENTITIES } from '../../common/constants';
 
 const BREACH_CONFIG_REPORT = `
 select description "Breach Name", duration / 60000 "Number of Minutes", 

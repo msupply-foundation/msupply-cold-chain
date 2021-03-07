@@ -1,3 +1,18 @@
+import { DatabaseService } from '../../../common/services';
+
+export interface CumulativeBreach {
+  duration: number;
+  maximumTemperature: number;
+  minimumTemperature: number;
+  isHotCumulative: boolean;
+  isColdCumulative: boolean;
+}
+
+export interface CumulativeBreachLookup {
+  hot: CumulativeBreach | null;
+  cold: CumulativeBreach | null;
+}
+
 const CUMULATIVE_EXPOSURE = `
 select *, sum(logInterval), max(temperature) maximumTemperature,
 sum(logInterval) duration,
@@ -23,19 +38,30 @@ group by temperature >= hotCumulativeMinThreshold
 `;
 
 export class CumulativeBreachManager {
-  constructor(databaseService) {
+  databaseService: DatabaseService;
+
+  constructor(databaseService: DatabaseService) {
     this.databaseService = databaseService;
   }
 
-  getCumulativeExposure = async (from, to, sensorId) => {
-    const result = await this.databaseService.query(CUMULATIVE_EXPOSURE, [from, to, sensorId]);
+  getCumulativeExposure = async (
+    from: number,
+    to: number,
+    sensorId: string
+  ): Promise<CumulativeBreachLookup> => {
+    const result: CumulativeBreach[] = await this.databaseService.query(CUMULATIVE_EXPOSURE, [
+      from,
+      to,
+      sensorId,
+    ]);
 
-    const lookup = result.reduce((acc, value) => {
-      if (value.isHotCumulative) return { ...acc, hotCumulative: value };
-      if (value.isColdCumulative) return { ...acc, coldCumulative: value };
-      return acc;
-    }, {});
-
-    return lookup;
+    return result.reduce(
+      (acc: CumulativeBreachLookup, value: CumulativeBreach) => {
+        if (value.isHotCumulative) return { ...acc, hot: value };
+        if (value.isColdCumulative) return { ...acc, cold: value };
+        return acc;
+      },
+      { cold: null, hot: null }
+    );
   };
 }

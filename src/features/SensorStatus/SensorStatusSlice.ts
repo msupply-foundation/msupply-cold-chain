@@ -7,7 +7,7 @@ import { AcknowledgeBreachAction, ConsecutiveBreachAction } from '../Breach';
 import { SensorAction } from '../Entities';
 import { FormatService } from '../../common/services';
 
-interface SensorStatusState {
+export interface SensorStatus {
   name: string;
   macAddress: string;
   logInterval: number;
@@ -28,7 +28,7 @@ interface SensorStatusState {
 
 interface SensorStatusSliceState {
   fetchingById: Record<string, boolean>;
-  byId: Record<string, SensorStatusState>;
+  byId: Record<string, SensorStatus>;
 }
 
 const initialState: SensorStatusSliceState = {
@@ -46,7 +46,7 @@ const getFetchingById = ({
   return fetchingById;
 };
 
-const getStatus = (state: RootState, id: string): SensorStatusState => {
+const getStatus = (state: RootState, id: string): SensorStatus => {
   const { [id]: status } = getById(state) ?? {};
   return status;
 };
@@ -119,7 +119,7 @@ interface FetchPayload {
 
 interface FetchSuccessPayload {
   sensorId: string;
-  status: SensorStatusState;
+  status: SensorStatus;
 }
 
 interface FetchFailPayload {
@@ -137,7 +137,7 @@ const reducers = {
     },
   },
   fetchSuccess: {
-    prepare: (sensorId: string, status: SensorStatusState) => ({ payload: { sensorId, status } }),
+    prepare: (sensorId: string, status: SensorStatus) => ({ payload: { sensorId, status } }),
     reducer: (
       draftState: SensorStatusSliceState,
       { payload: { sensorId, status } }: PayloadAction<FetchSuccessPayload>

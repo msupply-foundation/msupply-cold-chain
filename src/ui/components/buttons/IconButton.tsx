@@ -11,7 +11,7 @@ const style: ViewStyle = {
 interface IconButtonProps {
   onPress: () => void;
   Icon: ReactElement<IconProps>;
-  Text: ReactElement<TextProps>;
+  Text?: ReactElement<TextProps>;
 }
 
 export const IconButton: FC<IconButtonProps> = ({ onPress, Icon, Text }) => {

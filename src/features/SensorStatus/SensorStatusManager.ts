@@ -1,3 +1,6 @@
+import { SensorStatus } from './SensorStatusSlice';
+import { DatabaseService } from '../../common/services';
+
 const SENSOR_STATUS = `
 with breach as (
   select (select count(*) > 0
@@ -58,16 +61,18 @@ const SENSOR_STATUS_ADDITIONAL =
   'select s.batteryLevel batteryLevel, temperature as currentTemperature from sensor s left join temperaturelog tl on tl.sensorid = s.id where s.id = ? order by timestamp desc limit 1';
 
 export class SensorStatusManager {
-  constructor(databaseService) {
+  databaseService: DatabaseService;
+
+  constructor(databaseService: DatabaseService) {
     this.databaseService = databaseService;
   }
 
-  getSensorStatus = async sensorId => {
+  getSensorStatus = async (sensorId: string): Promise<SensorStatus> => {
     const result = await this.databaseService.query(SENSOR_STATUS, [sensorId, sensorId, sensorId]);
     const resultTwo = await this.databaseService.query(SENSOR_STATUS_ADDITIONAL, [sensorId]);
 
     const { batteryLevel, currentTemperature = 'N/A' } = resultTwo[0] ?? {};
 
-    return { ...result[0], currentTemperature, batteryLevel };
+    return { ...result[0], currentTemperature, batteryLevel } as SensorStatus;
   };
 }

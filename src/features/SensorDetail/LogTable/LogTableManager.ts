@@ -1,3 +1,6 @@
+import { PaginationConfig } from './LogTableManager';
+import { DatabaseService } from '../../../common/services';
+
 const GET_LOGS = `
 select tl.id id,
 tl.timestamp timestamp,
@@ -22,13 +25,33 @@ limit ?
 offset ?
 `;
 
+export interface TemperatureLogRow {
+  id: string;
+  timestamp: number;
+  temperature: number;
+  isInHotBreach: boolean;
+  isInColdBreach: boolean;
+}
+
+export interface PaginationConfig {
+  offset: number;
+  limit: number;
+}
+
 export class LogTableManager {
-  constructor(databaseService) {
+  databaseService: DatabaseService;
+
+  constructor(databaseService: DatabaseService) {
     this.databaseService = databaseService;
   }
 
-  getLogs = async (from, to, id, pagination = {}) => {
-    const { offset = 0, limit = 50 } = pagination;
+  getLogs = async (
+    from: number,
+    to: number,
+    id: string,
+    pagination: PaginationConfig
+  ): Promise<TemperatureLogRow> => {
+    const { offset = 0, limit = 50 } = pagination ?? {};
     return this.databaseService.query(GET_LOGS, [from, to, id, limit, offset]);
   };
 }
