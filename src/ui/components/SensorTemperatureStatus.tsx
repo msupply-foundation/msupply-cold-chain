@@ -1,35 +1,18 @@
-import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { Animated, TouchableOpacity } from 'react-native';
-
-import { MILLISECONDS, COLOUR } from '~constants';
-import { SensorStatusSelector, AcknowledgeBreachAction } from '~features';
-
-import { Row, Centered, LargeRectangle } from '~layouts';
-import { Header, LargeText } from '~presentation/typography';
-
+import React, { FC, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Animated, TouchableOpacity, ViewStyle } from 'react-native';
+import { MILLISECONDS, COLOUR } from '../../common/constants';
+import { SensorStatusSelector, AcknowledgeBreachAction } from '../../features';
+import { Row, Centered, LargeRectangle } from '../layouts';
+import { Header, LargeText } from '../presentation/typography';
 import { Icon } from '../presentation/icons';
+import { RootState } from '../../common/store/store';
 
-const stateToProps = (state, ownProps) => {
-  const hasHotBreach = SensorStatusSelector.hasHotBreach(state, ownProps);
-  const hasColdBreach = SensorStatusSelector.hasColdBreach(state, ownProps);
-  const isLowBattery = SensorStatusSelector.isLowBattery(state, ownProps);
-  const isInDanger = SensorStatusSelector.isInDanger(state, ownProps);
-  const temperature = SensorStatusSelector.currentTemperature(state, ownProps);
-  const hasData = SensorStatusSelector.hasData(state, ownProps);
-
-  return { hasData, hasHotBreach, hasColdBreach, isLowBattery, isInDanger, temperature };
-};
-
-const dispatchToProps = (dispatch, { id }) => {
-  return { startAcknowledging: () => dispatch(AcknowledgeBreachAction.startAcknowledging(id)) };
-};
-
-const styles = {
+const styles: { icon: ViewStyle } = {
   icon: { position: 'absolute', left: 40 },
 };
 
-const getAnimations = animationValues => {
+const getAnimations = (animationValues: Animated.Value[]) => {
   return Animated.loop(
     Animated.sequence(
       animationValues.map(value => {
@@ -52,15 +35,31 @@ const getAnimations = animationValues => {
   );
 };
 
-export const SensorTemperatureStatusComponent = ({
-  temperature,
-  hasHotBreach,
-  hasColdBreach,
-  isLowBattery,
-  isInDanger,
-  startAcknowledging,
-  hasData,
-}) => {
+interface SensorTemperatureStatusProps {
+  id: string;
+}
+
+export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> = ({ id }) => {
+  const dispatch = useDispatch();
+  const startAcknowledging = () => dispatch(AcknowledgeBreachAction.startAcknowledging(id));
+
+  const hasHotBreach = useSelector((state: RootState) =>
+    SensorStatusSelector.hasHotBreach(state, { id })
+  );
+  const hasColdBreach = useSelector((state: RootState) =>
+    SensorStatusSelector.hasColdBreach(state, { id })
+  );
+  const isLowBattery = useSelector((state: RootState) =>
+    SensorStatusSelector.isLowBattery(state, { id })
+  );
+  const isInDanger = useSelector((state: RootState) =>
+    SensorStatusSelector.isInDanger(state, { id })
+  );
+  const temperature = useSelector((state: RootState) =>
+    SensorStatusSelector.currentTemperature(state, { id })
+  );
+  const hasData = useSelector((state: RootState) => SensorStatusSelector.hasData(state, { id }));
+
   if (!hasData) return null;
 
   const fadeAnim1 = React.useRef(new Animated.Value(0)).current;
@@ -105,7 +104,4 @@ export const SensorTemperatureStatusComponent = ({
   );
 };
 
-export const SensorTemperatureStatus = connect(
-  stateToProps,
-  dispatchToProps
-)(SensorTemperatureStatusComponent);
+export const SensorTemperatureStatus = SensorTemperatureStatusComponent;

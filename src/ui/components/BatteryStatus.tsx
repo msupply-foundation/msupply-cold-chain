@@ -5,8 +5,8 @@ import { LargeText, SmallText } from '../presentation/typography';
 
 interface BatteryStatusProps {
   batteryLevel: number;
-  isCharging: boolean;
-  variant: 'large';
+  isCharging?: boolean;
+  variant?: 'large' | 'small';
 }
 
 export const BatteryStatus: FC<BatteryStatusProps> = ({

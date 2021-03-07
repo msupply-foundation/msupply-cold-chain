@@ -3,8 +3,8 @@ import { COLOUR } from '../../../common/constants';
 import { Icon, ICON_NAME, ICON_SIZE } from './Icon';
 
 interface ColdBreachProps {
-  size: ICON_SIZE;
-  color: string;
+  size?: ICON_SIZE;
+  color?: string;
 }
 
 export const ColdBreach: FC<ColdBreachProps> = ({ size = ICON_SIZE.L, color = COLOUR.WHITE }) => {
