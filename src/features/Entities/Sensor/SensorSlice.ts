@@ -224,7 +224,7 @@ const getById = ({ entities: { sensor } }: RootState): ById<SensorState> => {
   return byId;
 };
 
-const getName = (state: RootState, id: string): string => {
+const getName = (state: RootState, { id }: { id: string }): string => {
   const { [id]: sensor } = getById(state);
   const { name, macAddress } = sensor ?? {};
 

@@ -17,7 +17,7 @@ import { RootState } from '../../../common/store/store';
 
 export const SensorDetailScreen: FC = () => {
   const { id } = useRouteProps<SensorStackNavigatorParameters, SENSOR_STACK.SENSOR_DETAIL>();
-  const name = useSelector((state: RootState) => SensorSelector.getName(state, id));
+  const name = useSelector((state: RootState) => SensorSelector.getName(state, { id }));
   const dispatch = useDispatch();
 
   const fetch = () => dispatch(DetailAction.fetch(id));
