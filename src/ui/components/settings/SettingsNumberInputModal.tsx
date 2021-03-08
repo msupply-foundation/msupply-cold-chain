@@ -1,16 +1,26 @@
 /* eslint-disable react/jsx-wrap-multilines */
-import { useState } from 'react';
+import React, { FC, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
-
 import { SettingsEditModal } from './SettingsEditModal';
-
-import { Slider } from '~presentation';
-import { Column, Row } from '~layouts';
-import { LargeText } from '~presentation/typography';
-import { COLOUR } from '~constants';
+import { Slider } from '../../presentation';
+import { Column, Row } from '../../layouts';
+import { LargeText } from '../../presentation/typography';
+import { COLOUR } from '../../../common/constants';
 import { useCombinedCallback } from '../../hooks';
 
-export const SettingsNumberInputModal = ({
+interface SettingsNumberInputModalProps {
+  title: string;
+  onConfirm: (newValue: { value: number }) => void;
+  initialValue: number;
+  maximumValue: number;
+  minimumValue: number;
+  step: number;
+  metric: string;
+  onClose: () => void;
+  isOpen: boolean;
+}
+
+export const SettingsNumberInputModal: FC<SettingsNumberInputModalProps> = ({
   title,
   onConfirm,
   initialValue,

@@ -1,8 +1,22 @@
+import React, { FC } from 'react';
+import { StyleProp, ViewProps } from 'react-native';
 import RNSlider from '@react-native-community/slider';
 
-import { COLOUR } from '~constants';
+import { COLOUR } from '../../common/constants';
 
-export const Slider = ({
+interface SliderProps {
+  minimumValue: number;
+  maximumValue: number;
+  isDisabled: boolean;
+  onSlidingStart: () => void;
+  onSlidingComplete: () => void;
+  onValueChange: () => void;
+  step: number;
+  value: number;
+  style: StyleProp<ViewProps>;
+}
+
+export const Slider: FC<SliderProps> = ({
   minimumValue,
   maximumValue,
   isDisabled,

@@ -1,19 +1,22 @@
 /* eslint-disable react/jsx-wrap-multilines */
+import React, { FC } from 'react';
 import { useDispatch } from 'react-redux';
-
-import { useToggle } from '~hooks';
-
+import { useToggle } from '../../hooks';
 import { SettingsItem } from './SettingsItem';
 import { SettingsAddSensorModal } from './SettingsAddSensorModal';
 import { ProgramAction, BlinkAction } from '../../../features/Bluetooth';
 
 import { ConnectingWithSensorModal } from '../modal';
 
-export const SettingsAddSensorRow = ({ macAddress }) => {
+interface SettingsAddSensorRowProps {
+  macAddress: string;
+}
+
+export const SettingsAddSensorRow: FC<SettingsAddSensorRowProps> = ({ macAddress }) => {
   const [isModalOpen, toggleModal] = useToggle(false);
   const dispatch = useDispatch();
 
-  const onConfirm = date => {
+  const onConfirm = (date: Date) => {
     toggleModal();
     dispatch(
       ProgramAction.tryProgramNewSensor(macAddress, Math.ceil(new Date(date).getTime() / 1000))

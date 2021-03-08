@@ -1,11 +1,18 @@
+import React, { FC } from 'react';
 import { ActivityIndicator } from 'react-native';
+import { COLOUR } from '../../../common/constants';
+import { NormalText, MediumText } from '../../presentation/typography';
+import { MaybeTouchableContainer, SettingsRowLayout } from '../../layouts';
 
-import { COLOUR } from '~constants';
+interface SettingsLoadingIndicatorRowProps {
+  label: string;
+  subtext: string;
+  isLoading: boolean;
+  onPress: () => void;
+  isDisabled: boolean;
+}
 
-import { NormalText, MediumText } from '~presentation/typography';
-import { MaybeTouchableContainer, SettingsRowLayout } from '~layouts';
-
-export const SettingsLoadingIndicatorRow = ({
+export const SettingsLoadingIndicatorRow: FC<SettingsLoadingIndicatorRowProps> = ({
   label = '',
   subtext = '',
   isLoading = false,

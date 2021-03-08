@@ -1,17 +1,23 @@
+import React, { FC } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
-import { useDatePicker } from '~hooks';
-import { COLOUR } from '~constants';
-
-import { Chevron } from '~presentation/icons';
-
+import { useDatePicker } from '../../hooks';
+import { COLOUR } from '../../../common/constants';
+import { Chevron } from '../../presentation/icons';
 import { SettingsItem } from './SettingsItem';
 import { Icon } from '../../presentation/icons/Icon';
 
-export const SettingsDateRow = ({
+interface SettingsDateRowProps {
+  label: string;
+  subtext: string;
+  onChangeDate: (date: Date) => void;
+  isDisabled: false;
+  initialDate: Date;
+}
+
+export const SettingsDateRow: FC<SettingsDateRowProps> = ({
   label = '',
   subtext = '',
-  onChangeDate = null,
+  onChangeDate,
   isDisabled = false,
   initialDate = new Date(),
 }) => {
