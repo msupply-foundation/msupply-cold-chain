@@ -1,12 +1,12 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { useEffect, useState } from 'react';
+import React, { ElementType, useEffect, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
-
-import { COLOUR } from '~constants';
+import { COLOUR } from '../../common/constants';
 import { useLoadAfterInteractions } from '../hooks';
 import { Centered } from '../layouts';
 
-export const withLoadAfterInteractions = WrappedComponent => props => {
+// TODO: Better types
+export const withLoadAfterInteractions = (WrappedComponent: ElementType) => (props: any) => {
   const load = useLoadAfterInteractions();
   const delay = useState(true);
 
