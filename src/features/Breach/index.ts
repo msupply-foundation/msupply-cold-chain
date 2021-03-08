@@ -1,4 +1,3 @@
-export { BreachManager } from './BreachManager';
 export { BreachReducer, BreachSaga } from './BreachSlice';
 
 export {

@@ -33,7 +33,6 @@ export {
   CumulativeBreachManager,
   BreachReducer,
   BreachSaga,
-  BreachManager,
   ConsecutiveBreachAction,
   ConsecutiveBreachSelector,
   ConsecutiveBreachSaga,
