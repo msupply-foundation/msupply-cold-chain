@@ -1,15 +1,26 @@
 /* eslint-disable react/jsx-wrap-multilines */
-import { COLOUR } from '~constants';
-import { useToggle } from '~hooks';
-
-import { Row } from '~layouts';
-import { NormalText } from '~presentation/typography';
-
+import React, { FC } from 'react';
+import { COLOUR } from '../../../common/constants';
+import { useToggle } from '../../hooks';
+import { Row } from '../../layouts';
+import { NormalText } from '../../presentation/typography';
 import { SettingsItem } from './SettingsItem';
 import { SettingsNumberInputModal } from './SettingsNumberInputModal';
-import { Icon } from '../../presentation/icons/Icon';
+import { Icon } from '../../presentation/icons';
 
-export const SettingsNumberInputRow = ({
+interface SettingsNumberInputRowProps {
+  label: string;
+  subtext: string;
+  onConfirm: () => void;
+  initialValue: number;
+  editDescription: string;
+  maximumValue: number;
+  minimumValue: number;
+  step: number;
+  metric: string;
+}
+
+export const SettingsNumberInputRow: FC<SettingsNumberInputRowProps> = ({
   label,
   subtext,
   onConfirm,

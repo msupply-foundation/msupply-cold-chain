@@ -1,18 +1,27 @@
 /* eslint-disable react/jsx-wrap-multilines */
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { useWindowDimensions } from 'react-native';
-import { TextInput } from 'react-native-gesture-handler';
+import React, { useEffect, useRef, useState, useCallback, FC } from 'react';
+import { KeyboardTypeOptions, TextInput, useWindowDimensions } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
-import { COLOUR } from '~constants';
+import { COLOUR } from '../../../common/constants';
 
-import { SmallText } from '~presentation/typography';
-import { Column, FlexPaddingView } from '~layouts';
+import { SmallText } from '../../presentation/typography';
+import { Column, FlexPaddingView } from '../../layouts';
 
 import { SettingsEditModal } from './SettingsEditModal';
 
-export const SettingsTextEditModal = ({
+interface SettingsTextEditModalProps {
+  title: string;
+  onConfirm: ({ inputValue }: { inputValue: string }) => void;
+  initialValue: string;
+  validation: any;
+  keyboardType: KeyboardTypeOptions;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const SettingsTextEditModal: FC<SettingsTextEditModalProps> = ({
   title,
   onConfirm,
   initialValue,
@@ -27,6 +36,9 @@ export const SettingsTextEditModal = ({
 
   return (
     <Formik
+      onSubmit={() => {
+        // Keep formik types happy?
+      }}
       initialValues={{ input: inputValue }}
       validationSchema={Yup.object().shape({ input: validation })}
     >
@@ -35,7 +47,7 @@ export const SettingsTextEditModal = ({
           isValid,
           inputValue,
         ]);
-        const textInputRef = useRef();
+        const textInputRef = useRef<TextInput | null>(null);
 
         useEffect(() => {
           setTimeout(() => textInputRef.current?.focus(), 100);
