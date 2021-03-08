@@ -1,16 +1,31 @@
 import { useState, useCallback } from 'react';
+import { AndroidEvent, Event as E } from '@react-native-community/datetimepicker';
 
 interface OnChangeDateCallback {
   (date: Date): void;
 }
 
-export const useDatePicker = (onChangeDate: OnChangeDateCallback) => {
+const x = typeof globalThis.Event;
+
+export const useDatePicker = (
+  onChangeDate: OnChangeDateCallback
+): [
+  isDatePickerOpen: boolean,
+  onChange: (event: AndroidEvent | E, date?: Date) => void,
+  toggleDatePicker: () => void
+] => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const onChange = useCallback(
-    ({ nativeEvent: { timestamp } }) => {
+    (event: AndroidEvent | E) => {
+      const { nativeEvent = { timestamp: 0 } } = event;
+
+      if ((nativeEvent as { timestamp: number })?.timestamp) {
+        const { timestamp } = nativeEvent as { timestamp: number };
+        if (timestamp) onChangeDate(new Date(timestamp));
+      }
+
       setIsDatePickerOpen(false);
-      if (timestamp) onChangeDate(new Date(timestamp));
     },
     [onChangeDate, setIsDatePickerOpen]
   );

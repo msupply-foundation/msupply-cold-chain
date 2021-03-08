@@ -15,7 +15,7 @@ import { Button } from '../buttons';
 
 import { SettingsEditModal } from './SettingsEditModal';
 import { BlinkSelector } from '../../../features/Bluetooth';
-import { Icon } from '../../presentation/icons/Icon';
+import { Icon } from '../../presentation/icons';
 
 const styles = {
   column: { maxHeight: STYLE.HEIGHT.SENSOR_ROW },
@@ -103,7 +103,7 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
                 </Row>
               </Pressable>
 
-              <Pressable style={styles.loggingColumns.three} onPress={toggleTimePicker}>
+              <Pressable style={styles.loggingColumns.three} onPress={() => toggleTimePicker()}>
                 <Row justifyContent="space-between">
                   <NormalText colour={COLOUR.GREY_ONE}>
                     {moment(date).format(FORMAT.DATE.STANDARD_TIME)}
