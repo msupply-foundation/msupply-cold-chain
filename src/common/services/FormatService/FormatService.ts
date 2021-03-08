@@ -1,12 +1,11 @@
 import moment from 'moment';
-
-import { SPECIAL_CHARACTER, MILLISECONDS, FORMAT } from '~constants';
-import { t } from '~translations';
+import { SPECIAL_CHARACTER, MILLISECONDS, FORMAT } from '../../constants';
+import { t } from '../../translations';
 
 export class FormatService {
-  getTickFormatter = () => {
-    let currentDay = null;
-    return tick => {
+  getTickFormatter = (): ((tick: number) => string) => {
+    let currentDay: null | number = null;
+    return (tick: number) => {
       let formatted = '';
       const nextCurrentDay = moment(tick * 1000).day();
       if (currentDay !== nextCurrentDay) {
@@ -22,27 +21,35 @@ export class FormatService {
     };
   };
 
-  deviceBatteryLevel = level => {
+  deviceBatteryLevel = (level: number): string => {
     return `${Number(level * 100).toFixed()}%`;
   };
 
-  sensorBatteryLevel = level => {
+  sensorBatteryLevel = (level: number): string => {
     return `${level}%`;
   };
 
-  headerTime = date => {
+  headerTime = (date: Date): string => {
     return moment(date).format('HH:mm');
   };
 
-  headerDate = date => {
+  headerDate = (date: Date): string => {
     return moment(date).format('DD MMMM');
   };
 
-  temperature = temperature => {
+  temperature = (temperature: number): string => {
     return `${temperature}${SPECIAL_CHARACTER.DEGREE_CELSIUS}`;
   };
 
-  listCumulativeBreach = ({ duration, minimumTemperature, maximumTemperature }) => {
+  listCumulativeBreach = ({
+    duration,
+    minimumTemperature,
+    maximumTemperature,
+  }: {
+    duration: number;
+    minimumTemperature: number;
+    maximumTemperature: number;
+  }): string => {
     const formattedDuration = moment.duration(duration, 'seconds').humanize();
     const formattedMin = `${this.temperature(minimumTemperature)}`;
     const formattedMax = `${this.temperature(maximumTemperature)}`;
@@ -52,7 +59,7 @@ export class FormatService {
     } ${formattedMax}`;
   };
 
-  lastDownloadTime = timestamp => {
-    return `${moment.duration(moment.unix(moment().unix() - timestamp)).humanize()} ${t('AGO')}`;
+  lastDownloadTime = (timestamp: number): string => {
+    return `${moment.duration(moment(moment().unix() - timestamp).unix()).humanize()} ${t('AGO')}`;
   };
 }

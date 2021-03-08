@@ -1,5 +1,5 @@
 import generateUUID from 'react-native-uuid';
 
 export class UtilService {
-  uuid = () => generateUUID.v1();
+  uuid = (): string => generateUUID.v1();
 }

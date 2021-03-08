@@ -1,3 +1,4 @@
+import { SystemSetting } from 'react-native-system-setting';
 /* eslint-disable no-empty */
 
 import { Alert } from 'react-native';
@@ -7,7 +8,7 @@ import SystemSetting from 'react-native-system-setting';
 import * as RNLocalize from 'react-native-localize';
 import * as Permissions from 'react-native-permissions';
 
-import { PERMISSION, PERMISSION_STATE } from '~constants';
+import { PERMISSION, PERMISSION_STATE } from '../../constants';
 
 /**
  * This service object is a facade over multiple different native modules ...
@@ -16,6 +17,16 @@ import { PERMISSION, PERMISSION_STATE } from '~constants';
  *
  */
 export class PermissionService {
+  settings: SystemSetting;
+
+  permissions: typeof Permissions;
+
+  deviceInfo: typeof DeviceInfo;
+
+  localizeInfo: typeof RNLocalize;
+
+  alerter: typeof Alert;
+
   constructor(
     settings = SystemSetting,
     permissions = Permissions,
@@ -30,11 +41,11 @@ export class PermissionService {
     this.alerter = alerter;
   }
 
-  checkBluetoothStatus = async () => {
+  checkBluetoothStatus = async (): Promise<boolean> => {
     return this.settings.isBluetoothEnabled();
   };
 
-  requestBluetoothEnabled = async () => {
+  requestBluetoothEnabled = async (): Promise<boolean> => {
     const isBluetoothEnabled = await this.checkBluetoothStatus();
     if (isBluetoothEnabled) return true;
 
@@ -42,31 +53,31 @@ export class PermissionService {
     return this.checkBluetoothStatus();
   };
 
-  hasLocationPermission = async () => {
+  hasLocationPermission = async (): Promise<boolean> => {
     const checkResult = await this.permissions.check(PERMISSION.LOCATION);
     return checkResult === PERMISSION_STATE.GRANTED;
   };
 
-  requestLocationPermission = async () => {
+  requestLocationPermission = async (): Promise<boolean> => {
     const requestResult = await this.permissions.request(PERMISSION.LOCATION);
     return requestResult === PERMISSION_STATE.GRANTED;
   };
 
-  hasStoragePermission = async () => {
+  hasStoragePermission = async (): Promise<boolean> => {
     const checkResult = await this.permissions.check(PERMISSION.STORAGE);
     return checkResult === PERMISSION_STATE.GRANTED;
   };
 
-  requestStoragePermission = async () => {
+  requestStoragePermission = async (): Promise<boolean> => {
     const requestResult = await this.permissions.request(PERMISSION.STORAGE, '');
     return requestResult === PERMISSION_STATE.GRANTED;
   };
 
-  checkLocationServicesStatus = async () => {
+  checkLocationServicesStatus = async (): Promise<boolean> => {
     return this.settings.isLocationEnabled();
   };
 
-  requestLocationServicesEnabled = async () => {
+  requestLocationServicesEnabled = async (): Promise<boolean> => {
     const isEnabled = await this.checkLocationServicesStatus();
 
     return new Promise(resolve => {
@@ -80,7 +91,7 @@ export class PermissionService {
             text: 'OK',
             onPress: async () => {
               await this.settings.switchLocation(async () => {
-                const result = await this.isLocationServicesEnabled();
+                const result = await this.checkLocationServicesStatus();
                 resolve(result);
               });
             },
@@ -91,25 +102,29 @@ export class PermissionService {
     });
   };
 
-  addFeatureStatusListener = async (feature, callback) => {
+  addFeatureStatusListener = async (
+    feature: 'location' | 'bluetooth',
+    callback: (newStatus: boolean) => void
+  ): Promise<void> => {
     switch (feature) {
       default: {
-        return null;
+        return;
       }
       case 'location': {
-        return this.settings.addLocationModeListener(newStatus => callback(newStatus !== 0));
+        this.settings.addLocationModeListener((newStatus: number) => callback(newStatus !== 0));
+        return;
       }
       case 'bluetooth': {
-        return this.settings.addBluetoothListener(callback);
+        this.settings.addBluetoothListener((newStatus: boolean) => callback(newStatus));
       }
     }
   };
 
-  getDeviceModel = () => {
+  getDeviceModel = (): string => {
     return this.deviceInfo.getModel();
   };
 
-  getDeviceTimezone = () => {
+  getDeviceTimezone = (): string => {
     return this.localizeInfo.getTimeZone();
   };
 }

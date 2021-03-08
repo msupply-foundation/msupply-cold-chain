@@ -1,12 +1,13 @@
 /* eslint-disable class-methods-use-this */
+
 // TODO: Bugsnag logging service
 
 export class BugsnagLoggerService {
-  breadcrumb() {
+  breadcrumb(): void {
     // TODO
   }
 
-  notify() {
+  notify(): void {
     // TODO
   }
 }
