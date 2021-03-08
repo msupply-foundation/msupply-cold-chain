@@ -1,16 +1,17 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-await-in-loop */
-
 import _ from 'lodash';
-
-import { ENTITIES, MILLISECONDS } from '~constants';
+import { Database } from './Database';
+import { ENTITIES, MILLISECONDS } from '../../constants';
 
 export class DatabaseService {
-  constructor(database) {
+  database: Database;
+
+  constructor(database: Database) {
     this.database = database;
   }
 
-  init = async () => {
+  init = async (): Promise<void> => {
     const COLD_BREACH = {
       id: 'COLD_BREACH',
       minimumTemperature: -999,
@@ -55,43 +56,40 @@ export class DatabaseService {
     ]);
   };
 
-  save = async (entityName, objectOrArray) => {
+  save = async (entityName: string, objectOrArray: any | any[]): Promise<any | any[]> => {
     const repository = await this.database.getRepository(entityName);
     return repository.save(objectOrArray);
   };
 
-  delete = async (entityName, entities) => {
-    const repository = await this.database.getRepository(entityName);
-    return repository.remove(entities);
-  };
-
-  getAll = async entityName => {
+  getAll = async (entityName: string): Promise<any | any[]> => {
     const repository = await this.database.getRepository(entityName);
     return repository.find();
   };
 
-  upsert = async (entityName, object) => {
+  upsert = async (entityName: string, object: any): Promise<any | any[]> => {
     let toSave = object;
     if (Array.isArray(object)) {
-      toSave = _.chunk(object, 500);
-      const results = await Promise.all(toSave.map(chunk => this.save(entityName, chunk)));
+      toSave = _.chunk(object, 500) as any[];
+      const results = (await Promise.all(
+        toSave.map((chunk: any) => this.save(entityName, chunk))
+      )) as any[];
       return results.flat();
     }
     return this.save(entityName, object);
   };
 
-  queryWith = async (entityName, queryObject) => {
+  queryWith = async (entityName: string, queryObject: any): Promise<any | any[]> => {
     const repository = await this.database.getRepository(entityName);
     return repository.find(queryObject);
   };
 
-  get = async (entityName, idOrQueryObject) => {
+  get = async (entityName: string, idOrQueryObject: string | any): Promise<any | any[]> => {
     const repository = await this.database.getRepository(entityName);
     return repository.findOne(idOrQueryObject);
   };
 
-  query = async (entityName, query) => {
-    const { manager } = await this.database.getConnection();
-    return manager.query(entityName, query);
+  query = async (entityName: string, query: string[]): Promise<any | any[]> => {
+    const { manager } = (await this.database.getConnection()) ?? {};
+    return manager?.query(entityName, query) ?? null;
   };
 }

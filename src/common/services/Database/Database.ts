@@ -1,4 +1,10 @@
-import { createConnection, getConnection } from 'typeorm/browser';
+import {
+  Connection,
+  ConnectionOptions,
+  createConnection,
+  getConnection,
+  Repository,
+} from 'typeorm/browser';
 import {
   SensorLog,
   TemperatureBreach,
@@ -7,9 +13,9 @@ import {
   Sensor,
   Setting,
 } from './entities';
-import { ENVIRONMENT } from '~constants';
+import { ENVIRONMENT } from '../../constants';
 
-export const getDefaultDatabaseConfig = () => ({
+export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
   type: 'react-native',
   database: 'josh52.sqlite',
   location: 'default',
@@ -40,30 +46,31 @@ export const getDefaultDatabaseConfig = () => ({
  *
  */
 export class Database {
+  config: ConnectionOptions;
+
+  connection: Connection | null;
+
   constructor(config = getDefaultDatabaseConfig()) {
     this.config = config;
     this.connection = null;
   }
 
-  createConnection = async () => {
+  createConnection = async (): Promise<Connection> => {
     try {
       this.connection = await getConnection('default');
       return this.connection;
     } catch (e) {
-      console.log('-------------------------------------------');
-      console.log('caught!');
-      console.log('-------------------------------------------');
       this.connection = await createConnection(this.config);
       return this.connection;
     }
   };
 
-  getConnection = async () => {
+  getConnection = async (): Promise<Connection | null> => {
     if (!this.connection) await this.createConnection();
     return this.connection;
   };
 
-  getRepository = async repo => {
-    return (await this.getConnection('default')).getRepository(repo);
+  getRepository = async (repo: string): Promise<any | any[]> => {
+    return (await this.getConnection())?.getRepository(repo);
   };
 }

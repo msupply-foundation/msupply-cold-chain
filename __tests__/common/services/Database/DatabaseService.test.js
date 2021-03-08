@@ -141,28 +141,6 @@ describe('DatabaseService: save', () => {
   });
 });
 
-describe('DatabaseService: delete', () => {
-  it('Calls the correct methods to save data', async () => {
-    const { database, mockRemove, mockGetRepository } = createMockDB();
-    const dbService = new DatabaseService(database);
-
-    await dbService.delete('entity', []);
-
-    expect(mockRemove).toBeCalledTimes(1);
-    expect(mockRemove).toBeCalledWith([]);
-    expect(mockGetRepository).toBeCalledTimes(1);
-    expect(mockGetRepository).toBeCalledWith('entity');
-  });
-  it('returns deleted entities', async () => {
-    const { database } = createMockDB();
-    const dbService = new DatabaseService(database);
-
-    const result = await dbService.delete('entity', []);
-
-    expect(result).toEqual([]);
-  });
-});
-
 describe('DatabaseService: getAll', () => {
   it('Calls the correct methods to get all data for an entity', async () => {
     const { database, mockFind, mockGetRepository } = createMockDB();
