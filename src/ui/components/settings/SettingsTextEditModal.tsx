@@ -16,7 +16,7 @@ interface SettingsTextEditModalProps {
   onConfirm: ({ inputValue }: { inputValue: string }) => void;
   initialValue: string;
   validation: any;
-  keyboardType: KeyboardTypeOptions;
+  keyboardType?: KeyboardTypeOptions;
   isOpen: boolean;
   onClose: () => void;
 }

@@ -1,16 +1,23 @@
 /* eslint-disable react/jsx-wrap-multilines */
-import { COLOUR } from '~constants';
-
+import React, { FC } from 'react';
+import { COLOUR } from '../../../common/constants';
 import { SettingsItem } from './SettingsItem';
 import { Row } from '../../layouts';
 import { SettingsTextEditModal } from './SettingsTextEditModal';
-
-import { useToggle, useCombinedCallback } from '~hooks';
-import { NormalText } from '~presentation/typography';
-
+import { useToggle, useCombinedCallback } from '../../hooks';
+import { NormalText } from '../../presentation/typography';
 import { Icon } from '../../presentation/icons';
 
-export const SettingsTextInputRow = ({
+interface SettingsTextInputRowProps {
+  label: string;
+  subtext: string;
+  onConfirm: () => void;
+  value: string;
+  editDescription: string;
+  validation: any;
+}
+
+export const SettingsTextInputRow: FC<SettingsTextInputRowProps> = ({
   label,
   subtext,
   onConfirm,
