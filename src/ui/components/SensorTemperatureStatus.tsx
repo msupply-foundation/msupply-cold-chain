@@ -79,7 +79,7 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
     </Centered>
   ) : (
     <TouchableOpacity onLongPress={startAcknowledging}>
-      <LargeRectangle colour={hasHotBreach ? COLOUR.DANGER : COLOUR.PRIMARY}>
+      <LargeRectangle color={hasHotBreach ? COLOUR.DANGER : COLOUR.PRIMARY}>
         <Row flex={1}>
           <Centered style={{ left: 10 }}>
             <LargeText colour={COLOUR.WHITE}>{temperature}</LargeText>

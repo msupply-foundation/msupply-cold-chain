@@ -23,7 +23,7 @@ export const SettingsItem: FC<SettingsItemProps> = ({
   <MaybeTouchableContainer isDisabled={isDisabled} onPress={onPress}>
     <SettingsRowLayout
       Text={<MediumText colour={COLOUR.GREY_ONE}>{label}</MediumText>}
-      Subtext={<NormalText colour={COLOUR.GREY_ONE}>{subtext}</NormalText>}
+      Subtext={<NormalText color={COLOUR.GREY_ONE}>{subtext}</NormalText>}
       LeftIcon={LeftIcon}
       RightComponent={RightComponent}
     />

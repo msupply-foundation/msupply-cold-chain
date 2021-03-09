@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { useOnAppFocus } from './useOnAppFocus';
 
-export const useTime = () => {
+export const useTime = (): Moment => {
   const [time, setTime] = useState(moment());
 
   useOnAppFocus(() => setTime(moment()));

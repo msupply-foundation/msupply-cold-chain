@@ -91,12 +91,12 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
               style={{ marginHorizontal: 20 }}
             >
               <Column style={styles.loggingColumns.one}>
-                <NormalText colour={COLOUR.GREY_ONE}>{t('START_LOGGING_FROM')}</NormalText>
+                <NormalText color={COLOUR.GREY_ONE}>{t('START_LOGGING_FROM')}</NormalText>
               </Column>
 
               <Pressable style={styles.loggingColumns.two} onPress={() => toggleDatePicker()}>
                 <Row justifyContent="space-between">
-                  <NormalText colour={COLOUR.GREY_ONE}>
+                  <NormalText color={COLOUR.GREY_ONE}>
                     {moment(date).format(FORMAT.DATE.STANDARD_DATE)}
                   </NormalText>
                   <Icon.Calendar />
@@ -105,7 +105,7 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
 
               <Pressable style={styles.loggingColumns.three} onPress={() => toggleTimePicker()}>
                 <Row justifyContent="space-between">
-                  <NormalText colour={COLOUR.GREY_ONE}>
+                  <NormalText color={COLOUR.GREY_ONE}>
                     {moment(date).format(FORMAT.DATE.STANDARD_TIME)}
                   </NormalText>
                   <Icon.Calendar />

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { InteractionManager } from 'react-native';
 
-export const useLoadAfterInteractions = () => {
+export const useLoadAfterInteractions = (): boolean => {
   const [load, setLoad] = useState(false);
 
   useEffect(() => {

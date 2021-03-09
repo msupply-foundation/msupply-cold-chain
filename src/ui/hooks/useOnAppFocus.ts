@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { AppState } from 'react-native';
 
-export const useOnAppFocus = callback => {
+export const useOnAppFocus = (callback: () => void): void => {
   const currentStateRef = useRef(AppState.currentState);
 
   const memoized = useCallback(

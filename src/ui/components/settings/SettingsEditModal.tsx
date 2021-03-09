@@ -26,7 +26,7 @@ export const SettingsEditModal: FC<SettingsEditModalProps> = ({
 }) => {
   return (
     <SettingsEditModalLayout
-      Title={<NormalText colour={COLOUR.GREY_ONE}>{title}</NormalText>}
+      Title={<NormalText color={COLOUR.GREY_ONE}>{title}</NormalText>}
       Content={Content}
       ButtonGroup={
         <SettingsEditButtonGroup>

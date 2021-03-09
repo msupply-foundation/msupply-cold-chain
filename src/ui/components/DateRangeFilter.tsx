@@ -25,7 +25,7 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = React.memo(
         <IconButton
           onPress={toggle}
           Icon={<Icon.Calendar />}
-          Text={<NormalText colour={COLOUR.GREY_ONE}>{initialRange.format()}</NormalText>}
+          Text={<NormalText color={COLOUR.GREY_ONE}>{initialRange.format()}</NormalText>}
         />
 
         <DateRangePicker

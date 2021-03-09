@@ -22,8 +22,8 @@ export const SettingsLoadingIndicatorRow: FC<SettingsLoadingIndicatorRowProps> =
   return (
     <MaybeTouchableContainer isDisabled={isDisabled || isLoading} onPress={onPress}>
       <SettingsRowLayout
-        Text={<MediumText colour={COLOUR.GREY_ONE}>{label}</MediumText>}
-        Subtext={<NormalText colour={COLOUR.GREY_ONE}>{subtext}</NormalText>}
+        Text={<MediumText color={COLOUR.GREY_ONE}>{label}</MediumText>}
+        Subtext={<NormalText color={COLOUR.GREY_ONE}>{subtext}</NormalText>}
         RightComponent={
           isLoading ? <ActivityIndicator color={COLOUR.PRIMARY} size="large" /> : null
         }

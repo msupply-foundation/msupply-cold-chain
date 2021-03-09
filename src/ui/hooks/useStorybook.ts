@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { DevSettings } from 'react-native';
 
-export const useStorybook = () => {
+export const useStorybook = (): boolean => {
   const [usingStorybook, setUsingStorybook] = useState(false);
 
   useEffect(() => {

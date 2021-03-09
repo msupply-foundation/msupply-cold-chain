@@ -142,7 +142,7 @@ const LargeRectangleStories = {
     </LargeRectangle>
   ),
   'with transparent background': () => (
-    <LargeRectangle colour="transparent">
+    <LargeRectangle color="transparent">
       <Text>Hello World</Text>
     </LargeRectangle>
   ),

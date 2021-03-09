@@ -9,11 +9,11 @@ const ICON_LOOKUP = {
 };
 
 interface ChevronProps {
-  direction: 'left' | 'right';
-  color: string;
+  direction?: 'left' | 'right';
+  color?: string;
 }
 
-export const Chevron: FC<ChevronProps> = ({ direction, color = COLOUR.OFF_WHITE }) => {
+export const Chevron: FC<ChevronProps> = ({ direction = 'right', color = COLOUR.OFF_WHITE }) => {
   const iconName = ICON_LOOKUP[direction];
 
   return <Icon size={ICON_SIZE.S} name={iconName} color={color} />;

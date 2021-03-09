@@ -34,7 +34,7 @@ export const AcknowledgeBreachModal: FC<AcknowledgeBreachModalProps> = ({ id }) 
     <SettingsEditModalLayout
       isOpen={handlingBreaches}
       onClose={() => dispatch(AcknowledgeBreachAction.finishAcknowledging())}
-      Title={<NormalText colour={COLOUR.GREY_ONE}>ACKNOWLEDGE BREACHES</NormalText>}
+      Title={<NormalText color={COLOUR.GREY_ONE}>ACKNOWLEDGE BREACHES</NormalText>}
       ButtonGroup={
         <SettingsEditButtonGroup>
           <SettingsEditButton
@@ -53,10 +53,9 @@ export const AcknowledgeBreachModal: FC<AcknowledgeBreachModalProps> = ({ id }) 
         ) : (
           <Column alignItems="center" flex={1} justifyContent="center">
             <FlatList
-              flex={1}
               ListEmptyComponent={
                 <Centered>
-                  <NormalText style={{ textAlign: 'left' }} colour={COLOUR.GREY_ONE}>
+                  <NormalText style={{ textAlign: 'left' }} color={COLOUR.GREY_ONE}>
                     The current breach is ongoing!
                   </NormalText>
                 </Centered>
@@ -66,20 +65,20 @@ export const AcknowledgeBreachModal: FC<AcknowledgeBreachModalProps> = ({ id }) 
                 return (
                   <Column>
                     <Centered>
-                      <NormalText style={{ textAlign: 'left' }} colour={COLOUR.GREY_ONE}>
+                      <NormalText style={{ textAlign: 'left' }} color={COLOUR.GREY_ONE}>
                         {item.temperatureBreachConfiguration.description}
                       </NormalText>
                     </Centered>
 
                     <Centered>
-                      <NormalText style={{ textAlign: 'left' }} colour={COLOUR.GREY_ONE}>
+                      <NormalText style={{ textAlign: 'left' }} color={COLOUR.GREY_ONE}>
                         {`started: ${moment(item.startTimestamp * 1000).format(
                           'DD/MM/YYYY HH:mm:ss'
                         )}`}
                       </NormalText>
                     </Centered>
                     <Centered>
-                      <NormalText style={{ textAlign: 'left' }} colour={COLOUR.GREY_ONE}>
+                      <NormalText style={{ textAlign: 'left' }} color={COLOUR.GREY_ONE}>
                         {`ended: ${moment(item.endTimestamp * 1000).format('DD/MM/YYYY HH:mm:ss')}`}
                       </NormalText>
                     </Centered>

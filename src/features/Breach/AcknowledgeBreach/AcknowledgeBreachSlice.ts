@@ -52,13 +52,11 @@ const reducers = {
       draftState.acknowledgingSensorId = sensorId;
     },
   },
-  finishAcknowledging: {
-    prepare: (sensorId: string) => ({ payload: { sensorId } }),
-    reducer: (draftState: AcknowledgeBreachSliceState) => {
-      draftState.acknowledging = false;
-      draftState.acknowledgingSensorId = '';
-    },
+  finishAcknowledging: (draftState: AcknowledgeBreachSliceState) => {
+    draftState.acknowledging = false;
+    draftState.acknowledgingSensorId = '';
   },
+
   tryAcknowledge: {
     prepare: (sensorId: string) => ({ payload: { sensorId } }),
     reducer: (draftState: AcknowledgeBreachSliceState) => {

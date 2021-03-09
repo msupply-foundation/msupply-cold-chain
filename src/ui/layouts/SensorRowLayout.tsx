@@ -1,10 +1,11 @@
+import React, { FC, ReactNode } from 'react';
 import { TouchableOpacity } from 'react-native';
 
-import { STYLE } from '~constants';
+import { STYLE } from '../../common/constants';
 
 import { Column } from './Column';
 import { Row } from './Row';
-import { HalfCircleButton } from '~components/buttons';
+import { HalfCircleButton } from '../components/buttons';
 import { Icon } from '../presentation/icons';
 
 const styles = {
@@ -14,7 +15,19 @@ const styles = {
   },
 };
 
-export const SensorRowLayout = ({ Chart, SensorStatus, onPress, direction }) => {
+interface SensorRowLayoutProps {
+  Chart: ReactNode;
+  SensorStatus: ReactNode;
+  onPress: () => void;
+  direction: 'left' | 'right';
+}
+
+export const SensorRowLayout: FC<SensorRowLayoutProps> = ({
+  Chart,
+  SensorStatus,
+  onPress,
+  direction,
+}) => {
   return (
     <TouchableOpacity onPress={onPress}>
       <Row justifyContent="space-between" alignItems="center" style={styles.row}>

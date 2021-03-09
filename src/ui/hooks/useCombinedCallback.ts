@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 
-interface CallbackWithParams {
-  (params?: any[]): void;
+// TODO: Better typing
+export interface CallbackWithParams {
+  (...args: any[]): void;
 }
 
 interface TriggeredCallback {
