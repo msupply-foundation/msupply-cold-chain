@@ -1,10 +1,18 @@
+import React, { FC, ReactNode } from 'react';
 import { ActivityIndicator, View } from 'react-native';
-
-import { COLOUR } from '~constants';
-
+import { COLOUR } from '../../common/constants';
 import { Column } from './Column';
 
-export const SensorStatusLayout = ({
+interface SensorStatusLayoutProps {
+  SensorName: ReactNode;
+  TemperatureStatus: ReactNode;
+  SensorStatusBar: ReactNode;
+  CumulativeBreach: ReactNode;
+  LastDownload: ReactNode;
+  isLoading: ReactNode;
+}
+
+export const SensorStatusLayout: FC<SensorStatusLayoutProps> = ({
   SensorName,
   TemperatureStatus,
   SensorStatusBar,
@@ -18,7 +26,7 @@ export const SensorStatusLayout = ({
         {SensorStatusBar}
         {SensorName}
       </Column>
-      <View flex={1}>{TemperatureStatus}</View>
+      <View>{TemperatureStatus}</View>
       <Column flex={1}>
         {LastDownload}
         {CumulativeBreach}

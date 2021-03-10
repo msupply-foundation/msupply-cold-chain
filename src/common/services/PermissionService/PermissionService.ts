@@ -1,23 +1,19 @@
-import { SystemSetting } from 'react-native-system-setting';
 /* eslint-disable no-empty */
-
 import { Alert } from 'react-native';
-
-import DeviceInfo from 'react-native-device-info';
 import SystemSetting from 'react-native-system-setting';
-import * as RNLocalize from 'react-native-localize';
+import DeviceInfo from 'react-native-device-info';
 import * as Permissions from 'react-native-permissions';
-
+import * as RNLocalize from 'react-native-localize';
 import { PERMISSION, PERMISSION_STATE } from '../../constants';
 
 /**
- * This service object is a facade over multiple different native modules ...
- * ... which manage different device aspects: Permissions, the state of   ...
- * ... native features and OS controlled aspects like the battery level.
+ * This service object is a facade over multiple different native modules
+ * which manage different device aspects: Permissions, the state of
+ * native features and OS controlled aspects like the battery level.
  *
  */
 export class PermissionService {
-  settings: SystemSetting;
+  settings: typeof SystemSetting;
 
   permissions: typeof Permissions;
 
@@ -90,10 +86,9 @@ export class PermissionService {
           {
             text: 'OK',
             onPress: async () => {
-              await this.settings.switchLocation(async () => {
-                const result = await this.checkLocationServicesStatus();
-                resolve(result);
-              });
+              await this.settings.switchLocation();
+              const result = await this.checkLocationServicesStatus();
+              resolve(result);
             },
           },
         ],
