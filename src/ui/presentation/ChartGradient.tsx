@@ -1,6 +1,7 @@
+import React, { FC } from 'react';
 import { Stop, Defs, LinearGradient } from 'react-native-svg';
 
-import { COLOUR } from '~constants';
+import { COLOUR } from '../../common/constants';
 
 const CONSTANTS = {
   DEFAULT_ID: 'grad',
@@ -14,7 +15,11 @@ const CONSTANTS = {
   OPACITY: '1',
 };
 
-export const ChartGradient = ({ id = CONSTANTS.DEFAULT_ID }) => (
+interface ChartGradientProps {
+  id: string;
+}
+
+export const ChartGradient: FC<ChartGradientProps> = ({ id = CONSTANTS.DEFAULT_ID }) => (
   <Defs>
     <LinearGradient id={id} x1={CONSTANTS.X1} y1={CONSTANTS.Y1} x2={CONSTANTS.X2} y2={CONSTANTS.Y2}>
       <Stop

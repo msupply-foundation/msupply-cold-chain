@@ -29,7 +29,7 @@ interface ButtonProps {
   text: string;
   onPress: () => void;
   isInModal?: boolean;
-  variant: 'standard' | 'dark';
+  variant?: 'standard' | 'dark';
 }
 
 export const Button: FC<ButtonProps> = ({
