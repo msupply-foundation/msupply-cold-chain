@@ -50,7 +50,7 @@ interface ChartProps {
 }
 
 export const Chart: FC<ChartProps> = ({
-  data,
+  data = [],
   width = STYLE.WIDTH.NORMAL_CHART,
   height = STYLE.HEIGHT.NORMAL_CHART,
   isLoading,

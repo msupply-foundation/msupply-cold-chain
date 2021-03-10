@@ -48,7 +48,7 @@ const getFetchingById = ({
 
 const getStatus = (state: RootState, id: string): SensorStatus => {
   const { [id]: status } = getById(state) ?? {};
-  return status;
+  return status ?? {};
 };
 
 const hasData = (state: RootState, { id }: { id: string }): boolean => {

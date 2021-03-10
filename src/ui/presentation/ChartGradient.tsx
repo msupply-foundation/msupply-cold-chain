@@ -16,7 +16,7 @@ const CONSTANTS = {
 };
 
 interface ChartGradientProps {
-  id: string;
+  id?: string;
 }
 
 export const ChartGradient: FC<ChartGradientProps> = ({ id = CONSTANTS.DEFAULT_ID }) => (

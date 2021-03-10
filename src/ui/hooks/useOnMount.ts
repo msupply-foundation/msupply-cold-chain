@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 export const useOnMount = (
   funcOrArray: () => void | (() => void)[],
-  cleanUpFuncOrArray: () => void | (() => void)[]
+  cleanUpFuncOrArray?: () => void | (() => void)[]
 ): void => {
   let funcToExecute: () => void = funcOrArray;
   if (Array.isArray(funcOrArray)) {
@@ -11,7 +11,7 @@ export const useOnMount = (
     };
   }
 
-  let cleanUpFunc: () => void = cleanUpFuncOrArray;
+  let cleanUpFunc: (() => void) | undefined = cleanUpFuncOrArray;
   if (Array.isArray(cleanUpFuncOrArray)) {
     cleanUpFunc = () => {
       cleanUpFuncOrArray.forEach(func => func());
