@@ -1,10 +1,10 @@
 import React, { FC, ReactNode } from 'react';
-import { Pressable, ViewProps } from 'react-native';
+import { Pressable, ViewStyle } from 'react-native';
 import Modal, { ModalProps } from 'react-native-modal';
 
 import { COLOUR } from '../../common/constants';
 
-const styles = {
+const styles: { container: ViewStyle } = {
   container: {
     backgroundColor: COLOUR.BACKGROUND_TWO,
     justifyContent: 'flex-end',
@@ -15,9 +15,9 @@ const styles = {
 
 interface FullScreenModalProps extends Partial<ModalProps> {
   isOpen: boolean;
-  onClose?: boolean;
+  onClose?: () => void;
   children: ReactNode;
-  style?: ViewProps;
+  style?: ViewStyle;
 }
 
 export const FullScreenModal: FC<FullScreenModalProps> = ({

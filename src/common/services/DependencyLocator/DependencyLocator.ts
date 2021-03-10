@@ -6,7 +6,6 @@ import { DownloadManager } from '../../../features/Bluetooth/Download/DownloadMa
 import { LogTableManager } from '../../../features/SensorDetail/LogTable/LogTableManager';
 import {
   BreachConfigurationManager,
-  BreachManager,
   ChartManager,
   ConsecutiveBreachManager,
   ReportManager,
@@ -29,12 +28,10 @@ export interface Dependencies {
   [DEPENDENCY.UTIL_SERVICE]?: UtilService;
   [DEPENDENCY.PERMISSION_SERVICE]?: PermissionService;
   [DEPENDENCY.LOGGER_SERVICE]?: DevLoggerService;
-
   [DEPENDENCY.SENSOR_MANAGER]?: SensorManager;
   [DEPENDENCY.SETTING_MANAGER]?: SettingManager;
   [DEPENDENCY.BREACH_CONFIGURATION_MANAGER]?: BreachConfigurationManager;
   [DEPENDENCY.CHART_MANAGER]?: ChartManager;
-  [DEPENDENCY.BREACH_MANAGER]?: BreachManager;
   [DEPENDENCY.LOG_TABLE_MANAGER]?: LogTableManager;
   [DEPENDENCY.DOWNLOAD_MANAGER]?: DownloadManager;
   [DEPENDENCY.REPORT_MANAGER]?: ReportManager;
@@ -56,7 +53,9 @@ class DependencyLocator {
     keyOrKeys: DEPENDENCY
   ): Dependencies[keyof Dependencies] | Dependencies[keyof Dependencies][] => {
     if (Array.isArray(keyOrKeys)) return keyOrKeys.map(key => this.get(key));
-    const dependency = this.dependencies[keyOrKeys];
+
+    const dependency: Dependencies[keyof Dependencies] = this.dependencies[keyOrKeys];
+
     return dependency;
   };
 

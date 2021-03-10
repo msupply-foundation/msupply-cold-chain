@@ -27,7 +27,7 @@ export const SettingsStackHeader: FC<SettingsStackHeaderProps> = ({ name, goBack
   return (
     <SettingsRowLayout
       LeftIcon={goBack ? <LeftIcon goBack={goBack} /> : null}
-      Text={<LargeText colour={COLOUR.SECONDARY}>{t(name)}</LargeText>}
+      Text={<LargeText color={COLOUR.SECONDARY}>{t(name)}</LargeText>}
     />
   );
 };

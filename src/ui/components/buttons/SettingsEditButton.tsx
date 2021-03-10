@@ -31,7 +31,7 @@ export const SettingsEditButton: FC<SettingsEditButtonProps> = ({
 
   return (
     <Container style={internalStyle} onPress={onPress}>
-      <MediumText colour={isDisabled ? COLOUR.GREY_TWO : COLOUR.GREY_ONE}>{text}</MediumText>
+      <MediumText color={isDisabled ? COLOUR.GREY_TWO : COLOUR.GREY_ONE}>{text}</MediumText>
     </Container>
   );
 };

@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { FC, ReactNode } from 'react';
 import { View } from 'react-native';
 import { Row } from './Row';
-import { Divider } from '~presentation';
-
-import { COLOUR, STYLE } from '~constants';
+import { Divider } from '../presentation';
+import { COLOUR, STYLE } from '../../common/constants';
 import { Column } from './Column';
 import { FlexPaddingView } from './FlexPaddingView';
 
@@ -19,7 +18,14 @@ const style = {
   leftIcon: { width: STYLE.WIDTH.SETTINGS_ICON },
 };
 
-export const SettingsRowLayout = ({
+interface SettingsRowLayoutProps {
+  Text?: ReactNode;
+  Subtext?: ReactNode;
+  LeftIcon?: ReactNode;
+  RightComponent?: ReactNode;
+}
+
+export const SettingsRowLayout: FC<SettingsRowLayoutProps> = ({
   Text = null,
   Subtext = null,
   LeftIcon = null,

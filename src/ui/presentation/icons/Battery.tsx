@@ -5,8 +5,8 @@ import { ICON_NAME, Icon, ICON_SIZE } from './Icon';
 
 interface BatteryProps extends TextStyle {
   batteryLevel: number;
-  isCharging: boolean;
-  size: ICON_SIZE;
+  isCharging?: boolean;
+  size?: ICON_SIZE;
   style?: TextStyle;
 }
 

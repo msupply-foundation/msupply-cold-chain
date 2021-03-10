@@ -82,7 +82,7 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
       <LargeRectangle color={hasHotBreach ? COLOUR.DANGER : COLOUR.PRIMARY}>
         <Row flex={1}>
           <Centered style={{ left: 10 }}>
-            <LargeText colour={COLOUR.WHITE}>{temperature}</LargeText>
+            <LargeText color={COLOUR.WHITE}>{temperature}</LargeText>
           </Centered>
 
           <Centered>

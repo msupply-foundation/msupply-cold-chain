@@ -1,13 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useWindowDimensions, View, Pressable, Keyboard } from 'react-native';
-
-import { STYLE, COLOUR } from '~constants';
-import { Divider } from '~presentation';
-
+import React, { FC, ReactNode, useCallback, useEffect, useState } from 'react';
+import { useWindowDimensions, View, Pressable, Keyboard, ViewStyle } from 'react-native';
+import { STYLE, COLOUR } from '../../common/constants';
+import { Divider } from '../presentation';
 import { Column } from './Column';
 import { FullScreenModal } from './FullScreenModal';
 
-const style = {
+const style: { container: ViewStyle } = {
   container: {
     backgroundColor: COLOUR.WHITE,
     borderRadius: STYLE.BORDER.RADIUS.RECTANGLE,
@@ -17,7 +15,21 @@ const style = {
   },
 };
 
-export const SettingsEditModalLayout = ({ Title, Content, ButtonGroup, isOpen, onClose }) => {
+interface SettingsEditModalLayoutProps {
+  Title: ReactNode;
+  Content: ReactNode;
+  ButtonGroup: ReactNode;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const SettingsEditModalLayout: FC<SettingsEditModalLayoutProps> = ({
+  Title,
+  Content,
+  ButtonGroup,
+  isOpen,
+  onClose,
+}) => {
   const { width } = useWindowDimensions();
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 

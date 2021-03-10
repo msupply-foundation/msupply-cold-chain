@@ -80,7 +80,7 @@ export const SettingsTextEditModal: FC<SettingsTextEditModalProps> = ({
                   />
                 )}
                 {errors.input ? (
-                  <SmallText colour={COLOUR.DANGER}>{errors.input}</SmallText>
+                  <SmallText color={COLOUR.DANGER}>{errors.input}</SmallText>
                 ) : (
                   <FlexPaddingView height={15} />
                 )}

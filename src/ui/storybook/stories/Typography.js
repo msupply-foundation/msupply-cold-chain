@@ -101,7 +101,7 @@ const LargeTextStories = {
   basic: () => <LargeText>Hello Storybook</LargeText>,
   'with white': () => (
     <View style={{ backgroundColor: 'black' }}>
-      <LargeText colour={COLOUR.OFF_WHITE}>3.2c</LargeText>
+      <LargeText color={COLOUR.OFF_WHITE}>3.2c</LargeText>
     </View>
   ),
   'long text': () => (
