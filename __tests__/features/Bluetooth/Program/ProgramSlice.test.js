@@ -204,7 +204,7 @@ describe('ProgramSaga', () => {
   });
   it('tryProgramSensor: fail', () => {
     const getInfoMock = jest.fn(() => {
-      throw new Error();
+      throw new Error('Josh');
     });
     const settingManager = { getSetting: () => SETTING.INT.DEFAULT_LOG_INTERVAL };
     const btService = {
@@ -219,7 +219,7 @@ describe('ProgramSaga', () => {
       payload: { macAddress: 'AA:BB:CC:DD:EE:FF', logInterval: 300 },
     })
       .provide([[getContext(DEPENDENCY.LOCATOR), depsLocator]])
-      .put(ProgramAction.programNewSensorFail('AA:BB:CC:DD:EE:FF'))
+      .put(ProgramAction.programNewSensorFail('AA:BB:CC:DD:EE:FF', 'Error: Josh'))
       .run();
   });
   it('tryProgramSensor: success', () => {

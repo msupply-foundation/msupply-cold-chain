@@ -1,5 +1,5 @@
-import { SensorState } from './../../Entities/Sensor/SensorSlice';
 import { SagaIterator } from '@redux-saga/types';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   call,
   getContext,
@@ -11,7 +11,7 @@ import {
   delay,
   takeLeading,
 } from 'redux-saga/effects';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { SensorState } from '../../Entities/Sensor/SensorSlice';
 import { MILLISECONDS, DEPENDENCY, REDUCER } from '../../../common/constants';
 import { CumulativeBreachAction, ConsecutiveBreachAction } from '../../Breach';
 

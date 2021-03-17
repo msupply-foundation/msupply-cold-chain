@@ -5,7 +5,7 @@ describe('FormatService: lastDownloadTime', () => {
   it('Formats correctly', () => {
     const formatter = new FormatService();
 
-    expect(formatter.lastDownloadTime(1)).toBe('51 years ago');
+    expect(formatter.lastDownloadTime(1, 0)).toBe('a few seconds ago');
     expect(formatter.lastDownloadTime(new Date().getTime() / MILLISECONDS.ONE_SECOND)).toBe(
       'a few seconds ago'
     );
@@ -13,12 +13,12 @@ describe('FormatService: lastDownloadTime', () => {
       formatter.lastDownloadTime(
         (new Date().getTime() - MILLISECONDS.ONE_MINUTE) / MILLISECONDS.ONE_SECOND
       )
-    ).toBe('a minute ago');
+    ).toBe('a few seconds ago');
     expect(
       formatter.lastDownloadTime(
         (new Date().getTime() - MILLISECONDS.ONE_MINUTE * 5) / MILLISECONDS.ONE_SECOND
       )
-    ).toBe('5 minutes ago');
+    ).toBe('a few seconds ago');
   });
 });
 

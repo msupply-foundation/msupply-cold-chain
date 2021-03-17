@@ -59,7 +59,7 @@ export class FormatService {
     } ${formattedMax}`;
   };
 
-  lastDownloadTime = (timestamp: number): string => {
-    return `${moment.duration(moment(moment().unix() - timestamp).unix()).humanize()} ${t('AGO')}`;
+  lastDownloadTime = (timestamp: number, now = moment().unix()): string => {
+    return `${moment.duration(moment(now - timestamp).unix()).humanize()} ${t('AGO')}`;
   };
 }

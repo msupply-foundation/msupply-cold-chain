@@ -75,7 +75,9 @@ describe('DownloadSaga', () => {
         expect(effects.put.length).toBe(5);
         expect(effects.put[0]).toEqual(put(DownloadAction.downloadStart(mockSensor.id)));
         expect(effects.put[1]).toEqual(put(ConsecutiveBreachAction.create(mockSensor)));
-        expect(effects.put[2]).toEqual(put(DownloadAction.passiveDownloadForSensorSuccess()));
+        expect(effects.put[2]).toEqual(
+          put(DownloadAction.passiveDownloadForSensorSuccess(mockSensor.id))
+        );
         expect(effects.put[3]).toEqual(
           put(CumulativeBreachAction.fetchListForSensor(mockSensor.id))
         );
@@ -96,7 +98,9 @@ describe('DownloadSaga', () => {
         const { effects } = result;
 
         expect(effects.put.length).toBe(2);
-        expect(effects.put[0]).toEqual(put(DownloadAction.passiveDownloadForSensorFail()));
+        expect(effects.put[0]).toEqual(
+          put(DownloadAction.passiveDownloadForSensorFail(mockSensor.id))
+        );
         expect(effects.put[1]).toEqual(put(DownloadAction.downloadComplete('1')));
       });
   });

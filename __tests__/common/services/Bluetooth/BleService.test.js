@@ -1,7 +1,6 @@
 import { BleManager } from 'react-native-ble-plx';
 import { BleService } from '~common/services';
-import { BLUETOOTH , BLUE_MAESTRO } from '~constants';
-
+import { BLUETOOTH, BLUE_MAESTRO } from '~constants';
 
 const createMockDevice = () => {
   const mockOnDisconnected = jest.fn(callback => {
@@ -82,7 +81,7 @@ describe('BleService: connectToDevice', () => {
     btService.connectToDevice(macAddress);
 
     expect(mockConnectToDevice).toBeCalledTimes(1);
-    expect(mockConnectToDevice).toBeCalledWith(macAddress, { scanMode: 2 });
+    expect(mockConnectToDevice).toBeCalledWith(macAddress);
   });
 });
 
@@ -96,7 +95,7 @@ describe('BleService: writeCharacteristic', () => {
     btService.connectToDevice(macAddress);
 
     expect(mockConnectToDevice).toBeCalledTimes(1);
-    expect(mockConnectToDevice).toBeCalledWith(macAddress, { scanMode: 2 });
+    expect(mockConnectToDevice).toBeCalledWith(macAddress);
   });
 });
 
@@ -115,7 +114,7 @@ describe('BleService: connectAndDiscoverServices', () => {
     await btService.connectAndDiscoverServices(macAddress);
 
     expect(mockConnectToDevice).toBeCalledTimes(1);
-    expect(mockConnectToDevice).toBeCalledWith(macAddress, { scanMode: 2 });
+    expect(mockConnectToDevice).toBeCalledWith(macAddress);
 
     expect(mockDiscoverAllServicesAndCharacteristicsForDevice).toBeCalledTimes(1);
     expect(mockDiscoverAllServicesAndCharacteristicsForDevice).toBeCalledWith(macAddress);
@@ -147,20 +146,6 @@ describe('BleService: stopScan', () => {
 
     expect(mockStopDeviceScan).toBeCalledTimes(1);
     expect(mockStopDeviceScan).toBeCalledWith();
-  });
-});
-
-describe('BleService: setScanCallback', () => {
-  it('Correctly sets the passed callback', () => {
-    const { manager } = createMockBleManager();
-
-    const btService = new BleService(manager);
-
-    const callback = () => {};
-    btService.scanCallback = callback;
-
-    // eslint-disable-next-line no-underscore-dangle
-    expect(btService._scanCallback).toBe(callback);
   });
 });
 
@@ -382,7 +367,7 @@ describe('BleService: updateLogInterval', () => {
 
     const btService = new BleService(manager);
     const result = await btService.updateLogInterval('josh', 60);
-    expect(result).toMatch(/Interval: 60s/);
+    expect(result).toEqual(true);
   });
 });
 
@@ -464,7 +449,7 @@ describe('BleService: getInfo', () => {
 
     const btService = new BleService(manager);
     const result = await btService.getInfo('josh');
-    expect(result).toEqual({ batteryLevel: '100', isDisabled: true });
+    expect(result).toEqual({ batteryLevel: 10, isDisabled: false });
   });
 });
 
@@ -535,7 +520,7 @@ describe('BleService: getInfoWithRetries', () => {
 
     const btService = new BleService(manager);
     const result = await btService.getInfoWithRetries('josh', 10);
-    expect(result).toEqual({ batteryLevel: '100', isDisabled: true });
+    expect(result).toEqual({ batteryLevel: 10, isDisabled: false });
   });
 });
 
@@ -593,7 +578,8 @@ describe('BleService: updateLogIntervalWithRetries', () => {
 
     const btService = new BleService(manager);
     const result = await btService.updateLogIntervalWithRetries('josh', 60, 10);
-    expect(result).toMatch(/Interval: 60s/);
+
+    expect(result).toEqual(true);
   });
 });
 

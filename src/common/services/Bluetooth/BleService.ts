@@ -227,7 +227,7 @@ export class BleService {
     const result = (await this.writeWithSingleResponse(
       macAddress,
       `${BLUE_MAESTRO.COMMANDS.UPDATE_LOG_INTERVAL}${logInterval}`,
-      data => !!stringFromBase64(data).match(/success/)
+      data => !!stringFromBase64(data).match(/interval/i)
     )) as boolean;
     return result;
   };

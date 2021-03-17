@@ -12,11 +12,11 @@ describe('CumulativeBreachManager: getCumulativeExposure', () => {
 
     const result = breachManager.getCumulativeExposure(0, 1, 'a');
     const resultShouldBe = {
-      coldCumulative: {
+      cold: {
         duration: 5,
         isColdCumulative: true,
       },
-      hotCumulative: {
+      hot: {
         duration: 10,
         isHotCumulative: true,
       },
@@ -31,7 +31,7 @@ describe('CumulativeBreachManager: getCumulativeExposure', () => {
     const breachManager = new CumulativeBreachManager(mockDbService);
 
     const result = breachManager.getCumulativeExposure(0, 1, 'a');
-    const resultShouldBe = { hotCumulative: { duration: 10, isHotCumulative: true } };
+    const resultShouldBe = { hot: { duration: 10, isHotCumulative: true }, cold: null };
 
     await expect(result).resolves.toEqual(resultShouldBe);
   });
@@ -42,7 +42,7 @@ describe('CumulativeBreachManager: getCumulativeExposure', () => {
     const breachManager = new CumulativeBreachManager(mockDbService);
 
     const result = breachManager.getCumulativeExposure(0, 1, 'a');
-    const resultShouldBe = { coldCumulative: { duration: 10, isColdCumulative: true } };
+    const resultShouldBe = { cold: { duration: 10, isColdCumulative: true }, hot: null };
 
     await expect(result).resolves.toEqual(resultShouldBe);
   });
@@ -53,7 +53,7 @@ describe('CumulativeBreachManager: getCumulativeExposure', () => {
     const breachManager = new CumulativeBreachManager(mockDbService);
 
     const result = breachManager.getCumulativeExposure(0, 1, 'a');
-    const resultShouldBe = {};
+    const resultShouldBe = { hot: null, cold: null };
 
     await expect(result).resolves.toEqual(resultShouldBe);
   });

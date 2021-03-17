@@ -12,6 +12,7 @@ Object {
   "DANGER": "#FA6400",
   "DIVIDER": "#E7EBEF",
   "DIVIDER_TWO": "rgba(74, 144, 266, 0.05)",
+  "GOOD": "green",
   "GREY_ONE": "#4A4A4A",
   "GREY_THREE": "#F5F7F8",
   "GREY_TWO": "#EEEEEE",
