@@ -36,6 +36,7 @@ if (__DEV__) {
 
   // Tracks redux store and actions dispatched in flipper.
   // https://github.com/jk-gan/redux-flipper
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const createDebugger = require('redux-flipper').default;
   middleware.push(createDebugger());
 }
