@@ -1,4 +1,3 @@
-import { PaginationConfig } from './LogTableManager';
 import { DatabaseService } from '../../../common/services';
 
 const GET_LOGS = `

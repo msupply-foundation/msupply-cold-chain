@@ -88,7 +88,7 @@ export class DatabaseService {
     return repository.findOne(idOrQueryObject);
   };
 
-  query = async (entityName: string, query: string[]): Promise<any | any[]> => {
+  query = async (entityName: string, query?: (string | number)[]): Promise<any | any[]> => {
     const { manager } = (await this.database.getConnection()) ?? {};
     return manager?.query(entityName, query) ?? null;
   };

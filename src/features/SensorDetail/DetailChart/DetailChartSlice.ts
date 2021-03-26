@@ -67,10 +67,6 @@ const { actions: DetailChartAction, reducer: DetailChartReducer } = createSlice(
   extraReducers,
 });
 
-interface Selector {
-  numberOfDataPoints(state: RootState): number;
-}
-
 const DetailChartSelector = {
   numberOfDataPoints: ({ sensorDetail: { detailChart } }: RootState): number => {
     const { numberOfDataPoints } = detailChart;

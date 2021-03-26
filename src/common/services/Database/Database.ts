@@ -1,10 +1,4 @@
-import {
-  Connection,
-  ConnectionOptions,
-  createConnection,
-  getConnection,
-  Repository,
-} from 'typeorm/browser';
+import { Connection, ConnectionOptions, createConnection, getConnection } from 'typeorm/browser';
 import {
   SensorLog,
   TemperatureBreach,

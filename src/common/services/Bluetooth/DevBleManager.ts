@@ -1,7 +1,4 @@
 import { Device, BleError, ScanOptions, Characteristic, Subscription } from 'react-native-ble-plx';
-/* istanbul ignore file */
-
-import { BleManager } from 'react-native-ble-plx';
 import { BluetoothManager, BluetoothDevice } from './BleService';
 
 interface MonitorCallback {

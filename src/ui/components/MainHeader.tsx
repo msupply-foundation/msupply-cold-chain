@@ -18,8 +18,8 @@ interface MainHeaderProps {
 }
 
 export const MainHeader: FC = withFormatService(({ formatter }: MainHeaderProps) => {
-  const batteryLevel = useBatteryLevel();
-  const isCharging = usePowerState();
+  const batteryLevel = useBatteryLevel() ?? 0;
+  const isCharging = usePowerState() === 'charging';
   const timeNow = useTime();
 
   return (
@@ -27,12 +27,12 @@ export const MainHeader: FC = withFormatService(({ formatter }: MainHeaderProps)
       <Icon.MsupplyMan />
 
       <Row>
-        <BatteryStatus
-          batteryLevel={formatter.deviceBatteryLevel(batteryLevel)}
-          isCharging={isCharging}
-        />
+        <BatteryStatus batteryLevel={batteryLevel} isCharging={isCharging} />
         <View style={{ width: 20 }} />
-        <DateAndTime date={formatter.headerDate(timeNow)} time={formatter.headerTime(timeNow)} />
+        <DateAndTime
+          date={formatter.headerDate(timeNow.toDate())}
+          time={formatter.headerTime(timeNow.toDate())}
+        />
       </Row>
     </Row>
   );

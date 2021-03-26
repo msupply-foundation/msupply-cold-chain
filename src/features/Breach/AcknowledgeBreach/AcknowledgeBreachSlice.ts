@@ -119,7 +119,7 @@ function* tryFetchUnacknowledged({
     const breaches = yield call(breachManager.getUnacknowledged, sensorId);
     yield put(AcknowledgeBreachAction.fetchUnacknowledgedSuccess(breaches));
   } catch (error) {
-    yield put(AcknowledgeBreachAction.fetchUnacknowledgedFail());
+    yield put(AcknowledgeBreachAction.fetchUnacknowledgedFail(sensorId));
   }
 }
 

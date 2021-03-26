@@ -1,5 +1,5 @@
 import React, { FC, ReactElement } from 'react';
-import { Pressable, Text as RNText, TextProps, ViewStyle } from 'react-native';
+import { Pressable, TextProps, ViewStyle } from 'react-native';
 import { IconProps } from '../../presentation/icons/Icon';
 
 const style: ViewStyle = {

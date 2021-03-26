@@ -65,7 +65,7 @@ export class PermissionService {
   };
 
   requestStoragePermission = async (): Promise<boolean> => {
-    const requestResult = await this.permissions.request(PERMISSION.STORAGE, '');
+    const requestResult = await this.permissions.request(PERMISSION.STORAGE);
     return requestResult === PERMISSION_STATE.GRANTED;
   };
 

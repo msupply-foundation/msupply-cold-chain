@@ -52,7 +52,7 @@ const reducers = {
     },
   },
   flush: (draftState: DetailSliceState) => {
-    draftState.id = initialState.id;
+    draftState.sensorId = initialState.sensorId;
     draftState.from = initialState.from;
     draftState.to = initialState.to;
     draftState.isLoading = initialState.isLoading;
