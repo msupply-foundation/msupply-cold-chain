@@ -18,7 +18,7 @@ const styles = {
 interface SensorRowLayoutProps {
   Chart: ReactNode;
   SensorStatus: ReactNode;
-  onPress: () => void;
+  onPress: (() => void) | null;
   direction: 'left' | 'right';
 }
 

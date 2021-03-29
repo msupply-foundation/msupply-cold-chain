@@ -21,17 +21,17 @@ export const SensorDetailScreen: FC = () => {
   const dispatch = useDispatch();
 
   const fetch = () => dispatch(DetailAction.fetch(id));
-  const flush = () => dispatch(DetailAction.flush(id));
+  const flush = () => dispatch(DetailAction.flush());
 
-  useOnMount(flush, fetch);
+  useOnMount([flush, fetch]);
   useHideTabBar();
 
   return (
     <SensorDetailScreenLayout
       ActionBar={<SensorDetailActionBar id={id} />}
       Name={<LargeText>{name}</LargeText>}
-      CumulativeBreach={<SensorDetailCumulativeBreachStatus id={id} />}
-      Chart={<SensorDetailChart id={id} />}
+      CumulativeBreach={<SensorDetailCumulativeBreachStatus />}
+      Chart={<SensorDetailChart />}
       Table={<SensorLogsTable id={id} />}
     />
   );

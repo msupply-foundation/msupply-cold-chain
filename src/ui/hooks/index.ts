@@ -10,3 +10,4 @@ export { useOnMount } from './useOnMount';
 export { useCallbackOnGainingFocus } from './useCallbackOnFocus';
 export { useHideTabBar } from './useHideTabBar';
 export { useLoadAfterInteractions } from './useLoadAfterInteractions';
+export { useFormatter } from './useFormatter';

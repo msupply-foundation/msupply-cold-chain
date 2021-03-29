@@ -27,7 +27,7 @@ export const MainHeader: FC = withFormatService(({ formatter }: MainHeaderProps)
       <Icon.MsupplyMan />
 
       <Row>
-        <BatteryStatus batteryLevel={batteryLevel} isCharging={isCharging} />
+        <BatteryStatus batteryLevel={Math.ceil(batteryLevel * 100)} isCharging={isCharging} />
         <View style={{ width: 20 }} />
         <DateAndTime
           date={formatter.headerDate(timeNow.toDate())}

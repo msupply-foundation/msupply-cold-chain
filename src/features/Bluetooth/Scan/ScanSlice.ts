@@ -1,3 +1,5 @@
+import _ from 'lodash';
+import { Buffer } from 'buffer';
 import { eventChannel } from 'redux-saga';
 import { SagaIterator } from '@redux-saga/types';
 import { ActionReducerMapBuilder, createSlice } from '@reduxjs/toolkit';
@@ -11,6 +13,7 @@ import {
   takeLeading,
   select,
 } from 'redux-saga/effects';
+import { BLUE_MAESTRO } from './../../../common/constants/Bluetooth';
 import { DEPENDENCY, REDUCER } from '../../../common/constants';
 import { SensorSelector, SensorAction } from '../../Entities';
 import { RootState } from '../../../common/store/store';
@@ -107,9 +110,16 @@ export function* stop(): SagaIterator {
 
 // TODO: Fix type
 export function callback(btService: BleService): any {
+  const throttledScan = _.throttle(btService.scanForSensors, 1000);
   return eventChannel(emitter => {
-    btService.scanForSensors((_, device) => {
-      emitter(device);
+    throttledScan((__, device) => {
+      // TODO: Make more generic.
+      if (device && device?.manufacturerData) {
+        const isBlueMaestroDevice =
+          Buffer.from(device.manufacturerData, 'base64').readInt16LE(0) ===
+          BLUE_MAESTRO.MANUFACTURER_ID;
+        if (isBlueMaestroDevice) emitter(device);
+      }
     });
     return () => {};
   });

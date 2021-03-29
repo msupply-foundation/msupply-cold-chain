@@ -61,11 +61,6 @@ const iconComponentFromIconName = (name: ICON_NAME): typeof FontAwesome => {
   const lookup = {
     [ICON_NAME.POWER_PLUG_ON]: MaterialCommunityIcon,
     [ICON_NAME.POWER_PLUG_OFF]: MaterialCommunityIcon,
-    [ICON_NAME.BATTERY_EMPTY]: MaterialCommunityIcon,
-    [ICON_NAME.BATTERY_ONE]: MaterialCommunityIcon,
-    [ICON_NAME.BATTERY_TWO]: MaterialCommunityIcon,
-    [ICON_NAME.BATTERY_THREE]: MaterialCommunityIcon,
-    [ICON_NAME.BATTERY_FOUR]: MaterialCommunityIcon,
 
     [ICON_NAME.BATTERY_CHARGING]: Feather,
   };

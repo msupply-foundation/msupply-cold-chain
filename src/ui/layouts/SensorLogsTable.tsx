@@ -36,18 +36,21 @@ const SensorLogsCell: FC<SensorLogsCellProps> = ({
   breachType,
 }) => {
   if (columnKey === 'isInBreach') {
+    const icon =
+      breachType === 'cold' ? (
+        <Icon.ColdBreach size={ICON_SIZE.S} color={COLOUR.PRIMARY} />
+      ) : (
+        <Icon.HotBreach size={ICON_SIZE.S} color={COLOUR.DANGER} />
+      );
+
+    const iconOrNull = data ? icon : null;
+
     return (
       <Centered
         flex={flex}
-        style={[!isLast ? { borderRightColor: COLOUR.DIVIDER_TWO, borderRightWidth: 5 } : {}]}
+        style={!isLast ? { borderRightColor: COLOUR.DIVIDER_TWO, borderRightWidth: 5 } : {}}
       >
-        {(!!data &&
-          (breachType === 'cold' ? (
-            <Icon.ColdBreach size={ICON_SIZE.S} color={COLOUR.PRIMARY} />
-          ) : (
-            <Icon.HotBreach size={ICON_SIZE.S} color={COLOUR.DANGER} />
-          ))) ||
-          null}
+        {iconOrNull}
       </Centered>
     );
   }

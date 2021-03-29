@@ -17,6 +17,7 @@ import { SensorChartRow } from '../../components';
 import { AcknowledgeBreachModal } from '../../components/modal/AcknowledgeBreachModal';
 import { Gradient } from '../../layouts';
 import { RootState } from '../../../common/store/store';
+import { SensorState } from '../../../features/Entities/Sensor/SensorSlice';
 
 export const SensorListScreen: FC = () => {
   const navigation = useNavigation();
@@ -27,15 +28,26 @@ export const SensorListScreen: FC = () => {
 
   const dispatch = useDispatch();
   const getSensors = () => dispatch(SensorAction.fetchAll());
-  const startPassiveDownloading = () => dispatch(DownloadAction.passiveDownloadingStart());
-  const startBatteryObserving = () => dispatch(BatteryObserverAction.start());
+
+  const startPassiveDownloading = () => {
+    dispatch(DownloadAction.passiveDownloadingStart());
+  };
+
+  const startBatteryObserving = () => {
+    dispatch(BatteryObserverAction.start());
+  };
 
   useOnMount([startPassiveDownloading, startBatteryObserving]);
   useCallbackOnGainingFocus(getSensors);
 
-  const renderItem = useCallback(({ item: { id } }) => {
+  // TODO: Typings??
+  // eslint-disable-next-line react/no-unused-prop-types
+  const renderItem = useCallback(({ item: { id } }: { item: { id: string } }) => {
     const sensorDetailScreen = NAVIGATION.SCREENS.SENSOR_STACK.SENSOR_DETAIL;
-    const onPress = () => navigation.navigate(sensorDetailScreen, { id });
+    const onPress = () => {
+      console.log('id', id);
+      navigation.navigate(sensorDetailScreen, { id });
+    };
     return <SensorChartRow id={id} onPress={onPress} />;
   }, []);
 

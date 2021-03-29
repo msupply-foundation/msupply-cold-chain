@@ -7,8 +7,8 @@ import { FormatService } from '../../../common/services';
 import { RootState } from '../../../common/store/store';
 
 interface CumulativeBreach {
-  hotCumulative: TemperatureCumulativeBreach;
-  coldCumulative: TemperatureCumulativeBreach;
+  hot: TemperatureCumulativeBreach;
+  cold: TemperatureCumulativeBreach;
 }
 
 interface TemperatureCumulativeBreach {
@@ -95,9 +95,9 @@ const detailColdCumulative = (
   { formatter }: { formatter: FormatService }
 ): string => {
   const { detail } = cumulative;
-  const { coldCumulative } = detail ?? {};
+  const { cold } = detail ?? {};
 
-  return coldCumulative ? formatter.listCumulativeBreach(coldCumulative) : '';
+  return cold ? formatter.listCumulativeBreach(cold) : '';
 };
 
 const detailHotCumulative = (
@@ -105,9 +105,9 @@ const detailHotCumulative = (
   { formatter }: { formatter: FormatService }
 ): string => {
   const { detail } = cumulative;
-  const { hotCumulative } = detail ?? {};
+  const { hot } = detail ?? {};
 
-  return hotCumulative ? formatter.listCumulativeBreach(hotCumulative) : '';
+  return hot ? formatter.listCumulativeBreach(hot) : '';
 };
 
 const listColdCumulative = (
@@ -116,9 +116,9 @@ const listColdCumulative = (
 ): string => {
   const { listById } = cumulative;
   const { [id]: listCumulative } = listById;
-  const { coldCumulative } = listCumulative;
+  const { cold } = listCumulative ?? {};
 
-  return coldCumulative ? formatter.listCumulativeBreach(coldCumulative) : '';
+  return cold ? formatter.listCumulativeBreach(cold) : '';
 };
 
 const listHotCumulative = (
@@ -127,9 +127,9 @@ const listHotCumulative = (
 ): string => {
   const { listById } = cumulative;
   const { [id]: listCumulative } = listById;
-  const { hotCumulative } = listCumulative ?? {};
+  const { hot } = listCumulative ?? {};
 
-  return hotCumulative ? formatter.listCumulativeBreach(hotCumulative) : '';
+  return hot ? formatter.listCumulativeBreach(hot) : '';
 };
 
 const CumulativeBreachSelector = {

@@ -44,8 +44,8 @@ const round5 = (n: number) => {
 
 interface ChartProps {
   data: ChartDataPoint[];
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   isLoading: boolean;
 }
 

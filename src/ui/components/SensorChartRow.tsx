@@ -14,7 +14,6 @@ import {
 import { SensorRowLayout } from '../layouts';
 import { Chart } from '../presentation';
 import { SensorStatus } from './SensorStatus';
-import { withFormatService } from '../hoc/withFormatService';
 import { RootState } from '../../common/store/store';
 
 interface SensorChartRowProps {
@@ -22,7 +21,7 @@ interface SensorChartRowProps {
   onPress: () => void;
 }
 
-export const SensorChartRowComponent: FC<SensorChartRowProps> = React.memo(({ id, onPress }) => {
+export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, onPress }) => {
   const dispatch = useDispatch();
   const fetchStatus = () => dispatch(SensorStatusAction.fetch(id));
   const fetchChartData = () => dispatch(ChartAction.getListChartData(id));
@@ -43,7 +42,7 @@ export const SensorChartRowComponent: FC<SensorChartRowProps> = React.memo(({ id
   return (
     <SensorRowLayout
       onPress={hasData && !isLoadingChartData ? () => onPress() : null}
-      Chart={<Chart isLoading={isLoadingChartData} onPress={onPress} data={data} />}
+      Chart={<Chart isLoading={isLoadingChartData} data={data} />}
       SensorStatus={
         <SensorStatus name={name} isLoading={isLoadingStatus} hasData={hasData} id={id} />
       }
@@ -51,5 +50,3 @@ export const SensorChartRowComponent: FC<SensorChartRowProps> = React.memo(({ id
     />
   );
 });
-
-export const SensorChartRow = withFormatService(SensorChartRowComponent);

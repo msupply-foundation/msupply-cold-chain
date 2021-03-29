@@ -29,7 +29,7 @@ export const LoadAfterInteractions: FC<LoadAfterInteractionsProps> = ({
   }, []);
 
   if (load && children) {
-    return <>children</>;
+    return <>{children}</>;
   }
 
   if (delay) {

@@ -1,14 +1,16 @@
 import { useEffect } from 'react';
 
 export const useOnMount = (
-  funcOrArray: () => void | (() => void)[],
+  funcOrArray: (() => void) | (() => void)[],
   cleanUpFuncOrArray?: () => void | (() => void)[]
 ): void => {
-  let funcToExecute: () => void = funcOrArray;
+  let funcToExecute: () => void;
   if (Array.isArray(funcOrArray)) {
     funcToExecute = () => {
       funcOrArray.forEach(func => func());
     };
+  } else {
+    funcToExecute = funcOrArray;
   }
 
   let cleanUpFunc: (() => void) | undefined = cleanUpFuncOrArray;
