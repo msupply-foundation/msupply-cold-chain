@@ -2,16 +2,16 @@
 
 /* eslint-disable import/no-cycle */
 import {
-    EventSubscriber,
-    EntitySubscriberInterface,
-    InsertEvent,
-    AfterInsert,
-    AfterUpdate,
-  } from 'typeorm/browser';
-    
+  EventSubscriber,
+  EntitySubscriberInterface,
+  InsertEvent,
+  AfterInsert,
+  AfterUpdate,
+} from 'typeorm/browser';
+
 import { Sensor } from '../entities';
 
-import { ENTITIES } from '../../../constants';
+import { SyncService } from '../../SyncService/SyncService';
 
 @EventSubscriber()
 class SensorSubscriber implements EntitySubscriberInterface {
@@ -21,15 +21,13 @@ class SensorSubscriber implements EntitySubscriberInterface {
 
   @AfterInsert()
   public async afterInsert(event: InsertEvent<any>) {
-    const { entity, manager } = event;
-    manager.save(ENTITIES.SYNC_QUEUE, { type: ENTITIES.SENSOR, payload: JSON.stringify(entity) });
+    new SyncService(event).log();
   }
 
   @AfterUpdate()
   public async afterUpdate(event: InsertEvent<any>) {
-    const { entity, manager } = event;
-    manager.save(ENTITIES.SYNC_QUEUE, { type: ENTITIES.SENSOR, payload: JSON.stringify(entity) });
+    new SyncService(event).log();
   }
 }
 
-export { SensorSubscriber }
+export { SensorSubscriber };

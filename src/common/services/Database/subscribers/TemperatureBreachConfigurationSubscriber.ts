@@ -2,41 +2,32 @@
 
 /* eslint-disable import/no-cycle */
 import {
-    EntitySubscriberInterface,
-    EventSubscriber,
-    AfterInsert,
-    InsertEvent,
-    AfterUpdate,
-  } from 'typeorm/browser';
-  
-  import { TemperatureBreachConfiguration } from '../entities';
-  
-  import { ENTITIES } from '../../../constants';
+  EntitySubscriberInterface,
+  EventSubscriber,
+  AfterInsert,
+  InsertEvent,
+  AfterUpdate,
+} from 'typeorm/browser';
 
-  @EventSubscriber()
-  class TemperatureBreachConfigurationSubscriber implements EntitySubscriberInterface {
-    public listenTo() {
-      return TemperatureBreachConfiguration;
-    }
-  
-    @AfterInsert()
-    public async afterInsert(event: InsertEvent<any>) {
-      const { entity, manager } = event;
-      manager.save(ENTITIES.SYNC_QUEUE, {
-        type: ENTITIES.TEMPERATURE_BREACH_CONFIGURATION,
-        payload: JSON.stringify(entity),
-      });
-    }
-  
-    @AfterUpdate()
-    public async afterUpdate(event: InsertEvent<any>) {
-      const { entity, manager } = event;
-      manager.save(ENTITIES.SYNC_QUEUE, {
-        type: ENTITIES.TEMPERATURE_BREACH_CONFIGURATION,
-        payload: JSON.stringify(entity),
-      });
-    }
+import { TemperatureBreachConfiguration } from '../entities';
+
+import { SyncService } from '../../SyncService';
+
+@EventSubscriber()
+class TemperatureBreachConfigurationSubscriber implements EntitySubscriberInterface {
+  public listenTo() {
+    return TemperatureBreachConfiguration;
   }
-  
-  export { TemperatureBreachConfigurationSubscriber };
-  
+
+  @AfterInsert()
+  public async afterInsert(event: InsertEvent<any>) {
+    new SyncService(event).log();
+  }
+
+  @AfterUpdate()
+  public async afterUpdate(event: InsertEvent<any>) {
+    new SyncService(event).log();
+  }
+}
+
+export { TemperatureBreachConfigurationSubscriber };
