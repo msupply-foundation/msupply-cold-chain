@@ -6,7 +6,7 @@ import {
   TemperatureLog,
   Sensor,
   Setting,
-  SyncQueue,
+  SyncLog,
 } from './entities';
 
 import {
@@ -37,7 +37,7 @@ export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
     TemperatureBreach,
     TemperatureBreachConfiguration,
     Setting,
-    SyncQueue,
+    SyncLog,
   ],
   subscribers: [
     SensorSubscriber,
