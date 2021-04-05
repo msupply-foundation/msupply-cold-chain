@@ -1,35 +1,36 @@
 /* istanbul ignore file */
 
 /* eslint-disable import/no-cycle */
-import { Entity, Column, OneToMany } from 'typeorm/browser';
+import { OneToMany, Entity, Column } from 'typeorm/browser';
+
 import { Base } from './Base';
 import { TemperatureBreach } from './TemperatureBreach';
 
 @Entity('TemperatureBreachConfiguration')
 class TemperatureBreachConfiguration extends Base {
   @Column({ type: 'double', nullable: false })
-  minimumTemperature;
+  minimumTemperature!: number;
 
   @Column({ type: 'double', nullable: false })
-  maximumTemperature;
+  maximumTemperature!: number;
 
   @Column({ type: 'integer', nullable: false })
-  duration;
+  duration!: number;
 
   @Column({ type: 'varchar', length: 7, nullable: true })
-  colour;
+  colour!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  description;
+  description!: string;
 
   @OneToMany(
     () => TemperatureBreach,
-    temperatureBreach => temperatureBreach.TemperatureBreachConfiguration,
+    (temperatureBreach: TemperatureBreach) => temperatureBreach.temperatureBreachConfiguration,
     {
       cascade: ['insert', 'update'],
     }
   )
-  temperatureBreaches;
+  temperatureBreaches!: TemperatureBreach[];
 }
 
 export { TemperatureBreachConfiguration };
