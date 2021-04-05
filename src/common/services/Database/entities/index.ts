@@ -4,3 +4,4 @@ export { TemperatureLog } from './TemperatureLog';
 export { TemperatureBreach } from './TemperatureBreach';
 export { TemperatureBreachConfiguration } from './TemperatureBreachConfiguration';
 export { Setting } from './Setting';
+export { SyncQueue } from './SyncQueue';
