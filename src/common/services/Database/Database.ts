@@ -6,7 +6,17 @@ import {
   TemperatureLog,
   Sensor,
   Setting,
+  SyncQueue,
 } from './entities';
+
+import {
+  SensorSubscriber,
+  SensorLogSubscriber,
+  TemperatureBreachConfigurationSubscriber,
+  TemperatureBreachSubscriber,
+  TemperatureLogSubscriber 
+} from './subscribers'
+
 import { ENVIRONMENT } from '../../constants';
 
 export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
@@ -27,6 +37,14 @@ export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
     TemperatureBreach,
     TemperatureBreachConfiguration,
     Setting,
+    SyncQueue,
+  ],
+  subscribers: [
+    SensorSubscriber,
+    SensorLogSubscriber,
+    TemperatureLogSubscriber,
+    TemperatureBreachSubscriber,
+    TemperatureBreachConfigurationSubscriber,
   ],
 });
 
