@@ -14,8 +14,8 @@ import {
   SensorLogSubscriber,
   TemperatureBreachConfigurationSubscriber,
   TemperatureBreachSubscriber,
-  TemperatureLogSubscriber 
-} from './subscribers'
+  TemperatureLogSubscriber,
+} from './subscribers';
 
 import { ENVIRONMENT } from '../../constants';
 
@@ -49,7 +49,7 @@ export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
 });
 
 /**
- * Interface for connections to a database. If a previously created 
+ * Interface for connections to a database. If a previously created
  * connection exists, then return that connection. Otherwise, create
  * a new connection using the passed parameters.
  *

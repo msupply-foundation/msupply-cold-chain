@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { EntitySubscriberInterface, PrimaryGeneratedColumn } from 'typeorm/browser';
+import { PrimaryGeneratedColumn } from 'typeorm/browser';
 
 abstract class Base {
   @PrimaryGeneratedColumn('uuid')

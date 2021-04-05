@@ -11,7 +11,7 @@ import {
 
 import { Sensor } from '../entities';
 
-import { SyncService } from '../../SyncService/SyncService';
+import { SyncService } from '../../SyncService';
 
 @EventSubscriber()
 class SensorSubscriber implements EntitySubscriberInterface {
