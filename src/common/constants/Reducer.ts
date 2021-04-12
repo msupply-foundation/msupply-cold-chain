@@ -1,5 +1,6 @@
 export enum REDUCER {
   DATABASE = 'database',
+  DEV = 'dev',
   BLUETOOTH = 'bluetooth',
   SENSORS = 'sensors',
   TEMPERATURE_LOGS = 'temperatureLogs',

@@ -64,7 +64,7 @@ export {
   SensorAction,
   SensorSelector,
   SensorSaga,
-  SensorManager,
+  SensorManager
 } from './Entities';
 
 export {
@@ -107,3 +107,18 @@ export {
 } from './SensorDetail';
 
 export {
+  SyncAction,
+  SyncReducer,
+  SyncSelector,
+  SyncSaga,
+  SyncQueueManager,
+  SyncOutManager
+} from './Sync';
+
+export {
+  DevReducer,
+  DevAction,
+  DevSelector,
+  DevSaga,
+  DevManager
+} from './Dev';

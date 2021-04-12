@@ -15,6 +15,7 @@ import {
   FormatService,
   BugsnagLoggerService,
   DevLoggerService,
+  DevService,
   DevBleManager,
   DependencyLocatorContext,
 } from '../../common/services';
@@ -24,13 +25,16 @@ import {
   ReportManager,
   DownloadManager,
   LogTableManager,
+  ChartManager,
   CumulativeBreachManager,
   ConsecutiveBreachManager,
   AcknowledgeBreachManager,
-  ChartManager,
   BreachConfigurationManager,
   SettingManager,
   SensorManager,
+  SyncQueueManager,
+  SyncOutManager,
+  DevManager
 } from '../../features';
 
 export const DependencyContainer: FC = ({ children }) => {
@@ -47,6 +51,7 @@ export const DependencyContainer: FC = ({ children }) => {
     const exportService = new ExportService();
     const devLogger = new DevLoggerService();
     const bugsnagLogger = new BugsnagLoggerService();
+    const devService = new DevService();
 
     DependencyLocator.register(DEPENDENCY.PERMISSION_SERVICE, permissionService);
     DependencyLocator.register(
@@ -73,6 +78,9 @@ export const DependencyContainer: FC = ({ children }) => {
     const sensorsManager = new SensorManager(dbService, utilService);
     const reportManager = new ReportManager(dbService, exportService, permissionService);
     const sensorStatusManager = new SensorStatusManager(dbService);
+    const syncQueueManager = new SyncQueueManager(dbService);
+    const syncOutManager = new SyncOutManager();
+    const devManager = new DevManager(dbService, utilService, devService);
 
     DependencyLocator.register(DEPENDENCY.BREACH_CONFIGURATION_MANAGER, breachConfigurationManager);
     DependencyLocator.register(DEPENDENCY.SENSOR_MANAGER, sensorsManager);
@@ -85,6 +93,9 @@ export const DependencyContainer: FC = ({ children }) => {
     DependencyLocator.register(DEPENDENCY.REPORT_MANAGER, reportManager);
     DependencyLocator.register(DEPENDENCY.SENSOR_STATUS_MANAGER, sensorStatusManager);
     DependencyLocator.register(DEPENDENCY.ACKNOWLEDGE_BREACH_MANAGER, ackBreachManager);
+    DependencyLocator.register(DEPENDENCY.SYNC_QUEUE_MANAGER, syncQueueManager);
+    DependencyLocator.register(DEPENDENCY.SYNC_OUT_MANAGER, syncOutManager);
+    DependencyLocator.register(DEPENDENCY.DEV_MANAGER, devManager);
 
     (async () => {
       await db.getConnection();
