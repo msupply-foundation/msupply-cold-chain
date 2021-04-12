@@ -1,27 +1,22 @@
-
-import moment from 'moment';
-import { InsertEvent, UpdateEvent, EntityManager, EntityMetadata } from 'typeorm/browser';
-
-import { Base } from '../Database/entities';
+import { EntityManager } from 'typeorm/browser';
 import { ENTITIES } from '../../constants';
 
-class SyncService {
-    private entity: Base;
-    private manager: EntityManager;
-    private metadata: EntityMetadata;
+import { UtilService } from '../UtilService';
 
-    constructor(event: InsertEvent<any> | UpdateEvent<any>) {
-        this.entity = event.entity;
-        this.manager = event.manager;
-        this.metadata = event.metadata;
+
+class SyncService {
+    private manager: EntityManager;
+
+    constructor(manager: EntityManager) {
+        this.manager = manager;
     }
 
-    public async log() {
+    public async log(id: string, type: string, payload: string) {
         this.manager.save(ENTITIES.SYNC_LOG, {
-            id: this.entity.id,
-            type: this.metadata.tableName,
-            payload: JSON.stringify(this.entity),
-            timestamp: moment().unix(),
+            id,
+            type,
+            payload,
+            timestamp: new UtilService().now()
         });
     }
 }

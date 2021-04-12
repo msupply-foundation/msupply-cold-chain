@@ -6,12 +6,11 @@ import {
   EventSubscriber,
   AfterInsert,
   InsertEvent,
+  UpdateEvent,
   AfterUpdate,
 } from 'typeorm/browser';
 
 import { TemperatureBreachConfiguration } from '../entities';
-
-import { SyncService } from '../../SyncService';
 
 @EventSubscriber()
 class TemperatureBreachConfigurationSubscriber implements EntitySubscriberInterface {
@@ -20,14 +19,10 @@ class TemperatureBreachConfigurationSubscriber implements EntitySubscriberInterf
   }
 
   @AfterInsert()
-  public async afterInsert(event: InsertEvent<any>) {
-    new SyncService(event).log();
-  }
+  public async afterInsert(_: InsertEvent<any>) {}
 
   @AfterUpdate()
-  public async afterUpdate(event: InsertEvent<any>) {
-    new SyncService(event).log();
-  }
+  public async afterUpdate(_: UpdateEvent<any>) {}
 }
 
 export { TemperatureBreachConfigurationSubscriber };
