@@ -1,1 +1,0 @@
-export { SyncQueueManager } from './SyncQueueManager';

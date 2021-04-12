@@ -29,4 +29,5 @@ export enum REDUCER {
   DETAIL = 'detail',
   DETAIL_CHART = 'detailChart',
   DETAIL_CUMULATIVE_BREACH = 'detailCumulative',
+  SYNC = 'sync',
 }
