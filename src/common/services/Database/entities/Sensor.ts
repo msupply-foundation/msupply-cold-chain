@@ -3,7 +3,6 @@
 /* eslint-disable import/no-cycle */
 import { OneToMany, Entity, Column, PrimaryGeneratedColumn } from 'typeorm/browser';
 
-import { SensorLog } from './SensorLog';
 import { TemperatureLog } from './TemperatureLog';
 import { TemperatureBreach } from './TemperatureBreach';
 
@@ -29,11 +28,6 @@ class Sensor {
 
   @Column({ nullable: true, type: 'int' })
   programmedDate!: number;
-
-  @OneToMany(() => SensorLog, sensorLog => sensorLog.sensor, {
-    cascade: ['insert', 'update'],
-  })
-  sensorLogs!: SensorLog[];
 
   @OneToMany(() => TemperatureLog, temperatureLog => temperatureLog.sensor, {
     cascade: ['insert', 'update'],
