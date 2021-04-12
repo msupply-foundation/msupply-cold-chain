@@ -12,6 +12,7 @@ import { ReportSaga } from '../../features/Report';
 import { SensorStatusSaga } from '../../features/SensorStatus';
 import { PermissionSaga } from '../../features/Permission';
 import { SyncSaga } from '../../features/Sync';
+import { DevSaga } from '../../features/Dev';
 
 export function* RootSaga() {
   yield fork(EntitiesSaga.root);
@@ -23,6 +24,7 @@ export function* RootSaga() {
   yield fork(SensorStatusSaga.root);
   yield fork(PermissionSaga.root);
   yield fork(SyncSaga.root);
+  yield fork(DevSaga.root)
 }
 
 export const SagaMiddleware = createSagaMiddleware({
