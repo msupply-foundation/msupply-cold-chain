@@ -4,7 +4,7 @@ import { getContext, call, takeEvery } from 'redux-saga/effects';
 
 import { DEPENDENCY, REDUCER } from '../../common/constants';
 
-interface SyncQueueSliceState { };
+interface SyncQueueSliceState { }
 
 const initialState: SyncQueueSliceState = {};
 

@@ -1,6 +1,5 @@
 /* istanbul ignore file */
 
-/* eslint-disable import/no-cycle */
 import {
   EventSubscriber,
   EntitySubscriberInterface,
@@ -17,11 +16,11 @@ import { ENTITIES } from '../../../constants';
 
 @EventSubscriber()
 class TemperatureBreachSubscriber implements EntitySubscriberInterface {
-  public listenTo() {
+  public static listenTo(): typeof TemperatureBreach {
     return TemperatureBreach;
   }
 
-  public async updateSyncQueue(event: InsertEvent<any> | UpdateEvent<any>) {
+  public static async updateSyncQueue(event: InsertEvent<TemperatureBreach> | UpdateEvent<TemperatureBreach>): Promise<void> {
     const { entity, manager, metadata } = event;
 
     const {
@@ -64,13 +63,13 @@ class TemperatureBreachSubscriber implements EntitySubscriberInterface {
   }
 
   @AfterInsert()
-  public async afterInsert(event: InsertEvent<any>) {
-    return this.updateSyncQueue(event);
+  public static async afterInsert(event: InsertEvent<TemperatureBreach>): Promise<void> {
+    return TemperatureBreachSubscriber.updateSyncQueue(event);
   }
 
   @AfterUpdate()
-  public async afterUpdate(event: InsertEvent<any>) {
-    return this.updateSyncQueue(event);
+  public static async afterUpdate(event: UpdateEvent<TemperatureBreach>): Promise<void> {
+    return TemperatureBreachSubscriber.updateSyncQueue(event);
   }
 }
 

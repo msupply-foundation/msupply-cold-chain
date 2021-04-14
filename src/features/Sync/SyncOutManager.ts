@@ -36,7 +36,7 @@ class SyncOutManager {
 
     
 
-    pushLogs = async(logs: SyncLog[]) => {
+    pushLogs = async (logs: SyncLog[]): Promise<void> => {
         const loginResponse = await fetch(this.paths.login, {
             method: 'POST',
             headers: {

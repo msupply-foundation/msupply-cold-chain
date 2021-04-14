@@ -38,21 +38,21 @@ class SyncQueueManager {
     this.databaseService = databaseService;
   }
 
-  peekNext = async (count: number) => {
+  peekNext = async (count: number): Promise<SyncLog[]> => {
     const result: SyncLog[] = await this.databaseService.query(SYNC_QUEUE_PEEK_NEXT, [count]);
     return result;
   } 
 
-  peekAll = async () => {
+  peekAll = async (): Promise<SyncLog[]> => {
     const result: SyncLog[] = await this.databaseService.query(SYNC_QUEUE_PEEK_ALL);
     return result;
   }
 
-  dropNext = async (count: number) => this.databaseService.query(SYNC_QUEUE_DROP_NEXT, [count]);
+  dropNext = async (count: number): Promise<void> => this.databaseService.query(SYNC_QUEUE_DROP_NEXT, [count]);
 
-  dropAll = async () => this.databaseService.query(SYNC_QUEUE_DROP_ALL);
+  dropAll = async (): Promise<void> => this.databaseService.query(SYNC_QUEUE_DROP_ALL);
 
-  length = async () => this.databaseService.query(SYNC_QUEUE_LENGTH);
+  length = async (): Promise<number> => this.databaseService.query(SYNC_QUEUE_LENGTH);
 }
 
 export { SyncQueueManager }

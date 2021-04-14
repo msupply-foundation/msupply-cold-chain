@@ -1,6 +1,5 @@
 /* istanbul ignore file */
 
-/* eslint-disable import/no-cycle */
 import {
   EventSubscriber,
   EntitySubscriberInterface,
@@ -11,16 +10,15 @@ import {
 } from 'typeorm/browser';
 
 import { Sensor } from '../entities';
-
 import { SyncService } from '../../SyncService';
 
 @EventSubscriber()
 class SensorSubscriber implements EntitySubscriberInterface {
-  public listenTo() {
+  public static listenTo(): typeof Sensor {
     return Sensor;
   }
 
-  public async updateSyncQueue(event: InsertEvent<any> | UpdateEvent<any>) {
+  public static async updateSyncQueue(event: InsertEvent<Sensor> | UpdateEvent<Sensor>): Promise<void> {
     const { entity, manager, metadata } = event;
     
     const { id } = entity;
@@ -32,13 +30,13 @@ class SensorSubscriber implements EntitySubscriberInterface {
   }
 
   @AfterInsert()
-  public async afterInsert(event: InsertEvent<any>) {
-    this.updateSyncQueue(event);
+  public static async afterInsert(event: InsertEvent<Sensor>): Promise<void> {
+    SensorSubscriber.updateSyncQueue(event);
   }
 
   @AfterUpdate()
-  public async afterUpdate(event: UpdateEvent<any>) {
-    this.updateSyncQueue(event);
+  public static async afterUpdate(event: UpdateEvent<Sensor>): Promise<void> {
+    SensorSubscriber.updateSyncQueue(event);
   }
 }
 

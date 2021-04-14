@@ -19,7 +19,7 @@ class TemperatureBreach {
   startTimestamp!: number;
 
   @Column({ type: 'varchar', nullable: false })
-  temperatureBreachConfigurationId!: String;
+  temperatureBreachConfigurationId!: string;
 
   @Column({ type: 'boolean', nullable: false, default: false })
   acknowledged!: boolean;

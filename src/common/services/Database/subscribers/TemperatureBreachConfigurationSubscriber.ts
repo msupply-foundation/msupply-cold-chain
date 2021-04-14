@@ -1,6 +1,5 @@
 /* istanbul ignore file */
 
-/* eslint-disable import/no-cycle */
 import {
   EntitySubscriberInterface,
   EventSubscriber,
@@ -14,15 +13,17 @@ import { TemperatureBreachConfiguration } from '../entities';
 
 @EventSubscriber()
 class TemperatureBreachConfigurationSubscriber implements EntitySubscriberInterface {
-  public listenTo() {
+  public static listenTo(): typeof TemperatureBreachConfiguration {
     return TemperatureBreachConfiguration;
   }
 
   @AfterInsert()
-  public async afterInsert(_: InsertEvent<any>) {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static async afterInsert(_: InsertEvent<TemperatureBreachConfiguration>): Promise<void> {}
 
   @AfterUpdate()
-  public async afterUpdate(_: UpdateEvent<any>) {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static async afterUpdate(_: UpdateEvent<TemperatureBreachConfiguration>): Promise<void> {}
 }
 
 export { TemperatureBreachConfigurationSubscriber };

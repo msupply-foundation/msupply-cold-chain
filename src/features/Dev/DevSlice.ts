@@ -1,12 +1,13 @@
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { takeEvery, getContext, all, call, put } from 'redux-saga/effects';
+import { takeEvery, getContext, call, put } from 'redux-saga/effects';
 
-import { Sensor, TemperatureLog } from '../../common/services/Database/entities';
+import { Sensor } from '../../common/services/Database/entities';
 import { DEPENDENCY, REDUCER } from '../../common/constants';
 
 import { SensorAction } from '../Entities';
 import { ConsecutiveBreachAction } from '../Breach'
+
 
 interface CreatePayload {
     sensor: Sensor;
@@ -44,6 +45,7 @@ function* generateSensor(): SagaIterator {
     yield put(SensorAction.create(sensor.macAddress, sensor.logInterval, sensor.logDelay, sensor.batteryLevel));
   } catch (error) {
     // TODO: add error handling actions.
+    // eslint-disable-next-line no-console
     console.log(error.message);
   }
 }
@@ -51,11 +53,13 @@ function* generateSensor(): SagaIterator {
 function* generateTemperatureLog({ payload: { sensor } }: PayloadAction<CreatePayload>): SagaIterator {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const devManager = yield call(DependencyLocator.get, DEPENDENCY.DEV_MANAGER);
+  const temperatureLogManager = yield call(DependencyLocator.get, DEPENDENCY.TEMPERATURE_LOG_MANAGER);
   try {
     const temperatureLog = yield call(devManager.generateTemperatureLog, sensor);
     yield call(temperatureLogManager.addNewTemperatureLog, temperatureLog);
   } catch (error) {
     // TODO: add error handling actions.
+    // eslint-disable-next-line no-console
     console.log(error.message);
   }
 }
@@ -70,11 +74,12 @@ function* generateTemperatureBreach({ payload: { sensor } }: PayloadAction<Creat
     yield put(ConsecutiveBreachAction.create(sensor));
   } catch (error) {
       // TODO: add error handling actions.
+      // eslint-disable-next-line no-console
       console.log(error.message);
   }
 }
 
-function* root() {
+function* root(): SagaIterator {
   yield takeEvery(DevAction.generateSensor, generateSensor);
   yield takeEvery(DevAction.generateTemperatureLog, generateTemperatureLog);
   yield takeEvery(DevAction.generateTemperatureBreach, generateTemperatureBreach);

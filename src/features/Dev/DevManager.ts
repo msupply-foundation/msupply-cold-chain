@@ -13,7 +13,9 @@ const DELETE_BREACH_LOGS = `
 
 class DevManager {
   databaseService: DatabaseService;
+
   utilService: UtilService;
+
   devService: DevService;
 
   constructor(databaseService: DatabaseService, utilService: UtilService, devService: DevService) {
@@ -22,7 +24,7 @@ class DevManager {
     this.devService = devService;
   }
 
-  generateSensor = () => {
+  generateSensor = (): Partial<Sensor> => {
     const macAddress = this.devService.randomMac();
     const logInterval = 300;
     const logDelay = 0;
@@ -36,7 +38,7 @@ class DevManager {
     };
   };
 
-  generateTemperatureLog = (sensor: Sensor, temperature: number, timestamp: number) => {
+  generateTemperatureLog = (sensor: Sensor, temperature: number, timestamp: number): Partial<TemperatureLog> => {
     const { id: sensorId, logInterval } = sensor;
 
     return {
@@ -47,11 +49,11 @@ class DevManager {
     }
   }
 
-  generateBreachTemperatureLog = (sensor: Sensor, temperatureBreachConfiguration: TemperatureBreachConfiguration, timestamp: number) => {
+  generateBreachTemperatureLog = (sensor: Sensor, temperatureBreachConfiguration: TemperatureBreachConfiguration, timestamp: number): Partial<TemperatureLog> => {
     const { id: sensorId, logInterval } = sensor;
-   
+
     const temperature = this.devService.randomInt(
-      temperatureBreachConfiguration.minimumTemperature, 
+      temperatureBreachConfiguration.minimumTemperature,
       temperatureBreachConfiguration.maximumTemperature
     );
 
@@ -63,9 +65,10 @@ class DevManager {
     }
   };
 
-  generateBreachTemperatureLogs = async (sensor: Sensor) => {
+  generateBreachTemperatureLogs = async (sensor: Sensor): Promise<Partial<TemperatureLog>[]> => {
     const { id: sensorId, logInterval } = sensor;
-    const [{ minimumTemperature, maximumTemperature, duration }] = await this.databaseService.getAll(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION) as TemperatureBreachConfiguration[];
+    const [{ minimumTemperature, maximumTemperature, duration }] =
+      await this.databaseService.getAll(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION) as TemperatureBreachConfiguration[];
 
     const breachLogCount = Math.ceil(duration / (logInterval * 1000));
     const breachLogTimestamps = Array.from(Array(breachLogCount).keys()).reduce((acc, i) =>

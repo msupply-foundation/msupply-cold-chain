@@ -1,6 +1,5 @@
 /* istanbul ignore file */
 
-/* eslint-disable import/no-cycle */
 import {
   EventSubscriber,
   EntitySubscriberInterface,
@@ -16,11 +15,11 @@ import { SyncService } from '../../SyncService';
 
 @EventSubscriber()
 class TemperatureLogSubscriber implements EntitySubscriberInterface {
-  public listenTo() {
+  public static listenTo(): typeof TemperatureLog {
     return TemperatureLog;
   }
 
-  public async updateSyncQueue(event: InsertEvent<any> | UpdateEvent<any>) {
+  public static async updateSyncQueue(event: InsertEvent<TemperatureLog> | UpdateEvent<TemperatureLog>): Promise<void> {
     const { entity, manager, metadata } = event;
     
     const { id } = entity;
@@ -32,13 +31,13 @@ class TemperatureLogSubscriber implements EntitySubscriberInterface {
   }
 
   @AfterInsert()
-  public async afterInsert(event: InsertEvent<any>) {
-    return this.updateSyncQueue(event);
+  public static async afterInsert(event: InsertEvent<TemperatureLog>): Promise<void> {
+    return TemperatureLogSubscriber.updateSyncQueue(event);
   }
 
   @AfterUpdate()
-  public async afterUpdate(event: UpdateEvent<any>) {
-    return this.updateSyncQueue(event);
+  public static async afterUpdate(event: UpdateEvent<TemperatureLog>): Promise<void> {
+    return TemperatureLogSubscriber.updateSyncQueue(event);
   }
 }
 

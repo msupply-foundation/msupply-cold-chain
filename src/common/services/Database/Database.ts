@@ -1,6 +1,5 @@
 import { Connection, ConnectionOptions, createConnection, getConnection } from 'typeorm/browser';
 import {
-  SensorLog,
   TemperatureBreach,
   TemperatureBreachConfiguration,
   TemperatureLog,
@@ -11,7 +10,6 @@ import {
 
 import {
   SensorSubscriber,
-  SensorLogSubscriber,
   TemperatureBreachConfigurationSubscriber,
   TemperatureBreachSubscriber,
   TemperatureLogSubscriber,
@@ -32,7 +30,6 @@ export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
   synchronize: true,
   entities: [
     Sensor,
-    SensorLog,
     TemperatureLog,
     TemperatureBreach,
     TemperatureBreachConfiguration,
@@ -41,7 +38,6 @@ export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
   ],
   subscribers: [
     SensorSubscriber,
-    SensorLogSubscriber,
     TemperatureLogSubscriber,
     TemperatureBreachSubscriber,
     TemperatureBreachConfigurationSubscriber,
