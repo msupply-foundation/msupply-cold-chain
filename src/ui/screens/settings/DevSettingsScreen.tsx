@@ -9,7 +9,6 @@ import { SettingsList } from '../../layouts';
 import { useDependency } from '../../../ui/hooks';
 import { DEPENDENCY } from '../../../common/constants';
 import { DevAction } from '../../../features';
-import { DevService } from '../../../common/services';
 
 export const DevSettingsScreen: FC = () => {
   const dispatch = useDispatch();
@@ -18,15 +17,13 @@ export const DevSettingsScreen: FC = () => {
  
   const availableSensors = useSelector(SensorSelector.sensorsList);
 
-  const devService = new DevService();
-
   return (
     <SettingsList>
       <SettingsGroup title="Add records">
         <SettingsButtonRow
           label="Add random sensor"
           subtext="Adds a random sensor with a random mac address and default values"
-          onPress={() => dispatch(SensorAction.create(devService.randomMac(), 300, 0, 100))}
+          onPress={() => dispatch(DevAction.generateSensor())}
         />
         {
           availableSensors.map(sensorState => {
@@ -37,7 +34,7 @@ export const DevSettingsScreen: FC = () => {
                 subtext={`Add logs for ${sensorState?.name ?? sensorState.macAddress}`}
                 onPress={async () => {
                   const sensor = await sensorManager.getSensor(sensorState.macAddress);
-                  dispatch(DevAction.generateBreachLogs(sensor));
+                  dispatch(DevAction.generateTemperatureBreach(sensor));
                 }}
               />
             );

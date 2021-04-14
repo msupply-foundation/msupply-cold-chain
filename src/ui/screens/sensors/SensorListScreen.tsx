@@ -45,7 +45,6 @@ export const SensorListScreen: FC = () => {
   const renderItem = useCallback(({ item: { id } }: { item: { id: string } }) => {
     const sensorDetailScreen = NAVIGATION.SCREENS.SENSOR_STACK.SENSOR_DETAIL;
     const onPress = () => {
-      console.log('id', id);
       navigation.navigate(sensorDetailScreen, { id });
     };
     return <SensorChartRow id={id} onPress={onPress} />;

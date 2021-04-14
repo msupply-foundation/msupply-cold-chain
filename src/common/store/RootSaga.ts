@@ -24,7 +24,7 @@ export function* RootSaga() {
   yield fork(SensorStatusSaga.root);
   yield fork(PermissionSaga.root);
   yield fork(SyncSaga.root);
-  yield fork(DevSaga.root)
+  yield fork(DevSaga.root);
 }
 
 export const SagaMiddleware = createSagaMiddleware({

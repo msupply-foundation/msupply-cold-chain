@@ -32,6 +32,7 @@ import {
   BreachConfigurationManager,
   SettingManager,
   SensorManager,
+  TemperatureLogManager,
   SyncQueueManager,
   SyncOutManager,
   DevManager
@@ -76,6 +77,7 @@ export const DependencyContainer: FC = ({ children }) => {
     const logTableManager = new LogTableManager(dbService);
     const downloadManager = new DownloadManager(dbService, utilService);
     const sensorsManager = new SensorManager(dbService, utilService);
+    const temperatureLogManager = new TemperatureLogManager(dbService, utilService);
     const reportManager = new ReportManager(dbService, exportService, permissionService);
     const sensorStatusManager = new SensorStatusManager(dbService);
     const syncQueueManager = new SyncQueueManager(dbService);
@@ -84,6 +86,7 @@ export const DependencyContainer: FC = ({ children }) => {
 
     DependencyLocator.register(DEPENDENCY.BREACH_CONFIGURATION_MANAGER, breachConfigurationManager);
     DependencyLocator.register(DEPENDENCY.SENSOR_MANAGER, sensorsManager);
+    DependencyLocator.register(DEPENDENCY.TEMPERATURE_LOG_MANAGER, temperatureLogManager);
     DependencyLocator.register(DEPENDENCY.SETTING_MANAGER, settingManager);
     DependencyLocator.register(DEPENDENCY.CHART_MANAGER, chartManager);
     DependencyLocator.register(DEPENDENCY.CONSECUTIVE_BREACH_MANAGER, consecutiveBreachManager);

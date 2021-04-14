@@ -9,6 +9,7 @@ export enum DEPENDENCY {
   UTIL_SERVICE = 'utilService',
   DATABASE_UTILS = 'databaseUtils',
   SENSOR_MANAGER = 'sensorManager',
+  TEMPERATURE_LOG_MANAGER = 'temperatureLogManager',
   SETTING_MANAGER = 'settingManager',
   BREACH_CONFIGURATION_MANAGER = 'breachConfigurationManager',
   CHART_MANAGER = 'chartManager',

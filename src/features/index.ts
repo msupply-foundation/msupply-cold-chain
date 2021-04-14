@@ -64,7 +64,11 @@ export {
   SensorAction,
   SensorSelector,
   SensorSaga,
-  SensorManager
+  SensorManager,
+  TemperatureLogAction,
+  TemperatureLogSelector,
+  TemperatureLogSaga,
+  TemperatureLogManager,
 } from './Entities';
 
 export {
