@@ -16,11 +16,6 @@ export {
 } from './Sensor';
 
 export {
-  TemperatureLogInitialState,
-  TemperatureLogReducer,
-  TemperatureLogAction,
-  TemperatureLogSelector,
-  TemperatureLogSaga,
   TemperatureLogManager
 } from './TemperatureLog';
 

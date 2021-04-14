@@ -2,9 +2,11 @@ import { DatabaseService } from "../../../common/services/Database";
 import { UtilService } from "../../../common/services/UtilService";
 
 import { ENTITIES } from "../../../common/constants";
+import { TemperatureLog } from "../../../common/services/Database/entities";
 
 export class TemperatureLogManager {
     databaseService: DatabaseService;
+
     utilService: UtilService;
 
     constructor(dbService: DatabaseService, utilService: UtilService) {
@@ -12,12 +14,15 @@ export class TemperatureLogManager {
         this.utilService = utilService;
     }
 
-    upsert = async (temperatureLog: object) => {
+    upsert = async (temperatureLog: Partial<TemperatureLog>[]): Promise<Partial<TemperatureLog>[]> => {
         return this.databaseService.upsert(ENTITIES.TEMPERATURE_LOG, temperatureLog);
     };
 
-    addNewTemperatureLog = async (sensorId: string | null, logInterval: number, temperature: number, timestamp: number) => {
-        const id = this.utilService.uuid();
-        return this.upsert({ id, sensorId, logInterval, temperature, timestamp });
+    addNewTemperatureLog = async (temperatureLog: Partial<TemperatureLog>): Promise<Partial<TemperatureLog>[]> => {
+        return this.addNewTemperatureLogs([temperatureLog]);
     };
+
+    addNewTemperatureLogs = async (temperatureLogs: Partial<TemperatureLog>[]): Promise<Partial<TemperatureLog>[]> => {
+        return this.upsert(temperatureLogs.map(temperatureLog => ({ id: this.utilService.uuid(), ...temperatureLog })));
+    }
 }

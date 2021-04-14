@@ -7,7 +7,6 @@ export enum REDUCER {
   SENSOR = 'sensor',
   SETTING = 'setting',
   BREACH_CONFIGURATION = 'breachConfiguration',
-  TEMPERATURE_LOG = 'temperatureLog',
   CHART = 'chart',
   BREACH = 'breach',
   CUMULATIVE_BREACH = 'cumulative',
