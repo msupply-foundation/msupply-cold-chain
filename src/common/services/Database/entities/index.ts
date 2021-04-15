@@ -5,3 +5,4 @@ export { TemperatureBreach } from './TemperatureBreach';
 export { TemperatureBreachConfiguration } from './TemperatureBreachConfiguration';
 export { Setting } from './Setting';
 export { SyncLog } from './SyncLog';
+export { SyncConfig } from './SyncConfig';
