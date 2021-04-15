@@ -6,13 +6,13 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm/browser';
 @Entity('Setting')
 class Setting {
   @PrimaryGeneratedColumn('uuid')
-  id;
+  id!: string;
 
   @Column({ nullable: true, type: 'varchar', length: 100 })
-  key;
+  key!: string;
 
   @Column({ nullable: true, type: 'varchar', length: 100 })
-  value;
+  value!: string;
 }
 
 export { Setting };

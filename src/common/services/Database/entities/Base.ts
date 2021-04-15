@@ -2,9 +2,9 @@
 
 import { PrimaryGeneratedColumn } from 'typeorm/browser';
 
-class Base {
+abstract class Base {
   @PrimaryGeneratedColumn('uuid')
-  id;
+  id!: string;
 }
 
 export { Base };

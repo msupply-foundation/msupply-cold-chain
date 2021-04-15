@@ -9,11 +9,13 @@ export enum DEPENDENCY {
   UTIL_SERVICE = 'utilService',
   DATABASE_UTILS = 'databaseUtils',
   SENSOR_MANAGER = 'sensorManager',
+  TEMPERATURE_LOG_MANAGER = 'temperatureLogManager',
   SETTING_MANAGER = 'settingManager',
   BREACH_CONFIGURATION_MANAGER = 'breachConfigurationManager',
   CHART_MANAGER = 'chartManager',
   BREACH_MANAGER = 'breachManager',
   LOG_TABLE_MANAGER = 'logTableManager',
+  DEV_MANAGER = 'devManager',
   DOWNLOAD_MANAGER = 'downloadManager',
   REPORT_MANAGER = 'reportManager',
   PERMISSION_SERVICE = 'permissionService',
@@ -22,6 +24,9 @@ export enum DEPENDENCY {
   CUMULATIVE_BREACH_MANAGER = 'cumulativeBreachManager',
   ACKNOWLEDGE_BREACH_MANAGER = 'acknowledgeBreachManager',
   LOGGER_SERVICE = 'loggerService',
+  SYNC_SERVICE = 'syncService',
+  SYNC_QUEUE_MANAGER = 'syncQueueManager',
+  SYNC_OUT_MANAGER = 'syncOutManager'
 }
 
 export const BLUETOOTH_SERVICE = {

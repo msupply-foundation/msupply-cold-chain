@@ -1,12 +1,13 @@
+// eslint-disable-next-line no-shadow
 export enum REDUCER {
   DATABASE = 'database',
+  DEV = 'dev',
   BLUETOOTH = 'bluetooth',
   SENSORS = 'sensors',
   TEMPERATURE_LOGS = 'temperatureLogs',
   SENSOR = 'sensor',
   SETTING = 'setting',
   BREACH_CONFIGURATION = 'breachConfiguration',
-  TEMPERATURE_LOG = 'temperatureLog',
   CHART = 'chart',
   BREACH = 'breach',
   CUMULATIVE_BREACH = 'cumulative',
@@ -29,4 +30,5 @@ export enum REDUCER {
   DETAIL = 'detail',
   DETAIL_CHART = 'detailChart',
   DETAIL_CUMULATIVE_BREACH = 'detailCumulative',
+  SYNC = 'sync',
 }

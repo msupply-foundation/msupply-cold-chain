@@ -1,0 +1,3 @@
+export {
+    TemperatureLogManager
+} from './TemperatureLogManager';

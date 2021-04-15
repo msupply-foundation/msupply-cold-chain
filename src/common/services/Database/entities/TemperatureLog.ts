@@ -1,46 +1,47 @@
 /* istanbul ignore file */
 
 /* eslint-disable import/no-cycle */
-import { PrimaryColumn, ManyToOne, Entity, Column, JoinColumn, Index } from 'typeorm/browser';
-import { TemperatureBreach } from './TemperatureBreach';
+import { ManyToOne, Entity, Column, PrimaryColumn, Index, JoinColumn } from 'typeorm/browser';
+
 import { Sensor } from './Sensor';
+import { TemperatureBreach } from './TemperatureBreach';
 
 @Entity('TemperatureLog')
 class TemperatureLog {
   @PrimaryColumn({ type: 'varchar', nullable: false })
-  id;
+  id!: string;
 
   @Column({ type: 'double' })
-  temperature;
+  temperature!: number;
 
   @Index()
   @Column({ type: 'integer' })
-  timestamp;
+  timestamp!: number;
 
   @Index()
   @Column({ type: 'integer' })
-  logInterval;
+  logInterval!: number;
 
   @Column({ type: 'varchar', nullable: true })
-  temperatureBreachId;
+  temperatureBreachId!: string | null;
 
   @ManyToOne(() => TemperatureBreach, temperatureBreach => temperatureBreach.temperatureLogs, {
     cascade: ['insert', 'update'],
     eager: false,
   })
   @JoinColumn({ name: 'temperatureBreachId' })
-  temperatureBreach;
+  temperatureBreach!: string;
 
   @Index()
   @Column({ type: 'varchar', nullable: true })
-  sensorId;
+  sensorId!: string | null;
 
   @JoinColumn({ name: 'sensorId' })
   @ManyToOne(() => Sensor, temperatureBreach => temperatureBreach.temperatureLogs, {
     cascade: ['insert', 'update'],
     eager: false,
   })
-  sensor;
+  sensor!: Sensor;
 }
 
 export { TemperatureLog };

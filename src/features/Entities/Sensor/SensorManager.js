@@ -246,7 +246,9 @@ export class SensorManager {
 
   addNewSensor = async (macAddress, logInterval, logDelay, batteryLevel) => {
     const id = this.utils.uuid();
+    const name = id.slice(0, 8);
     return this.upsert({
+      name,
       logInterval,
       macAddress,
       id,

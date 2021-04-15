@@ -65,6 +65,10 @@ export {
   SensorSelector,
   SensorSaga,
   SensorManager,
+  TemperatureLogAction,
+  TemperatureLogSelector,
+  TemperatureLogSaga,
+  TemperatureLogManager,
 } from './Entities';
 
 export {
@@ -105,3 +109,20 @@ export {
   DetailChartSaga,
   DetailChartSelector,
 } from './SensorDetail';
+
+export {
+  SyncAction,
+  SyncReducer,
+  SyncSelector,
+  SyncSaga,
+  SyncQueueManager,
+  SyncOutManager
+} from './Sync';
+
+export {
+  DevReducer,
+  DevAction,
+  DevSelector,
+  DevSaga,
+  DevManager
+} from './Dev';

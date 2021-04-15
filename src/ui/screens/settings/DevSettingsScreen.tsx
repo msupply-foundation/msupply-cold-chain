@@ -1,20 +1,21 @@
+import { SyncAction } from '../../../features/Sync';
 import React, { FC } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { SensorAction } from '../../../features/Entities';
+import { SensorAction, SensorManager, SensorSelector } from '../../../features/Entities';
 
 import { SettingsButtonRow, SettingsGroup } from '../../components/settings';
 import { SettingsList } from '../../layouts';
-
-const randomMacAddress = () => {
-  return 'XX:XX:XX:XX:XX:XX'.replace(/X/g, () => {
-    return '0123456789ABCDEF'.charAt(Math.floor(Math.random() * 16));
-  });
-};
+import { useDependency } from '../../../ui/hooks';
+import { DEPENDENCY } from '../../../common/constants';
+import { DevAction } from '../../../features';
 
 export const DevSettingsScreen: FC = () => {
   const dispatch = useDispatch();
-  // const availableSensors = useSelector(SensorSelector.sensorsList);
+
+  const sensorManager: SensorManager = useDependency(DEPENDENCY.SENSOR_MANAGER) as SensorManager;
+ 
+  const availableSensors = useSelector(SensorSelector.sensorsList);
 
   return (
     <SettingsList>
@@ -22,14 +23,30 @@ export const DevSettingsScreen: FC = () => {
         <SettingsButtonRow
           label="Add random sensor"
           subtext="Adds a random sensor with a random mac address and default values"
-          onPress={() => dispatch(SensorAction.create(randomMacAddress(), 300, 0, 100))}
+          onPress={() => dispatch(DevAction.generateSensor())}
         />
-        {/* {availableSensors.map(sensor => (
-          <SettingsButtonRow
-            key={sensor?.id}
-            label={`Add logs for ${sensor?.name ?? sensor.macAddress}`}
-          />
-        ))} */}
+        {
+          availableSensors.map(sensorState => {
+            return (
+              <SettingsButtonRow
+                key={sensorState?.id}
+                label="Create sensor logs"
+                subtext={`Add logs for ${sensorState?.name ?? sensorState.macAddress}`}
+                onPress={async () => {
+                  const sensor = await sensorManager.getSensor(sensorState.macAddress);
+                  dispatch(DevAction.generateTemperatureBreach(sensor));
+                }}
+              />
+            );
+          })
+        }
+      </SettingsGroup>
+      <SettingsGroup title="Sync records">
+        <SettingsButtonRow
+          label="Sync all records"
+          subtext="Syncs all records currently stored in sync queue"
+          onPress={() => dispatch(SyncAction.syncAll())} 
+        />
       </SettingsGroup>
     </SettingsList>
   );

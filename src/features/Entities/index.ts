@@ -16,6 +16,10 @@ export {
 } from './Sensor';
 
 export {
+  TemperatureLogManager
+} from './TemperatureLog';
+
+export {
   SettingReducer,
   SettingAction,
   SettingSelector,

@@ -5,4 +5,5 @@ export const ENTITIES = {
   TEMPERATURE_BREACH_CONFIGURATION: 'TemperatureBreachConfiguration',
   SENSOR_LOG: 'SensorLog',
   SETTING: 'Setting',
+  SYNC_LOG: 'SyncLog'
 };

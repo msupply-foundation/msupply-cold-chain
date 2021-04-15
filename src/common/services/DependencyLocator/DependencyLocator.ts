@@ -11,6 +11,8 @@ import {
   ReportManager,
   SensorManager,
   SettingManager,
+  SyncQueueManager,
+  SyncOutManager,
 } from '../../../features';
 import { BleService } from '../Bluetooth/BleService';
 import { DatabaseService } from '../Database';
@@ -39,6 +41,8 @@ export interface Dependencies {
   [DEPENDENCY.CONSECUTIVE_BREACH_MANAGER]?: ConsecutiveBreachManager;
   [DEPENDENCY.CUMULATIVE_BREACH_MANAGER]?: CumulativeBreachManager;
   [DEPENDENCY.ACKNOWLEDGE_BREACH_MANAGER]?: AcknowledgeBreachManager;
+  [DEPENDENCY.SYNC_QUEUE_MANAGER]?: SyncQueueManager;
+  [DEPENDENCY.SYNC_OUT_MANAGER]?: SyncOutManager;
 }
 
 class DependencyLocator {

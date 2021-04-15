@@ -1,12 +1,20 @@
 import { Connection, ConnectionOptions, createConnection, getConnection } from 'typeorm/browser';
 import {
-  SensorLog,
   TemperatureBreach,
   TemperatureBreachConfiguration,
   TemperatureLog,
   Sensor,
   Setting,
+  SyncLog,
 } from './entities';
+
+import {
+  SensorSubscriber,
+  TemperatureBreachConfigurationSubscriber,
+  TemperatureBreachSubscriber,
+  TemperatureLogSubscriber,
+} from './subscribers';
+
 import { ENVIRONMENT } from '../../constants';
 
 export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
@@ -22,22 +30,27 @@ export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
   synchronize: true,
   entities: [
     Sensor,
-    SensorLog,
     TemperatureLog,
     TemperatureBreach,
     TemperatureBreachConfiguration,
     Setting,
+    SyncLog,
+  ],
+  subscribers: [
+    SensorSubscriber,
+    TemperatureLogSubscriber,
+    TemperatureBreachSubscriber,
+    TemperatureBreachConfigurationSubscriber,
   ],
 });
 
 /**
- * Interface for connections to a database. If there is a connection ...
- * ... made already, then return that connection. Otherwise, create one
- * with the passed parameters.
+ * Interface for connections to a database. If a previously created
+ * connection exists, then return that connection. Otherwise, create
+ * a new connection using the passed parameters.
  *
  * This is the only place where imports of database packages to initiate
  * a connection or to interface with any native module should occur.
- *
  */
 export class Database {
   config: ConnectionOptions;
