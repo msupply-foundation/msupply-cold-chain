@@ -342,7 +342,9 @@ function* updatePassword({ payload: { password } }: UpdatePasswordAction): SagaI
 }
 
 function* syncSensorsSuccess(): SagaIterator {
-    // TODO.
+    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+    const syncQueueManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_QUEUE_MANAGER);
+    yield call(syncQueueManager.dropSensors);
 }
 
 function* syncSensorsFailure(): SagaIterator {
@@ -364,7 +366,9 @@ function* syncSensors(): SagaIterator {
 }
 
 function* syncTemperatureLogsSuccess(): SagaIterator {
-    // TODO.
+    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+    const syncQueueManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_QUEUE_MANAGER);
+    yield call(syncQueueManager.dropTemperatureLogs);
 }
 
 function* syncTemperatureLogsFailure(): SagaIterator {
@@ -386,7 +390,9 @@ function* syncTemperatureLogs(): SagaIterator {
 }
 
 function* syncTemperatureBreachesSuccess(): SagaIterator {
-    // TODO.
+    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+    const syncQueueManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_QUEUE_MANAGER);
+    yield call(syncQueueManager.dropTemperatureBreaches);
 }
 
 function* syncTemperatureBreachesFailure(): SagaIterator {
@@ -429,7 +435,6 @@ function* fetchAll(): SagaIterator {
         } = syncOutManager;
 
         yield put(
-            // TODO: add logic for handling successful pushes
             SyncAction.fetchAllSuccess({
                 host,
                 port,
