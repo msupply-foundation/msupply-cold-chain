@@ -1,50 +1,51 @@
 import { ENTITIES } from "../../common/constants";
 import { SyncLog } from "../../common/services/Database/entities";
 
-const HOSTNAME = '10.0.2.2';
-const PORT = '8080';
-
-const RESOURCES = {
-    COLDCHAIN_V1: 'coldchain/v1'
-}
+const URL = '10.0.2.2:8080/coldchain/v1'
+const USERNAME = 'GEN';
+const PASSWORD = 'secret';
 
 const PATHS = {
+    ROOT: 'coldchain/v1',
     LOGIN: 'login',
     SENSOR: 'sensor', 
     TEMPERATURE_LOG: 'temperature-log',
     TEMPERATURE_BREACH: 'temperature-breach'
 }
 class SyncOutManager {
-    private paths: { [key: string]: string };
+    private url: string;
+
+    private username: string;
+
+    private password: string;
 
     constructor() {
-        // TODO: initialise SyncOut manager from dependency container.
-        const rootPath = `http://${HOSTNAME}:${PORT}/${RESOURCES.COLDCHAIN_V1}`;
-
-        const loginPath = `${rootPath}/${PATHS.LOGIN}`;
-        const sensorPath = `${rootPath}/${PATHS.SENSOR}`;
-        const temperatureLogPath = `${rootPath}/${PATHS.TEMPERATURE_LOG}`;
-        const temperatureBreachPath = `${rootPath}/${PATHS.TEMPERATURE_BREACH}`;
-
-        this.paths = {
-            login: loginPath,
-            sensor: sensorPath,
-            temperatureLog: temperatureLogPath,
-            temperatureBreach: temperatureBreachPath,
-        };
+        this.url = URL;
+        this.username = USERNAME;
+        this.password = PASSWORD;
     }
 
-    
+    setUrl = (url: string): void  => {
+        this.url = url;
+    }
 
-    pushLogs = async (logs: SyncLog[]): Promise<void> => {
-        const loginResponse = await fetch(this.paths.login, {
+    setUsername = (username: string): void => {
+        this.username = username;
+    }
+
+    setPassword = (password: string): void => {
+        this.password = password;
+    }
+
+    pushLogs = async(logs: SyncLog[]): Promise<void> => {
+        const loginResponse = await fetch(`${this.url}/${PATHS.LOGIN}`, {
             method: 'POST',
             headers: {
                 'content-type': 'application/json',
             },
             body: JSON.stringify({
-                username: 'GEN',
-                password: 'secret'
+                username: this.username,
+                password: this.password
             })
         })
 
@@ -73,17 +74,17 @@ class SyncOutManager {
                 },
             }
     
-            await fetch(this.paths.sensor, {
+            await fetch(`${this.url}/${PATHS.SENSOR}`, {
                 ...pushConfig,
                 body: JSON.stringify(sensorSyncLogs.map(log => JSON.parse(log.payload)))
             })
 
-            await fetch(this.paths.temperatureLog, {
+            await fetch(`${this.url}/${PATHS.TEMPERATURE_LOG}`, {
                 ...pushConfig,
                 body: JSON.stringify(temperatureLogSyncLogs.map(log => JSON.parse(log.payload)))
             })
 
-            await fetch(this.paths.temperatureBreach, {
+            await fetch(`${this.url}/${PATHS.TEMPERATURE_BREACH}`, {
                 ...pushConfig,
                 body: JSON.stringify(temperatureBreachSyncLogs.map(log => JSON.parse(log.payload)))
             })

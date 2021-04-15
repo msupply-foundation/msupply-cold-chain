@@ -6,3 +6,4 @@ export { TemperatureBreachSettingsScreen } from './TemperatureBreachSettingsScre
 export { DevSettingsScreen } from './DevSettingsScreen';
 export { CumulativeDetailSettingScreen } from './CumulativeDetailSettingScreen';
 export { Settings } from './Settings';
+export { SyncSettingsScreen } from './SyncSettingsScreen';
