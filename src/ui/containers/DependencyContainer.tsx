@@ -81,7 +81,7 @@ export const DependencyContainer: FC = ({ children }) => {
     const reportManager = new ReportManager(dbService, exportService, permissionService);
     const sensorStatusManager = new SensorStatusManager(dbService);
     const syncQueueManager = new SyncQueueManager(dbService);
-    const syncOutManager = new SyncOutManager();
+    const syncOutManager = new SyncOutManager(dbService);
     const devManager = new DevManager(dbService, utilService, devService);
 
     DependencyLocator.register(DEPENDENCY.BREACH_CONFIGURATION_MANAGER, breachConfigurationManager);
@@ -103,6 +103,8 @@ export const DependencyContainer: FC = ({ children }) => {
     (async () => {
       await db.getConnection();
       await dbService.init();
+
+      await syncOutManager.hydrate();
 
       setReady(true);
       SplashScreen.hideAsync();

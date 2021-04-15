@@ -48,12 +48,34 @@ export class DatabaseService {
 
     if (configs.length >= 4) return configs;
 
-    return this.upsert(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION, [
+    await this.upsert(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION, [
       HOT_BREACH,
       HOT_CUMULATIVE,
       COLD_BREACH,
       COLD_CUMULATIVE,
     ]);
+
+    const host = 'http://10.0.2.2';
+    const port = '8080';
+
+    const loginPath = 'coldchain/v1/login';
+    const sensorPath = 'coldchain/v1/sensor';
+    const temperatureLogPath = 'coldchain/v1/tempeartureLog';
+    const temperatureBreachPath = 'coldchain/v1/temperatureBreach';
+
+    const username = 'GEN';
+    const password = 'secret';
+
+    return this.upsert(ENTITIES.SYNC_CONFIG, [{
+      host,
+      port,
+      loginPath,
+      sensorPath,
+      temperatureLogPath,
+      temperatureBreachPath,
+      username,
+      password,
+    }]);
   };
 
   save = async (entityName: string, objectOrArray: any | any[]): Promise<any | any[]> => {
