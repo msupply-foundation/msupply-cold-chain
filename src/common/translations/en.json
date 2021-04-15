@@ -12,6 +12,7 @@
   "SETTINGS_STACK/TemperatureBreachSettings": "Temperature Breach Settings",
   "SETTINGS_STACK/TemperatureBreachDetail": "Temperature Breach Detail",
   "SETTINGS_STACK/TemperatureCumulativeDetail": "Temperature Cumulative Detail",
+  "SETTINGS_STACK/Sync": "Sync",
   "SETTINGS_STACK/Developer": "Developer",
   "BLUETOOTH_SETTINGS": "Bluetooth",
   "BLUETOOTH_SETTINGS_SUBTEXT": "Manage bluetooth",
