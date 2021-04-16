@@ -1,9 +1,9 @@
 {
   "name": "mSupplyColdChain",
-  "version": "0.0.2",
+  "version": "0.0.2-rc1",
   "description": "Cold chain temperature monitoring",
   "author": "mSupply Foundation",
-  "main": "index.js",
+  "main": "index.ts",
   "license": "GPL-3.0-or-later",
   "private": true,
   "engines": {
