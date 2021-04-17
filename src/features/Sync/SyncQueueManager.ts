@@ -28,9 +28,9 @@ const SYNC_QUEUE_DROP_NEXT = `
   ) 
 `
 
-const SYNC_QUEUE_DROP_ALL = `
+const SYNC_QUEUE_DROP = `
   DELETE FROM synclog
-  WHERE type = ?
+  WHERE id IN (?)
 `
 
 const SYNC_QUEUE_LENGTH = `
@@ -60,19 +60,8 @@ class SyncQueueManager {
     return this.databaseService.query(SYNC_QUEUE_PEEK_ALL, [ENTITIES.TEMPERATURE_BREACH]);
   } 
 
-  dropSensors = async (count?: number): Promise<void> => {
-    if (count) return this.databaseService.query(SYNC_QUEUE_DROP_NEXT, [ENTITIES.SENSOR, count]);
-    return this.databaseService.query(SYNC_QUEUE_DROP_ALL, [ENTITIES.SENSOR]);
-  } 
-
-  dropTemperatureLogs = async (count?: number): Promise<void> => {
-    if (count) return this.databaseService.query(SYNC_QUEUE_DROP_NEXT, [ENTITIES.TEMPERATURE_LOG, count]);
-    return this.databaseService.query(SYNC_QUEUE_DROP_ALL, [ENTITIES.TEMPERATURE_LOG]);
-  } 
-
-  dropTemperatureBreaches = async (count?: number): Promise<void> => {
-    if (count) return this.databaseService.query(SYNC_QUEUE_DROP_NEXT, [ENTITIES.TEMPERATURE_BREACH, count]);
-    return this.databaseService.query(SYNC_QUEUE_DROP_ALL, [ENTITIES.TEMPERATURE_BREACH]);
+  dropLogs = async (logs: SyncLog[]): Promise<void> => {
+    return this.databaseService.query(SYNC_QUEUE_DROP, [logs.map(({ id }) => id).join()]);
   } 
 
   lengthSensors = async (): Promise<number> => this.databaseService.query(SYNC_QUEUE_LENGTH, [ENTITIES.SENSOR]);
