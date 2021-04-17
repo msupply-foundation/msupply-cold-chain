@@ -77,12 +77,12 @@ export const SyncSettingsScreen: FC = () => {
         <SettingsButtonRow
           label="Authenticate"
           subtext="Authenticate with server"
-          onPress={() => dispatch(SyncAction.authenticate())} 
+          onPress={() => dispatch(SyncAction.authenticate(loginUrl, username, password))} 
         />
         <SettingsButtonRow
           label="Sync all records"
           subtext="Syncs all records currently stored in sync queue"
-          onPress={() => dispatch(SyncAction.syncAll())} 
+          onPress={() => dispatch(SyncAction.syncAll(loginUrl, sensorUrl, temperatureLogUrl, temperatureBreachUrl, username, password))} 
         />
       </SettingsGroup>
     </SettingsList>

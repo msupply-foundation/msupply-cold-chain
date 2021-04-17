@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SagaIterator } from '@redux-saga/types';
-import { getContext, call, put, takeEvery } from 'redux-saga/effects';
+import { getContext, call, delay, put, takeEvery } from 'redux-saga/effects';
 
-import { DEPENDENCY, REDUCER } from '../../common/constants';
+import { DEPENDENCY, MILLISECONDS, REDUCER } from '../../common/constants';
 import { RootState } from '../../common/store/store';
 import { SyncLog } from '../../common/services/Database/entities';
 
@@ -73,6 +73,17 @@ export interface UpdatePasswordAction {
     payload: UpdatePasswordActionPayload;
 }
 
+export interface AuthenticateActionPayload {
+    loginUrl: string;
+    username: string;
+    password: string;
+}
+
+export interface  AuthenticateAction {
+    type: string;
+    payload: AuthenticateActionPayload;
+ } 
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface AuthenticateSuccessActionPayload {}
 
@@ -80,6 +91,15 @@ export interface AuthenticateSuccessAction {
     type: string;
     payload: AuthenticateSuccessActionPayload;
 }
+
+export interface  SyncSensorsActionPayload {
+    sensorUrl: string;
+ } 
+
+ export interface  SyncSensorsAction {
+    type: string;
+    payload: SyncSensorsActionPayload;
+ } 
 
 export interface SyncSensorsSuccessActionPayload {
     syncLogs: SyncLog[]
@@ -90,6 +110,15 @@ export interface SyncSensorsSuccessAction {
     payload: SyncSensorsSuccessActionPayload;
 }
 
+export interface  SyncTemperatureLogsActionPayload {
+    temperatureLogUrl: string;
+ } 
+
+ export interface  SyncTemperatureLogsAction {
+    type: string;
+    payload: SyncTemperatureLogsActionPayload;
+ } 
+
 export interface SyncTemperatureLogsSuccessActionPayload {
     syncLogs: SyncLog[]
 }
@@ -98,6 +127,15 @@ export interface SyncTemperatureLogsSuccessAction {
     type: string;
     payload: SyncTemperatureLogsSuccessActionPayload;
 }
+
+export interface  SyncTemperatureBreachesActionPayload {
+    temperatureBreachUrl: string;
+} 
+
+export interface  SyncTemperatureBreachesAction {
+    type: string;
+    payload: SyncTemperatureBreachesActionPayload;
+ } 
 
 export interface  SyncTemperatureBreachesSuccessActionPayload {
     syncLogs: SyncLog[]
@@ -121,6 +159,21 @@ export interface FetchAllAction {
     type: string;
     payload: FetchAllSuccessActionPayload;
 }
+
+export interface SyncAllActionPayload {
+    loginUrl: string;
+    sensorUrl: string;
+    temperatureLogUrl: string;
+    temperatureBreachUrl: string;
+    username: string;
+    password: string;
+}
+
+export interface SyncAllAction {
+    type: string;
+    payload: SyncAllActionPayload;
+}
+
 export interface PrepareActionReturn<SomePayload> {
     payload: SomePayload;
 }
@@ -198,10 +251,20 @@ const reducers = {
             draftState.password = password;
         },
     },
-    authenticate: () => {},
+    authenticate: {
+        prepare: (loginUrl: string, username: string, password: string):  PrepareActionReturn<AuthenticateActionPayload> => ({
+            payload: { loginUrl, username, password },
+        }),
+        reducer: () => {}
+    },
     authenticateSuccess: () => {},
     authenticateFailure: () => {},
-    syncSensors: () => {},
+    syncSensors: {
+        prepare: (sensorUrl: string):  PrepareActionReturn<SyncSensorsActionPayload> => ({
+            payload: { sensorUrl },
+        }),
+        reducer: () => {}
+    },
     syncSensorsSuccess: {
         prepare: (syncLogs: SyncLog[]):  PrepareActionReturn<SyncSensorsSuccessActionPayload> => ({
             payload: { syncLogs },
@@ -209,7 +272,12 @@ const reducers = {
         reducer: () => {}
     },
     syncSensorsFailure: () => {},
-    syncTemperatureLogs: () => {},
+    syncTemperatureLogs: {
+        prepare: (temperatureLogUrl: string):  PrepareActionReturn<SyncTemperatureLogsActionPayload> => ({
+            payload: { temperatureLogUrl },
+        }),
+        reducer: () => {}
+    },
     syncTemperatureLogsSuccess: {
         prepare: (syncLogs: SyncLog[]):  PrepareActionReturn<SyncTemperatureLogsSuccessActionPayload> => ({
             payload: { syncLogs },
@@ -217,7 +285,12 @@ const reducers = {
         reducer: () => {}
     },
     syncTemperatureLogsFailure: () => {},
-    syncTemperatureBreaches: () => {},
+    syncTemperatureBreaches: {
+        prepare: (temperatureBreachUrl: string):  PrepareActionReturn<SyncTemperatureBreachesActionPayload> => ({
+            payload: { temperatureBreachUrl },
+        }),
+        reducer: () => {}
+    },
     syncTemperatureBreachesSuccess: {
         prepare: (syncLogs: SyncLog[]):  PrepareActionReturn<SyncTemperatureBreachesSuccessActionPayload> => ({
             payload: { syncLogs },
@@ -263,7 +336,26 @@ const reducers = {
             draftState.password = password;
         },
     },
-    syncAll: () => { },
+    syncAll: {
+        prepare: (
+            loginUrl: string,
+            sensorUrl: string,
+            temperatureLogUrl: string,
+            temperatureBreachUrl: string,
+            username: string,
+            password: string,
+        ): PrepareActionReturn<FetchAllSuccessActionPayload> => ({
+            payload: {
+                loginUrl,
+                sensorUrl,
+                temperatureLogUrl,
+                temperatureBreachUrl,
+                username,
+                password,
+            },
+        }),
+        reducer: () => {},
+    },
 };
 
 const { actions: SyncAction, reducer: SyncReducer } = createSlice({
@@ -359,12 +451,12 @@ function* authenticateFailure(): SagaIterator {
     // TODO.
 }
 
-function* authenticate(): SagaIterator {
+function* authenticate({ payload: { loginUrl, username, password }}: AuthenticateAction): SagaIterator {
     const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
     const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
 
     try {
-        yield call(syncOutManager.login);
+        yield call(syncOutManager.login, loginUrl, username, password);
         yield put(SyncAction.authenticateSuccess());
     } catch (e) {
         // eslint-disable-next-line no-console
@@ -383,14 +475,14 @@ function* syncSensorsFailure(): SagaIterator {
     // TODO.
 }
 
-function* syncSensors(): SagaIterator {
+function* syncSensors({ payload: { sensorUrl }}: SyncSensorsAction): SagaIterator {
     const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
     const syncQueueManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_QUEUE_MANAGER);
     const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
 
     try {
         const syncLogs = yield call(syncQueueManager.nextSensors);
-        yield call(syncOutManager.syncSensors, syncLogs);
+        yield call(syncOutManager.syncSensors, sensorUrl, syncLogs);
         yield put(SyncAction.syncSensorsSuccess(syncLogs));
     } catch (e) {
         // eslint-disable-next-line no-console
@@ -409,14 +501,14 @@ function* syncTemperatureLogsFailure(): SagaIterator {
     // TODO.
 }
 
-function* syncTemperatureLogs(): SagaIterator {
+function* syncTemperatureLogs({ payload: { temperatureLogUrl }}: SyncTemperatureLogsAction): SagaIterator {
     const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
     const syncQueueManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_QUEUE_MANAGER);
     const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
 
     try {
         const syncLogs = yield call(syncQueueManager.nextTemperatureLogs);
-        yield call(syncOutManager.syncTemperatureLogs, syncLogs);
+        yield call(syncOutManager.syncTemperatureLogs, temperatureLogUrl, syncLogs);
         yield put(SyncAction.syncTemperatureLogsSuccess(syncLogs));
     } catch (e) {
         // eslint-disable-next-line no-console
@@ -435,14 +527,14 @@ function* syncTemperatureBreachesFailure(): SagaIterator {
     // TODO.
 }
 
-function* syncTemperatureBreaches(): SagaIterator {
+function* syncTemperatureBreaches({ payload: { temperatureBreachUrl }}: SyncTemperatureBreachesAction): SagaIterator {
     const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
     const syncQueueManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_QUEUE_MANAGER);
     const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
 
     try {
         const syncLogs = yield call(syncQueueManager.nextTemperatureBreaches);
-        yield call(syncOutManager.syncTemperatureBreaches, syncLogs);
+        yield call(syncOutManager.syncTemperatureBreaches, temperatureBreachUrl, syncLogs);
         yield put(SyncAction.syncTemperatureBreachesSuccess(syncLogs));
     } catch (e) {
         // eslint-disable-next-line no-console
@@ -451,35 +543,35 @@ function* syncTemperatureBreaches(): SagaIterator {
     }
 }
 
-function* syncAll(): SagaIterator {
-    yield put(SyncAction.syncSensors());
-    yield put(SyncAction.syncTemperatureLogs());
-    yield put(SyncAction.syncTemperatureBreaches());
+function* syncAll({ payload: { loginUrl, sensorUrl, temperatureLogUrl, temperatureBreachUrl, username, password }}: SyncAllAction): SagaIterator {
+    yield put(SyncAction.authenticate(loginUrl, username, password))
+    yield delay(MILLISECONDS.TEN_SECONDS);
+    yield put(SyncAction.syncSensors(sensorUrl));
+    yield put(SyncAction.syncTemperatureLogs(temperatureLogUrl));
+    yield put(SyncAction.syncTemperatureBreaches(temperatureBreachUrl));
 }
 
 function* fetchAll(): SagaIterator {
     const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
     const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
     try {
-        const {
+        const loginUrl = yield call(syncOutManager.getLoginUrl);
+        const sensorUrl = yield call(syncOutManager.getSensorUrl);
+        const temperatureLogUrl = yield call(syncOutManager.getTemperatureLogUrl);
+        const temperatureBreachUrl = yield call(syncOutManager.getTemperatureBreachUrl);
+        const username = yield call(syncOutManager.getUsername);
+        const password = yield call(syncOutManager.getPassword);
+
+        const syncConfig = {
             loginUrl,
             sensorUrl,
             temperatureLogUrl,
             temperatureBreachUrl,
             username,
             password,
-        } = syncOutManager;
+        };
 
-        yield put(
-            SyncAction.fetchAllSuccess({
-                loginUrl,
-                sensorUrl,
-                temperatureLogUrl,
-                temperatureBreachUrl,
-                username,
-                password,
-            })
-        );
+        yield put(SyncAction.fetchAllSuccess(syncConfig));
     } catch (error) {
         // eslint-disable-next-line no-console
         console.log(error.message);
