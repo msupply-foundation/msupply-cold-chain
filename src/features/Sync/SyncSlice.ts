@@ -4,6 +4,7 @@ import { getContext, call, put, takeEvery } from 'redux-saga/effects';
 
 import { DEPENDENCY, REDUCER } from '../../common/constants';
 import { RootState } from '../../common/store/store';
+import { SyncLog } from '../../common/services/Database/entities';
 
 interface SyncSliceState {
     host: string;
@@ -99,6 +100,33 @@ export interface AuthenticateSuccessActionPayload {}
 export interface AuthenticateSuccessAction {
     type: string;
     payload: AuthenticateSuccessActionPayload;
+}
+
+export interface SyncSensorsSuccessActionPayload {
+    syncLogs: SyncLog[]
+}
+
+export interface SyncSensorsSuccessAction {
+    type: string;
+    payload: SyncSensorsSuccessActionPayload;
+}
+
+export interface SyncTemperatureLogsSuccessActionPayload {
+    syncLogs: SyncLog[]
+}
+
+export interface SyncTemperatureLogsSuccessAction {
+    type: string;
+    payload: SyncTemperatureLogsSuccessActionPayload;
+}
+
+export interface  SyncTemperatureBreachesSuccessActionPayload {
+    syncLogs: SyncLog[]
+}
+
+export interface SyncTemperatureBreachesSuccessAction {
+    type: string;
+    payload: SyncTemperatureBreachesSuccessActionPayload;
 }
 
 export interface FetchAllSuccessActionPayload {
@@ -218,6 +246,30 @@ const reducers = {
     authenticate: () => {},
     authenticateSuccess: () => {},
     authenticateFailure: () => {},
+    syncSensors: () => {},
+    syncSensorsSuccess: {
+        prepare: (syncLogs: SyncLog[]):  PrepareActionReturn<SyncSensorsSuccessActionPayload> => ({
+            payload: { syncLogs },
+        }),
+        reducer: () => {}
+    },
+    syncSensorsFailure: () => {},
+    syncTemperatureLogs: () => {},
+    syncTemperatureLogsSuccess: {
+        prepare: (syncLogs: SyncLog[]):  PrepareActionReturn<SyncTemperatureLogsSuccessActionPayload> => ({
+            payload: { syncLogs },
+        }),
+        reducer: () => {}
+    },
+    syncTemperatureLogsFailure: () => {},
+    syncTemperatureBreaches: () => {},
+    syncTemperatureBreachesSuccess: {
+        prepare: (syncLogs: SyncLog[]):  PrepareActionReturn<SyncTemperatureBreachesSuccessActionPayload> => ({
+            payload: { syncLogs },
+        }),
+        reducer: () => {}
+    },
+    syncTemperatureBreachesFailure: () => {},
     fetchAll: () => { },
     fetchAllSuccess: {
         prepare: ({
@@ -375,8 +427,11 @@ function* authenticate(): SagaIterator {
         yield put(SyncAction.authenticateFailure())
     }
 }
+
+function* syncSensorsSuccess({ payload: { syncLogs } }: SyncSensorsSuccessAction): SagaIterator {
+    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
     const syncQueueManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_QUEUE_MANAGER);
-    yield call(syncQueueManager.dropSensors);
+    yield call(syncQueueManager.dropLogs, syncLogs);
 }
 
 function* syncSensorsFailure(): SagaIterator {
@@ -391,16 +446,18 @@ function* syncSensors(): SagaIterator {
     try {
         const syncLogs = yield call(syncQueueManager.nextSensors);
         yield call(syncOutManager.syncSensors, syncLogs);
-        yield call(syncSensorsSuccess);
+        yield put(SyncAction.syncSensorsSuccess(syncLogs));
     } catch (e) {
+        // eslint-disable-next-line no-console
+        console.log(e.message);
         yield call(syncSensorsFailure);
     }
 }
 
-function* syncTemperatureLogsSuccess(): SagaIterator {
+function* syncTemperatureLogsSuccess({ payload: { syncLogs } }: SyncTemperatureLogsSuccessAction): SagaIterator {
     const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
     const syncQueueManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_QUEUE_MANAGER);
-    yield call(syncQueueManager.dropTemperatureLogs);
+    yield call(syncQueueManager.dropLogs, syncLogs);
 }
 
 function* syncTemperatureLogsFailure(): SagaIterator {
@@ -415,16 +472,18 @@ function* syncTemperatureLogs(): SagaIterator {
     try {
         const syncLogs = yield call(syncQueueManager.nextTemperatureLogs);
         yield call(syncOutManager.syncTemperatureLogs, syncLogs);
-        yield call(syncTemperatureLogsSuccess);
+        yield put(SyncAction.syncTemperatureLogsSuccess(syncLogs));
     } catch (e) {
+        // eslint-disable-next-line no-console
+        console.log(e.message);
         yield call(syncTemperatureLogsFailure);
     }
 }
 
-function* syncTemperatureBreachesSuccess(): SagaIterator {
+function* syncTemperatureBreachesSuccess({ payload: { syncLogs } }: SyncTemperatureBreachesSuccessAction): SagaIterator {
     const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
     const syncQueueManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_QUEUE_MANAGER);
-    yield call(syncQueueManager.dropTemperatureBreaches);
+    yield call(syncQueueManager.dropLogs, syncLogs);
 }
 
 function* syncTemperatureBreachesFailure(): SagaIterator {
@@ -439,16 +498,18 @@ function* syncTemperatureBreaches(): SagaIterator {
     try {
         const syncLogs = yield call(syncQueueManager.nextTemperatureBreaches);
         yield call(syncOutManager.syncTemperatureBreaches, syncLogs);
-        yield call(syncTemperatureBreachesSuccess);
+        yield put(SyncAction.syncTemperatureBreachesSuccess(syncLogs));
     } catch (e) {
-        yield call(syncTemperatureBreachesFailure);
+        // eslint-disable-next-line no-console
+        console.log(e.message);
+        yield put(SyncAction.syncTemperatureBreachesFailure());
     }
 }
 
 function* syncAll(): SagaIterator {
-    yield call(syncSensors);
-    yield call(syncTemperatureLogs);
-    yield call(syncTemperatureBreaches);
+    yield put(SyncAction.syncSensors());
+    yield put(SyncAction.syncTemperatureLogs());
+    yield put(SyncAction.syncTemperatureBreaches());
 }
 
 function* fetchAll(): SagaIterator {
@@ -493,6 +554,15 @@ function* root(): SagaIterator {
     yield takeEvery(SyncAction.authenticate, authenticate)
     yield takeEvery(SyncAction.authenticateSuccess, authenticateSuccess);
     yield takeEvery(SyncAction.authenticateFailure, authenticateFailure);
+    yield takeEvery(SyncAction.syncSensors, syncSensors);
+    yield takeEvery(SyncAction.syncSensorsSuccess, syncSensorsSuccess);
+    yield takeEvery(SyncAction.syncSensorsFailure, syncSensorsFailure);
+    yield takeEvery(SyncAction.syncTemperatureLogs, syncTemperatureLogs);
+    yield takeEvery(SyncAction.syncTemperatureLogsSuccess, syncTemperatureLogsSuccess);
+    yield takeEvery(SyncAction.syncTemperatureLogsFailure, syncTemperatureLogsFailure);
+    yield takeEvery(SyncAction.syncTemperatureBreaches, syncTemperatureBreaches);
+    yield takeEvery(SyncAction.syncTemperatureBreachesSuccess, syncTemperatureBreachesSuccess);
+    yield takeEvery(SyncAction.syncTemperatureBreachesFailure, syncTemperatureBreachesFailure);
     yield takeEvery(SyncAction.fetchAll, fetchAll);
     yield takeEvery(SyncAction.syncAll, syncAll);
 }
