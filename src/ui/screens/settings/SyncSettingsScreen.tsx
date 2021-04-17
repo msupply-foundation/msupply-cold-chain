@@ -91,6 +91,11 @@ export const SyncSettingsScreen: FC = () => {
       </SettingsGroup>
       <SettingsGroup title="Operations">
         <SettingsButtonRow
+          label="Authenticate"
+          subtext="Authenticate with server"
+          onPress={() => dispatch(SyncAction.authenticate())} 
+        />
+        <SettingsButtonRow
           label="Sync all records"
           subtext="Syncs all records currently stored in sync queue"
           onPress={() => dispatch(SyncAction.syncAll())} 

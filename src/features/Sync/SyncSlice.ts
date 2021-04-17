@@ -93,6 +93,14 @@ export interface UpdatePasswordAction {
     payload: UpdatePasswordActionPayload;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface AuthenticateSuccessActionPayload {}
+
+export interface AuthenticateSuccessAction {
+    type: string;
+    payload: AuthenticateSuccessActionPayload;
+}
+
 export interface FetchAllSuccessActionPayload {
     host: string;
     port: string;
@@ -207,6 +215,9 @@ const reducers = {
             draftState.password = password;
         },
     },
+    authenticate: () => {},
+    authenticateSuccess: () => {},
+    authenticateFailure: () => {},
     fetchAll: () => { },
     fetchAllSuccess: {
         prepare: ({
@@ -343,6 +354,27 @@ function* updatePassword({ payload: { password } }: UpdatePasswordAction): SagaI
 
 function* syncSensorsSuccess(): SagaIterator {
     const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+function* authenticateSuccess(): SagaIterator {
+    // TODO.
+}
+
+function* authenticateFailure(): SagaIterator { 
+    // TODO.
+}
+
+function* authenticate(): SagaIterator {
+    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+    const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
+
+    try {
+        yield call(syncOutManager.login);
+        yield put(SyncAction.authenticateSuccess());
+    } catch (e) {
+        // eslint-disable-next-line no-console
+        console.log(e.message);
+        yield put(SyncAction.authenticateFailure())
+    }
+}
     const syncQueueManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_QUEUE_MANAGER);
     yield call(syncQueueManager.dropSensors);
 }
@@ -458,6 +490,9 @@ function* root(): SagaIterator {
     yield takeEvery(SyncAction.updatePort, updatePort);
     yield takeEvery(SyncAction.updateUsername, updateUsername);
     yield takeEvery(SyncAction.updatePassword, updatePassword);
+    yield takeEvery(SyncAction.authenticate, authenticate)
+    yield takeEvery(SyncAction.authenticateSuccess, authenticateSuccess);
+    yield takeEvery(SyncAction.authenticateFailure, authenticateFailure);
     yield takeEvery(SyncAction.fetchAll, fetchAll);
     yield takeEvery(SyncAction.syncAll, syncAll);
 }
