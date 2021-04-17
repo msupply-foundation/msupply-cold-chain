@@ -6,24 +6,18 @@ import { SyncLog } from "../../common/services/Database/entities";
 
 const GET_SYNC_CONFIG = 'SELECT * FROM syncconfig';
 
-const SET_SYNC_HOST = 'UPDATE syncconfig SET host = ?'
-const SET_SYNC_PORT = 'UPDATE syncconfig SET PORT = ?'
-const SET_SYNC_LOGIN_PATH = 'UPDATE syncconfig SET loginPath = ?'
-const SET_SYNC_SENSOR_PATH = 'UPDATE syncconfig SET sensorpath = ?'
-const SET_SYNC_TEMPERATURE_LOG_PATH = 'UPDATE syncconfig SET temperaturelogpath = ?'
-const SET_SYNC_TEMPERATURE_BREACH_PATH = 'UPDATE syncconfig SET temperaturebreachpath = ?'
+const SET_SYNC_LOGIN_URL = 'UPDATE syncconfig SET loginurl = ?'
+const SET_SYNC_SENSOR_URL = 'UPDATE syncconfig SET sensorurl = ?'
+const SET_SYNC_TEMPERATURE_LOG_URL = 'UPDATE syncconfig SET temperaturelogurl = ?'
+const SET_SYNC_TEMPERATURE_BREACH_URL = 'UPDATE syncconfig SET temperaturebreachurl = ?'
 const SET_SYNC_USERNAME = `UPDATE syncconfig SET username = ?`;
 const SET_SYNC_PASSWORD = `UPDATE syncconfig SET password = ?`;
 
 interface SyncConfig {
-    host: string,
-    port: string,
-    paths: {
-        login: string,
-        sensor: string,
-        temperatureLog: string,
-        temperatureBreach: string
-    },
+    loginUrl: string,
+    sensorUrl: string,
+    temperatureLogUrl: string,
+    temperatureBreachUrl: string
     username: string,
     password: string,
 }
@@ -39,58 +33,42 @@ class SyncOutManager {
 
     hydrate = async (): Promise<void> => {
         const [{ 
-            host, 
-            port, 
-            loginPath,
-            sensorPath, 
-            temperatureLogPath,
-            temperatureBreachPath,
+            loginUrl,
+            sensorUrl, 
+            temperatureLogUrl,
+            temperatureBreachUrl,
             username,
             password
         }] = await this.databaseService.query(GET_SYNC_CONFIG);
 
         this.config = {
-            host,
-            port,
-            paths: {
-                login: loginPath,
-                sensor: sensorPath,
-                temperatureLog: temperatureLogPath,
-                temperatureBreach: temperatureBreachPath,
-            },
+            loginUrl,
+            sensorUrl,
+            temperatureLogUrl,
+            temperatureBreachUrl,
             username,
             password
         };
     }
 
-    setHost = async (host: string): Promise<void> => {
-        await this.databaseService.query(SET_SYNC_HOST, [host]);
-        this.config.host = host;
+    setLoginUrl = async (url: string): Promise<void> => { 
+        await this.databaseService.query(SET_SYNC_LOGIN_URL, [url]);
+        this.config.loginUrl = url; 
     }
 
-    setPort = async (port: string): Promise<void> => {
-        await this.databaseService.query(SET_SYNC_PORT, [port]);
-        this.config.port = port;
+    setSensorUrl = async (url: string): Promise<void> => { 
+        await this.databaseService.query(SET_SYNC_SENSOR_URL, [url]);
+        this.config.sensorUrl = url; 
     }
 
-    setLoginPath = async (path: string): Promise<void> => { 
-        await this.databaseService.query(SET_SYNC_LOGIN_PATH, [path]);
-        this.config.paths.login = path; 
+    setTemperatureLogUrl = async (url: string): Promise<void> => { 
+        await this.databaseService.query(SET_SYNC_TEMPERATURE_LOG_URL, [url]);
+        this.config.temperatureLogUrl = url; 
     }
 
-    setSensorPath = async (path: string): Promise<void> => { 
-        await this.databaseService.query(SET_SYNC_SENSOR_PATH, [path]);
-        this.config.paths.sensor = path; 
-    }
-
-    setTemperatureLogPath = async (path: string): Promise<void> => { 
-        await this.databaseService.query(SET_SYNC_TEMPERATURE_LOG_PATH, [path]);
-        this.config.paths.temperatureLog = path; 
-    }
-
-    setTemperatureBreachPath = async (path: string): Promise<void> => { 
-        await this.databaseService.query(SET_SYNC_TEMPERATURE_BREACH_PATH, [path]);
-        this.config.paths.temperatureBreach = path; 
+    setTemperatureBreachUrl = async (url: string): Promise<void> => { 
+        await this.databaseService.query(SET_SYNC_TEMPERATURE_BREACH_URL, [url]);
+        this.config.temperatureBreachUrl = url; 
     }
 
     setUsername = async (username: string): Promise<void> => {
@@ -103,25 +81,13 @@ class SyncOutManager {
         this.config.password = password; 
     }
 
-    get host(): string { return this.config.host }
+    get loginUrl(): string { return this.config.loginUrl }
 
-    get port(): string { return this.config.port }
+    get sensorUrl(): string { return this.config.sensorUrl }
 
-    get loginPath(): string { return this.config.paths.login }
-    
-    get sensorPath(): string { return this.config.paths.sensor }
+    get temperatureLogUrl(): string { return this.config.temperatureLogUrl }
 
-    get temperatureLogPath(): string { return this.config.paths.temperatureLog }
-
-    get temperatureBreachPath(): string { return this.config.paths.temperatureBreach }
-
-    get loginUrl(): string { return `${this.host}:${this.port}/${this.loginPath}` }
-
-    get sensorUrl(): string { return `${this.host}:${this.port}/${this.sensorPath}` }
-
-    get temperatureLogUrl(): string { return `${this.host}:${this.port}/${this.temperatureLogPath}` }
-
-    get temperatureBreachUrl(): string { return `${this.host}:${this.port}/${this.temperatureBreachPath}` }
+    get temperatureBreachUrl(): string { return this.config.temperatureBreachUrl }
 
     get username(): string { return this.config.username }
 

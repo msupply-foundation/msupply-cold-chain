@@ -7,28 +7,22 @@ import { Base } from './Base';
 @Entity('SyncConfig')
 class SyncConfig extends Base {
   @Column({ type: 'varchar', nullable: true })
-  host!: string;
-
-  @Column({ type: 'varchar', nullable: true })
-  port!: string;
-
-  @Column({ type: 'varchar', nullable: true })
   username!: string;
 
   @Column({ type: 'varchar', nullable: true })
   password!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  loginPath!: string;
+  loginUrl!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  sensorPath!: string;
+  sensorUrl!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  temperatureLogPath!: string;
+  temperatureLogUrl!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  temperatureBreachPath!: string;
+  temperatureBreachUrl!: string;
 }
 
 export { SyncConfig };
