@@ -12,14 +12,12 @@ import {
 import { SyncAction, SyncSelector } from '../../../features/Sync';
 
 export const SyncSettingsScreen: FC = () => {
-  const host: string = useSelector(SyncSelector.getHost);
-  const port: string = useSelector(SyncSelector.getPort);
   const username: string = useSelector(SyncSelector.getUsername);
   const password: string = useSelector(SyncSelector.getPassword);
-  const loginPath: string = useSelector(SyncSelector.getLoginPath);
-  const sensorPath: string = useSelector(SyncSelector.getSensorPath);
-  const temperatureLogPath: string = useSelector(SyncSelector.getTemperatureLogPath);
-  const temperatureBreachPath: string = useSelector(SyncSelector.getTemperatureBreachPath);
+  const loginUrl: string = useSelector(SyncSelector.getLoginUrl);
+  const sensorUrl: string = useSelector(SyncSelector.getSensorUrl);
+  const temperatureLogUrl: string = useSelector(SyncSelector.getTemperatureLogUrl);
+  const temperatureBreachUrl: string = useSelector(SyncSelector.getTemperatureBreachUrl);
 
   const dispatch = useDispatch();
 
@@ -31,46 +29,32 @@ export const SyncSettingsScreen: FC = () => {
     <SettingsList>
       <SettingsGroup title="Server configuration">
         <SettingsTextInputRow
-          label="Server host"
-          subtext="Server host"
-          onConfirm={({inputValue}: { inputValue: string }) => dispatch(SyncAction.updateHost(inputValue))}
-          value={host}
-          editDescription="Edit server host"
+          label="Login"
+          subtext="Login URL"
+          onConfirm={({inputValue}: { inputValue: string }) => dispatch(SyncAction.updateLoginUrl(inputValue))}
+          value={loginUrl}
+          editDescription="Edit login URL"
         />
         <SettingsTextInputRow
-          label="Server port"
-          subtext="Server port"
-          onConfirm={({inputValue}: { inputValue: string }) => dispatch(SyncAction.updatePort(inputValue))}
-          value={port}
-          editDescription="Edit server port"
+          label="Sensors"
+          subtext="Sensor URL"
+          onConfirm={({inputValue}: { inputValue: string }) => dispatch(SyncAction.updateSensorUrl(inputValue))}
+          value={sensorUrl}
+          editDescription="Edit sensor URL"
         />
         <SettingsTextInputRow
-          label="Login path"
-          subtext="Login path"
-          onConfirm={({inputValue}: { inputValue: string }) => dispatch(SyncAction.updateLoginPath(inputValue))}
-          value={loginPath}
-          editDescription="Edit login path"
+          label="Temperatures"
+          subtext="Temperature log URL"
+          onConfirm={({inputValue}: { inputValue: string }) => dispatch(SyncAction.updateTemperatureLogUrl(inputValue))}
+          value={temperatureLogUrl}
+          editDescription="Edit temperature log URL"
         />
         <SettingsTextInputRow
-          label="Sensor path"
-          subtext="Sensor path"
-          onConfirm={({inputValue}: { inputValue: string }) => dispatch(SyncAction.updateSensorPath(inputValue))}
-          value={sensorPath}
-          editDescription="Edit server port"
-        />
-        <SettingsTextInputRow
-          label="Temperature log path"
-          subtext="Temperature log path"
-          onConfirm={({inputValue}: { inputValue: string }) => dispatch(SyncAction.updateTemperatureLogPath(inputValue))}
-          value={temperatureLogPath}
-          editDescription="Edit temperature log path"
-        />
-        <SettingsTextInputRow
-          label="Temperature breach path"
-          subtext="Temperature breach path"
-          onConfirm={({inputValue}: { inputValue: string }) => dispatch(SyncAction.updateTemperatureBreachPath(inputValue))}
-          value={temperatureBreachPath}
-          editDescription="Edit temperature breach path"
+          label="Breaches"
+          subtext="Temperature breach URL"
+          onConfirm={({inputValue}: { inputValue: string }) => dispatch(SyncAction.updateTemperatureBreachUrl(inputValue))}
+          value={temperatureBreachUrl}
+          editDescription="Edit temperature breach URL"
         />
       </SettingsGroup>
       <SettingsGroup title="Store credentials">
@@ -91,9 +75,14 @@ export const SyncSettingsScreen: FC = () => {
       </SettingsGroup>
       <SettingsGroup title="Operations">
         <SettingsButtonRow
+          label="Authenticate"
+          subtext="Authenticate with server"
+          onPress={() => dispatch(SyncAction.authenticate(loginUrl, username, password))} 
+        />
+        <SettingsButtonRow
           label="Sync all records"
           subtext="Syncs all records currently stored in sync queue"
-          onPress={() => dispatch(SyncAction.syncAll())} 
+          onPress={() => dispatch(SyncAction.syncAll(loginUrl, sensorUrl, temperatureLogUrl, temperatureBreachUrl, username, password))} 
         />
       </SettingsGroup>
     </SettingsList>

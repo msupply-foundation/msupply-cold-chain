@@ -104,8 +104,6 @@ export const DependencyContainer: FC = ({ children }) => {
       await db.getConnection();
       await dbService.init();
 
-      await syncOutManager.hydrate();
-
       setReady(true);
       SplashScreen.hideAsync();
     })();

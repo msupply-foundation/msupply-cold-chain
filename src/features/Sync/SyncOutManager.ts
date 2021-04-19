@@ -4,147 +4,87 @@ import { DatabaseService } from '../../common/services/Database';
 
 import { SyncLog } from "../../common/services/Database/entities";
 
-const GET_SYNC_CONFIG = 'SELECT * FROM syncconfig';
+const GET_LOGIN_URL = 'SELECT loginurl from syncconfig'
+const GET_SENSOR_URL = 'SELECT sensorurl from syncconfig'
+const GET_TEMPERATURE_LOG_URL = 'SELECT temperaturelogurl from syncconfig'
+const GET_TEMPERATURE_BREACH_URL = 'SELECT temperaturebreachurl from syncconfig'
+const GET_USERNAME = 'SELECT username from syncconfig'
+const GET_PASSWORD = 'SELECT password from syncconfig'
 
-const SET_SYNC_HOST = 'UPDATE syncconfig SET host = ?'
-const SET_SYNC_PORT = 'UPDATE syncconfig SET PORT = ?'
-const SET_SYNC_LOGIN_PATH = 'UPDATE syncconfig SET loginPath = ?'
-const SET_SYNC_SENSOR_PATH = 'UPDATE syncconfig SET sensorpath = ?'
-const SET_SYNC_TEMPERATURE_LOG_PATH = 'UPDATE syncconfig SET temperaturelogpath = ?'
-const SET_SYNC_TEMPERATURE_BREACH_PATH = 'UPDATE syncconfig SET temperaturebreachpath = ?'
-const SET_SYNC_USERNAME = `UPDATE syncconfig SET username = ?`;
-const SET_SYNC_PASSWORD = `UPDATE syncconfig SET password = ?`;
-
-interface SyncConfig {
-    host: string,
-    port: string,
-    paths: {
-        login: string,
-        sensor: string,
-        temperatureLog: string,
-        temperatureBreach: string
-    },
-    username: string,
-    password: string,
-}
+const SET_LOGIN_URL = 'UPDATE syncconfig SET loginurl = ?'
+const SET_SENSOR_URL = 'UPDATE syncconfig SET sensorurl = ?'
+const SET_TEMPERATURE_LOG_URL = 'UPDATE syncconfig SET temperaturelogurl = ?'
+const SET_TEMPERATURE_BREACH_URL = 'UPDATE syncconfig SET temperaturebreachurl = ?'
+const SET_USERNAME = `UPDATE syncconfig SET username = ?`;
+const SET_PASSWORD = `UPDATE syncconfig SET password = ?`;
 
 class SyncOutManager {
     private databaseService: DatabaseService;
-
-    private config!: SyncConfig;
 
     constructor(databaseService: DatabaseService) {
         this.databaseService = databaseService;
     }
 
-    hydrate = async (): Promise<void> => {
-        const [{ 
-            host, 
-            port, 
-            loginPath,
-            sensorPath, 
-            temperatureLogPath,
-            temperatureBreachPath,
-            username,
-            password
-        }] = await this.databaseService.query(GET_SYNC_CONFIG);
+    private getAuthenticationBody = (username: string, password: string): string => JSON.stringify({ username, password });
 
-        this.config = {
-            host,
-            port,
-            paths: {
-                login: loginPath,
-                sensor: sensorPath,
-                temperatureLog: temperatureLogPath,
-                temperatureBreach: temperatureBreachPath,
-            },
-            username,
-            password
-        };
+    private getSyncBody = (logs: SyncLog[]): string => JSON.stringify(logs.map(log => JSON.parse(log.payload))); 
+
+    public getLoginUrl = async(): Promise<string> => {
+        const [{ loginUrl }] = await this.databaseService.query(GET_LOGIN_URL);
+        return loginUrl;
     }
 
-    setHost = async (host: string): Promise<void> => {
-        await this.databaseService.query(SET_SYNC_HOST, [host]);
-        this.config.host = host;
+    public getSensorUrl = async(): Promise<string> => {
+        const [{ sensorUrl }] = await this.databaseService.query(GET_SENSOR_URL);
+        return sensorUrl;
     }
 
-    setPort = async (port: string): Promise<void> => {
-        await this.databaseService.query(SET_SYNC_PORT, [port]);
-        this.config.port = port;
+    public getTemperatureLogUrl = async(): Promise<string> => {
+        const [{ temperatureLogUrl }] = await this.databaseService.query(GET_TEMPERATURE_LOG_URL);
+        return temperatureLogUrl;
     }
 
-    setLoginPath = async (path: string): Promise<void> => { 
-        await this.databaseService.query(SET_SYNC_LOGIN_PATH, [path]);
-        this.config.paths.login = path; 
+    public getTemperatureBreachUrl = async(): Promise<string> => {
+        const [{ temperatureBreachUrl }] = await this.databaseService.query(GET_TEMPERATURE_BREACH_URL);
+        return temperatureBreachUrl;
     }
 
-    setSensorPath = async (path: string): Promise<void> => { 
-        await this.databaseService.query(SET_SYNC_SENSOR_PATH, [path]);
-        this.config.paths.sensor = path; 
+    public getUsername = async(): Promise<string> => {
+        const [{ username }] = await this.databaseService.query(GET_USERNAME);
+        return username;
     }
 
-    setTemperatureLogPath = async (path: string): Promise<void> => { 
-        await this.databaseService.query(SET_SYNC_TEMPERATURE_LOG_PATH, [path]);
-        this.config.paths.temperatureLog = path; 
+    public getPassword = async(): Promise<string> => {
+        const [{ password }] = await this.databaseService.query(GET_PASSWORD);
+        return password;
     }
 
-    setTemperatureBreachPath = async (path: string): Promise<void> => { 
-        await this.databaseService.query(SET_SYNC_TEMPERATURE_BREACH_PATH, [path]);
-        this.config.paths.temperatureBreach = path; 
+    public setLoginUrl = async (url: string): Promise<void> => this.databaseService.query(SET_LOGIN_URL, [url]);
+
+    public setSensorUrl = async (url: string): Promise<void> => this.databaseService.query(SET_SENSOR_URL, [url]);
+
+    public setTemperatureLogUrl = async (url: string): Promise<void> => this.databaseService.query(SET_TEMPERATURE_LOG_URL, [url]);
+
+    public setTemperatureBreachUrl = async (url: string): Promise<void> => this.databaseService.query(SET_TEMPERATURE_BREACH_URL, [url]);
+
+    public setUsername = async (username: string): Promise<void> => this.databaseService.query(SET_USERNAME, [username]); 
+
+    public setPassword = async (password: string): Promise<void> => this.databaseService.query(SET_PASSWORD, [password]);
+
+    public login = async (loginUrl: string, username: string, password: string): Promise<void> => {
+        axios.post(loginUrl, this.getAuthenticationBody(username, password), { withCredentials: true });
     }
 
-    setUsername = async (username: string): Promise<void> => {
-        await this.databaseService.query(SET_SYNC_USERNAME, [username]);
-        this.config.username = username; 
+    public syncSensors = async (sensorUrl: string, logs: SyncLog[]): Promise<void> => {
+        axios.put(sensorUrl, this.getSyncBody(logs), { withCredentials: true });
     }
 
-    setPassword = async (password: string): Promise<void> => {
-        await this.databaseService.query(SET_SYNC_PASSWORD, [password]);
-        this.config.password = password; 
+    public syncTemperatureLogs = async (temperatureLogUrl: string, logs: SyncLog[]): Promise<void> => {
+        axios.put(temperatureLogUrl, this.getSyncBody(logs), { withCredentials: true });
     }
 
-    get host(): string { return this.config.host }
-
-    get port(): string { return this.config.port }
-
-    get loginPath(): string { return this.config.paths.login }
-    
-    get sensorPath(): string { return this.config.paths.sensor }
-
-    get temperatureLogPath(): string { return this.config.paths.temperatureLog }
-
-    get temperatureBreachPath(): string { return this.config.paths.temperatureBreach }
-
-    get loginUrl(): string { return `${this.host}:${this.port}/${this.loginPath}` }
-
-    get sensorUrl(): string { return `${this.host}:${this.port}/${this.sensorPath}` }
-
-    get temperatureLogUrl(): string { return `${this.host}:${this.port}/${this.temperatureLogPath}` }
-
-    get temperatureBreachUrl(): string { return `${this.host}:${this.port}/${this.temperatureBreachPath}` }
-
-    get username(): string { return this.config.username }
-
-    get password(): string { return this.config.password }
-
-    getAuthenticationBody = (): string => JSON.stringify({ username: this.config.username, password: this.config.password });
-
-    getSyncBody = (logs: SyncLog[]): string => JSON.stringify(logs.map(log => JSON.parse(log.payload))); 
-
-    login = async (): Promise<void> => {
-        axios.post(this.loginUrl, this.getAuthenticationBody(), { withCredentials: true });
-    }
-
-    syncSensors = async (logs: SyncLog[]): Promise<void> => {
-        axios.put(this.sensorUrl, this.getSyncBody(logs), { withCredentials: true });
-    }
-
-    syncTemperatureLogs = async (logs: SyncLog[]): Promise<void> => {
-        axios.put(this.temperatureLogUrl, this.getSyncBody(logs), { withCredentials: true });
-    }
-
-    syncTemperatureBreaches = async (logs: SyncLog[]): Promise<void> => {
-        axios.put(this.temperatureBreachUrl, this.getSyncBody(logs), { withCredentials: true });
+    public syncTemperatureBreaches = async (temperatureBreachUrl: string, logs: SyncLog[]): Promise<void> => {
+        axios.put(temperatureBreachUrl, this.getSyncBody(logs), { withCredentials: true });
     }
 }
 

@@ -55,24 +55,19 @@ export class DatabaseService {
       COLD_CUMULATIVE,
     ]);
 
-    const host = 'http://10.0.2.2';
-    const port = '8080';
-
-    const loginPath = 'coldchain/v1/login';
-    const sensorPath = 'coldchain/v1/sensor';
-    const temperatureLogPath = 'coldchain/v1/tempeartureLog';
-    const temperatureBreachPath = 'coldchain/v1/temperatureBreach';
+    const loginUrl = 'http://10.0.2.2:8080/coldchain/v1/login';
+    const sensorUrl = 'http://10.0.2.2:8080/coldchain/v1/sensor';
+    const temperatureLogUrl = 'http://10.0.2.2:8080/coldchain/v1/temperature-log';
+    const temperatureBreachUrl = 'http://10.0.2.2:8080/coldchain/v1/temperature-breach';
 
     const username = 'GEN';
     const password = 'secret';
 
     return this.upsert(ENTITIES.SYNC_CONFIG, [{
-      host,
-      port,
-      loginPath,
-      sensorPath,
-      temperatureLogPath,
-      temperatureBreachPath,
+      loginUrl,
+      sensorUrl,
+      temperatureLogUrl,
+      temperatureBreachUrl,
       username,
       password,
     }]);
