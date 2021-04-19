@@ -13,6 +13,7 @@ interface SyncSliceState {
     temperatureBreachUrl: string;
     username: string;
     password: string;
+    lastSync: number;
 }
 
 const initialState: SyncSliceState = {
@@ -22,6 +23,7 @@ const initialState: SyncSliceState = {
     temperatureBreachUrl: '',
     username: '',
     password: '',
+    lastSync: 0,
 };
 
 export interface UpdateLoginUrlActionPayload {
@@ -73,6 +75,14 @@ export interface UpdatePasswordAction {
     payload: UpdatePasswordActionPayload;
 }
 
+export interface UpdateLastSyncActionPayload {
+    lastSync: number;
+}
+
+export interface UpdateLastSyncAction {
+    type: string;
+    payload: UpdateLastSyncActionPayload;
+}
 export interface AuthenticateActionPayload {
     loginUrl: string;
     username: string;
@@ -153,6 +163,7 @@ export interface FetchAllSuccessActionPayload {
     temperatureBreachUrl: string;
     username: string;
     password: string;
+    lastSync: number;
 }
 
 export interface FetchAllAction {
@@ -251,6 +262,17 @@ const reducers = {
             draftState.password = password;
         },
     },
+    updateLastSync: {
+        prepare: (lastSync: number): PrepareActionReturn<UpdateLastSyncActionPayload> => ({
+            payload: { lastSync },
+        }),
+        reducer: (
+            draftState: SyncSliceState,
+            { payload: { lastSync } }: PayloadAction<UpdateLastSyncActionPayload>
+        ) => {
+            draftState.lastSync = lastSync;
+        },
+    },
     authenticate: {
         prepare: (loginUrl: string, username: string, password: string):  PrepareActionReturn<AuthenticateActionPayload> => ({
             payload: { loginUrl, username, password },
@@ -307,6 +329,7 @@ const reducers = {
             temperatureBreachUrl,
             username,
             password,
+            lastSync,
         }: {
             loginUrl: string;
             sensorUrl: string;
@@ -314,6 +337,7 @@ const reducers = {
             temperatureBreachUrl: string;
             username: string;
             password: string;
+            lastSync: number;
         }): PrepareActionReturn<FetchAllSuccessActionPayload> => ({
             payload: {
                 loginUrl,
@@ -322,6 +346,7 @@ const reducers = {
                 temperatureBreachUrl,
                 username,
                 password,
+                lastSync,
             },
         }),
         reducer: (
@@ -398,6 +423,10 @@ const getPassword = (state: RootState): string => {
     return password;
 };
 
+const getLastSync = (state: RootState): number => {
+    const { lastSync } = getSliceState(state);
+    return lastSync;
+}
 const SyncSelector = {
     getLoginUrl,
     getSensorUrl,
@@ -405,6 +434,7 @@ const SyncSelector = {
     getTemperatureBreachUrl,
     getUsername,
     getPassword,
+    getLastSync,
 };
 
 function* updateLoginUrl({ payload: { loginUrl } }: UpdateLoginUrlAction): SagaIterator {
@@ -443,6 +473,11 @@ function* updatePassword({ payload: { password } }: UpdatePasswordAction): SagaI
     syncOutManager.setPassword(password);
 }
 
+function* updateLastSync({ payload: { lastSync }}: UpdateLastSyncAction): SagaIterator {
+    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+    const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
+    syncOutManager.setLastSync(lastSync);
+}
 function* authenticateSuccess(): SagaIterator {
     // TODO.
 }
@@ -586,6 +621,7 @@ function* root(): SagaIterator {
     yield takeEvery(SyncAction.updateTemperatureBreachUrl, updateTemperatureBreachUrl);
     yield takeEvery(SyncAction.updateUsername, updateUsername);
     yield takeEvery(SyncAction.updatePassword, updatePassword);
+    yield takeEvery(SyncAction.updateLastSync, updateLastSync);
     yield takeEvery(SyncAction.authenticate, authenticate)
     yield takeEvery(SyncAction.authenticateSuccess, authenticateSuccess);
     yield takeEvery(SyncAction.authenticateFailure, authenticateFailure);

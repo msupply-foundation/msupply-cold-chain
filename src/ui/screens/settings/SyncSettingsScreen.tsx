@@ -12,6 +12,7 @@ import {
 import { SyncAction, SyncSelector } from '../../../features/Sync';
 
 export const SyncSettingsScreen: FC = () => {
+  const lastSync: number = useSelector(SyncSelector.getLastSync);
   const username: string = useSelector(SyncSelector.getUsername);
   const password: string = useSelector(SyncSelector.getPassword);
   const loginUrl: string = useSelector(SyncSelector.getLoginUrl);
