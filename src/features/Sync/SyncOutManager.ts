@@ -11,6 +11,7 @@ const GET_TEMPERATURE_BREACH_URL = 'SELECT temperaturebreachurl from syncconfig'
 const GET_USERNAME = 'SELECT username from syncconfig'
 const GET_PASSWORD = 'SELECT password from syncconfig'
 const GET_LAST_SYNC = 'SELECT lastsync from syncconfig';
+const GET_IS_PASSIVE_SYNC_ENABLED = 'SELECT ispassivesyncenabled from syncconfig';
 
 const SET_LOGIN_URL = 'UPDATE syncconfig SET loginurl = ?'
 const SET_SENSOR_URL = 'UPDATE syncconfig SET sensorurl = ?'
@@ -19,6 +20,7 @@ const SET_TEMPERATURE_BREACH_URL = 'UPDATE syncconfig SET temperaturebreachurl =
 const SET_USERNAME = `UPDATE syncconfig SET username = ?`;
 const SET_PASSWORD = `UPDATE syncconfig SET password = ?`;
 const SET_LAST_SYNC = `UPDATE syncconfig SET lastsync = ?`;
+const SET_IS_PASSIVE_SYNC_ENABLED = `UPDATE syncconfig SET ispassivesyncenabled = ?`;
 
 class SyncOutManager {
     private databaseService: DatabaseService;
@@ -65,6 +67,12 @@ class SyncOutManager {
         const [{ lastSync }] = await this.databaseService.query(GET_LAST_SYNC);
         return lastSync;
     }
+
+    public getIsPassiveSyncEnabled = async(): Promise<boolean> => {
+        const [{ isPassiveSyncEnabled }] = await this.databaseService.query(GET_IS_PASSIVE_SYNC_ENABLED);
+        return isPassiveSyncEnabled;
+    }
+
     public setLoginUrl = async (url: string): Promise<void> => this.databaseService.query(SET_LOGIN_URL, [url]);
 
     public setSensorUrl = async (url: string): Promise<void> => this.databaseService.query(SET_SENSOR_URL, [url]);
@@ -78,6 +86,9 @@ class SyncOutManager {
     public setPassword = async (password: string): Promise<void> => this.databaseService.query(SET_PASSWORD, [password]);
 
     public setLastSync = async (lastSync: number): Promise<void> => this.databaseService.query(SET_LAST_SYNC, [lastSync]);
+
+    public setIsPassiveSyncEnabled = async (isPassiveSyncEnabled: boolean): Promise<void> => this.databaseService.query(SET_IS_PASSIVE_SYNC_ENABLED, [Number(isPassiveSyncEnabled)]);
+
     public login = async (loginUrl: string, username: string, password: string): Promise<void> => {
         axios.post(loginUrl, this.getAuthenticationBody(username, password), { withCredentials: true });
     }

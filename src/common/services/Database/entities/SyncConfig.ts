@@ -26,6 +26,9 @@ class SyncConfig extends Base {
 
   @Column({ type: 'int', nullable: true })
   lastSync!: number;
+
+  @Column({ type: 'int', nullable: true })
+  isPassiveSyncEnabled!: number;
 }
 
 export { SyncConfig };

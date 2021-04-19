@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SagaIterator } from '@redux-saga/types';
-import { getContext, call, delay, put, takeEvery } from 'redux-saga/effects';
+import { getContext, call, delay, put, takeEvery, takeLeading, select, take, race } from 'redux-saga/effects';
 
 import { DEPENDENCY, MILLISECONDS, REDUCER } from '../../common/constants';
 import { RootState } from '../../common/store/store';
@@ -15,6 +15,7 @@ interface SyncSliceState {
     password: string;
     lastSync: number;
     isSyncing: boolean;
+    isPassiveSyncEnabled: boolean;
 }
 
 const initialState: SyncSliceState = {
@@ -26,6 +27,7 @@ const initialState: SyncSliceState = {
     password: '',
     lastSync: 0,
     isSyncing: false,
+    isPassiveSyncEnabled: false,
 };
 
 export interface UpdateLoginUrlActionPayload {
@@ -92,6 +94,15 @@ export interface UpdateIsSyncingActionPayload {
 export interface UpdateIsSyncingAction {
     type: string;
     payload: UpdateIsSyncingActionPayload;
+}
+
+export interface UpdateIsPassiveSyncEnabledActionPayload {
+    isPassiveSyncEnabled: boolean;
+}
+
+export interface UpdateIsPassiveSyncEnabledAction {
+    type: string;
+    payload: UpdateIsPassiveSyncEnabledActionPayload;
 }
 export interface AuthenticateActionPayload {
     loginUrl: string;
@@ -174,6 +185,7 @@ export interface FetchAllSuccessActionPayload {
     username: string;
     password: string;
     lastSync: number;
+    isPassiveSyncEnabled: boolean;
 }
 
 export interface FetchAllAction {
@@ -193,6 +205,10 @@ export interface SyncAllActionPayload {
 export interface SyncAllAction {
     type: string;
     payload: SyncAllActionPayload;
+}
+
+export interface SyncingErrorActionPayload {
+    error: string
 }
 
 export interface PrepareActionReturn<SomePayload> {
@@ -294,6 +310,17 @@ const reducers = {
             draftState.isSyncing = isSyncing;
         },
     },
+    updateIsPassiveSyncEnabled: {
+        prepare: (isPassiveSyncEnabled: boolean): PrepareActionReturn<UpdateIsPassiveSyncEnabledActionPayload> => ({
+            payload: { isPassiveSyncEnabled },
+        }),
+        reducer: (
+            draftState: SyncSliceState,
+            { payload: { isPassiveSyncEnabled } }: PayloadAction<UpdateIsPassiveSyncEnabledActionPayload>
+        ) => {
+            draftState.isPassiveSyncEnabled = isPassiveSyncEnabled;
+        },
+    },
     authenticate: {
         prepare: (loginUrl: string, username: string, password: string):  PrepareActionReturn<AuthenticateActionPayload> => ({
             payload: { loginUrl, username, password },
@@ -351,6 +378,7 @@ const reducers = {
             username,
             password,
             lastSync,
+            isPassiveSyncEnabled,
         }: {
             loginUrl: string;
             sensorUrl: string;
@@ -359,6 +387,7 @@ const reducers = {
             username: string;
             password: string;
             lastSync: number;
+            isPassiveSyncEnabled: boolean;
         }): PrepareActionReturn<FetchAllSuccessActionPayload> => ({
             payload: {
                 loginUrl,
@@ -368,11 +397,12 @@ const reducers = {
                 username,
                 password,
                 lastSync,
+                isPassiveSyncEnabled
             },
         }),
         reducer: (
             draftState: SyncSliceState,
-            { payload: { loginUrl, sensorUrl, temperatureLogUrl, temperatureBreachUrl, username, password } }: PayloadAction<FetchAllSuccessActionPayload>
+            { payload: { loginUrl, sensorUrl, temperatureLogUrl, temperatureBreachUrl, username, password, lastSync, isPassiveSyncEnabled } }: PayloadAction<FetchAllSuccessActionPayload>
         ) => {
             draftState.loginUrl = loginUrl;
             draftState.sensorUrl = sensorUrl;
@@ -380,6 +410,8 @@ const reducers = {
             draftState.temperatureBreachUrl = temperatureBreachUrl;
             draftState.username = username;
             draftState.password = password;
+            draftState.lastSync = lastSync;
+            draftState.isPassiveSyncEnabled = isPassiveSyncEnabled;
         },
     },
     syncAll: {
@@ -390,7 +422,7 @@ const reducers = {
             temperatureBreachUrl: string,
             username: string,
             password: string,
-        ): PrepareActionReturn<FetchAllSuccessActionPayload> => ({
+        ): PrepareActionReturn<SyncAllActionPayload> => ({
             payload: {
                 loginUrl,
                 sensorUrl,
@@ -402,6 +434,8 @@ const reducers = {
         }),
         reducer: () => {},
     },
+    enablePassiveSync: (draftState: SyncSliceState) => { draftState.isPassiveSyncEnabled = true; },
+    disablePassiveSync: (draftState: SyncSliceState) => { draftState.isPassiveSyncEnabled = false; }
 };
 
 const { actions: SyncAction, reducer: SyncReducer } = createSlice({
@@ -453,6 +487,12 @@ const getIsSyncing = (state: RootState): boolean => {
     const { isSyncing } = getSliceState(state);
     return isSyncing;
 }
+
+const getIsPassiveSyncEnabled = (state: RootState): boolean => {
+    const { isPassiveSyncEnabled } = getSliceState(state);
+    return isPassiveSyncEnabled;
+}
+
 const SyncSelector = {
     getLoginUrl,
     getSensorUrl,
@@ -462,7 +502,40 @@ const SyncSelector = {
     getPassword,
     getLastSync,
     getIsSyncing,
+    getIsPassiveSyncEnabled,
 };
+
+function* fetchAll(): SagaIterator {
+    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+    const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
+    try {
+        const loginUrl = yield call(syncOutManager.getLoginUrl);
+        const sensorUrl = yield call(syncOutManager.getSensorUrl);
+        const temperatureLogUrl = yield call(syncOutManager.getTemperatureLogUrl);
+        const temperatureBreachUrl = yield call(syncOutManager.getTemperatureBreachUrl);
+        const username = yield call(syncOutManager.getUsername);
+        const password = yield call(syncOutManager.getPassword);
+        const lastSync = yield call(syncOutManager.getLastSync);
+        const isPassiveSyncEnabled = yield call(syncOutManager.getIsPassiveSyncEnabled)
+
+        const syncConfig = {
+            loginUrl,
+            sensorUrl,
+            temperatureLogUrl,
+            temperatureBreachUrl,
+            username,
+            password,
+            lastSync,
+            isPassiveSyncEnabled
+        };
+
+        yield put(SyncAction.fetchAllSuccess(syncConfig));
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log(error.message);
+        // TODO: add logic for handling failed pushes
+    }
+}
 
 function* updateLoginUrl({ payload: { loginUrl } }: UpdateLoginUrlAction): SagaIterator {
     const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
@@ -505,6 +578,13 @@ function* updateLastSync({ payload: { lastSync }}: UpdateLastSyncAction): SagaIt
     const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
     syncOutManager.setLastSync(lastSync);
 }
+
+function* updateIsPassiveSyncEnabled({ payload: { isPassiveSyncEnabled }}: UpdateIsPassiveSyncEnabledAction): SagaIterator {
+    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+    const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
+    syncOutManager.setIsPassiveSyncEnabled(isPassiveSyncEnabled);
+}
+
 function* authenticateSuccess(): SagaIterator {
     // TODO.
 }
