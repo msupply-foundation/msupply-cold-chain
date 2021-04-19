@@ -14,6 +14,7 @@ interface SyncSliceState {
     username: string;
     password: string;
     lastSync: number;
+    isSyncing: boolean;
 }
 
 const initialState: SyncSliceState = {
@@ -24,6 +25,7 @@ const initialState: SyncSliceState = {
     username: '',
     password: '',
     lastSync: 0,
+    isSyncing: false,
 };
 
 export interface UpdateLoginUrlActionPayload {
@@ -82,6 +84,14 @@ export interface UpdateLastSyncActionPayload {
 export interface UpdateLastSyncAction {
     type: string;
     payload: UpdateLastSyncActionPayload;
+}
+export interface UpdateIsSyncingActionPayload {
+    isSyncing: boolean;
+}
+
+export interface UpdateIsSyncingAction {
+    type: string;
+    payload: UpdateIsSyncingActionPayload;
 }
 export interface AuthenticateActionPayload {
     loginUrl: string;
@@ -273,6 +283,17 @@ const reducers = {
             draftState.lastSync = lastSync;
         },
     },
+    updateIsSyncing: {
+        prepare: (isSyncing: boolean): PrepareActionReturn<UpdateIsSyncingActionPayload> => ({
+            payload: { isSyncing },
+        }),
+        reducer: (
+            draftState: SyncSliceState,
+            { payload: { isSyncing } }: PayloadAction<UpdateIsSyncingActionPayload>
+        ) => {
+            draftState.isSyncing = isSyncing;
+        },
+    },
     authenticate: {
         prepare: (loginUrl: string, username: string, password: string):  PrepareActionReturn<AuthenticateActionPayload> => ({
             payload: { loginUrl, username, password },
@@ -427,6 +448,11 @@ const getLastSync = (state: RootState): number => {
     const { lastSync } = getSliceState(state);
     return lastSync;
 }
+
+const getIsSyncing = (state: RootState): boolean => {
+    const { isSyncing } = getSliceState(state);
+    return isSyncing;
+}
 const SyncSelector = {
     getLoginUrl,
     getSensorUrl,
@@ -435,6 +461,7 @@ const SyncSelector = {
     getUsername,
     getPassword,
     getLastSync,
+    getIsSyncing,
 };
 
 function* updateLoginUrl({ payload: { loginUrl } }: UpdateLoginUrlAction): SagaIterator {
@@ -579,11 +606,13 @@ function* syncTemperatureBreaches({ payload: { temperatureBreachUrl }}: SyncTemp
 }
 
 function* syncAll({ payload: { loginUrl, sensorUrl, temperatureLogUrl, temperatureBreachUrl, username, password }}: SyncAllAction): SagaIterator {
+    yield put(SyncAction.updateIsSyncing(true));
     yield put(SyncAction.authenticate(loginUrl, username, password))
     yield delay(MILLISECONDS.TEN_SECONDS);
     yield put(SyncAction.syncSensors(sensorUrl));
     yield put(SyncAction.syncTemperatureLogs(temperatureLogUrl));
     yield put(SyncAction.syncTemperatureBreaches(temperatureBreachUrl));
+    yield put(SyncAction.updateIsSyncing(false));
 }
 
 function* fetchAll(): SagaIterator {
