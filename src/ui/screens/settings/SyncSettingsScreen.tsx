@@ -1,6 +1,8 @@
 import React, { useEffect, FC } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+import moment from 'moment';
+
 import { SettingsList } from '../../layouts';
 
 import {
@@ -9,10 +11,14 @@ import {
   SettingsButtonRow
 } from '../../components/settings';
 
+
 import { SyncAction, SyncSelector } from '../../../features/Sync';
+import { FORMAT } from '../../../common/constants';
 
 export const SyncSettingsScreen: FC = () => {
   const lastSync: number = useSelector(SyncSelector.getLastSync);
+  const isPassiveSyncEnabled: boolean = useSelector(SyncSelector.getIsPassiveSyncEnabled);
+
   const username: string = useSelector(SyncSelector.getUsername);
   const password: string = useSelector(SyncSelector.getPassword);
   const loginUrl: string = useSelector(SyncSelector.getLoginUrl);
@@ -85,6 +91,21 @@ export const SyncSettingsScreen: FC = () => {
           subtext="Syncs all records currently stored in sync queue"
           onPress={() => dispatch(SyncAction.syncAll(loginUrl, sensorUrl, temperatureLogUrl, temperatureBreachUrl, username, password))} 
         />
+        {
+          isPassiveSyncEnabled ? (
+            <SettingsButtonRow
+              label="Stop sync scheduler"
+              subtext={`Stops sync scheduler (last sync: ${moment.unix(lastSync).format(FORMAT.DATE.STANDARD_DATE)})`}
+              onPress={() => dispatch(SyncAction.disablePassiveSync())} 
+            />
+          ) : (
+            <SettingsButtonRow
+              label="Start sync scheduler"
+              subtext={`Starts sync scheduler (last sync: ${moment.unix(lastSync).format(FORMAT.DATE.STANDARD_DATE)})`}
+              onPress={() => dispatch(SyncAction.enablePassiveSync())} 
+            />
+          )
+        }
       </SettingsGroup>
     </SettingsList>
   );
