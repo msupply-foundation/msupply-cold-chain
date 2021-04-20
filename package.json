@@ -90,8 +90,6 @@
     "react-native-unimodules": "^0.10.1",
     "react-native-uuid": "^1.4.9",
     "react-native-vector-icons": "^7.1.0",
-    "react-navigation": "^4.4.1",
-    "react-navigation-stack": "^2.8.3",
     "react-redux": "^7.2.1",
     "reactotron-react-native": "^5.0.0",
     "reactotron-redux": "^3.1.3",
