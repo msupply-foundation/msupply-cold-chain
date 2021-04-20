@@ -9,13 +9,6 @@ import {
   SyncConfig,
 } from './entities';
 
-import {
-  SensorSubscriber,
-  TemperatureBreachConfigurationSubscriber,
-  TemperatureBreachSubscriber,
-  TemperatureLogSubscriber,
-} from './subscribers';
-
 import { ENVIRONMENT } from '../../constants';
 
 export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
@@ -37,14 +30,9 @@ export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
     Setting,
     SyncLog,
     SyncConfig,
-  ],
-  subscribers: [
-    SensorSubscriber,
-    TemperatureLogSubscriber,
-    TemperatureBreachSubscriber,
-    TemperatureBreachConfigurationSubscriber,
-  ],
+  ]
 });
+
 
 /**
  * Interface for connections to a database. If a previously created

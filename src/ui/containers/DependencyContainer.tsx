@@ -38,6 +38,8 @@ import {
   DevManager
 } from '../../features';
 
+import { SensorSubscriber, TemperatureLogSubscriber, TemperatureBreachSubscriber } from '../../common/services/Database/subscribers';
+
 export const DependencyContainer: FC = ({ children }) => {
   const [ready, setReady] = useState(false);
 
@@ -80,7 +82,7 @@ export const DependencyContainer: FC = ({ children }) => {
     const temperatureLogManager = new TemperatureLogManager(dbService, utilService);
     const reportManager = new ReportManager(dbService, exportService, permissionService);
     const sensorStatusManager = new SensorStatusManager(dbService);
-    const syncQueueManager = new SyncQueueManager(dbService);
+    const syncQueueManager = new SyncQueueManager(dbService, utilService);
     const syncOutManager = new SyncOutManager(dbService);
     const devManager = new DevManager(dbService, utilService, devService);
 
@@ -103,6 +105,12 @@ export const DependencyContainer: FC = ({ children }) => {
     (async () => {
       await db.getConnection();
       await dbService.init();
+
+      dbService.registerSubscribers([
+        new SensorSubscriber(syncQueueManager),
+        new TemperatureLogSubscriber(syncQueueManager),
+        new TemperatureBreachSubscriber(syncQueueManager)
+      ]);
 
       setReady(true);
       SplashScreen.hideAsync();

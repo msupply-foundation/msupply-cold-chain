@@ -1,6 +1,6 @@
 
 import { ENTITIES } from '../../common/constants';
-import { DatabaseService } from '../../common/services';
+import { DatabaseService, UtilService } from '../../common/services';
 import { SyncLog } from '../../common/services/Database/entities';
 
 const SYNC_QUEUE_PEEK_NEXT = `
@@ -40,10 +40,22 @@ const SYNC_QUEUE_LENGTH = `
 
 class SyncQueueManager {
   private databaseService: DatabaseService;
+  
+  private utilService: UtilService;
 
-  constructor(databaseService: DatabaseService) {
+  constructor(databaseService: DatabaseService, utilService: UtilService) {
     this.databaseService = databaseService;
+    this.utilService = utilService;
   }
+
+  pushLog = async (id: string, type: string, payload: string): Promise<SyncLog> => {
+    return this.databaseService.save(ENTITIES.SYNC_LOG, {
+        id,
+        type,
+        payload,
+        timestamp: this.utilService.now()
+    });
+}
 
   nextSensors = async (count?: number): Promise<SyncLog[]> => {
     if (count) return this.databaseService.query(SYNC_QUEUE_PEEK_NEXT, [ENTITIES.SENSOR, count]);
