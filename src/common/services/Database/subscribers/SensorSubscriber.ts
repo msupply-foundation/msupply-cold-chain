@@ -1,42 +1,50 @@
+/* eslint-disable class-methods-use-this */
 /* istanbul ignore file */
 
 import {
   EventSubscriber,
   EntitySubscriberInterface,
-  InsertEvent,
-  UpdateEvent,
-  AfterInsert,
   AfterUpdate,
+  AfterInsert,
+  UpdateEvent,
+  InsertEvent,
 } from 'typeorm/browser';
 
 import { Sensor } from '../entities';
-import { SyncService } from '../../SyncService';
+
+import { SyncQueueManager } from '../../../../features';
 
 @EventSubscriber()
 class SensorSubscriber implements EntitySubscriberInterface {
-  public static listenTo(): typeof Sensor {
+  private syncQueueManager: SyncQueueManager;
+
+  public constructor(syncQueueManager: SyncQueueManager) {
+    this.syncQueueManager = syncQueueManager;
+  }
+
+  public listenTo(): typeof Sensor {
     return Sensor;
   }
 
-  public static async updateSyncQueue(event: InsertEvent<Sensor> | UpdateEvent<Sensor>): Promise<void> {
-    const { entity, manager, metadata } = event;
-    
+  public async updateSyncQueue(event: InsertEvent<Sensor> | UpdateEvent<Sensor>): Promise<void> {
+    const { entity, metadata } = event;
+
     const { id } = entity;
     const { tableName } = metadata;
-    
+
     const payload = JSON.stringify(entity);
 
-    new SyncService(manager).log(id, tableName, payload);
+    this.syncQueueManager.pushLog(id, tableName, payload);
   }
 
   @AfterInsert()
-  public static async afterInsert(event: InsertEvent<Sensor>): Promise<void> {
-    SensorSubscriber.updateSyncQueue(event);
+  public async afterInsert(event: InsertEvent<Sensor>): Promise<void> {
+    return this.updateSyncQueue(event);
   }
 
   @AfterUpdate()
-  public static async afterUpdate(event: UpdateEvent<Sensor>): Promise<void> {
-    SensorSubscriber.updateSyncQueue(event);
+  public async afterUpdate(event: UpdateEvent<Sensor>): Promise<void> {
+    return this.updateSyncQueue(event);
   }
 }
 

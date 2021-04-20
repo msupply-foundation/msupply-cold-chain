@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 /* istanbul ignore file */
 
 import {
@@ -11,33 +12,39 @@ import {
 
 import { TemperatureLog } from '../entities';
 
-import { SyncService } from '../../SyncService';
+import { SyncQueueManager } from '../../../../features';
 
 @EventSubscriber()
 class TemperatureLogSubscriber implements EntitySubscriberInterface {
-  public static listenTo(): typeof TemperatureLog {
+  private syncQueueManager: SyncQueueManager;
+
+  public constructor(syncQueueManager: SyncQueueManager) {
+    this.syncQueueManager = syncQueueManager;
+  }
+
+  public listenTo(): typeof TemperatureLog {
     return TemperatureLog;
   }
 
-  public static async updateSyncQueue(event: InsertEvent<TemperatureLog> | UpdateEvent<TemperatureLog>): Promise<void> {
-    const { entity, manager, metadata } = event;
-    
+  public async updateSyncQueue(event: InsertEvent<TemperatureLog> | UpdateEvent<TemperatureLog>): Promise<void> {
+    const { entity, metadata } = event;
+
     const { id } = entity;
     const { tableName } = metadata;
-    
+
     const payload = JSON.stringify(entity);
 
-    new SyncService(manager).log(id, tableName, payload);
+    this.syncQueueManager.pushLog(id, tableName, payload);
   }
 
   @AfterInsert()
-  public static async afterInsert(event: InsertEvent<TemperatureLog>): Promise<void> {
-    return TemperatureLogSubscriber.updateSyncQueue(event);
+  public async afterInsert(event: InsertEvent<TemperatureLog>): Promise<void> {
+    return this.updateSyncQueue(event);
   }
 
   @AfterUpdate()
-  public static async afterUpdate(event: UpdateEvent<TemperatureLog>): Promise<void> {
-    return TemperatureLogSubscriber.updateSyncQueue(event);
+  public async afterUpdate(event: UpdateEvent<TemperatureLog>): Promise<void> {
+    return this.updateSyncQueue(event);
   }
 }
 

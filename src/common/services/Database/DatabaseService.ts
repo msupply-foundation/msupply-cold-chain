@@ -1,6 +1,8 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-await-in-loop */
 import _ from 'lodash';
+import { EntitySubscriberInterface } from 'typeorm/browser';
+
 import { Database } from './Database';
 import { ENTITIES, MILLISECONDS } from '../../constants';
 
@@ -72,6 +74,10 @@ export class DatabaseService {
       password,
     }]);
   };
+
+  registerSubscribers = (subscribers: EntitySubscriberInterface[]): void => {
+    subscribers.forEach(subscriber => this.database.connection?.subscribers.push(subscriber));
+  }
 
   save = async (entityName: string, objectOrArray: any | any[]): Promise<any | any[]> => {
     const repository = await this.database.getRepository(entityName);
