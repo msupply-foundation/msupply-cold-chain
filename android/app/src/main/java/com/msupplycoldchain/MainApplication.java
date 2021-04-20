@@ -8,7 +8,6 @@ import com.reactnativerestart.RestartPackage;
 import com.bugsnag.android.BugsnagPackage;
 import com.chirag.RNMail.RNMail;
 import com.ninty.system.setting.SystemSettingPackage;
-import io.rumors.reactnativesettings.RNSettingsPackage;
 import com.reactcommunity.rnlocalize.RNLocalizePackage;
 import com.rnfs.RNFSPackage;
 import com.polidea.reactnativeble.BlePackage;
