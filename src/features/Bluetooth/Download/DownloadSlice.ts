@@ -162,7 +162,6 @@ function* startPassiveDownloading(): SagaIterator {
 }
 
 function* watchPassiveDownloading(): SagaIterator {
-  yield take(DownloadAction.passiveDownloadingStart);
   yield race({
     start: call(startPassiveDownloading),
     stop: take(DownloadAction.passiveDownloadingStop),
