@@ -12,6 +12,7 @@ Object {
   "DATABASE": "database",
   "DATABASE_UTILS": "databaseUtils",
   "DEVICE": "device",
+  "DEV_MANAGER": "devManager",
   "DOWNLOAD_MANAGER": "downloadManager",
   "EXPORT_SERVICE": "exportService",
   "FORMAT_SERVICE": "formatService",
@@ -23,6 +24,10 @@ Object {
   "SENSOR_MANAGER": "sensorManager",
   "SENSOR_STATUS_MANAGER": "sensorStatusManager",
   "SETTING_MANAGER": "settingManager",
+  "SYNC_OUT_MANAGER": "syncOutManager",
+  "SYNC_QUEUE_MANAGER": "syncQueueManager",
+  "SYNC_SERVICE": "syncService",
+  "TEMPERATURE_LOG_MANAGER": "temperatureLogManager",
   "UTIL_SERVICE": "utilService",
 }
 `;
