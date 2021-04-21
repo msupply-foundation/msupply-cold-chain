@@ -1,7 +1,15 @@
-import { SETTING, ENTITIES } from '~constants';
+import { SETTING, ENTITIES } from '../../../common/constants';
 
 const DEFAULTS = {
-  [SETTING.INT.DEFAULT_LOG_INTERVAL]: '300',
+  [SETTING.BLUETOOTH.DEFAULT_LOG_INTERVAL]: '300',
+  [SETTING.SYNC.AUTH_URL]: 'http://10.0.2.2:8080/coldchain/v1/login',
+  [SETTING.SYNC.SENSOR_URL]: 'http://10.0.2.2:8080/coldchain/v1/sensor',
+  [SETTING.SYNC.TEMPERATURE_LOG_URL]: 'http://10.0.2.2:8080/coldchain/v1/temperature-log',
+  [SETTING.SYNC.TEMPERATURE_BREACH_URL]: 'http://10.0.2.2:8080/coldchain/v1/temperature-breach',
+  [SETTING.SYNC.AUTH_USERNAME]: 'GEN',
+  [SETTING.SYNC.AUTH_PASSWORD]: 'secret',
+  [SETTING.SYNC.LAST_SYNC]: 0,
+  [SETTING.SYNC.IS_PASSIVE_SYNC_ENABLED]: false,
 };
 
 export class SettingManager {
