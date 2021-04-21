@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { EntitySubscriberInterface } from 'typeorm/browser';
 
 import { Database } from './Database';
-import { ENTITIES, MILLISECONDS } from '../../constants';
+import { ENTITIES, MILLISECONDS, SyncSetting } from '../../constants';
 
 export class DatabaseService {
   database: Database;
@@ -56,23 +56,6 @@ export class DatabaseService {
       COLD_BREACH,
       COLD_CUMULATIVE,
     ]);
-
-    const loginUrl = 'http://10.0.2.2:8080/coldchain/v1/login';
-    const sensorUrl = 'http://10.0.2.2:8080/coldchain/v1/sensor';
-    const temperatureLogUrl = 'http://10.0.2.2:8080/coldchain/v1/temperature-log';
-    const temperatureBreachUrl = 'http://10.0.2.2:8080/coldchain/v1/temperature-breach';
-
-    const username = 'GEN';
-    const password = 'secret';
-
-    return this.upsert(ENTITIES.SYNC_CONFIG, [{
-      loginUrl,
-      sensorUrl,
-      temperatureLogUrl,
-      temperatureBreachUrl,
-      username,
-      password,
-    }]);
   };
 
   registerSubscribers = (subscribers: EntitySubscriberInterface[]): void => {
