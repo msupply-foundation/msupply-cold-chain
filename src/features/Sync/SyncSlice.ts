@@ -2,91 +2,21 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SagaIterator } from '@redux-saga/types';
 import { getContext, call, delay, put, takeEvery, takeLeading, select, take, race } from 'redux-saga/effects';
 
+import { SettingAction, SettingSelector } from '../Entities';
+import { SyncSettingSlice } from '../Entities/Setting/SettingSlice';
 import { DEPENDENCY, MILLISECONDS, REDUCER } from '../../common/constants';
 import { RootState } from '../../common/store/store';
 import { SyncLog } from '../../common/services/Database/entities';
 
+
 interface SyncSliceState {
-    loginUrl: string;
-    sensorUrl: string;
-    temperatureLogUrl: string;
-    temperatureBreachUrl: string;
-    username: string;
-    password: string;
-    lastSync: number;
     isSyncing: boolean;
-    isPassiveSyncEnabled: boolean;
 }
 
 const initialState: SyncSliceState = {
-    loginUrl: '',
-    sensorUrl: '',
-    temperatureLogUrl: '',
-    temperatureBreachUrl: '',
-    username: '',
-    password: '',
-    lastSync: 0,
     isSyncing: false,
-    isPassiveSyncEnabled: false,
 };
 
-export interface UpdateLoginUrlActionPayload {
-    loginUrl: string;
-}
-export interface UpdateLoginUrlAction {
-    type: string;
-    payload: UpdateLoginUrlActionPayload;
-}
-
-export interface UpdateSensorUrlActionPayload {
-    sensorUrl: string;
-}
-export interface UpdateSensorUrlAction {
-    type: string;
-    payload: UpdateSensorUrlActionPayload;
-}
-
-export interface UpdateTemperatureLogUrlActionPayload {
-    temperatureLogUrl: string;
-}
-export interface UpdateTemperatureLogUrlAction {
-    type: string;
-    payload: UpdateTemperatureLogUrlActionPayload;
-}
-
-export interface UpdateTemperatureBreachUrlActionPayload {
-    temperatureBreachUrl: string;
-}
-export interface UpdateTemperatureBreachUrlAction {
-    type: string;
-    payload: UpdateTemperatureBreachUrlActionPayload;
-}
-
-export interface UpdateUsernameActionPayload {
-    username: string;
-}
-export interface UpdateUsernameAction {
-    type: string;
-    payload: UpdateUsernameActionPayload;
-}
-
-export interface UpdatePasswordActionPayload {
-    password: string;
-}
-
-export interface UpdatePasswordAction {
-    type: string;
-    payload: UpdatePasswordActionPayload;
-}
-
-export interface UpdateLastSyncActionPayload {
-    lastSync: number;
-}
-
-export interface UpdateLastSyncAction {
-    type: string;
-    payload: UpdateLastSyncActionPayload;
-}
 export interface UpdateIsSyncingActionPayload {
     isSyncing: boolean;
 }
@@ -96,14 +26,7 @@ export interface UpdateIsSyncingAction {
     payload: UpdateIsSyncingActionPayload;
 }
 
-export interface UpdateIsPassiveSyncEnabledActionPayload {
-    isPassiveSyncEnabled: boolean;
-}
 
-export interface UpdateIsPassiveSyncEnabledAction {
-    type: string;
-    payload: UpdateIsPassiveSyncEnabledActionPayload;
-}
 export interface AuthenticateActionPayload {
     loginUrl: string;
     username: string;
@@ -216,89 +139,6 @@ export interface PrepareActionReturn<SomePayload> {
 }
 
 const reducers = {
-    updateLoginUrl: {
-        prepare: (loginUrl: string): PrepareActionReturn<UpdateLoginUrlActionPayload> => ({
-            payload: { loginUrl },
-        }),
-        reducer: (
-            draftState: SyncSliceState,
-            { payload: { loginUrl } }: PayloadAction<UpdateLoginUrlActionPayload>
-        ) => {
-            draftState.loginUrl = loginUrl;
-        },
-    },
-    updateSensorUrl: {
-        prepare: (sensorUrl: string): PrepareActionReturn<UpdateSensorUrlActionPayload> => ({
-            payload: { sensorUrl },
-        }),
-        reducer: (
-            draftState: SyncSliceState,
-            { payload: { sensorUrl } }: PayloadAction<UpdateSensorUrlActionPayload>
-        ) => {
-            draftState.sensorUrl = sensorUrl;
-        },
-    },
-    updateTemperatureLogUrl: {
-        prepare: (
-            temperatureLogUrl: string
-        ): PrepareActionReturn<UpdateTemperatureLogUrlActionPayload> => ({
-            payload: { temperatureLogUrl },
-        }),
-        reducer: (
-            draftState: SyncSliceState,
-            { payload: { temperatureLogUrl } }: PayloadAction<UpdateTemperatureLogUrlActionPayload>
-        ) => {
-            draftState.temperatureLogUrl = temperatureLogUrl;
-        },
-    },
-    updateTemperatureBreachUrl: {
-        prepare: (
-            temperatureBreachUrl: string
-        ): PrepareActionReturn<UpdateTemperatureBreachUrlActionPayload> => ({
-            payload: { temperatureBreachUrl },
-        }),
-        reducer: (
-            draftState: SyncSliceState,
-            {
-                payload: { temperatureBreachUrl },
-            }: PayloadAction<UpdateTemperatureBreachUrlActionPayload>
-        ) => {
-            draftState.temperatureBreachUrl = temperatureBreachUrl;
-        },
-    },
-    updateUsername: {
-        prepare: (username: string): PrepareActionReturn<UpdateUsernameActionPayload> => ({
-            payload: { username },
-        }),
-        reducer: (
-            draftState: SyncSliceState,
-            { payload: { username } }: PayloadAction<UpdateUsernameActionPayload>
-        ) => {
-            draftState.username = username;
-        },
-    },
-    updatePassword: {
-        prepare: (password: string): PrepareActionReturn<UpdatePasswordActionPayload> => ({
-            payload: { password },
-        }),
-        reducer: (
-            draftState: SyncSliceState,
-            { payload: { password } }: PayloadAction<UpdatePasswordActionPayload>
-        ) => {
-            draftState.password = password;
-        },
-    },
-    updateLastSync: {
-        prepare: (lastSync: number): PrepareActionReturn<UpdateLastSyncActionPayload> => ({
-            payload: { lastSync },
-        }),
-        reducer: (
-            draftState: SyncSliceState,
-            { payload: { lastSync } }: PayloadAction<UpdateLastSyncActionPayload>
-        ) => {
-            draftState.lastSync = lastSync;
-        },
-    },
     updateIsSyncing: {
         prepare: (isSyncing: boolean): PrepareActionReturn<UpdateIsSyncingActionPayload> => ({
             payload: { isSyncing },
@@ -308,17 +148,6 @@ const reducers = {
             { payload: { isSyncing } }: PayloadAction<UpdateIsSyncingActionPayload>
         ) => {
             draftState.isSyncing = isSyncing;
-        },
-    },
-    updateIsPassiveSyncEnabled: {
-        prepare: (isPassiveSyncEnabled: boolean): PrepareActionReturn<UpdateIsPassiveSyncEnabledActionPayload> => ({
-            payload: { isPassiveSyncEnabled },
-        }),
-        reducer: (
-            draftState: SyncSliceState,
-            { payload: { isPassiveSyncEnabled } }: PayloadAction<UpdateIsPassiveSyncEnabledActionPayload>
-        ) => {
-            draftState.isPassiveSyncEnabled = isPassiveSyncEnabled;
         },
     },
     authenticate: {
@@ -368,52 +197,6 @@ const reducers = {
         reducer: () => {}
     },
     syncTemperatureBreachesFailure: () => {},
-    fetchAll: () => { },
-    fetchAllSuccess: {
-        prepare: ({
-            loginUrl,
-            sensorUrl,
-            temperatureLogUrl,
-            temperatureBreachUrl,
-            username,
-            password,
-            lastSync,
-            isPassiveSyncEnabled,
-        }: {
-            loginUrl: string;
-            sensorUrl: string;
-            temperatureLogUrl: string;
-            temperatureBreachUrl: string;
-            username: string;
-            password: string;
-            lastSync: number;
-            isPassiveSyncEnabled: boolean;
-        }): PrepareActionReturn<FetchAllSuccessActionPayload> => ({
-            payload: {
-                loginUrl,
-                sensorUrl,
-                temperatureLogUrl,
-                temperatureBreachUrl,
-                username,
-                password,
-                lastSync,
-                isPassiveSyncEnabled
-            },
-        }),
-        reducer: (
-            draftState: SyncSliceState,
-            { payload: { loginUrl, sensorUrl, temperatureLogUrl, temperatureBreachUrl, username, password, lastSync, isPassiveSyncEnabled } }: PayloadAction<FetchAllSuccessActionPayload>
-        ) => {
-            draftState.loginUrl = loginUrl;
-            draftState.sensorUrl = sensorUrl;
-            draftState.temperatureLogUrl = temperatureLogUrl;
-            draftState.temperatureBreachUrl = temperatureBreachUrl;
-            draftState.username = username;
-            draftState.password = password;
-            draftState.lastSync = lastSync;
-            draftState.isPassiveSyncEnabled = isPassiveSyncEnabled;
-        },
-    },
     syncAll: {
         prepare: (
             loginUrl: string,
@@ -434,8 +217,8 @@ const reducers = {
         }),
         reducer: () => {},
     },
-    enablePassiveSync: (draftState: SyncSliceState) => { draftState.isPassiveSyncEnabled = true; },
-    disablePassiveSync: (draftState: SyncSliceState) => { draftState.isPassiveSyncEnabled = false; }
+    enablePassiveSync: () => { },
+    disablePassiveSync: () => { }
 };
 
 const { actions: SyncAction, reducer: SyncReducer } = createSlice({
@@ -448,142 +231,15 @@ const getSliceState = ({ sync }: RootState): SyncSliceState => {
     return sync;
 };
 
-const getLoginUrl = (state: RootState): string => {
-    const { loginUrl } = getSliceState(state);
-    return loginUrl;
-};
-
-const getSensorUrl = (state: RootState): string => {
-    const { sensorUrl } = getSliceState(state);
-    return sensorUrl;
-};
-
-const getTemperatureLogUrl = (state: RootState): string => {
-    const { temperatureLogUrl } = getSliceState(state);
-    return temperatureLogUrl;
-};
-
-const getTemperatureBreachUrl = (state: RootState): string => {
-    const { temperatureBreachUrl } = getSliceState(state);
-    return temperatureBreachUrl;
-};
-
-const getUsername = (state: RootState): string => {
-    const { username } = getSliceState(state);
-    return username;
-};
-
-const getPassword = (state: RootState): string => {
-    const { password } = getSliceState(state);
-    return password;
-};
-
-const getLastSync = (state: RootState): number => {
-    const { lastSync } = getSliceState(state);
-    return lastSync;
-}
-
 const getIsSyncing = (state: RootState): boolean => {
     const { isSyncing } = getSliceState(state);
     return isSyncing;
 }
 
-const getIsPassiveSyncEnabled = (state: RootState): boolean => {
-    const { isPassiveSyncEnabled } = getSliceState(state);
-    return isPassiveSyncEnabled;
-}
 
 const SyncSelector = {
-    getLoginUrl,
-    getSensorUrl,
-    getTemperatureLogUrl,
-    getTemperatureBreachUrl,
-    getUsername,
-    getPassword,
-    getLastSync,
     getIsSyncing,
-    getIsPassiveSyncEnabled,
 };
-
-function* fetchAll(): SagaIterator {
-    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-    const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
-    try {
-        const loginUrl = yield call(syncOutManager.getLoginUrl);
-        const sensorUrl = yield call(syncOutManager.getSensorUrl);
-        const temperatureLogUrl = yield call(syncOutManager.getTemperatureLogUrl);
-        const temperatureBreachUrl = yield call(syncOutManager.getTemperatureBreachUrl);
-        const username = yield call(syncOutManager.getUsername);
-        const password = yield call(syncOutManager.getPassword);
-        const lastSync = yield call(syncOutManager.getLastSync);
-        const isPassiveSyncEnabled = yield call(syncOutManager.getIsPassiveSyncEnabled)
-
-        const syncConfig = {
-            loginUrl,
-            sensorUrl,
-            temperatureLogUrl,
-            temperatureBreachUrl,
-            username,
-            password,
-            lastSync,
-            isPassiveSyncEnabled
-        };
-
-        yield put(SyncAction.fetchAllSuccess(syncConfig));
-    } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log(error.message);
-        // TODO: add logic for handling failed pushes
-    }
-}
-
-function* updateLoginUrl({ payload: { loginUrl } }: UpdateLoginUrlAction): SagaIterator {
-    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-    const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
-    syncOutManager.setLoginUrl(loginUrl);
-}
-
-function* updateSensorUrl({ payload: { sensorUrl } }: UpdateSensorUrlAction): SagaIterator {
-    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-    const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
-    syncOutManager.setSensorUrl(sensorUrl);
-}
-
-function* updateTemperatureLogUrl({ payload: { temperatureLogUrl } }: UpdateTemperatureLogUrlAction): SagaIterator {
-    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-    const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
-    syncOutManager.setTemperatureLogUrl(temperatureLogUrl);
-}
-
-function* updateTemperatureBreachUrl({ payload: { temperatureBreachUrl } }: UpdateTemperatureBreachUrlAction): SagaIterator {
-    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-    const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
-    syncOutManager.setTemperatureBreachUrl(temperatureBreachUrl);
-}
-
-function* updateUsername({ payload: { username } }: UpdateUsernameAction): SagaIterator {
-    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-    const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
-    syncOutManager.setUsername(username);
-}
-
-function* updatePassword({ payload: { password } }: UpdatePasswordAction): SagaIterator {
-    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-    const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
-    syncOutManager.setPassword(password);
-}
-
-function* updateLastSync({ payload: { lastSync }}: UpdateLastSyncAction): SagaIterator {
-    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-    const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
-    syncOutManager.setLastSync(lastSync);
-}
-
-function* updateIsPassiveSyncEnabled({ payload: { isPassiveSyncEnabled }}: UpdateIsPassiveSyncEnabledAction): SagaIterator {
-    const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-    const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
-    syncOutManager.setIsPassiveSyncEnabled(isPassiveSyncEnabled);
-}
 
 function* authenticateSuccess(): SagaIterator {
     // TODO.
@@ -617,7 +273,7 @@ function* syncSensorsSuccess({ payload: { syncLogs } }: SyncSensorsSuccessAction
     const syncQueueManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_QUEUE_MANAGER);
     try { 
         yield call(syncQueueManager.dropLogs, syncLogs);
-        yield put(SyncAction.updateLastSync(utilService.now()));
+        yield put(SettingAction.updateSyncLastSync(utilService.now()));
     } catch (e) {
         // eslint-disable-next-line no-console
         console.log(e.message);
@@ -651,7 +307,7 @@ function* syncTemperatureLogsSuccess({ payload: { syncLogs } }: SyncTemperatureL
     const syncQueueManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_QUEUE_MANAGER);
     try { 
         yield call(syncQueueManager.dropLogs, syncLogs);
-        yield put(SyncAction.updateLastSync(utilService.now()));
+        yield put(SettingAction.updateSyncLastSync(utilService.now()));
     } catch (e) {
         // eslint-disable-next-line no-console
         console.log(e.message);
@@ -685,7 +341,7 @@ function* syncTemperatureBreachesSuccess({ payload: { syncLogs } }: SyncTemperat
     const syncQueueManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_QUEUE_MANAGER);
     try { 
         yield call(syncQueueManager.dropLogs, syncLogs);
-        yield put(SyncAction.updateLastSync(utilService.now()));
+        yield put(SettingAction.updateSyncLastSync(utilService.now()));
     } catch (e) {
         // eslint-disable-next-line no-console
         console.log(e.message);
@@ -726,13 +382,15 @@ function* syncAll({ payload: { loginUrl, sensorUrl, temperatureLogUrl, temperatu
 
 function* startSyncScheduler(): SagaIterator {
     while (true) {
-        const loginUrl = yield select(getLoginUrl);
-        const sensorUrl = yield select(getSensorUrl);
-        const temperatureLogUrl = yield select(getTemperatureLogUrl);
-        const temperatureBreachUrl = yield select(getTemperatureBreachUrl);
-        const username = yield select(getUsername);
-        const password = yield select(getPassword);
-        yield put(SyncAction.syncAll(loginUrl, sensorUrl, temperatureLogUrl, temperatureBreachUrl, username, password));
+        const { 
+            [SyncSettingSlice.AuthUrl]: authUrl, 
+            [SyncSettingSlice.SensorUrl]: sensorUrl, 
+            [SyncSettingSlice.TemperatureLogUrl]: temperatureLogUrl,
+            [SyncSettingSlice.TemperatureBreachUrl]: temperatureBreachUrl, 
+            [SyncSettingSlice.AuthUsername]: username,
+            [SyncSettingSlice.AuthPassword]: password 
+        } = yield select(SettingSelector.getSyncSettings);
+        yield put(SyncAction.syncAll(authUrl, sensorUrl, temperatureLogUrl, temperatureBreachUrl, username, password));
         yield delay(MILLISECONDS.ONE_MINUTE);
     }
 }
@@ -745,16 +403,6 @@ function* enablePassiveSync(): SagaIterator {
   }
 
 function* root(): SagaIterator {
-    yield takeEvery(SyncAction.fetchAll, fetchAll);
-    yield takeEvery(SyncAction.updateLoginUrl, updateLoginUrl);
-    yield takeEvery(SyncAction.updateSensorUrl, updateSensorUrl);
-    yield takeEvery(SyncAction.updateTemperatureLogUrl, updateTemperatureLogUrl);
-    yield takeEvery(SyncAction.updateTemperatureBreachUrl, updateTemperatureBreachUrl);
-    yield takeEvery(SyncAction.updateUsername, updateUsername);
-    yield takeEvery(SyncAction.updatePassword, updatePassword);
-    yield takeEvery(SyncAction.updateLastSync, updateLastSync);
-    yield takeEvery(SyncAction.updateIsPassiveSyncEnabled, updateIsPassiveSyncEnabled);
-
     yield takeEvery(SyncAction.authenticate, authenticate)
     yield takeEvery(SyncAction.authenticateSuccess, authenticateSuccess);
     yield takeEvery(SyncAction.authenticateFailure, authenticateFailure);
@@ -772,6 +420,6 @@ function* root(): SagaIterator {
     yield takeLeading(SyncAction.enablePassiveSync, enablePassiveSync)
 }
 
-const SyncSaga = { root, fetchAll, syncAll };
+const SyncSaga = { root, syncAll };
 
 export { SyncAction, SyncReducer, SyncSaga, SyncSelector };
