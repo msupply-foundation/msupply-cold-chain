@@ -6,7 +6,6 @@ import {
   Sensor,
   Setting,
   SyncLog,
-  SyncConfig,
 } from './entities';
 
 import { ENVIRONMENT } from '../../constants';
@@ -29,7 +28,6 @@ export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
     TemperatureBreachConfiguration,
     Setting,
     SyncLog,
-    SyncConfig,
   ]
 });
 
