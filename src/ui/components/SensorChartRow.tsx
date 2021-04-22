@@ -41,7 +41,7 @@ export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, onPress
 
   return (
     <SensorRowLayout
-      onPress={hasData && !isLoadingChartData ? () => onPress() : null}
+      onPress={hasData && !isLoadingChartData ? () => onPress() : undefined}
       Chart={<Chart isLoading={isLoadingChartData} data={data} />}
       SensorStatus={
         <SensorStatus name={name} isLoading={isLoadingStatus} hasData={hasData} id={id} />

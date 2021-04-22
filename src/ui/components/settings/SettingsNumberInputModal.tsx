@@ -46,7 +46,7 @@ export const SettingsNumberInputModal: FC<SettingsNumberInputModalProps> = ({
       Content={
         <Column alignItems="center" justifyContent="center">
           <Row justifyContent="space-between" alignItems="center">
-            <LargeText colour={COLOUR.SECONDARY}>
+            <LargeText color={COLOUR.SECONDARY}>
               {`${value} ${metric ? `(${metric})` : ''}`}
             </LargeText>
           </Row>

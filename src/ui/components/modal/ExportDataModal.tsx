@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useCallback, FC } from 'react';
 import { useDispatch } from 'react-redux';
 import { Input } from 'react-native-elements';
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions, TextInput } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
@@ -18,7 +18,7 @@ interface ExportDataModalProps {
   onConfirm: () => void;
   isOpen: boolean;
   onClose: () => void;
-  variant: 'export' | 'email' | null;
+  variant: 'export' | 'email' | '';
 }
 
 export const ExportDataModal: FC<ExportDataModalProps> = ({
@@ -61,8 +61,8 @@ export const ExportDataModal: FC<ExportDataModalProps> = ({
           () => isValid && onConfirmModal({ username, comment }),
           [username, comment]
         );
-        const usernameRef = useRef<Input>(null);
-        const commentRef = useRef<Input>(null);
+        const usernameRef = useRef<TextInput | null>(null);
+        const commentRef = useRef<TextInput | null>(null);
 
         useEffect(() => {
           setTimeout(() => usernameRef.current?.focus(), 100);

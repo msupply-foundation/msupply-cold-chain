@@ -20,7 +20,7 @@ const LeftIcon: FC<LeftIconProps> = ({ goBack }) => (
 
 interface SettingsStackHeaderProps {
   name: string;
-  goBack: () => void;
+  goBack: (() => void) | null;
 }
 
 export const SettingsStackHeader: FC<SettingsStackHeaderProps> = ({ name, goBack }) => {

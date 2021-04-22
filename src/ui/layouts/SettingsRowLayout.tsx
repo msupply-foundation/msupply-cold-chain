@@ -4,7 +4,6 @@ import { Row } from './Row';
 import { Divider } from '../presentation';
 import { COLOUR, STYLE } from '../../common/constants';
 import { Column } from './Column';
-import { FlexPaddingView } from './FlexPaddingView';
 
 import { Centered } from './Centered';
 
@@ -14,7 +13,7 @@ const style = {
     backgroundColor: COLOUR.WHITE,
   },
   iconContainer: { paddingRight: STYLE.PADDING.HORIZONTAL },
-  subtext: { height: STYLE.HEIGHT.SUB_TEXT },
+  subtext: { height: STYLE.HEIGHT.SUB_TEXT + 50 },
   leftIcon: { width: STYLE.WIDTH.SETTINGS_ICON },
 };
 
@@ -36,10 +35,9 @@ export const SettingsRowLayout: FC<SettingsRowLayoutProps> = ({
       <Row alignItems="center" justifyContent="space-between" style={style.row}>
         <Row alignItems="center">
           <Centered style={style.leftIcon}>{LeftIcon}</Centered>
-          <Column>
-            <FlexPaddingView height={STYLE.HEIGHT.SUB_TEXT} />
+          <Column justifyContent="center">
             {Text}
-            <View style={style.subtext}>{Subtext}</View>
+            {Subtext}
           </Column>
         </Row>
         <View style={style.iconContainer}>{RightComponent}</View>
