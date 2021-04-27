@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { COLOUR } from '../../common/constants';
 import { SensorStatusLayout } from '../layouts/SensorStatusLayout';
 import { BoldText } from '../presentation/typography';
@@ -6,7 +6,6 @@ import { SensorListCumulativeBreachStatus } from './SensorListCumulativeBreachSt
 import { SensorLastDownloadTime } from './SensorLastDownloadTime';
 import { SensorStatusBar } from './SensorStatusBar';
 import { SensorTemperatureStatus } from './SensorTemperatureStatus';
-import { FC } from 'react';
 
 interface SensorStatusProps {
   isLoading: boolean;

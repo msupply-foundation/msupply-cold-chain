@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { STYLE, COLOUR } from '../../common/constants';
 
 interface DividerProps {
-  width?: number;
+  width?: number | string;
   height?: number;
   backgroundColor?: string;
 }

@@ -1,23 +1,22 @@
 import React, { FC } from 'react';
 import { useSelector } from 'react-redux';
-import { FormatService } from '../../common/services';
 import { RootState } from '../../common/store/store';
 import { CumulativeBreachSelector } from '../../features';
-import { withFormatService } from '../hoc/withFormatService';
+import { useFormatter } from '../hooks';
 import { Column } from '../layouts';
 import { NormalText } from '../presentation/typography';
 
 interface SensorListCumulativeBreachStatus {
   id: string;
-  formatter: FormatService;
 }
 
-export const SensorListCumulativeBreachStatusComponent: FC<SensorListCumulativeBreachStatus> = props => {
+export const SensorListCumulativeBreachStatus: FC<SensorListCumulativeBreachStatus> = ({ id }) => {
+  const formatter = useFormatter();
   const coldCumulative = useSelector((state: RootState) =>
-    CumulativeBreachSelector.listColdCumulative(state, props)
+    CumulativeBreachSelector.listColdCumulative(state, { id, formatter })
   );
   const hotCumulative = useSelector((state: RootState) =>
-    CumulativeBreachSelector.listHotCumulative(state, props)
+    CumulativeBreachSelector.listHotCumulative(state, { id, formatter })
   );
 
   return (
@@ -27,7 +26,3 @@ export const SensorListCumulativeBreachStatusComponent: FC<SensorListCumulativeB
     </Column>
   );
 };
-
-export const SensorListCumulativeBreachStatus = withFormatService(
-  SensorListCumulativeBreachStatusComponent
-);

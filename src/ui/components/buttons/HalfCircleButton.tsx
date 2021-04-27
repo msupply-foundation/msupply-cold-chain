@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, ReactElement } from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
 
 import { STYLE, COLOUR } from '../../../common/constants';
@@ -23,8 +23,8 @@ const leftStyle = {
 
 interface HalfCircleButtonProps {
   direction: 'left' | 'right';
-  onPress: () => void;
-  Icon: typeof AppIcon;
+  onPress?: () => void;
+  Icon: ReactElement;
 }
 
 export const HalfCircleButton: FC<HalfCircleButtonProps> = ({ direction, onPress, Icon }) => {

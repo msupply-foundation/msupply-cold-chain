@@ -1,22 +1,19 @@
 import React, { FC } from 'react';
 import { useSelector } from 'react-redux';
-import { FormatService } from '../../common/services';
 import { RootState } from '../../common/store/store';
 import { SensorStatusSelector } from '../../features';
-import { withFormatService } from '../hoc/withFormatService';
+import { useFormatter } from '../hooks';
 import { NormalText } from '../presentation/typography';
 
 interface SensorLastDownloadTimeProps {
   id: string;
-  formatter: FormatService;
 }
 
-export const SensorLastDownloadTimeComponent: FC<SensorLastDownloadTimeProps> = props => {
+export const SensorLastDownloadTime: FC<SensorLastDownloadTimeProps> = ({ id }) => {
+  const formatter = useFormatter();
   const lastDownload = useSelector((state: RootState) =>
-    SensorStatusSelector.lastDownloadTime(state, props)
+    SensorStatusSelector.lastDownloadTime(state, { id, formatter })
   );
 
   return <NormalText>{lastDownload}</NormalText>;
 };
-
-export const SensorLastDownloadTime = withFormatService(SensorLastDownloadTimeComponent);

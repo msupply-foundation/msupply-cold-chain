@@ -65,9 +65,6 @@ export {
   SensorSelector,
   SensorSaga,
   SensorManager,
-  TemperatureLogAction,
-  TemperatureLogSelector,
-  TemperatureLogSaga,
   TemperatureLogManager,
 } from './Entities';
 
@@ -116,13 +113,7 @@ export {
   SyncSelector,
   SyncSaga,
   SyncQueueManager,
-  SyncOutManager
+  SyncOutManager,
 } from './Sync';
 
-export {
-  DevReducer,
-  DevAction,
-  DevSelector,
-  DevSaga,
-  DevManager
-} from './Dev';
+export { DevReducer, DevAction, DevSelector, DevSaga, DevManager } from './Dev';
