@@ -5,7 +5,7 @@ import { COLOUR } from '../../../common/constants';
 
 interface SettingsNavigationRowProps {
   label: string;
-  subtext: string;
+  subtext?: string;
   Icon: ReactNode;
   onPress: () => void;
 }

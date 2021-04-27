@@ -1,6 +1,5 @@
 import React, { useMemo, useEffect, FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
 import { DeviceServiceModal } from '../presentation';
 import { Icon } from '../presentation/icons';
 import { PermissionAction, PermissionSelector } from '../../features/Permission';
@@ -23,7 +22,7 @@ export const PermissionsContainer: FC = ({ children }) => {
     if (showLocationServicesModal) {
       return (
         <DeviceServiceModal
-          isOpen={!showLocationServicesModal}
+          isOpen={showLocationServicesModal}
           onPress={async () => dispatch(PermissionAction.requestLocationServicesEnabled())}
           title="Enable Location Services"
           Icon={<Icon.Location />}
@@ -34,7 +33,7 @@ export const PermissionsContainer: FC = ({ children }) => {
     if (showBluetoothModal) {
       return (
         <DeviceServiceModal
-          isOpen={!showBluetoothModal}
+          isOpen={showBluetoothModal}
           onPress={async () => dispatch(PermissionAction.requestBluetoothEnabled())}
           title="Enable Bluetooth"
           Icon={<Icon.Bluetooth />}
@@ -45,7 +44,7 @@ export const PermissionsContainer: FC = ({ children }) => {
     if (showLocationPermissionModal) {
       return (
         <DeviceServiceModal
-          isOpen={!showLocationPermissionModal}
+          isOpen={showLocationPermissionModal}
           onPress={async () => dispatch(PermissionAction.requestLocationPermission())}
           title="Grant Location Permission"
           Icon={<Icon.Location />}
@@ -56,7 +55,7 @@ export const PermissionsContainer: FC = ({ children }) => {
     if (showStoragePermissionModal) {
       return (
         <DeviceServiceModal
-          isOpen={!showStoragePermissionModal}
+          isOpen={showStoragePermissionModal}
           onPress={async () => dispatch(PermissionAction.requestStoragePermission())}
           title="Grant Storage Permission"
           Icon={<Icon.Storage />}
@@ -64,7 +63,6 @@ export const PermissionsContainer: FC = ({ children }) => {
         />
       );
     }
-
     return null;
   }, [
     showBluetoothModal,

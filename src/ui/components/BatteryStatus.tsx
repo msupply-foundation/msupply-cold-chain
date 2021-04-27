@@ -18,9 +18,12 @@ export const BatteryStatus: FC<BatteryStatusProps> = ({
   const Text = variant === 'large' ? LargeText : SmallText;
 
   return batteryLevel ? (
-    <Row alignItems="center" flex={1}>
-      <Icon.Battery isCharging={isCharging} batteryLevel={batteryLevel} size={iconSize} />
+    <Row>
       <Text>{String(batteryLevel)}</Text>
+      <Row style={{ marginLeft: 10 }} />
+      <Icon.Battery isCharging={isCharging} batteryLevel={batteryLevel} size={iconSize} />
     </Row>
-  ) : null;
+  ) : (
+    <Icon.Battery isCharging={isCharging} batteryLevel={batteryLevel} size={iconSize} />
+  );
 };

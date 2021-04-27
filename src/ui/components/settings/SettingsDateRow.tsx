@@ -2,9 +2,8 @@ import React, { FC } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useDatePicker } from '../../hooks';
 import { COLOUR } from '../../../common/constants';
-import { Chevron } from '../../presentation/icons';
 import { SettingsItem } from './SettingsItem';
-import { Icon } from '../../presentation/icons/Icon';
+import { Icon } from '../../presentation/icons';
 
 interface SettingsDateRowProps {
   label: string;
@@ -29,7 +28,7 @@ export const SettingsDateRow: FC<SettingsDateRowProps> = ({
         label={label}
         subtext={subtext}
         LeftIcon={<Icon.Calendar />}
-        RightComponent={<Chevron direction="right" color={COLOUR.GREY_ONE} />}
+        RightComponent={<Icon.Chevron direction="right" color={COLOUR.GREY_ONE} />}
         onPress={toggleDatePicker}
         isDisabled={isDisabled}
       />

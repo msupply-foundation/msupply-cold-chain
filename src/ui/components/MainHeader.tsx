@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import { View } from 'react-native';
-import { useBatteryLevel, usePowerState } from 'react-native-device-info';
+import { usePowerState } from 'react-native-device-info';
 import { COLOUR } from '../../common/constants';
 
 import { Row } from '../layouts';
 import { Icon } from '../presentation/icons';
-import { BatteryStatus } from '../presentation/BatteryStatus';
+import { BatteryStatus } from './BatteryStatus';
 import { withFormatService } from '../hoc/withFormatService';
 import { useTime } from '../hooks/useTime';
 import { DateAndTime } from '../presentation/DateAndTime';
@@ -18,8 +18,9 @@ interface MainHeaderProps {
 }
 
 export const MainHeader: FC = withFormatService(({ formatter }: MainHeaderProps) => {
-  const batteryLevel = useBatteryLevel() ?? 0;
-  const isCharging = usePowerState() === 'charging';
+  const { batteryLevel = 0, batteryState } = usePowerState();
+
+  const isCharging = batteryState === 'charging';
   const timeNow = useTime();
 
   return (

@@ -5,8 +5,6 @@ interface OnChangeDateCallback {
   (date: Date): void;
 }
 
-const x = typeof globalThis.Event;
-
 export const useDatePicker = (
   onChangeDate: OnChangeDateCallback
 ): [

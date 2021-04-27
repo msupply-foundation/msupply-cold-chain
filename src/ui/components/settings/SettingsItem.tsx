@@ -4,7 +4,7 @@ import { MaybeTouchableContainer, SettingsRowLayout } from '../../layouts';
 import { COLOUR } from '../../../common/constants';
 
 interface SettingsItemProps {
-  label?: string;
+  label: string;
   subtext?: string;
   LeftIcon?: ReactNode;
   RightComponent?: ReactNode;
@@ -13,7 +13,7 @@ interface SettingsItemProps {
 }
 
 export const SettingsItem: FC<SettingsItemProps> = ({
-  label = '',
+  label,
   subtext = '',
   LeftIcon = null,
   RightComponent = null,
@@ -23,7 +23,7 @@ export const SettingsItem: FC<SettingsItemProps> = ({
   <MaybeTouchableContainer isDisabled={isDisabled} onPress={onPress}>
     <SettingsRowLayout
       Text={<MediumText color={COLOUR.GREY_ONE}>{label}</MediumText>}
-      Subtext={<NormalText color={COLOUR.GREY_ONE}>{subtext}</NormalText>}
+      Subtext={subtext ? <NormalText color={COLOUR.GREY_ONE}>{subtext}</NormalText> : null}
       LeftIcon={LeftIcon}
       RightComponent={RightComponent}
     />
