@@ -11,7 +11,7 @@ import { Icon } from '../../presentation/icons';
 interface SettingsNumberInputRowProps {
   label: string;
   subtext: string;
-  onConfirm: () => void;
+  onConfirm: (newValue: { value: number }) => void;
   initialValue: number;
   editDescription: string;
   maximumValue: number;

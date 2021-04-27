@@ -17,8 +17,6 @@ const COLUMNS: Column[] = [
   { header: 'Exposure', flex: 1, key: 'isInBreach', textAlign: 'left' },
 ];
 
-type X = Pick<TextStyle, 'textAlign'>;
-
 interface SensorLogsCellProps extends Pick<TextStyle, 'textAlign'> {
   data: string;
   flex?: number;

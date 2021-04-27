@@ -5,6 +5,8 @@ Object {
   "SENSOR": "Sensor",
   "SENSOR_LOG": "SensorLog",
   "SETTING": "Setting",
+  "SYNC_CONFIG": "SyncConfig",
+  "SYNC_LOG": "SyncLog",
   "TEMPERATURE_BREACH": "TemperatureBreach",
   "TEMPERATURE_BREACH_CONFIGURATION": "TemperatureBreachConfiguration",
   "TEMPERATURE_LOG": "TemperatureLog",

@@ -10,13 +10,10 @@ Object {
     [Function],
     [Function],
     [Function],
+    [Function],
   ],
   "location": "default",
-  "logging": Array [
-    "error",
-    "query",
-    "schema",
-  ],
+  "logging": Array [],
   "maxQueryExecutionTime": 3000,
   "synchronize": true,
   "type": "react-native",
@@ -27,6 +24,7 @@ exports[` 2`] = `
 Object {
   "database": "josh52.sqlite",
   "entities": Array [
+    [Function],
     [Function],
     [Function],
     [Function],

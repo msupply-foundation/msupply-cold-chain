@@ -24,6 +24,7 @@ Object {
       "MENU": "SETTINGS_STACK/Menu",
       "SENSORS": "SETTINGS_STACK/Sensors",
       "SENSOR_DETAIL": "SETTINGS_STACK/SensorDetail",
+      "SYNC": "SETTINGS_STACK/Sync",
       "TEMPERATURE_BREACH": "SETTINGS_STACK/TemperatureBreach",
       "TEMPERATURE_BREACH_DETAIL": "SETTINGS_STACK/TemperatureBreachDetail",
       "TEMPERATURE_CUMULATIVE_DETAIL": "SETTINGS_STACK/TemperatureCumulativeDetail",

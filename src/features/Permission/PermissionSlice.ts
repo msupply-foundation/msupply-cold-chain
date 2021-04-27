@@ -262,19 +262,19 @@ const PermissionSaga = {
 
 const PermissionSelector = {
   showLocationServicesModal: ({ permission }: RootState): boolean => {
-    const { isLocationServicesOn, initialRequestsComplete } = permission as PermissionSliceState;
+    const { isLocationServicesOn, initialRequestsComplete } = permission;
     return !isLocationServicesOn && initialRequestsComplete;
   },
   showBluetoothModal: ({ permission }: RootState): boolean => {
-    const { isBluetoothOn, initialRequestsComplete } = permission as PermissionSliceState;
+    const { isBluetoothOn, initialRequestsComplete } = permission;
     return !isBluetoothOn && initialRequestsComplete;
   },
   showLocationPermissionModal: ({ permission }: RootState): boolean => {
-    const { hasLocationPermission, initialRequestsComplete } = permission as PermissionSliceState;
+    const { hasLocationPermission, initialRequestsComplete } = permission;
     return !hasLocationPermission && initialRequestsComplete;
   },
   showStoragePermissionModal: ({ permission }: RootState): boolean => {
-    const { hasStoragePermission, initialRequestsComplete } = permission as PermissionSliceState;
+    const { hasStoragePermission, initialRequestsComplete } = permission;
     return !hasStoragePermission && initialRequestsComplete;
   },
 };

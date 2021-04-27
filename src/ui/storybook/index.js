@@ -8,7 +8,8 @@ configure(() => {
 }, module);
 
 export const Storybook = getStorybookUI({
-  asyncStorage: require('@react-native-community/async-storage').default,
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  asyncStorage: require('@react-native-async-storage/async-storage').default,
 });
 
 AppRegistry.registerComponent(appName, () => Storybook);

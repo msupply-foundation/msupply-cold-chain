@@ -11,7 +11,7 @@ import { Icon } from '../../presentation/icons';
 interface SettingsTextInputRowProps {
   label: string;
   subtext: string;
-  onConfirm: () => void;
+  onConfirm: ({ inputValue }: { inputValue: string }) => void;
   value: string;
   editDescription: string;
   validation: any;

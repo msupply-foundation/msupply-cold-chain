@@ -15,6 +15,7 @@ Object {
   "DETAIL": "detail",
   "DETAIL_CHART": "detailChart",
   "DETAIL_CUMULATIVE_BREACH": "detailCumulative",
+  "DEV": "dev",
   "DEVICE": "device",
   "DOWNLOAD": "download",
   "ENTITIES": "entities",
@@ -29,7 +30,7 @@ Object {
   "SENSOR_DETAIL": "sensorDetail",
   "SENSOR_STATUS": "sensorStatus",
   "SETTING": "setting",
-  "TEMPERATURE_LOG": "temperatureLog",
+  "SYNC": "sync",
   "TEMPERATURE_LOGS": "temperatureLogs",
   "UPDATE": "update",
 }
