@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { SensorState } from '../../Entities/Sensor/SensorSlice';
 import { ENTITIES } from '../../../common/constants';
 import { DatabaseService, UtilService } from '../../../common/services';
@@ -54,11 +54,21 @@ export class DownloadManager {
     const sliceIndex = logs.length - maxNumberToSave;
     const logsToSave = logs.slice(sliceIndex);
 
-    let initial: any;
-    if (mostRecentLogTime == null) {
+    let initial: Moment | undefined;
+    if (!mostRecentLogTime) {
       initial = moment.unix(timeNow).subtract((logsToSave.length - 1) * logInterval, 'seconds');
     } else {
-      initial = moment.unix(mostRecentLogTime).add(logInterval, 's');
+      const numberOfLogIntervalsUntilNow =
+        Math.floor((timeNow - mostRecentLogTime) / logInterval) + 1;
+
+      // This 'lookback' (as opposed to only counting forward) is necessary to account for
+      // potential gaps in logs (e.g. due to battery running out)
+      // The number of log intervals until now, could be more then the max number to save, in which case,
+      // we create a 'gap' in logs which is our best guess as to when the sensor stopped recording.
+      initial = moment.unix(
+        mostRecentLogTime +
+          (numberOfLogIntervalsUntilNow * logInterval - maxNumberToSave * logInterval)
+      );
     }
 
     return logsToSave.map(({ temperature = 0 }, i) => {
