@@ -64,7 +64,7 @@ const reducers = {
       { payload: { sensorId } }: PayloadAction<FetchPayload>
     ) => {
       draftState.isLoading = true;
-      draftState.id = sensorId;
+      draftState.sensorId = sensorId;
     },
   },
   fetchSuccess: {
