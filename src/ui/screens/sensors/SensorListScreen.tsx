@@ -17,7 +17,6 @@ import { SensorChartRow } from '../../components';
 import { AcknowledgeBreachModal } from '../../components/modal/AcknowledgeBreachModal';
 import { Gradient } from '../../layouts';
 import { RootState } from '../../../common/store/store';
-import { SensorState } from '../../../features/Entities/Sensor/SensorSlice';
 
 export const SensorListScreen: FC = () => {
   const navigation = useNavigation();

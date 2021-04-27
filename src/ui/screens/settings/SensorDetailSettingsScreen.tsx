@@ -79,9 +79,9 @@ export const SensorDetailSettingsScreen: FC<SensorDetailSettingsScreenProps> = (
           validation={Yup.string()
             .required(t('REQUIRED'))
             .max(20, t('MAX_CHARACTERS', { number: 20 }))}
-          onConfirm={({ inputValue }: { inputValue: number }) =>
-            dispatch(SensorAction.update(id, 'name', inputValue))
-          }
+          onConfirm={({ inputValue }: { inputValue: string }) => {
+            dispatch(SensorAction.update(id, 'name', inputValue));
+          }}
           editDescription={t('EDIT_SENSOR_NAME')}
         />
         <SettingsNumberInputRow

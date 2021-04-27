@@ -6,10 +6,10 @@ import { MaybeTouchableContainer, SettingsRowLayout } from '../../layouts';
 
 interface SettingsLoadingIndicatorRowProps {
   label: string;
-  subtext: string;
+  subtext?: string;
   isLoading: boolean;
   onPress: () => void;
-  isDisabled: boolean;
+  isDisabled?: boolean;
 }
 
 export const SettingsLoadingIndicatorRow: FC<SettingsLoadingIndicatorRowProps> = ({

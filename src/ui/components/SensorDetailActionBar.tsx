@@ -15,7 +15,7 @@ interface SensorDetailActionBarProps {
 
 export const SensorDetailActionBar: FC<SensorDetailActionBarProps> = ({ id }) => {
   const dispatch = useDispatch();
-  const [exportModalVariant, setExportModalVariant] = useState(null);
+  const [exportModalVariant, setExportModalVariant] = useState<'email' | '' | 'export'>('');
   const updateDateRange = (from: number, to: number) =>
     dispatch(DetailAction.updateDateRange(from, to));
 
@@ -51,8 +51,8 @@ export const SensorDetailActionBar: FC<SensorDetailActionBarProps> = ({ id }) =>
         id={id}
         variant={exportModalVariant}
         isOpen={!!exportModalVariant}
-        onClose={() => setExportModalVariant(null)}
-        onConfirm={() => setExportModalVariant(null)}
+        onClose={() => setExportModalVariant('')}
+        onConfirm={() => setExportModalVariant('')}
       />
     </>
   );
