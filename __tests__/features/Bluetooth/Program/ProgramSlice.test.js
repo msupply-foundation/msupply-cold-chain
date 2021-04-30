@@ -122,7 +122,7 @@ describe('ProgramSaga', () => {
   });
   it('tryProgramSensor: toggle button when the sensor is not disabled', async () => {
     const toggleButtonMock = jest.fn(() => {});
-    const settingManager = { getSetting: () => SETTING.INT.DEFAULT_LOG_INTERVAL };
+    const settingManager = { getSetting: () => SETTING.BLUETOOTH.DEFAULT_LOG_INTERVAL };
     const btService = {
       getInfo: () => ({ isDisabled: false }),
       updateLogInterval: () => {},
@@ -143,7 +143,7 @@ describe('ProgramSaga', () => {
     const updateLogIntervalMock = jest.fn(() => {
       throw new Error();
     });
-    const settingManager = { getSetting: () => SETTING.INT.DEFAULT_LOG_INTERVAL };
+    const settingManager = { getSetting: () => SETTING.BLUETOOTH.DEFAULT_LOG_INTERVAL };
     const btService = {
       getInfo: () => ({}),
       updateLogInterval: updateLogIntervalMock,
@@ -164,7 +164,7 @@ describe('ProgramSaga', () => {
     const toggleButtonMock = jest.fn(() => {
       throw new Error();
     });
-    const settingManager = { getSetting: () => SETTING.INT.DEFAULT_LOG_INTERVAL };
+    const settingManager = { getSetting: () => SETTING.BLUETOOTH.DEFAULT_LOG_INTERVAL };
     const btService = {
       getInfo: () => ({ isDisabled: false }),
       updateLogInterval: () => {},
@@ -185,7 +185,7 @@ describe('ProgramSaga', () => {
     const getInfoMock = jest.fn(() => {
       throw new Error();
     });
-    const settingManager = { getSetting: () => SETTING.INT.DEFAULT_LOG_INTERVAL };
+    const settingManager = { getSetting: () => SETTING.BLUETOOTH.DEFAULT_LOG_INTERVAL };
     const btService = {
       getInfo: getInfoMock,
       updateLogInterval: () => {},
@@ -206,7 +206,7 @@ describe('ProgramSaga', () => {
     const getInfoMock = jest.fn(() => {
       throw new Error('Josh');
     });
-    const settingManager = { getSetting: () => SETTING.INT.DEFAULT_LOG_INTERVAL };
+    const settingManager = { getSetting: () => SETTING.BLUETOOTH.DEFAULT_LOG_INTERVAL };
     const btService = {
       getInfo: getInfoMock,
       updateLogInterval: () => {},

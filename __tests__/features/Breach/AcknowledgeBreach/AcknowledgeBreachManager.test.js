@@ -1,6 +1,6 @@
 import { IsNull, Not } from 'typeorm/browser';
-import { AcknowledgeBreachManager } from '~features/Breach';
-import { ENTITIES } from '~constants';
+import { AcknowledgeBreachManager } from '../../../../src/features/Breach';
+import { ENTITIES } from '../../../../src/common/constants';
 
 describe('AcknowledgeBreachManager: getUnacknowledged', () => {
   it('returns unacknowledged breaches', () => {

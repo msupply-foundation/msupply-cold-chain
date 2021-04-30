@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { EntitySubscriberInterface } from 'typeorm/browser';
 
 import { Database } from './Database';
-import { ENTITIES, MILLISECONDS, SyncSetting } from '../../constants';
+import { ENTITIES, MILLISECONDS } from '../../constants';
 
 export class DatabaseService {
   database: Database;
@@ -13,7 +13,7 @@ export class DatabaseService {
     this.database = database;
   }
 
-  init = async (): Promise<void> => {
+  init = async (): Promise<any> => {
     const COLD_BREACH = {
       id: 'COLD_BREACH',
       minimumTemperature: -999,
@@ -50,7 +50,7 @@ export class DatabaseService {
 
     if (configs.length >= 4) return configs;
 
-    await this.upsert(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION, [
+    return this.upsert(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION, [
       HOT_BREACH,
       HOT_CUMULATIVE,
       COLD_BREACH,
@@ -60,7 +60,7 @@ export class DatabaseService {
 
   registerSubscribers = (subscribers: EntitySubscriberInterface[]): void => {
     subscribers.forEach(subscriber => this.database.connection?.subscribers.push(subscriber));
-  }
+  };
 
   save = async (entityName: string, objectOrArray: any | any[]): Promise<any | any[]> => {
     const repository = await this.database.getRepository(entityName);
