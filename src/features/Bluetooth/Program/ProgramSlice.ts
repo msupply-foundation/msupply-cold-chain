@@ -110,7 +110,7 @@ export function* tryProgramNewSensor({
   try {
     const { value: logInterval } = yield call(
       settingManager.getSetting,
-      SETTING.INT.DEFAULT_LOG_INTERVAL
+      SETTING.BLUETOOTH.DEFAULT_LOG_INTERVAL
     );
     const { batteryLevel, isDisabled } = yield retry(10, 0, btService.getInfo, macAddress);
     yield retry(10, 0, btService.updateLogInterval, macAddress, logInterval);

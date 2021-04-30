@@ -4,8 +4,8 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useIsFocused } from '@react-navigation/native';
 import { t } from '../../../common/translations';
-import { COLOUR, SETTING, SETTINGS_STACK } from '../../../common/constants';
-import { SettingAction, SensorSelector } from '../../../features/Entities';
+import { COLOUR, SETTINGS_STACK } from '../../../common/constants';
+import { SettingAction, SettingSelector, SensorSelector } from '../../../features/Entities';
 
 import { SettingsList } from '../../layouts';
 import { UpdatingSensorModal } from '../../components/modal';
@@ -18,7 +18,6 @@ import {
 import { ScanAction, ScanSelector } from '../../../features/Bluetooth';
 
 import { SettingsStackParameters } from '../../containers/SettingsStackNavigator';
-import { RootState } from '../../../common/store/store';
 
 type SensorSettingsScreenProps = {
   navigation: StackNavigationProp<SettingsStackParameters, SETTINGS_STACK.MENU>;
@@ -39,14 +38,13 @@ export const SensorSettingsScreen: FC<SensorSettingsScreenProps> = React.memo(({
   }, []);
 
   const defaultLoggingInterval = useSelector(
-    (state: RootState) => state.entities.setting[SETTING.INT.DEFAULT_LOG_INTERVAL],
+    SettingSelector.getBluetoothDefaultLogInterval,
     shallowEqual
   );
 
   useEffect(() => {
     const reset = () => {
-      dispatch(ScanAction.tryStop());
-    };
+      dispatch(ScanAction.tryStop());    };
 
     if (isFocused) dispatch(ScanAction.tryStart());
     else reset();
@@ -74,8 +72,7 @@ export const SensorSettingsScreen: FC<SensorSettingsScreenProps> = React.memo(({
           label={t('DEFAULT_LOG_INTERVAL')}
           subtext={t('DEFAULT_LOG_INTERVAL_SUBTEXT')}
           onConfirm={({ value }: { value: number }) =>
-            dispatch(SettingAction.update(SETTING.INT.DEFAULT_LOG_INTERVAL, value * 60))
-          }
+            dispatch(SettingAction.updateBluetoothDefaultLogInterval(value * 60))}
           initialValue={Number(defaultLoggingInterval) / 60}
           editDescription={t('DEFAULT_LOG_INTERVAL')}
           maximumValue={30}

@@ -83,7 +83,7 @@ export const DependencyContainer: FC = ({ children }) => {
     const reportManager = new ReportManager(dbService, exportService, permissionService);
     const sensorStatusManager = new SensorStatusManager(dbService);
     const syncQueueManager = new SyncQueueManager(dbService, utilService);
-    const syncOutManager = new SyncOutManager(dbService);
+    const syncOutManager = new SyncOutManager();
     const devManager = new DevManager(dbService, utilService, devService);
 
     DependencyLocator.register(DEPENDENCY.BREACH_CONFIGURATION_MANAGER, breachConfigurationManager);
