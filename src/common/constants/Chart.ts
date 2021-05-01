@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-shadow
 export enum CHART {
   NUMBER_OF_TICKS_Y = 5,
   X_KEY = 'timestamp',

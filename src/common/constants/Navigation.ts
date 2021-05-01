@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 export enum SETTINGS_STACK {
   'MENU' = 'SETTINGS_STACK/Menu',
   'SENSORS' = 'SETTINGS_STACK/Sensors',

@@ -3,9 +3,8 @@ import { NativeModules } from 'react-native';
 import { take, delay, getContext, call, all, put, takeLeading, race } from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
 import { SensorState } from '../../Entities/Sensor/SensorSlice';
-import { DEPENDENCY, REDUCER, MILLISECONDS } from '../../../common/constants';
-
-import { SensorAction } from '../../Entities';
+import { DEPENDENCY, REDUCER, MILLISECONDS } from '~constants';
+import { SensorAction } from '~features/Entities';
 
 interface BatteryObserverState {
   isWatching: boolean;

@@ -9,7 +9,10 @@ const styles: { container: ViewStyle } = {
 };
 
 export const Gradient: FC = ({ children }) => (
-  <LinearGradient colors={COLOUR.BACKGROUND_GRADIENT} style={styles.container}>
+  <LinearGradient
+    colors={[COLOUR.BACKGROUND_GRADIENT_START, COLOUR.BACKGROUND_GRADIENT_END]}
+    style={styles.container}
+  >
     {children}
   </LinearGradient>
 );

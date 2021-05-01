@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-shadow
 export enum DEPENDENCY {
   LOCATOR = 'DependencyLocator',
   BLUETOOTH = 'bluetooth',
