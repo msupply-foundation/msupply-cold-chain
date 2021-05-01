@@ -6,9 +6,9 @@ import {
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
 
-import { NAVIGATION, COLOUR, FONT } from '../../common/constants';
-import { t } from '../../common/translations';
-import { Icon } from '../presentation/icons';
+import { NAVIGATION, COLOUR, FONT } from '~constants';
+import { t } from '~translations';
+import { Icon } from '~presentation/icons';
 
 export const ICON_LOOKUP = {
   [NAVIGATION.SCREENS.MAIN_TABS.SETTINGS]: <Icon.Cog />,
@@ -35,20 +35,16 @@ const screenOptions = ({
 const tabBarOptions: BottomTabBarOptions = {
   activeTintColor: COLOUR.WHITE,
   inactiveTintColor: COLOUR.OFF_WHITE,
-  activeBackgroundColor: COLOUR.HIGHLIGHT,
-  inactiveBackgroundColor: COLOUR.SECONDARY,
-  tabStyle: {
-    borderWidth: 1,
-    borderColor: COLOUR.DIVIDER,
-    borderBottomWidth: 0,
-    borderLeftWidth: 0,
-    borderRightWidth: 0,
-  },
+  activeBackgroundColor: COLOUR.SECONDARY,
+  inactiveBackgroundColor: COLOUR.HIGHLIGHT,
   labelStyle: { fontFamily: FONT.FAMILY.REGULAR, fontSize: FONT.SIZE.MS },
   labelPosition: 'below-icon',
+  style: {
+    borderTopWidth: 0,
+    elevation: 0,
+  },
 };
 
-// Export a TabNavigator component with configuration set.
 export const MainTabNavigator: FC = ({ children }) => (
   <Tab.Navigator screenOptions={screenOptions} tabBarOptions={tabBarOptions}>
     {children}
