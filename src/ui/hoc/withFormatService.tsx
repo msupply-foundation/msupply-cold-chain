@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { ElementType, FC } from 'react';
 import { DEPENDENCY } from '../../common/constants';
 import { FormatService } from '../../common/services';

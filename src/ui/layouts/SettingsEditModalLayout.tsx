@@ -48,7 +48,7 @@ export const SettingsEditModalLayout: FC<SettingsEditModalLayoutProps> = ({
       Keyboard.removeListener('keyboardDidShow', onKeyboardDidShow);
       Keyboard.removeListener('keyboardDidHide', onKeyboardDidHide);
     };
-  }, []);
+  }, [onKeyboardDidHide, onKeyboardDidShow]);
 
   const internalContentContainerStyle = { ...style.container, width: width * 0.95 };
   return (

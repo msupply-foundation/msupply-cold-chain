@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import PinView from 'react-native-pin-view';
 import LinearGradient from 'react-native-linear-gradient';
 

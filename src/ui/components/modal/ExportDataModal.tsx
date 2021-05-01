@@ -1,5 +1,4 @@
-/* eslint-disable react/jsx-wrap-multilines */
-import React, { useEffect, useRef, useCallback, FC } from 'react';
+import React, { useRef, useCallback, FC } from 'react';
 import { useDispatch } from 'react-redux';
 import { Input } from 'react-native-elements';
 import { useWindowDimensions, TextInput } from 'react-native';
@@ -41,8 +40,11 @@ export const ExportDataModal: FC<ExportDataModalProps> = ({
       }
       onConfirm();
     },
-    [id, onConfirm, variant]
+    [dispatch, id, onConfirm, variant]
   );
+
+  const usernameRef = useRef<TextInput | null>(null);
+  const commentRef = useRef<TextInput | null>(null);
 
   return (
     <Formik
@@ -57,16 +59,7 @@ export const ExportDataModal: FC<ExportDataModalProps> = ({
     >
       {({ handleChange, errors, values, isValid }) => {
         const { username, comment } = values;
-        const wrappedOnConfirm = useCallback(
-          () => isValid && onConfirmModal({ username, comment }),
-          [username, comment]
-        );
-        const usernameRef = useRef<TextInput | null>(null);
-        const commentRef = useRef<TextInput | null>(null);
-
-        useEffect(() => {
-          setTimeout(() => usernameRef.current?.focus(), 100);
-        }, [usernameRef.current, isOpen]);
+        const wrappedOnConfirm = () => isValid && onConfirmModal({ username, comment });
 
         return (
           <SettingsEditModal

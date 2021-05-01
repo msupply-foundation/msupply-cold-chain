@@ -3,20 +3,20 @@ import { useNavigation } from '@react-navigation/core';
 import { FlatList } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { NAVIGATION } from '../../../common/constants';
-import { useCallbackOnGainingFocus, useOnMount } from '../../hooks';
+import { NAVIGATION } from '~constants';
+import { useCallbackOnGainingFocus, useOnMount } from '~hooks';
 import {
   AcknowledgeBreachSelector,
   SensorSelector,
   SensorAction,
   BatteryObserverAction,
   DownloadAction,
-} from '../../../features';
+} from '~features';
 
-import { SensorChartRow } from '../../components';
+import { SensorChartRow } from '~components';
 import { AcknowledgeBreachModal } from '../../components/modal/AcknowledgeBreachModal';
-import { Gradient } from '../../layouts';
-import { RootState } from '../../../common/store/store';
+import { Gradient } from '~layouts';
+import { RootState } from '~store/store';
 
 export const SensorListScreen: FC = () => {
   const navigation = useNavigation();
@@ -40,14 +40,16 @@ export const SensorListScreen: FC = () => {
   useCallbackOnGainingFocus(getSensors);
 
   // TODO: Typings??
-  // eslint-disable-next-line react/no-unused-prop-types
-  const renderItem = useCallback(({ item: { id } }: { item: { id: string } }) => {
-    const sensorDetailScreen = NAVIGATION.SCREENS.SENSOR_STACK.SENSOR_DETAIL;
-    const onPress = () => {
-      navigation.navigate(sensorDetailScreen, { id });
-    };
-    return <SensorChartRow id={id} onPress={onPress} />;
-  }, []);
+  const renderItem = useCallback(
+    ({ item: { id } }: { item: { id: string } }) => {
+      const sensorDetailScreen = NAVIGATION.SCREENS.SENSOR_STACK.SENSOR_DETAIL;
+      const onPress = () => {
+        navigation.navigate(sensorDetailScreen, { id });
+      };
+      return <SensorChartRow id={id} onPress={onPress} />;
+    },
+    [navigation]
+  );
 
   return (
     <Gradient>

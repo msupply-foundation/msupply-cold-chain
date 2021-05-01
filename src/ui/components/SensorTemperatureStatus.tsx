@@ -60,8 +60,6 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
   );
   const hasData = useSelector((state: RootState) => SensorStatusSelector.hasData(state, { id }));
 
-  if (!hasData) return null;
-
   const fadeAnim1 = React.useRef(new Animated.Value(0)).current;
   const fadeAnim2 = React.useRef(new Animated.Value(0)).current;
   const fadeAnim3 = React.useRef(new Animated.Value(0)).current;
@@ -72,6 +70,8 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
   useEffect(() => {
     if (isInDanger) getAnimations(animationValues).start();
   }, [isInDanger, animationValues]);
+
+  if (!hasData) return null;
 
   return !isInDanger ? (
     <Centered>

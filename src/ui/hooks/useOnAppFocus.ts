@@ -22,5 +22,5 @@ export const useOnAppFocus = (callback: () => void): void => {
   useEffect(() => {
     AppState.addEventListener('focus', memoized);
     return () => AppState.removeEventListener('focus', memoized);
-  }, []);
+  }, [memoized]);
 };

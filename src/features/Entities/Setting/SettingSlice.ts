@@ -13,42 +13,42 @@ interface SettingEntity {
 
 export enum SettingSlice {
   Bluetooth = 'bluetooth',
-  Sync = 'sync'
+  Sync = 'sync',
 }
 
 export enum BluetoothSettingSlice {
- DefaultLogInterval = 'defaultLogInterval',
+  DefaultLogInterval = 'defaultLogInterval',
 }
 
 export enum SyncSettingSlice {
- AuthUrl = 'authUrl',
- AuthUsername = 'authUsername',
- AuthPassword = 'authPassword',
- SensorUrl = 'sensorUrl',
- TemperatureLogUrl = 'temperatureLogUrl',
- TemperatureBreachUrl = 'temperatureBreachUrl',
- LastSync = 'lastSync',
- IsPassiveSyncEnabled = 'isPassiveSyncEnabled'
+  AuthUrl = 'authUrl',
+  AuthUsername = 'authUsername',
+  AuthPassword = 'authPassword',
+  SensorUrl = 'sensorUrl',
+  TemperatureLogUrl = 'temperatureLogUrl',
+  TemperatureBreachUrl = 'temperatureBreachUrl',
+  LastSync = 'lastSync',
+  IsPassiveSyncEnabled = 'isPassiveSyncEnabled',
 }
 
 interface SyncSettingSliceState {
-  [SyncSettingSlice.AuthUrl]: string | null,
-  [SyncSettingSlice.AuthUsername]: string | null,
-  [SyncSettingSlice.AuthPassword]: string | null,
-  [SyncSettingSlice.SensorUrl]: string | null,
-  [SyncSettingSlice.TemperatureLogUrl]: string | null,
-  [SyncSettingSlice.TemperatureBreachUrl]: string | null,
-  [SyncSettingSlice.LastSync]: number | null,
-  [SyncSettingSlice.IsPassiveSyncEnabled]: boolean | null
+  [SyncSettingSlice.AuthUrl]: string | null;
+  [SyncSettingSlice.AuthUsername]: string | null;
+  [SyncSettingSlice.AuthPassword]: string | null;
+  [SyncSettingSlice.SensorUrl]: string | null;
+  [SyncSettingSlice.TemperatureLogUrl]: string | null;
+  [SyncSettingSlice.TemperatureBreachUrl]: string | null;
+  [SyncSettingSlice.LastSync]: number | null;
+  [SyncSettingSlice.IsPassiveSyncEnabled]: boolean | null;
 }
 
 interface BluetoothSettingSliceState {
-  [BluetoothSettingSlice.DefaultLogInterval]: number | null
+  [BluetoothSettingSlice.DefaultLogInterval]: number | null;
 }
 
 interface SettingSliceState {
-  [SettingSlice.Bluetooth]: BluetoothSettingSliceState,
-  [SettingSlice.Sync]: SyncSettingSliceState
+  [SettingSlice.Bluetooth]: BluetoothSettingSliceState;
+  [SettingSlice.Sync]: SyncSettingSliceState;
 }
 
 type SettingKey = string;
@@ -143,7 +143,7 @@ export interface PrepareActionReturn<SomePayload> {
 
 const initialState: SettingSliceState = {
   [SettingSlice.Bluetooth]: {
-    [BluetoothSettingSlice.DefaultLogInterval]: null
+    [BluetoothSettingSlice.DefaultLogInterval]: null,
   },
   [SettingSlice.Sync]: {
     [SyncSettingSlice.AuthUrl]: null,
@@ -153,8 +153,8 @@ const initialState: SettingSliceState = {
     [SyncSettingSlice.TemperatureLogUrl]: null,
     [SyncSettingSlice.TemperatureBreachUrl]: null,
     [SyncSettingSlice.LastSync]: null,
-    [SyncSettingSlice.IsPassiveSyncEnabled]: null
-  }
+    [SyncSettingSlice.IsPassiveSyncEnabled]: null,
+  },
 };
 
 const parseSettingSlice = (setting: SettingEntity) => {
@@ -173,7 +173,7 @@ const parseSettingSlice = (setting: SettingEntity) => {
     default:
       return SettingSlice.Sync;
   }
-}
+};
 
 const parseSettingKey = (setting: SettingEntity) => {
   switch (setting.key) {
@@ -198,7 +198,7 @@ const parseSettingKey = (setting: SettingEntity) => {
     default:
       return setting.key;
   }
-}
+};
 
 const parseValue = (setting: SettingEntity) => {
   try {
@@ -206,7 +206,7 @@ const parseValue = (setting: SettingEntity) => {
   } catch {
     return setting.value;
   }
-}
+};
 
 const reducers = {
   fetchAll: () => {},
@@ -243,110 +243,120 @@ const reducers = {
   },
   updateFail: () => {},
   updateBluetoothDefaultLogInterval: {
-    prepare: (defaultLogInterval: number): PrepareActionReturn<UpdateBluetoothDefaultLogIntervalActionPayload> => ({
+    prepare: (
+      defaultLogInterval: number
+    ): PrepareActionReturn<UpdateBluetoothDefaultLogIntervalActionPayload> => ({
       payload: { defaultLogInterval },
     }),
     reducer: (
       draftState: SettingSliceState,
-      { payload: { defaultLogInterval } }: PayloadAction<UpdateBluetoothDefaultLogIntervalActionPayload>
+      {
+        payload: { defaultLogInterval },
+      }: PayloadAction<UpdateBluetoothDefaultLogIntervalActionPayload>
     ) => {
-      draftState[SettingSlice.Bluetooth][BluetoothSettingSlice.DefaultLogInterval] = defaultLogInterval;
-    }
+      draftState[SettingSlice.Bluetooth][
+        BluetoothSettingSlice.DefaultLogInterval
+      ] = defaultLogInterval;
+    },
   },
   updateSyncAuthUrl: {
     prepare: (authUrl: string): PrepareActionReturn<UpdateSyncAuthUrlActionPayload> => ({
-        payload: { authUrl },
+      payload: { authUrl },
     }),
     reducer: (
-        draftState: SettingSliceState,
-        { payload: { authUrl } }: PayloadAction<UpdateSyncAuthUrlActionPayload>
+      draftState: SettingSliceState,
+      { payload: { authUrl } }: PayloadAction<UpdateSyncAuthUrlActionPayload>
     ) => {
-        draftState[SettingSlice.Sync][SyncSettingSlice.AuthUrl] = authUrl;
+      draftState[SettingSlice.Sync][SyncSettingSlice.AuthUrl] = authUrl;
     },
   },
   updateSyncSensorUrl: {
-      prepare: (sensorUrl: string): PrepareActionReturn<UpdateSyncSensorUrlActionPayload> => ({
-          payload: { sensorUrl },
-      }),
-      reducer: (
-          draftState: SettingSliceState,
-          { payload: { sensorUrl } }: PayloadAction<UpdateSyncSensorUrlActionPayload>
-      ) => {
-          draftState[SettingSlice.Sync][SyncSettingSlice.SensorUrl] = sensorUrl;
-      },
-  },
-  updateSyncTemperatureLogUrl: {
-      prepare: (
-          temperatureLogUrl: string
-      ): PrepareActionReturn<UpdateSyncTemperatureLogUrlActionPayload> => ({
-          payload: { temperatureLogUrl },
-      }),
-      reducer: (
-          draftState: SettingSliceState,
-          { payload: { temperatureLogUrl } }: PayloadAction<UpdateSyncTemperatureLogUrlActionPayload>
-      ) => {
-          draftState[SettingSlice.Sync][SyncSettingSlice.TemperatureLogUrl] = temperatureLogUrl;
-      },
-  },
-  updateSyncTemperatureBreachUrl: {
-      prepare: (
-          temperatureBreachUrl: string
-      ): PrepareActionReturn<UpdateSyncTemperatureBreachUrlActionPayload> => ({
-          payload: { temperatureBreachUrl },
-      }),
-      reducer: (
-          draftState: SettingSliceState,
-          {
-              payload: { temperatureBreachUrl },
-          }: PayloadAction<UpdateSyncTemperatureBreachUrlActionPayload>
-      ) => {
-          draftState[SettingSlice.Sync][SyncSettingSlice.TemperatureBreachUrl] = temperatureBreachUrl;
-      },
-  },
-  updateSyncAuthUsername: {
-      prepare: (username: string): PrepareActionReturn<UpdateSyncAuthUsernameActionPayload> => ({
-          payload: { username },
-      }),
-      reducer: (
-          draftState: SettingSliceState,
-          { payload: { username } }: PayloadAction<UpdateSyncAuthUsernameActionPayload>
-      ) => {
-          draftState[SettingSlice.Sync][SyncSettingSlice.AuthUsername] = username;
-      },
-  },
-  updateSyncAuthPassword: {
-      prepare: (password: string): PrepareActionReturn<UpdateSyncAuthPasswordActionPayload> => ({
-          payload: { password },
-      }),
-      reducer: (
-          draftState: SettingSliceState,
-          { payload: { password } }: PayloadAction<UpdateSyncAuthPasswordActionPayload>
-      ) => {
-          draftState[SettingSlice.Sync][SyncSettingSlice.AuthPassword] = password;
-      },
-  },
-  updateSyncLastSync: {
-      prepare: (lastSync: number): PrepareActionReturn<UpdateSyncLastSyncActionPayload> => ({
-          payload: { lastSync },
-      }),
-      reducer: (
-          draftState: SettingSliceState,
-          { payload: { lastSync } }: PayloadAction<UpdateSyncLastSyncActionPayload>
-      ) => {
-          draftState[SettingSlice.Sync][SyncSettingSlice.LastSync] = lastSync;
-      },
-  },
-  updateSyncIsPassiveSyncEnabled: {
-    prepare: (isPassiveSyncEnabled: boolean): PrepareActionReturn<UpdateSyncIsPassiveSyncEnabledActionPayload> => ({
-        payload: { isPassiveSyncEnabled },
+    prepare: (sensorUrl: string): PrepareActionReturn<UpdateSyncSensorUrlActionPayload> => ({
+      payload: { sensorUrl },
     }),
     reducer: (
-        draftState: SettingSliceState,
-        { payload: { isPassiveSyncEnabled } }: PayloadAction<UpdateSyncIsPassiveSyncEnabledActionPayload>
+      draftState: SettingSliceState,
+      { payload: { sensorUrl } }: PayloadAction<UpdateSyncSensorUrlActionPayload>
     ) => {
-        draftState[SettingSlice.Sync][SyncSettingSlice.IsPassiveSyncEnabled] = isPassiveSyncEnabled;
+      draftState[SettingSlice.Sync][SyncSettingSlice.SensorUrl] = sensorUrl;
     },
-},
+  },
+  updateSyncTemperatureLogUrl: {
+    prepare: (
+      temperatureLogUrl: string
+    ): PrepareActionReturn<UpdateSyncTemperatureLogUrlActionPayload> => ({
+      payload: { temperatureLogUrl },
+    }),
+    reducer: (
+      draftState: SettingSliceState,
+      { payload: { temperatureLogUrl } }: PayloadAction<UpdateSyncTemperatureLogUrlActionPayload>
+    ) => {
+      draftState[SettingSlice.Sync][SyncSettingSlice.TemperatureLogUrl] = temperatureLogUrl;
+    },
+  },
+  updateSyncTemperatureBreachUrl: {
+    prepare: (
+      temperatureBreachUrl: string
+    ): PrepareActionReturn<UpdateSyncTemperatureBreachUrlActionPayload> => ({
+      payload: { temperatureBreachUrl },
+    }),
+    reducer: (
+      draftState: SettingSliceState,
+      {
+        payload: { temperatureBreachUrl },
+      }: PayloadAction<UpdateSyncTemperatureBreachUrlActionPayload>
+    ) => {
+      draftState[SettingSlice.Sync][SyncSettingSlice.TemperatureBreachUrl] = temperatureBreachUrl;
+    },
+  },
+  updateSyncAuthUsername: {
+    prepare: (username: string): PrepareActionReturn<UpdateSyncAuthUsernameActionPayload> => ({
+      payload: { username },
+    }),
+    reducer: (
+      draftState: SettingSliceState,
+      { payload: { username } }: PayloadAction<UpdateSyncAuthUsernameActionPayload>
+    ) => {
+      draftState[SettingSlice.Sync][SyncSettingSlice.AuthUsername] = username;
+    },
+  },
+  updateSyncAuthPassword: {
+    prepare: (password: string): PrepareActionReturn<UpdateSyncAuthPasswordActionPayload> => ({
+      payload: { password },
+    }),
+    reducer: (
+      draftState: SettingSliceState,
+      { payload: { password } }: PayloadAction<UpdateSyncAuthPasswordActionPayload>
+    ) => {
+      draftState[SettingSlice.Sync][SyncSettingSlice.AuthPassword] = password;
+    },
+  },
+  updateSyncLastSync: {
+    prepare: (lastSync: number): PrepareActionReturn<UpdateSyncLastSyncActionPayload> => ({
+      payload: { lastSync },
+    }),
+    reducer: (
+      draftState: SettingSliceState,
+      { payload: { lastSync } }: PayloadAction<UpdateSyncLastSyncActionPayload>
+    ) => {
+      draftState[SettingSlice.Sync][SyncSettingSlice.LastSync] = lastSync;
+    },
+  },
+  updateSyncIsPassiveSyncEnabled: {
+    prepare: (
+      isPassiveSyncEnabled: boolean
+    ): PrepareActionReturn<UpdateSyncIsPassiveSyncEnabledActionPayload> => ({
+      payload: { isPassiveSyncEnabled },
+    }),
+    reducer: (
+      draftState: SettingSliceState,
+      {
+        payload: { isPassiveSyncEnabled },
+      }: PayloadAction<UpdateSyncIsPassiveSyncEnabledActionPayload>
+    ) => {
+      draftState[SettingSlice.Sync][SyncSettingSlice.IsPassiveSyncEnabled] = isPassiveSyncEnabled;
+    },
+  },
 };
 
 const { actions: SettingAction, reducer: SettingReducer } = createSlice({
@@ -359,12 +369,12 @@ const getSettings = (rootState: RootState): SettingSliceState => {
   const { entities } = rootState;
   const { setting } = entities;
   return setting;
-}
+};
 
 const getBluetoothSettings = (rootState: RootState): BluetoothSettingSliceState => {
   const { [SettingSlice.Bluetooth]: bluetooth } = getSettings(rootState);
   return bluetooth;
-}
+};
 
 const getSyncSettings = (rootState: RootState): SyncSettingSliceState => {
   const { [SettingSlice.Sync]: sync } = getSettings(rootState);
@@ -372,39 +382,45 @@ const getSyncSettings = (rootState: RootState): SyncSettingSliceState => {
 };
 
 const getBluetoothDefaultLogInterval = (rootState: RootState): number | null => {
-  const { [BluetoothSettingSlice.DefaultLogInterval]: bluetoothDefaultLogInterval } = getBluetoothSettings(rootState);
+  const {
+    [BluetoothSettingSlice.DefaultLogInterval]: bluetoothDefaultLogInterval,
+  } = getBluetoothSettings(rootState);
   return bluetoothDefaultLogInterval as number | null;
-}
+};
 
 const getSyncAuthUrl = (rootState: RootState): string | null => {
   const { [SyncSettingSlice.AuthUrl]: syncAuthUrl } = getSyncSettings(rootState);
   return syncAuthUrl as string | null;
-}
+};
 
 const getSyncAuthUsername = (rootState: RootState): string | null => {
   const { [SyncSettingSlice.AuthUsername]: syncAuthUsername } = getSyncSettings(rootState);
   return syncAuthUsername as string | null;
-}
+};
 
 const getSyncAuthPassword = (rootState: RootState): string | null => {
   const { [SyncSettingSlice.AuthPassword]: syncAuthPassword } = getSyncSettings(rootState);
   return syncAuthPassword as string | null;
-}
+};
 
 const getSyncSensorUrl = (rootState: RootState): string | null => {
   const { [SyncSettingSlice.SensorUrl]: syncSensorUrl } = getSyncSettings(rootState);
   return syncSensorUrl as string | null;
-}
+};
 
 const getSyncTemperatureLogUrl = (rootState: RootState): string | null => {
-  const { [SyncSettingSlice.TemperatureLogUrl]: syncTemperatureLogUrl } = getSyncSettings(rootState);
+  const { [SyncSettingSlice.TemperatureLogUrl]: syncTemperatureLogUrl } = getSyncSettings(
+    rootState
+  );
   return syncTemperatureLogUrl as string | null;
-}
+};
 
 const getSyncTemperatureBreachUrl = (rootState: RootState): string | null => {
-  const { [SyncSettingSlice.TemperatureBreachUrl]: syncTemperatureBreachUrl } = getSyncSettings(rootState);
+  const { [SyncSettingSlice.TemperatureBreachUrl]: syncTemperatureBreachUrl } = getSyncSettings(
+    rootState
+  );
   return syncTemperatureBreachUrl as string | null;
-}
+};
 
 const SettingSelector = {
   getBluetoothSettings,
@@ -441,7 +457,9 @@ function* update({ payload: { key, value } }: SettingUpdateAction): SagaIterator
   }
 }
 
-function* updateBluetoothDefaultLogInterval({ payload: { defaultLogInterval }}: UpdateBluetoothDefaultLogIntervalAction): SagaIterator {
+function* updateBluetoothDefaultLogInterval({
+  payload: { defaultLogInterval },
+}: UpdateBluetoothDefaultLogIntervalAction): SagaIterator {
   yield put(SettingAction.update(SETTING.BLUETOOTH.DEFAULT_LOG_INTERVAL, defaultLogInterval));
 }
 
@@ -453,34 +471,47 @@ function* updateSyncSensorUrl({ payload: { sensorUrl } }: UpdateSyncSensorUrlAct
   yield put(SettingAction.update(SETTING.SYNC.SENSOR_URL, sensorUrl));
 }
 
-function* updateSyncTemperatureLogUrl({ payload: { temperatureLogUrl } }: UpdateSyncTemperatureLogUrlAction): SagaIterator {
+function* updateSyncTemperatureLogUrl({
+  payload: { temperatureLogUrl },
+}: UpdateSyncTemperatureLogUrlAction): SagaIterator {
   yield put(SettingAction.update(SETTING.SYNC.TEMPERATURE_LOG_URL, temperatureLogUrl));
 }
 
-function* updateSyncTemperatureBreachUrl({ payload: { temperatureBreachUrl } }: UpdateSyncTemperatureBreachUrlAction): SagaIterator {
+function* updateSyncTemperatureBreachUrl({
+  payload: { temperatureBreachUrl },
+}: UpdateSyncTemperatureBreachUrlAction): SagaIterator {
   yield put(SettingAction.update(SETTING.SYNC.TEMPERATURE_BREACH_URL, temperatureBreachUrl));
 }
 
-function* updateSyncAuthUsername({ payload: { username } }: UpdateSyncAuthUsernameAction): SagaIterator {
+function* updateSyncAuthUsername({
+  payload: { username },
+}: UpdateSyncAuthUsernameAction): SagaIterator {
   yield put(SettingAction.update(SETTING.SYNC.AUTH_USERNAME, username));
 }
 
-function* updateSyncAuthPassword({ payload: { password } }: UpdateSyncAuthPasswordAction): SagaIterator {
+function* updateSyncAuthPassword({
+  payload: { password },
+}: UpdateSyncAuthPasswordAction): SagaIterator {
   yield put(SettingAction.update(SETTING.SYNC.AUTH_PASSWORD, password));
 }
 
-function* updateSyncLastSync({ payload: { lastSync }}: UpdateSyncLastSyncAction): SagaIterator {
+function* updateSyncLastSync({ payload: { lastSync } }: UpdateSyncLastSyncAction): SagaIterator {
   yield put(SettingAction.update(SETTING.SYNC.LAST_SYNC, lastSync));
 }
 
-function* updateSyncIsPassiveSyncEnabled({ payload: { isPassiveSyncEnabled }}: UpdateSyncIsPassiveSyncEnabledAction): SagaIterator {
+function* updateSyncIsPassiveSyncEnabled({
+  payload: { isPassiveSyncEnabled },
+}: UpdateSyncIsPassiveSyncEnabledAction): SagaIterator {
   yield put(SettingAction.update(SETTING.SYNC.IS_PASSIVE_SYNC_ENABLED, isPassiveSyncEnabled));
 }
 
 function* root(): SagaIterator {
   yield takeEvery(SettingAction.fetchAll, fetchAll);
   yield takeEvery(SettingAction.update, update);
-  yield takeEvery(SettingAction.updateBluetoothDefaultLogInterval, updateBluetoothDefaultLogInterval);
+  yield takeEvery(
+    SettingAction.updateBluetoothDefaultLogInterval,
+    updateBluetoothDefaultLogInterval
+  );
   yield takeEvery(SettingAction.updateSyncAuthUrl, updateSyncAuthUrl);
   yield takeEvery(SettingAction.updateSyncAuthUsername, updateSyncAuthUsername);
   yield takeEvery(SettingAction.updateSyncAuthPassword, updateSyncAuthPassword);

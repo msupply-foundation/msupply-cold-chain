@@ -23,5 +23,6 @@ export const useOnMount = (
   useEffect(() => {
     funcToExecute();
     return cleanUpFunc;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };

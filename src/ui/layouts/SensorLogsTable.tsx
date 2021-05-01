@@ -101,7 +101,7 @@ export const SensorLogsRow: FC<SensorLogsRowProps> = React.memo(
               key={key}
               columnKey={key}
               flex={flex}
-              data={rowData[key]}
+              data={String(rowData[key])}
               breachType={isInColdBreach ? 'cold' : 'hot'}
               isLast={ind === COLUMNS.length - 1}
               textAlign={textAlign}
@@ -116,7 +116,7 @@ export const SensorLogsRow: FC<SensorLogsRowProps> = React.memo(
 interface Column extends Pick<TextStyle, 'textAlign'> {
   header: string;
   flex: number;
-  key: string;
+  key: 'time' | 'temperature' | 'isInBreach';
 }
 
 interface HeaderProps {
@@ -171,7 +171,7 @@ export const SensorLogsTable: FC<SensorLogsTableProps> = React.memo(({ id }) => 
   const onEndReached = useCallback(
     () =>
       dispatch(LogTableAction.fetchMore(moment().subtract(3, 'days').unix(), moment().unix(), id)),
-    []
+    [dispatch, id]
   );
 
   return (

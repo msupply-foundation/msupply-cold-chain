@@ -1,10 +1,9 @@
-/* eslint-disable react/jsx-wrap-multilines */
 import React, { FC, ReactNode } from 'react';
-import { t } from '../../../common/translations';
-import { COLOUR } from '../../../common/constants';
+import { t } from '~translations';
+import { COLOUR } from '~constants';
 
-import { SettingsEditModalLayout, SettingsEditButtonGroup } from '../../layouts';
-import { NormalText } from '../../presentation/typography';
+import { SettingsEditModalLayout, SettingsEditButtonGroup } from '~layouts';
+import { NormalText } from '~presentation/typography';
 import { SettingsEditButton } from '../buttons';
 
 interface SettingsEditModalProps {

@@ -35,10 +35,14 @@ import {
   TemperatureLogManager,
   SyncQueueManager,
   SyncOutManager,
-  DevManager
+  DevManager,
 } from '../../features';
 
-import { SensorSubscriber, TemperatureLogSubscriber, TemperatureBreachSubscriber } from '../../common/services/Database/subscribers';
+import {
+  SensorSubscriber,
+  TemperatureLogSubscriber,
+  TemperatureBreachSubscriber,
+} from '../../common/services/Database/subscribers';
 
 export const DependencyContainer: FC = ({ children }) => {
   const [ready, setReady] = useState(false);
@@ -109,7 +113,7 @@ export const DependencyContainer: FC = ({ children }) => {
       dbService.registerSubscribers([
         new SensorSubscriber(syncQueueManager),
         new TemperatureLogSubscriber(syncQueueManager),
-        new TemperatureBreachSubscriber(syncQueueManager)
+        new TemperatureBreachSubscriber(syncQueueManager),
       ]);
 
       setReady(true);

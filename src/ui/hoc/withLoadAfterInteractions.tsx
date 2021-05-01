@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { ElementType, useEffect, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 import { COLOUR } from '../../common/constants';

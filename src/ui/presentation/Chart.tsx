@@ -1,5 +1,4 @@
-/* eslint-disable no-nested-ternary */
-import React, { FC, useCallback } from 'react';
+import React, { FC } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { VictoryLine, VictoryChart, VictoryAxis } from 'victory-native';
 import { FONT, STYLE, COLOUR, CHART, DEPENDENCY } from '../../common/constants';
@@ -57,7 +56,7 @@ export const Chart: FC<ChartProps> = ({
 }) => {
   const formatter = useDependency(DEPENDENCY.FORMAT_SERVICE) as FormatService;
 
-  const tickFormatter = useCallback(formatter.getTickFormatter(), [data]);
+  const tickFormatter = formatter.getTickFormatter();
 
   const minTemp = Math.min(...data.map(({ temperature }) => temperature));
   const maxTemp = Math.max(...data.map(({ temperature }) => temperature));

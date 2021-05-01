@@ -1,21 +1,19 @@
-/* eslint-disable react/jsx-wrap-multilines */
 import React, { useState, useCallback, FC } from 'react';
 import { useSelector } from 'react-redux';
 import { Pressable, ActivityIndicator } from 'react-native';
 import moment from 'moment';
-
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import { useDatePicker } from '../../hooks';
-import { FORMAT, COLOUR, STYLE } from '../../../common/constants';
-import { t } from '../../../common/translations';
-import { Column, Row } from '../../layouts';
-import { NormalText } from '../../presentation/typography';
+import { useDatePicker } from '~hooks';
+import { FORMAT, COLOUR, STYLE } from '~constants';
+import { t } from '~translations';
+import { Column, Row } from '~layouts';
+import { NormalText } from '~presentation/typography';
 import { Button } from '../buttons';
 
 import { SettingsEditModal } from './SettingsEditModal';
-import { BlinkSelector } from '../../../features/Bluetooth';
-import { Icon } from '../../presentation/icons';
+import { BlinkSelector } from '~features/Bluetooth';
+import { Icon } from '~presentation/icons';
 
 const styles = {
   column: { maxHeight: STYLE.HEIGHT.SENSOR_ROW },
@@ -58,7 +56,7 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
 
   const wrappedOnConfirm = useCallback(() => {
     onConfirm(moment(date).startOf('minute').toDate());
-  }, [date]);
+  }, [date, onConfirm]);
 
   const [isDatePickerOpen, onChangeDate, toggleDatePicker] = useDatePicker(validator);
   const [isTimePickerOpen, onChangeTime, toggleTimePicker] = useDatePicker(validator);

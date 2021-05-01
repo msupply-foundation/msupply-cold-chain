@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-wrap-multilines */
 import React, { FC } from 'react';
 import { COLOUR } from '../../../common/constants';
 import { SettingsItem } from './SettingsItem';
@@ -14,7 +13,7 @@ interface SettingsTextInputRowProps {
   onConfirm: ({ inputValue }: { inputValue: string }) => void;
   value: string;
   editDescription: string;
-  validation: any;
+  validation?: any;
 }
 
 export const SettingsTextInputRow: FC<SettingsTextInputRowProps> = ({

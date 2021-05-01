@@ -44,12 +44,13 @@ export const SensorSettingsScreen: FC<SensorSettingsScreenProps> = React.memo(({
 
   useEffect(() => {
     const reset = () => {
-      dispatch(ScanAction.tryStop());    };
+      dispatch(ScanAction.tryStop());
+    };
 
     if (isFocused) dispatch(ScanAction.tryStart());
     else reset();
     return reset;
-  }, [isFocused]);
+  }, [dispatch, isFocused]);
 
   return !load ? null : (
     <SettingsList>
@@ -72,7 +73,8 @@ export const SensorSettingsScreen: FC<SensorSettingsScreenProps> = React.memo(({
           label={t('DEFAULT_LOG_INTERVAL')}
           subtext={t('DEFAULT_LOG_INTERVAL_SUBTEXT')}
           onConfirm={({ value }: { value: number }) =>
-            dispatch(SettingAction.updateBluetoothDefaultLogInterval(value * 60))}
+            dispatch(SettingAction.updateBluetoothDefaultLogInterval(value * 60))
+          }
           initialValue={Number(defaultLoggingInterval) / 60}
           editDescription={t('DEFAULT_LOG_INTERVAL')}
           maximumValue={30}

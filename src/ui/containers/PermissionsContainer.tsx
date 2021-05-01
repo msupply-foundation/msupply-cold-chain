@@ -16,7 +16,7 @@ export const PermissionsContainer: FC = ({ children }) => {
     if (!__DEV__) {
       dispatch(PermissionAction.requestAndWatchPermissions());
     }
-  }, []);
+  }, [dispatch]);
 
   const Modal = useMemo(() => {
     if (showLocationServicesModal) {
@@ -65,6 +65,7 @@ export const PermissionsContainer: FC = ({ children }) => {
     }
     return null;
   }, [
+    dispatch,
     showBluetoothModal,
     showLocationPermissionModal,
     showLocationServicesModal,

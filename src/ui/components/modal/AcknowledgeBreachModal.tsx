@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-wrap-multilines */
 import React, { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';

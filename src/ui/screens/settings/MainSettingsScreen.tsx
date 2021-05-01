@@ -21,7 +21,7 @@ export const MainSettingsScreen: FC<MainSettingsScreenProps> = ({ navigation }) 
 
   useEffect(() => {
     dispatch(SettingAction.fetchAll());
-  }, []);
+  }, [dispatch]);
 
   return (
     <SettingsList>

@@ -3,7 +3,6 @@ import { BorderlessButton } from 'react-native-gesture-handler';
 
 import { STYLE, COLOUR } from '../../../common/constants';
 import { Centered } from '../../layouts';
-import { Icon as AppIcon } from '../../presentation/icons/Icon';
 
 const style = {
   width: STYLE.WIDTH.HALF_CIRCLE,

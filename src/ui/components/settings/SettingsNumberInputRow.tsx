@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-wrap-multilines */
 import React, { FC } from 'react';
 import { COLOUR } from '../../../common/constants';
 import { useToggle } from '../../hooks';

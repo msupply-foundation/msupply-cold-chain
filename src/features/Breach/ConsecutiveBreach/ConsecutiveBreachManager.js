@@ -1,7 +1,6 @@
 import moment from 'moment';
 import { Not, IsNull, MoreThan, Equal } from 'typeorm/browser';
-
-import { ENTITIES } from '~constants';
+import { ENTITIES } from '../../../common/constants';
 
 export class ConsecutiveBreachManager {
   constructor(databaseService, utils) {

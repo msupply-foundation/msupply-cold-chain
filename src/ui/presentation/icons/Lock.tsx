@@ -7,6 +7,6 @@ export const Lock: FC = () => {
   return <Icon size={ICON_SIZE.L} name={ICON_NAME.LOCK} color={COLOUR.PRIMARY} />;
 };
 
-export const UnLock = () => {
+export const UnLock: FC = () => {
   return <FontAwesome size={STYLE.ICON.SIZE.L} name={ICON.UNLOCK} color={COLOUR.PRIMARY} />;
 };

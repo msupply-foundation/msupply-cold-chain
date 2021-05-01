@@ -1,5 +1,4 @@
-/* eslint-disable react/jsx-wrap-multilines */
-import React, { useEffect, useRef, useState, useCallback, FC } from 'react';
+import React, { useState, FC } from 'react';
 import { KeyboardTypeOptions, TextInput, useWindowDimensions } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -43,15 +42,7 @@ export const SettingsTextEditModal: FC<SettingsTextEditModalProps> = ({
       validationSchema={Yup.object().shape({ input: validation })}
     >
       {({ handleChange, errors, values, isValid }) => {
-        const wrappedOnConfirm = useCallback(() => isValid && onConfirm({ inputValue }), [
-          isValid,
-          inputValue,
-        ]);
-        const textInputRef = useRef<TextInput | null>(null);
-
-        useEffect(() => {
-          setTimeout(() => textInputRef.current?.focus(), 100);
-        }, [textInputRef.current, isOpen]);
+        const wrappedOnConfirm = () => isValid && onConfirm({ inputValue });
 
         return (
           <SettingsEditModal
@@ -64,9 +55,6 @@ export const SettingsTextEditModal: FC<SettingsTextEditModalProps> = ({
               <Column alignItems="center" justifyContent="center">
                 {isOpen && (
                   <TextInput
-                    ref={ref => {
-                      textInputRef.current = ref;
-                    }}
                     value={values.input}
                     underlineColorAndroid={COLOUR.GREY_ONE}
                     style={{ width: width * 0.5 }}

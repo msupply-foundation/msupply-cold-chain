@@ -30,6 +30,7 @@ export const TemperatureBreachSettingsScreen: FC<TemperatureBreachSettingsScreen
 
   useEffect(() => {
     dispatch(BreachConfigurationAction.fetchAll());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return hotBreach ? (

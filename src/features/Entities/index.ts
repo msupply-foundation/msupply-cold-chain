@@ -15,9 +15,7 @@ export {
   SensorManager,
 } from './Sensor';
 
-export {
-  TemperatureLogManager
-} from './TemperatureLog';
+export { TemperatureLogManager } from './TemperatureLog';
 
 export {
   SettingReducer,

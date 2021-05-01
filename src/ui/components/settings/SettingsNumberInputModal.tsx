@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-wrap-multilines */
 import React, { FC, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { SettingsEditModal } from './SettingsEditModal';

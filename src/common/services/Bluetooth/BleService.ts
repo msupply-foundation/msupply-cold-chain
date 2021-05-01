@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import {
   Subscription,
   Characteristic,
@@ -8,8 +7,7 @@ import {
   ScanOptions,
 } from 'react-native-ble-plx';
 import { Buffer } from 'buffer';
-
-import { BLUE_MAESTRO, BLUETOOTH } from '../../constants';
+import { BLUE_MAESTRO, BLUETOOTH } from '~constants';
 
 export interface BluetoothDevice {
   id: string;
