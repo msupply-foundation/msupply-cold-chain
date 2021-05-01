@@ -10,10 +10,19 @@ import { NAVIGATION, COLOUR, FONT } from '~constants';
 import { t } from '~translations';
 import { Icon } from '~presentation/icons';
 
-export const ICON_LOOKUP = {
-  [NAVIGATION.SCREENS.MAIN_TABS.SETTINGS]: <Icon.Cog />,
-  [NAVIGATION.SCREENS.MAIN_TABS.MAP]: <Icon.Map />,
-  [NAVIGATION.SCREENS.MAIN_TABS.SENSORS]: <Icon.Sensors />,
+export const ICON_LOOKUP: Record<
+  string,
+  ((props: { focused: boolean; color: string; size: number }) => React.ReactNode) | undefined
+> = {
+  [NAVIGATION.SCREENS.MAIN_TABS.SETTINGS]: ({ focused }) => (
+    <Icon.Cog color={focused ? COLOUR.WHITE : COLOUR.OFF_WHITE} />
+  ),
+  [NAVIGATION.SCREENS.MAIN_TABS.MAP]: ({ focused }) => (
+    <Icon.Map color={focused ? COLOUR.WHITE : COLOUR.OFF_WHITE} />
+  ),
+  [NAVIGATION.SCREENS.MAIN_TABS.SENSORS]: ({ focused }) => (
+    <Icon.Sensors color={focused ? COLOUR.WHITE : COLOUR.OFF_WHITE} />
+  ),
 };
 
 // Create a TabNavigator
@@ -27,7 +36,7 @@ interface ScreenOptionsParams {
 const screenOptions = ({
   route: { name: routeName },
 }: ScreenOptionsParams): BottomTabNavigationOptions => ({
-  tabBarIcon: () => ICON_LOOKUP[routeName],
+  tabBarIcon: ICON_LOOKUP[routeName],
   title: t(routeName),
 });
 
@@ -36,7 +45,7 @@ const tabBarOptions: BottomTabBarOptions = {
   activeTintColor: COLOUR.WHITE,
   inactiveTintColor: COLOUR.OFF_WHITE,
   activeBackgroundColor: COLOUR.SECONDARY,
-  inactiveBackgroundColor: COLOUR.HIGHLIGHT,
+  inactiveBackgroundColor: COLOUR.SECONDARY,
   labelStyle: { fontFamily: FONT.FAMILY.REGULAR, fontSize: FONT.SIZE.MS },
   labelPosition: 'below-icon',
   style: {

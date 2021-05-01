@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 import React, { FC } from 'react';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -61,18 +60,17 @@ const iconComponentFromIconName = (name: ICON_NAME): typeof FontAwesome => {
   const lookup = {
     [ICON_NAME.POWER_PLUG_ON]: MaterialCommunityIcon,
     [ICON_NAME.POWER_PLUG_OFF]: MaterialCommunityIcon,
-
     [ICON_NAME.BATTERY_CHARGING]: Feather,
   };
 
-  return lookup[name] ?? DefaultIconComponent;
+  return name in lookup ? (lookup as any)[name] : DefaultIconComponent;
 };
 
 export interface IconProps {
   name: ICON_NAME;
   size?: ICON_SIZE;
   style?: TextProps;
-  color?: string;
+  color?: COLOUR;
 }
 
 export const Icon: FC<IconProps> = ({
