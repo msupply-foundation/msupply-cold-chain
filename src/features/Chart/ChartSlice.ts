@@ -1,4 +1,3 @@
-/* eslint-disable import/no-useless-path-segments */
 import { SagaIterator } from '@redux-saga/types';
 import moment from 'moment';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';

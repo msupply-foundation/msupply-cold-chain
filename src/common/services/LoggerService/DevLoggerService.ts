@@ -1,5 +1,3 @@
-/* eslint-disable class-methods-use-this */
-
 export class DevLoggerService {
   breadcrumb(message: string): void {
     console.log('-------------------------------------');

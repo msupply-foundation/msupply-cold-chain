@@ -12,19 +12,19 @@ describe('ScanAction', () => {
 });
 
 describe('ScanReducer', () => {
-  it('stopFail', () => {
+  it('Correct state after dispatching a success', () => {
     const newState = ScanReducer(
       { ...ScanInitialState, foundSensors: ['A'] },
       SensorAction.createSuccess('id', { macAddress: 'A' })
     );
     expect(newState).toEqual({ foundSensors: [], isScanning: false });
   });
-  it('stopFail', () => {
-    const newState = ScanReducer(ScanInitialState, ScanAction.startFail());
+  it('start failure sets state correctly', () => {
+    const newState = ScanReducer(ScanInitialState, ScanAction.stopFail());
     expect(newState).toEqual({ foundSensors: [], isScanning: false });
   });
   it('stopSuccess', () => {
-    const newState = ScanReducer(ScanInitialState, ScanAction.startFail());
+    const newState = ScanReducer(ScanInitialState, ScanAction.stopSuccess());
     expect(newState).toEqual({ foundSensors: [], isScanning: false });
   });
   it('startFail', () => {

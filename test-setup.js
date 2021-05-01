@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import * as ReactNative from 'react-native';
 
 jest.doMock('react-native', () => {

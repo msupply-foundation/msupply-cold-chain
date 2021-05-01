@@ -130,7 +130,7 @@ function* fetchAll(): SagaIterator {
   }
 }
 
-function* root() {
+function* root(): SagaIterator {
   yield takeEvery(BreachConfigurationAction.fetchAll, fetchAll);
   yield takeEvery(BreachConfigurationAction.update, update);
 }

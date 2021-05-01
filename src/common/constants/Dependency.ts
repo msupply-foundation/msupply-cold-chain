@@ -26,7 +26,7 @@ export enum DEPENDENCY {
   LOGGER_SERVICE = 'loggerService',
   SYNC_SERVICE = 'syncService',
   SYNC_QUEUE_MANAGER = 'syncQueueManager',
-  SYNC_OUT_MANAGER = 'syncOutManager'
+  SYNC_OUT_MANAGER = 'syncOutManager',
 }
 
 export const BLUETOOTH_SERVICE = {

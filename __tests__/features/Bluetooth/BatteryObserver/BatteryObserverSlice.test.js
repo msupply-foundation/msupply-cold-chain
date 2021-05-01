@@ -25,7 +25,7 @@ describe('BatteryObserverSlice: BatteryObserverSaga', () => {
 
         expect(effects.put[0]).toEqual(put(SensorAction.update('1', 'batteryLevel', 90)));
         expect(effects.put[1]).toEqual(put(BatteryObserverAction.updateSuccess()));
-        expect(effects.put.length).toEqual(2);
+        expect(effects.put).toHaveLength(2);
       });
   });
 });

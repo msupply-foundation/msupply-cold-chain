@@ -1,28 +1,36 @@
-import { DatabaseService } from "../../../common/services/Database";
-import { UtilService } from "../../../common/services/UtilService";
+import { DatabaseService } from '~services/Database';
+import { UtilService } from '~services/UtilService';
 
-import { ENTITIES } from "../../../common/constants";
-import { TemperatureLog } from "../../../common/services/Database/entities";
+import { ENTITIES } from '~constants';
+import { TemperatureLog } from '~services/Database/entities';
 
 export class TemperatureLogManager {
-    databaseService: DatabaseService;
+  databaseService: DatabaseService;
 
-    utilService: UtilService;
+  utilService: UtilService;
 
-    constructor(dbService: DatabaseService, utilService: UtilService) {
-        this.databaseService = dbService;
-        this.utilService = utilService;
-    }
+  constructor(dbService: DatabaseService, utilService: UtilService) {
+    this.databaseService = dbService;
+    this.utilService = utilService;
+  }
 
-    upsert = async (temperatureLog: Partial<TemperatureLog>[]): Promise<Partial<TemperatureLog>[]> => {
-        return this.databaseService.upsert(ENTITIES.TEMPERATURE_LOG, temperatureLog);
-    };
+  upsert = async (
+    temperatureLog: Partial<TemperatureLog>[]
+  ): Promise<Partial<TemperatureLog>[]> => {
+    return this.databaseService.upsert(ENTITIES.TEMPERATURE_LOG, temperatureLog);
+  };
 
-    addNewTemperatureLog = async (temperatureLog: Partial<TemperatureLog>): Promise<Partial<TemperatureLog>[]> => {
-        return this.addNewTemperatureLogs([temperatureLog]);
-    };
+  addNewTemperatureLog = async (
+    temperatureLog: Partial<TemperatureLog>
+  ): Promise<Partial<TemperatureLog>[]> => {
+    return this.addNewTemperatureLogs([temperatureLog]);
+  };
 
-    addNewTemperatureLogs = async (temperatureLogs: Partial<TemperatureLog>[]): Promise<Partial<TemperatureLog>[]> => {
-        return this.upsert(temperatureLogs.map(temperatureLog => ({ id: this.utilService.uuid(), ...temperatureLog })));
-    }
+  addNewTemperatureLogs = async (
+    temperatureLogs: Partial<TemperatureLog>[]
+  ): Promise<Partial<TemperatureLog>[]> => {
+    return this.upsert(
+      temperatureLogs.map(temperatureLog => ({ id: this.utilService.uuid(), ...temperatureLog }))
+    );
+  };
 }

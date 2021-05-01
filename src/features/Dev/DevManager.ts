@@ -1,15 +1,19 @@
-import moment from "moment";
+import moment from 'moment';
 
-import { ENTITIES } from "../../common/constants";
-import { DatabaseService } from "../../common/services/Database";
-import { DevService } from '../../common/services/DevService';
-import { Sensor, TemperatureBreachConfiguration, TemperatureLog } from "../../common/services/Database/entities";
-import { UtilService } from "../../common/services/UtilService";
+import { ENTITIES } from '~constants';
+import { DatabaseService } from '~services/Database';
+import { DevService } from '~services/DevService';
+import {
+  Sensor,
+  TemperatureBreachConfiguration,
+  TemperatureLog,
+} from '../../common/services/Database/entities';
+import { UtilService } from '../../common/services/UtilService';
 
-const DELETE_BREACH_LOGS = `
-  DELETE FROM temperaturelog
-  WHERE temperatureLog.timestamp <= ? AND temperatureLog.timestamp >= ?
-`
+// const DELETE_BREACH_LOGS = `
+//   DELETE FROM temperaturelog
+//   WHERE temperatureLog.timestamp <= ? AND temperatureLog.timestamp >= ?
+// `;
 
 class DevManager {
   databaseService: DatabaseService;
@@ -34,22 +38,30 @@ class DevManager {
       macAddress,
       logInterval,
       logDelay,
-      batteryLevel
+      batteryLevel,
     };
   };
 
-  generateTemperatureLog = (sensor: Sensor, temperature: number, timestamp: number): Partial<TemperatureLog> => {
+  generateTemperatureLog = (
+    sensor: Sensor,
+    temperature: number,
+    timestamp: number
+  ): Partial<TemperatureLog> => {
     const { id: sensorId, logInterval } = sensor;
 
     return {
       sensorId,
       logInterval,
       temperature,
-      timestamp
-    }
-  }
+      timestamp,
+    };
+  };
 
-  generateBreachTemperatureLog = (sensor: Sensor, temperatureBreachConfiguration: TemperatureBreachConfiguration, timestamp: number): Partial<TemperatureLog> => {
+  generateBreachTemperatureLog = (
+    sensor: Sensor,
+    temperatureBreachConfiguration: TemperatureBreachConfiguration,
+    timestamp: number
+  ): Partial<TemperatureLog> => {
     const { id: sensorId, logInterval } = sensor;
 
     const temperature = this.devService.randomInt(
@@ -62,17 +74,21 @@ class DevManager {
       logInterval,
       temperature,
       timestamp,
-    }
+    };
   };
 
   generateBreachTemperatureLogs = async (sensor: Sensor): Promise<Partial<TemperatureLog>[]> => {
     const { id: sensorId, logInterval } = sensor;
-    const [{ minimumTemperature, maximumTemperature, duration }] =
-      await this.databaseService.getAll(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION) as TemperatureBreachConfiguration[];
+    const [
+      { minimumTemperature, maximumTemperature, duration },
+    ] = (await this.databaseService.getAll(
+      ENTITIES.TEMPERATURE_BREACH_CONFIGURATION
+    )) as TemperatureBreachConfiguration[];
 
     const breachLogCount = Math.ceil(duration / (logInterval * 1000));
-    const breachLogTimestamps = Array.from(Array(breachLogCount).keys()).reduce((acc, i) =>
-      [...acc, moment.unix(acc[i]).subtract(logInterval, 'seconds').unix()], [moment().unix()]
+    const breachLogTimestamps = Array.from(Array(breachLogCount).keys()).reduce(
+      (acc, i) => [...acc, moment.unix(acc[i]).subtract(logInterval, 'seconds').unix()],
+      [moment().unix()]
     );
 
     return breachLogTimestamps.map(timestamp => {
@@ -87,7 +103,7 @@ class DevManager {
         timestamp,
       };
     });
-  }
+  };
 }
 
-export { DevManager }
+export { DevManager };

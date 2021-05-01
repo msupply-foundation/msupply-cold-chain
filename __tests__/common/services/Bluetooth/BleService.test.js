@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { BleManager } from 'react-native-ble-plx';
 import { BleService } from '~common/services';
 import { BLUETOOTH, BLUE_MAESTRO } from '~constants';
@@ -195,7 +196,7 @@ describe('BleService: scanForSensors', () => {
   });
 });
 
-describe('BleService: writeCharacteristic', () => {
+describe('BleService: writeCharacteristics', () => {
   it('Writes a characteristic to the passed mac', async () => {
     const { manager, mockWriteCharacteristicWithoutResponseForDevice } = createMockBleManager();
 

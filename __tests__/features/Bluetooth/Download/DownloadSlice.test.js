@@ -31,7 +31,7 @@ describe('DownloadReducer', () => {
       enabled: false,
     });
   });
-  it('downloadStart', () => {
+  it('downloadComplete', () => {
     const state = DownloadReducer(DownloadInitialState, DownloadAction.downloadComplete('1'));
     expect(state).toEqual({
       downloadingById: { 1: false },
@@ -72,7 +72,7 @@ describe('DownloadSaga', () => {
       .provide([[getContext(DEPENDENCY.LOCATOR), depsLocator]])
       .run()
       .then(({ effects }) => {
-        expect(effects.put.length).toBe(5);
+        expect(effects.put).toHaveLength(5);
         expect(effects.put[0]).toEqual(put(DownloadAction.downloadStart(mockSensor.id)));
         expect(effects.put[1]).toEqual(put(ConsecutiveBreachAction.create(mockSensor)));
         expect(effects.put[2]).toEqual(
@@ -97,7 +97,7 @@ describe('DownloadSaga', () => {
       .then(result => {
         const { effects } = result;
 
-        expect(effects.put.length).toBe(2);
+        expect(effects.put).toHaveLength(2);
         expect(effects.put[0]).toEqual(
           put(DownloadAction.passiveDownloadForSensorFail(mockSensor.id))
         );
@@ -131,7 +131,7 @@ describe('DownloadSaga', () => {
       .provide([[getContext(DEPENDENCY.LOCATOR), depsLocator]])
       .run()
       .then(({ effects }) => {
-        expect(effects.put.length).toEqual(2);
+        expect(effects.put).toHaveLength(2);
         expect(effects.put[0]).toEqual(put(DownloadAction.tryPassiveDownloadForSensor('1')));
         expect(effects.put[1]).toEqual(put(DownloadAction.tryPassiveDownloadForSensor('2')));
       });

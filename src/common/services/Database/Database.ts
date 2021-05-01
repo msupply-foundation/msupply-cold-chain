@@ -28,9 +28,8 @@ export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
     TemperatureBreachConfiguration,
     Setting,
     SyncLog,
-  ]
+  ],
 });
-
 
 /**
  * Interface for connections to a database. If a previously created

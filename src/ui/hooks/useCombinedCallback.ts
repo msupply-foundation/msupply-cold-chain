@@ -19,6 +19,7 @@ export const useCombinedCallback = (
       fn1(...props);
       fn2();
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [fn1, fn2, ...deps]
   );
 

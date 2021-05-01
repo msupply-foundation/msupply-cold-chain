@@ -9,7 +9,7 @@ import {
 import { DEPENDENCY, SETTING } from '../../../../src/common/constants';
 
 describe('ProgramReducer', () => {
-  it('Sets state correctly when updating log interval for a sensor is successful', () => {
+  it('Sets state correctly when updating log interval for a sensor is a failure', () => {
     const newState = ProgramReducer(
       ProgramInitialState,
       ProgramAction.updateLogIntervalFail('A', 300)
@@ -26,7 +26,7 @@ describe('ProgramReducer', () => {
 
     expect(newState).toEqual({ isProgramming: false, programmingByMac: {} });
   });
-  it('Sets state correctly when updating log interval for a sensor is successful', () => {
+  it('Sets state correctly when trying to update a log interval for a sensor', () => {
     const newState = ProgramReducer(
       ProgramInitialState,
       ProgramAction.tryUpdateLogInterval('A', 300)

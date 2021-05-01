@@ -10,6 +10,7 @@ interface TriggeredCallback {
 export const useCallbackOnGainingFocus = (callback: TriggeredCallback): boolean => {
   const isFocused = useIsFocused();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const memoized = useCallback(callback, []);
 
   useEffect(() => {

@@ -1,3 +1,1 @@
-export {
-    TemperatureLogManager
-} from './TemperatureLogManager';
+export { TemperatureLogManager } from './TemperatureLogManager';

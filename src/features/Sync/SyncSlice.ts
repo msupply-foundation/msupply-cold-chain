@@ -278,7 +278,6 @@ function* authenticate({
     yield call(syncOutManager.login, loginUrl, username, password);
     yield put(SyncAction.authenticateSuccess());
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log(e.message);
     yield put(SyncAction.authenticateFailure());
   }
@@ -296,7 +295,6 @@ function* syncSensorsSuccess({ payload: { syncLogs } }: SyncSensorsSuccessAction
     yield call(syncQueueManager.dropLogs, syncLogs);
     yield put(SettingAction.updateSyncLastSync(utilService.now()));
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log(e.message);
     yield call(syncSensorsFailure);
   }
@@ -312,7 +310,6 @@ function* syncSensors({ payload: { sensorUrl } }: SyncSensorsAction): SagaIterat
     yield call(syncOutManager.syncSensors, sensorUrl, syncLogs);
     yield put(SyncAction.syncSensorsSuccess(syncLogs));
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log(e.message);
     yield call(syncSensorsFailure);
   }
@@ -332,7 +329,6 @@ function* syncTemperatureLogsSuccess({
     yield call(syncQueueManager.dropLogs, syncLogs);
     yield put(SettingAction.updateSyncLastSync(utilService.now()));
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log(e.message);
     yield call(syncTemperatureLogsFailure);
   }
@@ -350,7 +346,6 @@ function* syncTemperatureLogs({
     yield call(syncOutManager.syncTemperatureLogs, temperatureLogUrl, syncLogs);
     yield put(SyncAction.syncTemperatureLogsSuccess(syncLogs));
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log(e.message);
     yield call(syncTemperatureLogsFailure);
   }
@@ -370,7 +365,6 @@ function* syncTemperatureBreachesSuccess({
     yield call(syncQueueManager.dropLogs, syncLogs);
     yield put(SettingAction.updateSyncLastSync(utilService.now()));
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log(e.message);
     yield call(syncTemperatureBreachesFailure);
   }
@@ -388,7 +382,6 @@ function* syncTemperatureBreaches({
     yield call(syncOutManager.syncTemperatureBreaches, temperatureBreachUrl, syncLogs);
     yield put(SyncAction.syncTemperatureBreachesSuccess(syncLogs));
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log(e.message);
     yield put(SyncAction.syncTemperatureBreachesFailure());
   }

@@ -1,3 +1,5 @@
+import { writeFileSync } from 'fs';
+
 const OPTIONS_LOOKUP = {
   'mock-ble': 'MOCK_BLE',
   'redux-logger': 'REDUX_LOGGER',
@@ -12,8 +14,6 @@ const DEFAULT_OPTIONS = {
   [OPTIONS_LOOKUP['dev-logger']]: false,
 };
 
-const fs = require('fs');
-
 const args = process.argv;
 
 const options = args
@@ -22,4 +22,4 @@ const options = args
   .filter(option => OPTIONS_LOOKUP[option])
   .reduce((acc, option) => ({ ...acc, [OPTIONS_LOOKUP[option]]: true }), DEFAULT_OPTIONS);
 
-fs.writeFileSync('env.json', JSON.stringify(options, null, 2));
+writeFileSync('env.json', JSON.stringify(options, null, 2));

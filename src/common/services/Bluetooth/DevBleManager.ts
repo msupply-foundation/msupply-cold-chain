@@ -118,7 +118,7 @@ export class DevBleManager implements BluetoothManager {
 
     this.scannerInterval = setInterval(
       () =>
-        callback(_, {
+        callback(null, {
           id: 'AB:CD:EF:GH:IJ:KL',
           manufacturerData: 'MwEBDAN0AFkBtwEMA3QAWQG3AMwCrAAAAAAA',
         }),
@@ -131,7 +131,6 @@ export class DevBleManager implements BluetoothManager {
     _: string,
     __: string,
     command: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ___: string
   ): Promise<Characteristic> {
     const connectedDevice = this.connectedDevices[macAddress];
@@ -151,7 +150,7 @@ export class DevBleManager implements BluetoothManager {
     _: string,
     __: string,
     callback: MonitorCallback,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     ___: string
   ): Subscription {
     const connectedDevice = this.connectedDevices[macAddress];

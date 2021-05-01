@@ -3,16 +3,16 @@ import { PermissionService } from '~common/services';
 describe('PermissionService: checkBluetoothStatus', () => {
   it('Returns true when bluetooth is enabled', () => {
     const permissionsService = new PermissionService();
-    expect(permissionsService.checkBluetoothStatus()).resolves.toBe(true);
+    return expect(permissionsService.checkBluetoothStatus()).resolves.toBe(true);
   });
 });
 
 describe('PermissionService: requestBluetoothEnabled', () => {
   it('Returns true when bluetooth is enabled', () => {
     const permissionsService = new PermissionService();
-    expect(permissionsService.requestBluetoothEnabled()).resolves.toBe(true);
+    return expect(permissionsService.requestBluetoothEnabled()).resolves.toBe(true);
   });
-  it('Returns true when bluetooth is enabled', () => {
+  it('Returns false when bluetooth is not enabled', () => {
     const settings = {
       isBluetoothEnabled: async () => false,
       switchBluetooth: async () => true,
@@ -26,35 +26,35 @@ describe('PermissionService: requestBluetoothEnabled', () => {
 describe('PermissionService: hasLocationPermission', () => {
   it('Returns true when bluetooth is enabled', () => {
     const permissionsService = new PermissionService();
-    expect(permissionsService.hasLocationPermission()).resolves.toBe(true);
+    return expect(permissionsService.hasLocationPermission()).resolves.toBe(true);
   });
 });
 
 describe('PermissionService: requestLocationPermission', () => {
   it('Returns true when bluetooth is enabled', () => {
     const permissionsService = new PermissionService();
-    expect(permissionsService.requestLocationPermission()).resolves.toBe(true);
+    return expect(permissionsService.requestLocationPermission()).resolves.toBe(true);
   });
 });
 
 describe('PermissionService: hasStoragePermission', () => {
   it('Returns true when bluetooth is enabled', () => {
     const permissionsService = new PermissionService();
-    expect(permissionsService.hasStoragePermission()).resolves.toBe(true);
+    return expect(permissionsService.hasStoragePermission()).resolves.toBe(true);
   });
 });
 
 describe('PermissionService: requestStoragePermission', () => {
   it('Returns true when bluetooth is enabled', () => {
     const permissionsService = new PermissionService();
-    expect(permissionsService.requestStoragePermission()).resolves.toBe(true);
+    return expect(permissionsService.requestStoragePermission()).resolves.toBe(true);
   });
 });
 
 describe('PermissionService: checkLocationServicesStatus', () => {
   it('Returns the state of location services', () => {
     const permissionsService = new PermissionService();
-    expect(permissionsService.checkLocationServicesStatus()).resolves.toBe(true);
+    return expect(permissionsService.checkLocationServicesStatus()).resolves.toBe(true);
   });
 });
 

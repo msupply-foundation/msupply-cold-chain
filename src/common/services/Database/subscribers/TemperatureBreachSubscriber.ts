@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 /* istanbul ignore file */
 
 import {
@@ -26,33 +25,30 @@ class TemperatureBreachSubscriber implements EntitySubscriberInterface {
     return TemperatureBreach;
   }
 
-  public async updateSyncQueue(event: InsertEvent<TemperatureBreach> | UpdateEvent<TemperatureBreach>): Promise<void> {
+  public async updateSyncQueue(
+    event: InsertEvent<TemperatureBreach> | UpdateEvent<TemperatureBreach>
+  ): Promise<void> {
     const { entity, manager, metadata } = event;
 
-    const {
-      id,
-      startTimestamp,
-      acknowledged,
-      sensorId,
-      temperatureBreachConfigurationId
-    } = entity;
+    const { id, startTimestamp, acknowledged, sensorId, temperatureBreachConfigurationId } = entity;
 
     const { tableName } = metadata;
 
-    const temperatureBreachConfiguration = await manager.findOne(
+    const temperatureBreachConfiguration = (await manager.findOne(
       ENTITIES.TEMPERATURE_BREACH_CONFIGURATION,
       temperatureBreachConfigurationId
-    ) as TemperatureBreachConfiguration;
-    
+    )) as TemperatureBreachConfiguration;
+
     const {
       minimumTemperature: thresholdMinimumTemperature,
       maximumTemperature: thresholdMaximumTemperature,
-      duration: thresholdDuration
+      duration: thresholdDuration,
     } = temperatureBreachConfiguration;
 
-    const type = temperatureBreachConfiguration.id === ('HOT_BREACH' || 'HOT_CUMULATIVE')
-      ? 'HOT_CONSECUTIVE'
-      : 'COLD_CONSECUTIVE';
+    const type =
+      temperatureBreachConfiguration.id === ('HOT_BREACH' || 'HOT_CUMULATIVE')
+        ? 'HOT_CONSECUTIVE'
+        : 'COLD_CONSECUTIVE';
 
     const payload = JSON.stringify({
       id,
@@ -80,4 +76,3 @@ class TemperatureBreachSubscriber implements EntitySubscriberInterface {
 }
 
 export { TemperatureBreachSubscriber };
-

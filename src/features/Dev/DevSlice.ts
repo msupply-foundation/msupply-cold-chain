@@ -6,12 +6,11 @@ import { Sensor } from '../../common/services/Database/entities';
 import { DEPENDENCY, REDUCER } from '../../common/constants';
 
 import { SensorAction } from '../Entities';
-import { ConsecutiveBreachAction } from '../Breach'
-
+import { ConsecutiveBreachAction } from '../Breach';
 
 interface CreatePayload {
-    sensor: Sensor;
-  }  
+  sensor: Sensor;
+}
 
 const initialState = {};
 
@@ -19,22 +18,21 @@ const reducers = {
   generateSensor: () => {},
   generateTemperatureLog: {
     prepare: (sensor: Sensor) => ({ payload: { sensor } }),
-    reducer: () => {}
+    reducer: () => {},
   },
   generateTemperatureBreach: {
     prepare: (sensor: Sensor) => ({ payload: { sensor } }),
-    reducer: () => {}
-  }
+    reducer: () => {},
+  },
 };
 
 const DevSelector = {};
 
 const { actions: DevAction, reducer: DevReducer } = createSlice({
-    name: REDUCER.DEV,
-    initialState,
-    reducers,
-  });
-  
+  name: REDUCER.DEV,
+  initialState,
+  reducers,
+});
 
 function* generateSensor(): SagaIterator {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
@@ -42,40 +40,54 @@ function* generateSensor(): SagaIterator {
 
   try {
     const sensor = yield call(devManager.generateSensor);
-    yield put(SensorAction.create(sensor.macAddress, sensor.logInterval, sensor.logDelay, sensor.batteryLevel));
+    yield put(
+      SensorAction.create(
+        sensor.macAddress,
+        sensor.logInterval,
+        sensor.logDelay,
+        sensor.batteryLevel
+      )
+    );
   } catch (error) {
     // TODO: add error handling actions.
-    // eslint-disable-next-line no-console
     console.log(error.message);
   }
 }
 
-function* generateTemperatureLog({ payload: { sensor } }: PayloadAction<CreatePayload>): SagaIterator {
+function* generateTemperatureLog({
+  payload: { sensor },
+}: PayloadAction<CreatePayload>): SagaIterator {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const devManager = yield call(DependencyLocator.get, DEPENDENCY.DEV_MANAGER);
-  const temperatureLogManager = yield call(DependencyLocator.get, DEPENDENCY.TEMPERATURE_LOG_MANAGER);
+  const temperatureLogManager = yield call(
+    DependencyLocator.get,
+    DEPENDENCY.TEMPERATURE_LOG_MANAGER
+  );
   try {
     const temperatureLog = yield call(devManager.generateTemperatureLog, sensor);
     yield call(temperatureLogManager.addNewTemperatureLog, temperatureLog);
   } catch (error) {
     // TODO: add error handling actions.
-    // eslint-disable-next-line no-console
     console.log(error.message);
   }
 }
- 
-function* generateTemperatureBreach({ payload: { sensor } }: PayloadAction<CreatePayload>): SagaIterator {
+
+function* generateTemperatureBreach({
+  payload: { sensor },
+}: PayloadAction<CreatePayload>): SagaIterator {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const devManager = yield call(DependencyLocator.get, DEPENDENCY.DEV_MANAGER);
-  const temperatureLogManager = yield call(DependencyLocator.get, DEPENDENCY.TEMPERATURE_LOG_MANAGER);
+  const temperatureLogManager = yield call(
+    DependencyLocator.get,
+    DEPENDENCY.TEMPERATURE_LOG_MANAGER
+  );
   try {
     const temperatureLogs = yield call(devManager.generateBreachTemperatureLogs, sensor);
     yield call(temperatureLogManager.addNewTemperatureLogs, temperatureLogs);
     yield put(ConsecutiveBreachAction.create(sensor));
   } catch (error) {
-      // TODO: add error handling actions.
-      // eslint-disable-next-line no-console
-      console.log(error.message);
+    // TODO: add error handling actions.
+    console.log(error.message);
   }
 }
 
@@ -92,9 +104,4 @@ const DevSaga = {
   generateTemperatureBreach,
 };
 
-export {
-  DevReducer,
-  DevAction,
-  DevSaga,
-  DevSelector,
-};
+export { DevReducer, DevAction, DevSaga, DevSelector };

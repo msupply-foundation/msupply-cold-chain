@@ -1,4 +1,3 @@
-/* eslint-disable no-empty */
 import { Alert } from 'react-native';
 import SystemSetting from 'react-native-system-setting';
 import DeviceInfo from 'react-native-device-info';

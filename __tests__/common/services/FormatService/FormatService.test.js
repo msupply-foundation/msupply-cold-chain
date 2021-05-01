@@ -50,19 +50,6 @@ describe('FormatService: temperature', () => {
   });
 });
 
-describe('FormatService: temperature', () => {
-  it('Formats correctly', () => {
-    const formatter = new FormatService();
-
-    expect(formatter.temperature(10)).toEqual('10°C');
-    expect(formatter.temperature(-10)).toEqual('-10°C');
-    expect(formatter.temperature(-0)).toEqual('0°C');
-    expect(formatter.temperature(0)).toEqual('0°C');
-    expect(formatter.temperature(10.1)).toEqual('10.1°C');
-    expect(formatter.temperature(10.11)).toEqual('10.11°C');
-  });
-});
-
 describe('FormatService: headerDate', () => {
   it('Formats correctly', () => {
     const formatter = new FormatService();

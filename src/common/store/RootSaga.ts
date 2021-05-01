@@ -1,4 +1,4 @@
-import createSagaMiddleware from 'redux-saga';
+import createSagaMiddleware, { SagaIterator } from 'redux-saga';
 import { fork } from 'redux-saga/effects';
 
 import { DependencyLocator } from '../services';
@@ -14,7 +14,7 @@ import { PermissionSaga } from '../../features/Permission';
 import { SyncSaga } from '../../features/Sync';
 import { DevSaga } from '../../features/Dev';
 
-export function* RootSaga() {
+export function* RootSaga(): SagaIterator {
   yield fork(EntitiesSaga.root);
   yield fork(ChartSaga.watchChartActions);
   yield fork(BreachSaga.root);

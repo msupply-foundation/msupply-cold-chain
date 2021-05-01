@@ -1,6 +1,5 @@
 /* istanbul ignore file */
 
-/* eslint-disable import/no-cycle */
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm/browser';
 
 @Entity('Setting')

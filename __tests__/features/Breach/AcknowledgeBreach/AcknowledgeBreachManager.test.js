@@ -14,7 +14,7 @@ describe('AcknowledgeBreachManager: getUnacknowledged', () => {
 
     const result = breachManager.getUnacknowledged('a');
 
-    expect(result).resolves.toEqual(unacknowledged);
+    return expect(result).resolves.toEqual(unacknowledged);
   });
 
   it('calls queryWith with the sensor id', () => {
@@ -49,7 +49,7 @@ describe('AcknowledgeBreachManager: acknowledge', () => {
       { id: 'b', acknowledged: true },
     ];
 
-    expect(result).resolves.toEqual(resultShouldBe);
+    return expect(result).resolves.toEqual(resultShouldBe);
   });
   it('Calls upsert with the correct parameters', () => {
     const unacknowledged = [{ id: 'a' }, { id: 'b' }];

@@ -137,7 +137,7 @@ function* tryFetch({
   yield put(LogTableAction.fetch(id, from, to));
 }
 
-function* root() {
+function* root(): SagaIterator {
   yield takeEvery(DetailAction.fetchSuccess, tryFetch);
   yield takeEvery(DetailAction.updateDateRange, tryFetch);
   yield takeEvery(LogTableAction.fetch, fetch);

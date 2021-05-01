@@ -1,6 +1,4 @@
 /* istanbul ignore file */
-
-/* eslint-disable import/no-cycle */
 import { ManyToOne, Entity, Column, PrimaryColumn, Index, JoinColumn } from 'typeorm/browser';
 
 import { Sensor } from './Sensor';

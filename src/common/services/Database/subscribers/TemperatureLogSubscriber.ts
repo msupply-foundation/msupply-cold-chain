@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 /* istanbul ignore file */
 
 import {
@@ -26,7 +25,9 @@ class TemperatureLogSubscriber implements EntitySubscriberInterface {
     return TemperatureLog;
   }
 
-  public async updateSyncQueue(event: InsertEvent<TemperatureLog> | UpdateEvent<TemperatureLog>): Promise<void> {
+  public async updateSyncQueue(
+    event: InsertEvent<TemperatureLog> | UpdateEvent<TemperatureLog>
+  ): Promise<void> {
     const { entity, metadata } = event;
 
     const { id } = entity;

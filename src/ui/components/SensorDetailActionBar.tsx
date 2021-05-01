@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-wrap-multilines */
 import React, { FC, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DetailAction, DetailSelector } from '../../features';
