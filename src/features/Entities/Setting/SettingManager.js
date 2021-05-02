@@ -1,4 +1,5 @@
 import { SETTING, ENTITIES } from '../../../common/constants';
+import { classToPlain } from 'class-transformer';
 
 const getDefaults = () => ({
   [SETTING.BLUETOOTH.DEFAULT_LOG_INTERVAL]: '300',
@@ -46,7 +47,7 @@ export class SettingManager {
 
   getSettings = async () => {
     const getSettingPromises = this.settingKeys.map(key => this.getSetting(key));
-    return Promise.all(getSettingPromises);
+    return Promise.all(getSettingPromises).then(setting => classToPlain(setting));
   };
 
   setSetting = async (key, value) => {

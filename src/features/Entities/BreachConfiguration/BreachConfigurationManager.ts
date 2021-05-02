@@ -1,5 +1,6 @@
 import { ENTITIES } from '../../../common/constants';
 import { DatabaseService } from '../../../common/services';
+import { classToPlain } from 'class-transformer';
 
 const REPORT = `
 select description "Breach Name", duration / 60000 "Number of Minutes", 
@@ -31,9 +32,15 @@ export class BreachConfigurationManager {
     return this.databaseService.upsert(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION, objectOrObjects);
   };
 
-  getAll = async (): Promise<TemperatureBreachConfiguration[]> => {
-    return this.databaseService.getAll(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION);
-  };
+  getAll = async (): Promise<TemperatureBreachConfiguration[]> =>
+    this.databaseService
+      .getAll(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION)
+      .then(tbc =>
+        tbc.map(
+          (config: TemperatureBreachConfiguration) =>
+            classToPlain(config) as TemperatureBreachConfiguration
+        )
+      );
 
   updateField = async (
     id: string,
