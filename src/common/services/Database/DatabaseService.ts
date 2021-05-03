@@ -5,6 +5,7 @@ import { EntitySubscriberInterface } from 'typeorm/browser';
 
 import { Database } from './Database';
 import { ENTITIES, MILLISECONDS } from '../../constants';
+import { classToPlain } from 'class-transformer';
 
 export class DatabaseService {
   database: Database;
@@ -69,7 +70,9 @@ export class DatabaseService {
 
   getAll = async (entityName: string): Promise<any | any[]> => {
     const repository = await this.database.getRepository(entityName);
-    return repository.find();
+    return repository
+      .find()
+      .then((result: any) => result.map((entity: any) => classToPlain(entity)));
   };
 
   upsert = async (entityName: string, object: any): Promise<any | any[]> => {
