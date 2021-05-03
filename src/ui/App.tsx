@@ -1,3 +1,4 @@
+import { MOCK_BLE } from 'react-native-dotenv';
 import React, { FC } from 'react';
 import { StatusBar } from 'react-native';
 
