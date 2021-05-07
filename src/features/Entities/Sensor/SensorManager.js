@@ -19,6 +19,7 @@ with breach as (
   s.logInterval logInterval,
   s.name        name,
   s.logDelay    logDelay,
+  s.batteryLevel batteryLevel,
   mostRecentLogTimestamp,
   firstTimestamp,
   coalesce(numberOfLogs,0) numberOfLogs,
@@ -28,11 +29,10 @@ with breach as (
   WHEN endTimestamp IS NULL AND temperatureBreachConfigurationId = 'HOT_BREACH' THEN 1 ELSE 0 END AS isInHotBreach,
   CASE WHEN endTimestamp IS NULL AND temperatureBreachConfigurationId = 'COLD_BREACH' THEN 1 ELSE 0 END AS isInColdBreach
   FROM      sensor s OUTER
-  
+  LEFT JOIN (SELECT coalesce(min(timestamp), 0) firstTimestamp from temperaturelog where sensorid = ?)
   left JOIN
   (
     SELECT  max(timestamp) mostRecentLogTimestamp,
-            coalesce(min(timestamp), 0) firstTimestamp,
             temperature    currentTemperature,
             count(*) numberOfLogs,
             tl.sensorid,
@@ -205,18 +205,15 @@ export class SensorManager {
   };
 
   getSensorState = async sensorId => {
-    const result = await this.databaseService.query(SENSOR_STATE, [sensorId, sensorId, sensorId]);
-    const resultTwo = await this.databaseService.query(
-      'select s.batteryLevel batteryLevel, temperature as currentTemperature from sensor s left join temperaturelog tl on tl.sensorid = s.id where s.id = ? order by timestamp desc limit 1',
-      [sensorId]
-    );
-
-    const { batteryLevel, currentTemperature = 'N/A' } = resultTwo[0] ?? {};
+    const result = await this.databaseService.query(SENSOR_STATE, [
+      sensorId,
+      sensorId,
+      sensorId,
+      sensorId,
+    ]);
 
     return {
       ...result[0],
-      currentTemperature,
-      batteryLevel,
       from: result[0].minChartTimestamp,
       to: result[0].mostRecentLogTimestamp,
       possibleFrom: result[0].firstTimestamp,
@@ -232,7 +229,6 @@ export class SensorManager {
     return this.databaseService.getAll(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION);
   };
 
-  // eslint-disable-next-line class-methods-use-this
   createBreachConfigurationJoinRecord = async (sensor, temperatureBreachConfiguration) => {
     const id = this.utils.uuid();
     const joinRecord = {

@@ -110,8 +110,11 @@ const selectFrom = ({ sensorDetail: { detail } }: RootState): number => {
   return from;
 };
 
+const fromTo = createSelector([selectFrom, selectTo], (from, to) => {
+  return { from, to };
+});
 // TODO: FIX Types
-const fromToRange = createSelector([selectFrom, selectTo], (from, to) => {
+const fromToRange = createSelector([fromTo], ({ from, to }) => {
   const options = { allDay: true };
   return (moment(from * MILLISECONDS.ONE_SECOND) as any).twix(
     to * MILLISECONDS.ONE_SECOND,
@@ -123,6 +126,7 @@ const DetailSelector = {
   from: selectFrom,
   to: selectTo,
   fromToRange,
+  fromTo,
   possibleFromTo: ({
     sensorDetail: { detail },
   }: RootState): { possibleFrom: number; possibleTo: number } => {

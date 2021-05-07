@@ -104,10 +104,11 @@ const LogTableSelector = {
   },
 };
 
-function* fetchMore({ payload: { from, to, id } }: PayloadAction<FetchPayload>): SagaIterator {
+function* fetchMore({ payload: { id } }: PayloadAction<FetchPayload>): SagaIterator {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const logTableManager = yield call(DependencyLocator.get, DEPENDENCY.LOG_TABLE_MANAGER);
 
+  const { from, to } = yield select(DetailSelector.fromTo);
   const pagination = yield select(LogTableSelector.pagination);
 
   try {
@@ -123,7 +124,9 @@ function* fetch({ payload: { from, to, id } }: PayloadAction<FetchPayload>): Sag
   const logTableManager = yield call(DependencyLocator.get, DEPENDENCY.LOG_TABLE_MANAGER);
 
   try {
-    const logs = yield call(logTableManager.getLogs, from, to, id);
+    const sensorId = yield select(DetailSelector.sensorId);
+    const logs = yield call(logTableManager.getLogs, from, to, id ?? sensorId);
+
     yield put(LogTableAction.fetchSuccess(logs));
   } catch (error) {
     yield put(LogTableAction.fetchFail());
@@ -131,10 +134,9 @@ function* fetch({ payload: { from, to, id } }: PayloadAction<FetchPayload>): Sag
 }
 
 function* tryFetch({
-  payload: { from, to },
-}: PayloadAction<{ from: number; to: number }>): SagaIterator {
-  const id = yield select(DetailSelector.sensorId);
-  yield put(LogTableAction.fetch(id, from, to));
+  payload: { from, to, sensorId },
+}: PayloadAction<{ from: number; to: number; sensorId: string }>): SagaIterator {
+  yield put(LogTableAction.fetch(sensorId, from, to));
 }
 
 function* root(): SagaIterator {

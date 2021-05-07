@@ -29,11 +29,10 @@ with breach as (
   WHEN endTimestamp IS NULL AND temperatureBreachConfigurationId = 'HOT_BREACH' THEN 1 ELSE 0 END AS isInHotBreach,
   CASE WHEN endTimestamp IS NULL AND temperatureBreachConfigurationId = 'COLD_BREACH' THEN 1 ELSE 0 END AS isInColdBreach
   FROM      sensor s OUTER
-  
+  LEFT JOIN (SELECT coalesce(min(timestamp), 0) firstTimestamp from temperaturelog where sensorid = ?)
   left JOIN
   (
     SELECT  max(timestamp) mostRecentLogTimestamp,
-            coalesce(min(timestamp), 0) firstTimestamp,
             temperature    currentTemperature,
             count(*) numberOfLogs,
             tl.sensorid,
@@ -57,9 +56,6 @@ with breach as (
   where s.id = ?
 `;
 
-const SENSOR_STATUS_ADDITIONAL =
-  'select s.batteryLevel batteryLevel, temperature as currentTemperature from sensor s left join temperaturelog tl on tl.sensorid = s.id where s.id = ? order by timestamp desc limit 1';
-
 export class SensorStatusManager {
   databaseService: DatabaseService;
 
@@ -68,11 +64,13 @@ export class SensorStatusManager {
   }
 
   getSensorStatus = async (sensorId: string): Promise<SensorStatus> => {
-    const result = await this.databaseService.query(SENSOR_STATUS, [sensorId, sensorId, sensorId]);
-    const resultTwo = await this.databaseService.query(SENSOR_STATUS_ADDITIONAL, [sensorId]);
+    const result = await this.databaseService.query(SENSOR_STATUS, [
+      sensorId,
+      sensorId,
+      sensorId,
+      sensorId,
+    ]);
 
-    const { batteryLevel, currentTemperature = 'N/A' } = resultTwo[0] ?? {};
-
-    return { ...result[0], currentTemperature, batteryLevel } as SensorStatus;
+    return result[0] as SensorStatus;
   };
 }
