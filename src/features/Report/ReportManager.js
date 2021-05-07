@@ -328,8 +328,8 @@ export class ReportManager {
     } catch (e) {}
 
     const directory = '/Download/cce';
-    const now = moment().format('DD-MM-YYYY-HHmm');
-    const file = `/${now}.csv`;
+    const now = moment().format('DD-MM-YYYY-HHmm:ss');
+    const file = `/${now}-${sensor.name}.csv`;
 
     const path = `${RNFS.ExternalStorageDirectoryPath}${directory}${file}`;
 
