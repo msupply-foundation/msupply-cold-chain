@@ -85,7 +85,7 @@ class DevManager {
       ENTITIES.TEMPERATURE_BREACH_CONFIGURATION
     )) as TemperatureBreachConfiguration[];
 
-    const breachLogCount = Math.ceil(duration / (logInterval * 1000));
+    const breachLogCount = Math.ceil(duration / (logInterval * 1000)) * 100;
     const breachLogTimestamps = Array.from(Array(breachLogCount).keys()).reduce(
       (acc, i) => [...acc, moment.unix(acc[i]).subtract(logInterval, 'seconds').unix()],
       [moment().unix()]
