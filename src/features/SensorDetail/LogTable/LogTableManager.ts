@@ -19,7 +19,7 @@ left outer join (
 ) b on b.temperaturebreachid = tl.temperaturebreachid
 where
 tl.timestamp between ? and ? and sensorId = ?
-order by timestamp
+order by timestamp desc
 limit ?
 offset ?
 `;
