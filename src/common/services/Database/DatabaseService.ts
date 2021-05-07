@@ -1,10 +1,8 @@
-/* eslint-disable camelcase */
-/* eslint-disable no-await-in-loop */
 import _ from 'lodash';
 import { EntitySubscriberInterface } from 'typeorm/browser';
 
 import { Database } from './Database';
-import { ENTITIES, MILLISECONDS } from '../../constants';
+import { ENTITIES, MILLISECONDS } from '~constants';
 import { classToPlain } from 'class-transformer';
 
 export class DatabaseService {
@@ -49,14 +47,37 @@ export class DatabaseService {
 
     const configs = await this.getAll(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION);
 
-    if (configs.length >= 4) return configs;
+    if (configs.length !== 4) {
+      this.upsert(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION, [
+        HOT_BREACH,
+        HOT_CUMULATIVE,
+        COLD_BREACH,
+        COLD_CUMULATIVE,
+      ]);
+    }
 
-    return this.upsert(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION, [
-      HOT_BREACH,
-      HOT_CUMULATIVE,
-      COLD_BREACH,
-      COLD_CUMULATIVE,
-    ]);
+    const isIntegrating = await this.get(ENTITIES.SETTING, { key: 'isIntegrating' });
+    if (!isIntegrating) {
+      this.upsert(ENTITIES.SETTING, { key: 'isIntegrating', value: 'false' });
+    }
+
+    const lastSync = await this.get(ENTITIES.SETTING, {
+      key: 'lastSync',
+    });
+    if (!lastSync) {
+      this.upsert(ENTITIES.SETTING, {
+        key: 'lastSync',
+        value: '0',
+      });
+    }
+
+    const defaultLogInterval = await this.get(ENTITIES.SETTING, {
+      key: 'defaultLogInterval',
+    });
+
+    if (!defaultLogInterval) {
+      this.upsert(ENTITIES.SETTING, { key: 'defaultLogInterval', value: '300' });
+    }
   };
 
   registerSubscribers = (subscribers: EntitySubscriberInterface[]): void => {

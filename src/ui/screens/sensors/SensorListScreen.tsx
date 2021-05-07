@@ -11,6 +11,7 @@ import {
   SensorAction,
   BatteryObserverAction,
   DownloadAction,
+  SyncAction,
 } from '~features';
 
 import { SensorChartRow } from '~components';
@@ -36,7 +37,11 @@ export const SensorListScreen: FC = () => {
     dispatch(BatteryObserverAction.start());
   };
 
-  useOnMount([startPassiveDownloading, startBatteryObserving]);
+  const startIntegrating = () => {
+    dispatch(SyncAction.tryStartPassiveIntegration());
+  };
+
+  useOnMount([startPassiveDownloading, startBatteryObserving, startIntegrating]);
   useCallbackOnGainingFocus(getSensors);
 
   // TODO: Typings??

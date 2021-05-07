@@ -37,10 +37,7 @@ export const SensorSettingsScreen: FC<SensorSettingsScreenProps> = React.memo(({
     InteractionManager.runAfterInteractions(() => setLoad(true));
   }, []);
 
-  const defaultLoggingInterval = useSelector(
-    SettingSelector.getBluetoothDefaultLogInterval,
-    shallowEqual
-  );
+  const defaultLoggingInterval = useSelector(SettingSelector.getDefaultLogInterval, shallowEqual);
 
   useEffect(() => {
     const reset = () => {

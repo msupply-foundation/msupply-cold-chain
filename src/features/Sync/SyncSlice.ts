@@ -1,3 +1,4 @@
+import { ToastAndroid } from 'react-native';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SagaIterator } from '@redux-saga/types';
 import {
@@ -7,23 +8,24 @@ import {
   put,
   takeEvery,
   takeLeading,
-  select,
   take,
   race,
+  takeLatest,
 } from 'redux-saga/effects';
-
-import { SettingAction, SettingSelector } from '../Entities';
-import { SyncSettingSlice } from '../Entities/Setting/SettingSlice';
-import { DEPENDENCY, MILLISECONDS, REDUCER } from '../../common/constants';
-import { RootState } from '../../common/store/store';
-import { SyncLog } from '../../common/services/Database/entities';
+import { SettingAction, SettingManager, SyncSettingMap } from '~features/Entities/Setting';
+import { DEPENDENCY, MILLISECONDS, REDUCER } from '~constants';
+import { RootState } from '~store/store';
+import { SyncLog } from '~services/Database/entities';
+import { SyncQueueManager } from '~features/Sync/SyncQueueManager';
 
 interface SyncSliceState {
   isSyncing: boolean;
+  syncQueueLength: number;
 }
 
 const initialState: SyncSliceState = {
   isSyncing: false,
+  syncQueueLength: 0,
 };
 
 export interface UpdateIsSyncingActionPayload {
@@ -108,6 +110,25 @@ export interface SyncTemperatureBreachesSuccessAction {
   payload: SyncTemperatureBreachesSuccessActionPayload;
 }
 
+export interface FailurePayload {
+  errorMessage: string;
+}
+
+export interface SyncSensorsFailureAction {
+  type: string;
+  payload: FailurePayload;
+}
+
+export interface SyncTemperatureLogsFailureAction {
+  type: string;
+  payload: FailurePayload;
+}
+
+export interface SyncTemperatureBreachesFailureAction {
+  type: string;
+  payload: FailurePayload;
+}
+
 export interface FetchAllSuccessActionPayload {
   loginUrl: string;
   sensorUrl: string;
@@ -124,29 +145,63 @@ export interface FetchAllAction {
   payload: FetchAllSuccessActionPayload;
 }
 
-export interface SyncAllActionPayload {
-  loginUrl: string;
-  sensorUrl: string;
-  temperatureLogUrl: string;
-  temperatureBreachUrl: string;
-  username: string;
-  password: string;
-}
-
+export type SyncAllPayload = Omit<
+  SyncSettingMap,
+  'lastSync' | 'isPassiveSyncEnabled' | 'isIntegrating'
+>;
 export interface SyncAllAction {
   type: string;
-  payload: SyncAllActionPayload;
+  payload: SyncAllPayload;
 }
 
 export interface SyncingErrorActionPayload {
   error: string;
 }
 
+export interface CountSyncQueuePayload {
+  count: number;
+}
 export interface PrepareActionReturn<SomePayload> {
   payload: SomePayload;
 }
 
 const reducers = {
+  tryCountSyncQueue: () => {},
+  countSyncQueueSuccess: {
+    prepare: (count: number): PrepareActionReturn<CountSyncQueuePayload> => ({
+      payload: { count },
+    }),
+    reducer: (
+      draftState: SyncSliceState,
+      { payload: { count } }: PrepareActionReturn<CountSyncQueuePayload>
+    ) => {
+      draftState.syncQueueLength = count;
+    },
+  },
+  countSyncQueueFailure: {
+    prepare: (errorMessage: string): PrepareActionReturn<FailurePayload> => ({
+      payload: { errorMessage },
+    }),
+    reducer: () => {},
+  },
+  tryStartPassiveIntegration: () => {},
+  tryTestConnection: {
+    prepare: (
+      loginUrl: string,
+      username: string,
+      password: string
+    ): PrepareActionReturn<AuthenticateActionPayload> => ({
+      payload: { username, password, loginUrl },
+    }),
+    reducer: () => {},
+  },
+  testConnectionSuccess: () => {},
+  testConnectionFailure: {
+    prepare: (errorMessage: string): PrepareActionReturn<FailurePayload> => ({
+      payload: { errorMessage },
+    }),
+    reducer: () => {},
+  },
   updateIsSyncing: {
     prepare: (isSyncing: boolean): PrepareActionReturn<UpdateIsSyncingActionPayload> => ({
       payload: { isSyncing },
@@ -182,7 +237,12 @@ const reducers = {
     }),
     reducer: () => {},
   },
-  syncSensorsFailure: () => {},
+  syncSensorsFailure: {
+    prepare: (errorMessage: string): PrepareActionReturn<FailurePayload> => ({
+      payload: { errorMessage },
+    }),
+    reducer: () => {},
+  },
   syncTemperatureLogs: {
     prepare: (
       temperatureLogUrl: string
@@ -199,7 +259,12 @@ const reducers = {
     }),
     reducer: () => {},
   },
-  syncTemperatureLogsFailure: () => {},
+  syncTemperatureLogsFailure: {
+    prepare: (errorMessage: string): PrepareActionReturn<FailurePayload> => ({
+      payload: { errorMessage },
+    }),
+    reducer: () => {},
+  },
   syncTemperatureBreaches: {
     prepare: (
       temperatureBreachUrl: string
@@ -216,24 +281,15 @@ const reducers = {
     }),
     reducer: () => {},
   },
-  syncTemperatureBreachesFailure: () => {},
+  syncTemperatureBreachesFailure: {
+    prepare: (errorMessage: string): PrepareActionReturn<FailurePayload> => ({
+      payload: { errorMessage },
+    }),
+    reducer: () => {},
+  },
   syncAll: {
-    prepare: (
-      loginUrl: string,
-      sensorUrl: string,
-      temperatureLogUrl: string,
-      temperatureBreachUrl: string,
-      username: string,
-      password: string
-    ): PrepareActionReturn<SyncAllActionPayload> => ({
-      payload: {
-        loginUrl,
-        sensorUrl,
-        temperatureLogUrl,
-        temperatureBreachUrl,
-        username,
-        password,
-      },
+    prepare: (syncSettings: SyncAllPayload): PrepareActionReturn<SyncAllPayload> => ({
+      payload: syncSettings,
     }),
     reducer: () => {},
   },
@@ -256,16 +312,21 @@ const getIsSyncing = (state: RootState): boolean => {
   return isSyncing;
 };
 
-const SyncSelector = {
-  getIsSyncing,
+const getSyncQueueCount = (state: RootState): number => {
+  const { syncQueueLength } = getSliceState(state);
+  return syncQueueLength;
 };
 
-function* authenticateSuccess(): SagaIterator {
-  // TODO.
-}
+const SyncSelector = {
+  getIsSyncing,
+  getSyncQueueCount,
+};
 
-function* authenticateFailure(): SagaIterator {
-  // TODO.
+function* getDependency(key: DEPENDENCY): SagaIterator {
+  const dependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const dependency = yield call(dependencyLocator.get, key);
+
+  return dependency;
 }
 
 function* authenticate({
@@ -278,13 +339,8 @@ function* authenticate({
     yield call(syncOutManager.login, loginUrl, username, password);
     yield put(SyncAction.authenticateSuccess());
   } catch (e) {
-    console.log(e.message);
     yield put(SyncAction.authenticateFailure());
   }
-}
-
-function* syncSensorsFailure(): SagaIterator {
-  // TODO.
 }
 
 function* syncSensorsSuccess({ payload: { syncLogs } }: SyncSensorsSuccessAction): SagaIterator {
@@ -293,10 +349,10 @@ function* syncSensorsSuccess({ payload: { syncLogs } }: SyncSensorsSuccessAction
   const syncQueueManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_QUEUE_MANAGER);
   try {
     yield call(syncQueueManager.dropLogs, syncLogs);
-    yield put(SettingAction.updateSyncLastSync(utilService.now()));
+    yield put(SettingAction.update('lastSync', utilService.now()));
   } catch (e) {
     console.log(e.message);
-    yield call(syncSensorsFailure);
+    yield put(SyncAction.syncSensorsFailure(e.message));
   }
 }
 
@@ -310,13 +366,9 @@ function* syncSensors({ payload: { sensorUrl } }: SyncSensorsAction): SagaIterat
     yield call(syncOutManager.syncSensors, sensorUrl, syncLogs);
     yield put(SyncAction.syncSensorsSuccess(syncLogs));
   } catch (e) {
-    console.log(e.message);
-    yield call(syncSensorsFailure);
+    console.log('SyncSensors', e.message);
+    yield put(SyncAction.syncSensorsFailure(e.message));
   }
-}
-
-function* syncTemperatureLogsFailure(): SagaIterator {
-  // TODO.
 }
 
 function* syncTemperatureLogsSuccess({
@@ -327,10 +379,10 @@ function* syncTemperatureLogsSuccess({
   const syncQueueManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_QUEUE_MANAGER);
   try {
     yield call(syncQueueManager.dropLogs, syncLogs);
-    yield put(SettingAction.updateSyncLastSync(utilService.now()));
+    yield put(SettingAction.update('lastSync', utilService.now()));
   } catch (e) {
     console.log(e.message);
-    yield call(syncTemperatureLogsFailure);
+    yield put(SyncAction.syncTemperatureLogsFailure(e.message));
   }
 }
 
@@ -347,12 +399,8 @@ function* syncTemperatureLogs({
     yield put(SyncAction.syncTemperatureLogsSuccess(syncLogs));
   } catch (e) {
     console.log(e.message);
-    yield call(syncTemperatureLogsFailure);
+    yield put(SyncAction.syncTemperatureLogsFailure(e.message));
   }
-}
-
-function* syncTemperatureBreachesFailure(): SagaIterator {
-  // TODO.
 }
 
 function* syncTemperatureBreachesSuccess({
@@ -363,10 +411,10 @@ function* syncTemperatureBreachesSuccess({
   const syncQueueManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_QUEUE_MANAGER);
   try {
     yield call(syncQueueManager.dropLogs, syncLogs);
-    yield put(SettingAction.updateSyncLastSync(utilService.now()));
+    yield put(SettingAction.update('lastSync', utilService.now()));
   } catch (e) {
     console.log(e.message);
-    yield call(syncTemperatureBreachesFailure);
+    yield put(SyncAction.syncTemperatureBreachesFailure(e.message));
   }
 }
 
@@ -383,15 +431,22 @@ function* syncTemperatureBreaches({
     yield put(SyncAction.syncTemperatureBreachesSuccess(syncLogs));
   } catch (e) {
     console.log(e.message);
-    yield put(SyncAction.syncTemperatureBreachesFailure());
+    yield put(SyncAction.syncTemperatureBreachesFailure(e.message));
   }
 }
 
 function* syncAll({
-  payload: { loginUrl, sensorUrl, temperatureLogUrl, temperatureBreachUrl, username, password },
+  payload: {
+    authUrl,
+    sensorUrl,
+    temperatureLogUrl,
+    temperatureBreachUrl,
+    authUsername,
+    authPassword,
+  },
 }: SyncAllAction): SagaIterator {
   yield put(SyncAction.updateIsSyncing(true));
-  yield put(SyncAction.authenticate(loginUrl, username, password));
+  yield put(SyncAction.authenticate(authUrl, authUsername, authPassword));
   const authenticateResult = yield take([
     SyncAction.authenticateSuccess,
     SyncAction.authenticateFailure,
@@ -400,36 +455,23 @@ function* syncAll({
     yield put(SyncAction.syncSensors(sensorUrl));
     yield take([SyncAction.syncSensorsSuccess, SyncAction.syncSensorsFailure]);
     yield put(SyncAction.syncTemperatureLogs(temperatureLogUrl));
-    yield take([SyncAction.syncSensorsSuccess, SyncAction.syncTemperatureLogsFailure]);
+    yield take([SyncAction.syncTemperatureLogsSuccess, SyncAction.syncTemperatureLogsFailure]);
     yield put(SyncAction.syncTemperatureBreaches(temperatureBreachUrl));
     yield take([
       SyncAction.syncTemperatureBreachesSuccess,
       SyncAction.syncTemperatureBreachesFailure,
     ]);
+  } else {
   }
   yield put(SyncAction.updateIsSyncing(false));
 }
 
 function* startSyncScheduler(): SagaIterator {
   while (true) {
-    const {
-      [SyncSettingSlice.AuthUrl]: authUrl,
-      [SyncSettingSlice.SensorUrl]: sensorUrl,
-      [SyncSettingSlice.TemperatureLogUrl]: temperatureLogUrl,
-      [SyncSettingSlice.TemperatureBreachUrl]: temperatureBreachUrl,
-      [SyncSettingSlice.AuthUsername]: username,
-      [SyncSettingSlice.AuthPassword]: password,
-    } = yield select(SettingSelector.getSyncSettings);
-    yield put(
-      SyncAction.syncAll(
-        authUrl,
-        sensorUrl,
-        temperatureLogUrl,
-        temperatureBreachUrl,
-        username,
-        password
-      )
-    );
+    const settingManager: SettingManager = yield call(getDependency, DEPENDENCY.SETTING_MANAGER);
+    const syncSettings: SyncSettingMap = yield call(settingManager.getSyncSettings);
+
+    yield put(SyncAction.syncAll(syncSettings));
     yield delay(MILLISECONDS.ONE_MINUTE);
   }
 }
@@ -441,24 +483,88 @@ function* enablePassiveSync(): SagaIterator {
   });
 }
 
+function* tryTestConnection({
+  payload: { loginUrl, username, password },
+}: AuthenticateAction): SagaIterator {
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const syncOutManager = yield call(DependencyLocator.get, DEPENDENCY.SYNC_OUT_MANAGER);
+
+  try {
+    yield call(syncOutManager.login, loginUrl, username, password);
+    yield put(SyncAction.testConnectionSuccess());
+  } catch (e) {
+    yield put(SyncAction.testConnectionFailure(e.message));
+  }
+}
+
+function* testConnectionFailure({
+  payload: { errorMessage },
+}: PayloadAction<FailurePayload>): SagaIterator {
+  ToastAndroid.show(`Connection could not be established: ${errorMessage}`, ToastAndroid.SHORT);
+}
+
+function* testConnectionSuccess(): SagaIterator {
+  ToastAndroid.show('Connection established!', ToastAndroid.SHORT);
+}
+
+function* tryStartPassiveIntegration(): SagaIterator {
+  const settingManager: SettingManager = yield call(getDependency, DEPENDENCY.SETTING_MANAGER);
+  const isIntegrating = yield call(settingManager.getBool, 'isIntegrating');
+
+  if (isIntegrating) {
+    yield put(SyncAction.enablePassiveSync());
+  }
+}
+
+function* tryCountSyncQueue(): SagaIterator {
+  const syncQueue: SyncQueueManager = yield call(getDependency, DEPENDENCY.SYNC_QUEUE_MANAGER);
+
+  try {
+    const syncCount = yield call(syncQueue.length);
+    yield put(SyncAction.countSyncQueueSuccess(syncCount));
+  } catch (e) {
+    yield put(SyncAction.countSyncQueueFailure(e.message));
+  }
+}
+
 function* root(): SagaIterator {
+  yield takeEvery(SyncAction.tryCountSyncQueue, tryCountSyncQueue);
+
   yield takeEvery(SyncAction.authenticate, authenticate);
-  yield takeEvery(SyncAction.authenticateSuccess, authenticateSuccess);
-  yield takeEvery(SyncAction.authenticateFailure, authenticateFailure);
+
   yield takeEvery(SyncAction.syncAll, syncAll);
   yield takeEvery(SyncAction.syncSensors, syncSensors);
-  yield takeEvery(SyncAction.syncSensorsSuccess, syncSensorsSuccess);
-  yield takeEvery(SyncAction.syncSensorsFailure, syncSensorsFailure);
   yield takeEvery(SyncAction.syncTemperatureLogs, syncTemperatureLogs);
-  yield takeEvery(SyncAction.syncTemperatureLogsSuccess, syncTemperatureLogsSuccess);
-  yield takeEvery(SyncAction.syncTemperatureLogsFailure, syncTemperatureLogsFailure);
   yield takeEvery(SyncAction.syncTemperatureBreaches, syncTemperatureBreaches);
-  yield takeEvery(SyncAction.syncTemperatureBreachesSuccess, syncTemperatureBreachesSuccess);
-  yield takeEvery(SyncAction.syncTemperatureBreachesFailure, syncTemperatureBreachesFailure);
 
+  yield takeEvery(SyncAction.syncSensorsSuccess, syncSensorsSuccess);
+  yield takeEvery(SyncAction.syncTemperatureLogsSuccess, syncTemperatureLogsSuccess);
+  yield takeEvery(SyncAction.syncTemperatureBreachesSuccess, syncTemperatureBreachesSuccess);
+
+  yield takeLatest(SyncAction.tryTestConnection, tryTestConnection);
+  yield takeLatest(SyncAction.testConnectionSuccess, testConnectionSuccess);
+  yield takeLatest(SyncAction.testConnectionFailure, testConnectionFailure);
+
+  yield takeLeading(SyncAction.tryStartPassiveIntegration, tryStartPassiveIntegration);
   yield takeLeading(SyncAction.enablePassiveSync, enablePassiveSync);
 }
 
-const SyncSaga = { root, syncAll };
+const SyncSaga = {
+  root,
+  syncAll,
+  tryCountSyncQueue,
+  authenticate,
+  syncSensors,
+  syncTemperatureBreaches,
+  syncTemperatureLogs,
+  syncSensorsSuccess,
+  syncTemperatureLogsSuccess,
+  syncTemperatureBreachesSuccess,
+  tryTestConnection,
+  testConnectionFailure,
+  testConnectionSuccess,
+  tryStartPassiveIntegration,
+  enablePassiveSync,
+};
 
 export { SyncAction, SyncReducer, SyncSaga, SyncSelector };

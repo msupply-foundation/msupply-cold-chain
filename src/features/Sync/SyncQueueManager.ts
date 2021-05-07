@@ -33,7 +33,11 @@ const SYNC_QUEUE_DROP = `
 `;
 
 const SYNC_QUEUE_LENGTH = `
-  SELECT COUNT(*) FROM synclog
+  SELECT COUNT(*) as count FROM synclog
+`;
+
+const SYNC_QUEUE_LENGTH_FOR_TYPE = `
+  SELECT COUNT(*) as count FROM synclog
   WHERE type = ?
 `;
 
@@ -81,14 +85,37 @@ class SyncQueueManager {
     return this.databaseService.query(SYNC_QUEUE_DROP, [logs.map(({ id }) => id).join()]);
   };
 
-  lengthSensors = async (): Promise<number> =>
-    this.databaseService.query(SYNC_QUEUE_LENGTH, [ENTITIES.SENSOR]);
+  length = async (): Promise<number> => {
+    const [result] = await this.databaseService.query(SYNC_QUEUE_LENGTH);
+    const { count } = result;
 
-  lengthTemperatureLogs = async (): Promise<number> =>
-    this.databaseService.query(SYNC_QUEUE_LENGTH, [ENTITIES.TEMPERATURE_LOG]);
+    return count;
+  };
 
-  lengthTemperatureBreaches = async (): Promise<number> =>
-    this.databaseService.query(SYNC_QUEUE_LENGTH, [ENTITIES.TEMPERATURE_BREACH]);
+  lengthSensors = async (): Promise<number> => {
+    const [result] = await this.databaseService.query(SYNC_QUEUE_LENGTH_FOR_TYPE, [
+      ENTITIES.SENSOR,
+    ]);
+    const { count } = result;
+
+    return count;
+  };
+
+  lengthTemperatureLogs = async (): Promise<number> => {
+    const [result] = await this.databaseService.query(SYNC_QUEUE_LENGTH_FOR_TYPE, [
+      ENTITIES.TEMPERATURE_LOG,
+    ]);
+    const { count } = result;
+    return count;
+  };
+
+  lengthTemperatureBreaches = async (): Promise<number> => {
+    const [result] = await this.databaseService.query(SYNC_QUEUE_LENGTH_FOR_TYPE, [
+      ENTITIES.TEMPERATURE_BREACH,
+    ]);
+    const { count } = result;
+    return count;
+  };
 }
 
 export { SyncQueueManager };

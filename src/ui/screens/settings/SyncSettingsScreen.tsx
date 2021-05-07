@@ -1,140 +1,131 @@
-import React, { useEffect, FC } from 'react';
+import React, { FC } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import moment from 'moment';
-
-import { SettingsList } from '../../layouts';
-
-import { SettingsTextInputRow, SettingsGroup, SettingsButtonRow } from '~components/settings';
-import { SettingAction, SettingSelector, SyncAction } from '~features';
-import { FORMAT } from '~constants';
-import { SyncSettingSlice } from '~features/Entities/Setting/SettingSlice';
+import { SettingsList } from '~layouts';
+import {
+  SettingsTextInputRow,
+  SettingsGroup,
+  SettingsButtonRow,
+  SettingsItem,
+} from '~components/settings';
+import { SettingAction, SettingSelector, SyncAction, SyncSelector } from '~features';
+import { t } from '~common/translations';
+import { useOnMount } from '~hooks';
 
 export const SyncSettingsScreen: FC = () => {
   const {
-    [SyncSettingSlice.AuthUrl]: authUrl,
-    [SyncSettingSlice.AuthUsername]: authUsername,
-    [SyncSettingSlice.AuthPassword]: authPassword,
-    [SyncSettingSlice.SensorUrl]: sensorUrl,
-    [SyncSettingSlice.TemperatureLogUrl]: temperatureLogUrl,
-    [SyncSettingSlice.TemperatureBreachUrl]: temperatureBreachUrl,
-    [SyncSettingSlice.LastSync]: lastSync,
-    [SyncSettingSlice.IsPassiveSyncEnabled]: isPassiveSyncEnabled,
-  } = useSelector(SettingSelector.getSyncSettings);
+    authUrl,
+    authUsername,
+    authPassword,
+    sensorUrl,
+    temperatureLogUrl,
+    temperatureBreachUrl,
+    isIntegrating,
+  } = useSelector(SettingSelector.getSettings);
+
+  const syncQueueLength = useSelector(SyncSelector.getSyncQueueCount);
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(SettingAction.fetchAll());
-  }, [dispatch]);
+  useOnMount([
+    () => dispatch(SyncAction.tryCountSyncQueue()),
+    () => dispatch(SettingAction.fetchAll()),
+  ]);
 
   return (
     <SettingsList>
       <SettingsGroup title="Server configuration">
         <SettingsTextInputRow
-          label="Login"
-          subtext="Login URL"
+          label={t('LOGIN')}
+          subtext={t('LOGIN_URL')}
           onConfirm={({ inputValue }: { inputValue: string }) =>
-            dispatch(SettingAction.updateSyncAuthUrl(inputValue))
+            dispatch(SettingAction.update('authUrl', inputValue))
           }
-          value={authUrl as string}
-          editDescription="Edit login URL"
+          value={authUrl}
+          editDescription={t('EDIT_LOGIN_URL')}
         />
         <SettingsTextInputRow
-          label="Sensors"
-          subtext="Sensor URL"
+          label={t('SENSORS')}
+          subtext={t('SENSOR_URL')}
           onConfirm={({ inputValue }: { inputValue: string }) =>
-            dispatch(SettingAction.updateSyncSensorUrl(inputValue))
+            dispatch(SettingAction.update('sensorUrl', inputValue))
           }
-          value={sensorUrl as string}
-          editDescription="Edit sensor URL"
+          value={sensorUrl}
+          editDescription={t('EDIT_SENSOR_URL')}
         />
         <SettingsTextInputRow
-          label="Temperatures"
-          subtext="Temperature log URL"
+          label={t('TEMPERATURES')}
+          subtext={t('TEMPERATURE_URL')}
           onConfirm={({ inputValue }: { inputValue: string }) =>
-            dispatch(SettingAction.updateSyncTemperatureLogUrl(inputValue))
+            dispatch(SettingAction.update('temperatureLogUrl', inputValue))
           }
-          value={temperatureLogUrl as string}
-          editDescription="Edit temperature log URL"
+          value={temperatureLogUrl}
+          editDescription={t('EDIT_TEMPERATURE_URL')}
         />
         <SettingsTextInputRow
-          label="Breaches"
-          subtext="Temperature breach URL"
+          label={t('TEMPERATURE_BREACHES')}
+          subtext={t('TEMPERATURE_BREACHES_URL')}
           onConfirm={({ inputValue }: { inputValue: string }) =>
-            dispatch(SettingAction.updateSyncTemperatureBreachUrl(inputValue))
+            dispatch(SettingAction.update('temperatureBreachUrl', inputValue))
           }
-          value={temperatureBreachUrl as string}
-          editDescription="Edit temperature breach URL"
+          value={temperatureBreachUrl}
+          editDescription={t('EDIT_TEMPERATURE_BREACHES_URL')}
         />
       </SettingsGroup>
-      <SettingsGroup title="Store credentials">
+      <SettingsGroup title={t('CREDENTIALS')}>
         <SettingsTextInputRow
-          label="Username"
-          subtext="Username"
+          label={t('USERNAME')}
+          subtext={t('USERNAME')}
           onConfirm={({ inputValue }: { inputValue: string }) =>
-            dispatch(SettingAction.updateSyncAuthUsername(inputValue))
+            dispatch(SettingAction.update('authUsername', inputValue))
           }
-          value={authUsername as string}
-          editDescription="Edit username"
+          value={authUsername}
+          editDescription={t('EDIT_USERNAME')}
         />
         <SettingsTextInputRow
-          label="Password"
-          subtext="Password"
+          label={t('PASSWORD')}
+          subtext={t('PASSWORD')}
           onConfirm={({ inputValue }: { inputValue: string }) =>
-            dispatch(SettingAction.updateSyncAuthPassword(inputValue))
+            dispatch(SettingAction.update('authPassword', inputValue))
           }
-          value={authPassword as string}
-          editDescription="Edit password"
+          value={authPassword}
+          editDescription={t('EDIT_PASSWORD')}
         />
       </SettingsGroup>
       <SettingsGroup title="Operations">
-        <SettingsButtonRow
-          label="Authenticate"
-          subtext="Authenticate with server"
-          onPress={() =>
-            dispatch(
-              SyncAction.authenticate(
-                authUrl as string,
-                authUsername as string,
-                authPassword as string
-              )
-            )
-          }
-        />
-        <SettingsButtonRow
-          label="Sync all records"
-          subtext="Syncs all records currently stored in sync queue"
-          onPress={() =>
-            dispatch(
-              SyncAction.syncAll(
-                authUrl as string,
-                sensorUrl as string,
-                temperatureLogUrl as string,
-                temperatureBreachUrl as string,
-                authUsername as string,
-                authPassword as string
-              )
-            )
-          }
-        />
-        {isPassiveSyncEnabled ? (
+        {isIntegrating ? (
           <SettingsButtonRow
-            label="Stop sync scheduler"
-            subtext={`Stops sync scheduler (last sync: ${moment
-              .unix(lastSync as number)
-              .format(FORMAT.DATE.STANDARD_DATE)})`}
-            onPress={() => dispatch(SyncAction.disablePassiveSync())}
+            label={t('STOP_INTEGRATION')}
+            subtext={t('STOP_INTEGRATION_SUBTEXT')}
+            onPress={() => {
+              dispatch(SettingAction.update('isIntegrating', false));
+              dispatch(SyncAction.disablePassiveSync());
+            }}
           />
         ) : (
           <SettingsButtonRow
-            label="Start sync scheduler"
-            subtext={`Starts sync scheduler (last sync: ${moment
-              .unix(lastSync as number)
-              .format(FORMAT.DATE.STANDARD_DATE)})`}
-            onPress={() => dispatch(SyncAction.enablePassiveSync())}
+            label={t('START_INTEGRATION')}
+            subtext={t('START_INTEGRATION_SUBTEXT')}
+            onPress={() => {
+              dispatch(SettingAction.update('isIntegrating', true));
+              dispatch(SyncAction.enablePassiveSync());
+            }}
           />
         )}
+        <SettingsButtonRow
+          label={t('TEST_CONNECTION')}
+          subtext={t('TEST_CONNECTION_SUBTEXT')}
+          onPress={() =>
+            dispatch(SyncAction.tryTestConnection(authUrl, authUsername, authPassword))
+          }
+        />
+        <SettingsGroup title="Info">
+          <SettingsItem
+            label="Number of records to send"
+            subtext={String(syncQueueLength)}
+            isDisabled
+          />
+        </SettingsGroup>
       </SettingsGroup>
     </SettingsList>
   );

@@ -6,14 +6,15 @@ Object {
     "DEFAULT_LOG_INTERVAL": "DEFAULT_LOG_INTERVAL",
   },
   "SYNC": Object {
-    "AUTH_PASSWORD": "AUTH_PASSWORD",
-    "AUTH_URL": "AUTH_URL",
-    "AUTH_USERNAME": "AUTH_USERNAME",
-    "IS_PASSIVE_SYNC_ENABLED": "IS_PASSIVE_SYNC_ENABLED",
-    "LAST_SYNC": "LAST_SYNC",
-    "SENSOR_URL": "SENSOR_URL",
-    "TEMPERATURE_BREACH_URL": "TEMPERATURE_BREACH_URL",
-    "TEMPERATURE_LOG_URL": "TEMPERATURE_LOG_URL",
+    "AUTH_PASSWORD": "authPassword",
+    "AUTH_URL": "authUrl",
+    "AUTH_USERNAME": "authUsername",
+    "IS_INTEGRATING": "isIntegrating",
+    "IS_PASSIVE_SYNC_ENABLED": "isPassiveSyncEnabled",
+    "LAST_SYNC": "lastSync",
+    "SENSOR_URL": "sensorUrl",
+    "TEMPERATURE_BREACH_URL": "temperatureBreachUrl",
+    "TEMPERATURE_LOG_URL": "temperatureLogUrl",
   },
 }
 `;
