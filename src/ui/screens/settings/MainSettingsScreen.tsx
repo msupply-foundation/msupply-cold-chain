@@ -44,12 +44,14 @@ export const MainSettingsScreen: FC<MainSettingsScreenProps> = ({ navigation }) 
           onPress={() => navigation.navigate(SETTINGS_STACK.SYNC)}
           RightComponent={ChevronIcon}
         />
-        <SettingsItem
-          label="Developer settings"
-          subtext="Assortment of options useful for development"
-          onPress={() => navigation.navigate(SETTINGS_STACK.DEVELOPER)}
-          RightComponent={ChevronIcon}
-        />
+        {__DEV__ && (
+          <SettingsItem
+            label="Developer settings"
+            subtext="Assortment of options useful for development"
+            onPress={() => navigation.navigate(SETTINGS_STACK.DEVELOPER)}
+            RightComponent={ChevronIcon}
+          />
+        )}
       </SettingsGroup>
     </SettingsList>
   );

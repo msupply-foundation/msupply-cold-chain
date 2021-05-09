@@ -12,7 +12,7 @@ import { ENVIRONMENT } from '../../constants';
 
 export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
   type: 'react-native',
-  database: 'josh52.sqlite',
+  database: 'josh47.sqlite',
   location: 'default',
 
   // extra: {

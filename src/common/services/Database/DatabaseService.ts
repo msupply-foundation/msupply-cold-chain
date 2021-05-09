@@ -58,7 +58,7 @@ export class DatabaseService {
 
     const isIntegrating = await this.get(ENTITIES.SETTING, { key: 'isIntegrating' });
     if (!isIntegrating) {
-      this.upsert(ENTITIES.SETTING, { key: 'isIntegrating', value: 'false' });
+      this.upsert(ENTITIES.SETTING, { id: 'isIntegrating', key: 'isIntegrating', value: 'false' });
     }
 
     const lastSync = await this.get(ENTITIES.SETTING, {
@@ -66,6 +66,7 @@ export class DatabaseService {
     });
     if (!lastSync) {
       this.upsert(ENTITIES.SETTING, {
+        id: 'lastSync',
         key: 'lastSync',
         value: '0',
       });
@@ -76,7 +77,11 @@ export class DatabaseService {
     });
 
     if (!defaultLogInterval) {
-      this.upsert(ENTITIES.SETTING, { key: 'defaultLogInterval', value: '300' });
+      this.upsert(ENTITIES.SETTING, {
+        id: 'defaultLogInterval',
+        key: 'defaultLogInterval',
+        value: '300',
+      });
     }
   };
 
