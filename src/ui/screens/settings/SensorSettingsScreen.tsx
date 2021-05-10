@@ -70,7 +70,7 @@ export const SensorSettingsScreen: FC<SensorSettingsScreenProps> = React.memo(({
           label={t('DEFAULT_LOG_INTERVAL')}
           subtext={t('DEFAULT_LOG_INTERVAL_SUBTEXT')}
           onConfirm={({ value }: { value: number }) =>
-            dispatch(SettingAction.updateBluetoothDefaultLogInterval(value * 60))
+            dispatch(SettingAction.update('defaultLogInterval', value * 60))
           }
           initialValue={Number(defaultLoggingInterval) / 60}
           editDescription={t('DEFAULT_LOG_INTERVAL')}
