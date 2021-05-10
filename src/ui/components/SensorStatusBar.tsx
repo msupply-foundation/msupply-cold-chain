@@ -15,7 +15,7 @@ export const SensorStatusBar: FC<SensorStatusBarProps> = ({ id }) => {
   );
 
   return (
-    <Row alignItems="center" style={{ alignSelf: 'flex-start' }}>
+    <Row>
       <BatteryStatus batteryLevel={batteryLevel} variant="small" />
     </Row>
   );

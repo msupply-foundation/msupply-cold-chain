@@ -27,9 +27,9 @@ export const SensorDetailScreenLayout: FC<SensorDetailScreenLayoutProps> = ({
           <View>{Name}</View>
           <View>{CumulativeBreach}</View>
         </Row>
-        <Centered>{Chart}</Centered>
+        <View>{Chart}</View>
         <View>{ActionBar}</View>
-        <View>{Table}</View>
+        <Row flex={1}>{Table}</Row>
       </LoadAfterInteractions>
     </Gradient>
   );

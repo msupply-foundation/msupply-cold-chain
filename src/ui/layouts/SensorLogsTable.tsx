@@ -1,7 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import { FlatList, View, Text, ActivityIndicator, TextStyle } from 'react-native';
 import moment from 'moment';
-import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 import { useSelector, useDispatch } from 'react-redux';
 import { MaybeTouchableContainer } from '~layouts';
 import { COLOUR } from '../../common/constants';
@@ -90,25 +89,23 @@ export const SensorLogsRow: FC<SensorLogsRowProps> = React.memo(
     };
 
     return (
-      <TouchableNativeFeedback onPress={() => {}}>
-        <Row
-          flex={1}
-          justifyContent="space-between"
-          style={{ backgroundColor: even ? COLOUR.GREY_TWO : COLOUR.BACKGROUND_TWO }}
-        >
-          {COLUMNS.map(({ key, flex, textAlign }, ind) => (
-            <SensorLogsCell
-              key={key}
-              columnKey={key}
-              flex={flex}
-              data={String(rowData[key])}
-              breachType={isInColdBreach ? 'cold' : 'hot'}
-              isLast={ind === COLUMNS.length - 1}
-              textAlign={textAlign}
-            />
-          ))}
-        </Row>
-      </TouchableNativeFeedback>
+      <Row
+        flex={1}
+        justifyContent="space-between"
+        style={{ backgroundColor: even ? COLOUR.GREY_TWO : COLOUR.BACKGROUND_TWO }}
+      >
+        {COLUMNS.map(({ key, flex, textAlign }, ind) => (
+          <SensorLogsCell
+            key={key}
+            columnKey={key}
+            flex={flex}
+            data={String(rowData[key])}
+            breachType={isInColdBreach ? 'cold' : 'hot'}
+            isLast={ind === COLUMNS.length - 1}
+            textAlign={textAlign}
+          />
+        ))}
+      </Row>
     );
   }
 );
@@ -190,26 +187,24 @@ export const SensorLogsTable: FC<SensorLogsTableProps> = React.memo(({ id }) => 
     []
   );
 
-  const onEndReached = useCallback(
-    () =>
-      dispatch(LogTableAction.fetchMore(moment().subtract(3, 'days').unix(), moment().unix(), id)),
-    [dispatch, id]
-  );
+  const onEndReached = useCallback(() => {
+    dispatch(LogTableAction.fetchMore(moment().subtract(3, 'days').unix(), moment().unix(), id));
+  }, [dispatch, id]);
 
   return (
     <FlatList
-      style={{ backgroundColor: '#dddddd' }}
-      ListEmptyComponent={<ActivityIndicator size="large" color={COLOUR.PRIMARY} />}
+      style={{ flex: 1, backgroundColor: '#dddddd' }}
+      ListEmptyComponent={
+        <ActivityIndicator size="large" color={COLOUR.PRIMARY} style={{ flex: 1 }} />
+      }
       onEndReached={onEndReached}
       onEndReachedThreshold={0.25}
       refreshing={isLoading}
       data={data}
       getItemLayout={(_, index) => ({ length: data.length, offset: 50 * index, index })}
-      initialNumToRender={5}
       ListHeaderComponent={<Header columns={COLUMNS} />}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
-      maxToRenderPerBatch={20}
       stickyHeaderIndices={[0]}
     />
   );

@@ -10,8 +10,7 @@ import { Icon } from '../presentation/icons';
 
 const styles = {
   row: {
-    paddingVertical: STYLE.PADDING.VERTICAL,
-    height: STYLE.HEIGHT.SENSOR_ROW,
+    height: 175,
   },
 };
 
@@ -31,11 +30,13 @@ export const SensorRowLayout: FC<SensorRowLayoutProps> = ({
   return (
     <TouchableOpacity onPress={onPress}>
       <Row style={styles.row}>
-        <Column flex={1} justifyContent="center">
+        <Column flex={3} justifyContent="center">
           {Chart}
         </Column>
-        <Column justifyContent="center">{SensorStatus}</Column>
-        <Column justifyContent="center">
+        <Column flex={1} justifyContent="center" alignItems="flex-end">
+          {SensorStatus}
+        </Column>
+        <Column style={{ flexBasis: 50 }} justifyContent="center" alignItems="flex-end">
           {!!onPress && (
             <HalfCircleButton direction={direction} Icon={<Icon.Chevron direction={direction} />} />
           )}

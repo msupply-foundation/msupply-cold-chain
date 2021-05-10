@@ -3,7 +3,7 @@ import { Column } from './Column';
 import { Row } from './Row';
 
 const style = {
-  container: { backgroundColor: '#dddddd', padding: 20 },
+  container: { backgroundColor: '#dddddd' },
 };
 
 interface SensorDetailActionBarLayoutProps {
