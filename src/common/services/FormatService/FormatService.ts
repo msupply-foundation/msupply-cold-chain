@@ -60,6 +60,6 @@ export class FormatService {
   };
 
   lastDownloadTime = (timestamp: number, now = moment().unix()): string => {
-    return `${moment.duration(moment(now - timestamp).unix()).humanize()} ${t('AGO')}`;
+    return `${moment.duration(now - timestamp, 'seconds').humanize()} ${t('AGO')}`;
   };
 }
