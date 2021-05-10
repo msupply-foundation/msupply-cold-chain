@@ -38,6 +38,7 @@ export const AcknowledgeBreachModal: FC<AcknowledgeBreachModalProps> = ({ id }) 
         <SettingsEditButtonGroup>
           <SettingsEditButton
             text="ACKNOWLEDGE"
+            isDisabled={!unhandledBreaches.length}
             onPress={() => dispatch(AcknowledgeBreachAction.tryAcknowledge(id))}
           />
           <SettingsEditButton
