@@ -38,12 +38,14 @@ export const MainSettingsScreen: FC<MainSettingsScreenProps> = ({ navigation }) 
           onPress={() => navigation.navigate(SETTINGS_STACK.TEMPERATURE_BREACH)}
           RightComponent={ChevronIcon}
         />
-        <SettingsItem
-          label="Sync settings"
-          subtext="Sync configuration"
-          onPress={() => navigation.navigate(SETTINGS_STACK.SYNC)}
-          RightComponent={ChevronIcon}
-        />
+        {__DEV__ && (
+          <SettingsItem
+            label="Sync settings"
+            subtext="Sync configuration"
+            onPress={() => navigation.navigate(SETTINGS_STACK.SYNC)}
+            RightComponent={ChevronIcon}
+          />
+        )}
         {__DEV__ && (
           <SettingsItem
             label="Developer settings"

@@ -110,11 +110,11 @@ export const DependencyContainer: FC = ({ children }) => {
       await db.getConnection();
       await dbService.init();
 
-      dbService.registerSubscribers([
-        new SensorSubscriber(syncQueueManager),
-        new TemperatureLogSubscriber(syncQueueManager),
-        new TemperatureBreachSubscriber(syncQueueManager),
-      ]);
+      // dbService.registerSubscribers([
+      //   new SensorSubscriber(syncQueueManager),
+      //   new TemperatureLogSubscriber(syncQueueManager),
+      //   new TemperatureBreachSubscriber(syncQueueManager),
+      // ]);
 
       setReady(true);
       SplashScreen.hideAsync();
