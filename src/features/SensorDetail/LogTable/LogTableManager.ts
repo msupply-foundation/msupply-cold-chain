@@ -1,6 +1,8 @@
+import { SortConfig, SortDirection, SortKey } from '~features/SensorDetail/LogTable/LogTableSlice';
 import { DatabaseService } from '../../../common/services';
 
-const GET_LOGS = `
+const getLogsQuery = (sortKey: SortKey, sortDirection: SortDirection) => {
+  const GET_LOGS = `
 select tl.id id,
 tl.timestamp timestamp,
 tl.temperature temperature,
@@ -19,10 +21,13 @@ left outer join (
 ) b on b.temperaturebreachid = tl.temperaturebreachid
 where
 tl.timestamp between ? and ? and sensorId = ?
-order by timestamp desc
+order by ${sortKey} ${sortDirection}
 limit ?
 offset ?
 `;
+
+  return GET_LOGS;
+};
 
 export interface TemperatureLogRow {
   id: string;
@@ -48,9 +53,17 @@ export class LogTableManager {
     from: number,
     to: number,
     id: string,
-    pagination: PaginationConfig
+    pagination: PaginationConfig,
+    sortConfig: SortConfig
   ): Promise<TemperatureLogRow> => {
     const { offset = 0, limit = 50 } = pagination ?? {};
-    return this.databaseService.query(GET_LOGS, [from, to, id, limit, offset]);
+    const { sortKey = 'timestamp', sortDirection = 'desc' } = sortConfig ?? {};
+    return this.databaseService.query(getLogsQuery(sortKey, sortDirection), [
+      from,
+      to,
+      id,
+      limit,
+      offset,
+    ]);
   };
 }

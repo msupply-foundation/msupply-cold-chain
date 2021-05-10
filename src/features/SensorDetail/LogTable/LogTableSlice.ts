@@ -4,13 +4,21 @@ import { createSlice, PayloadAction, ActionReducerMapBuilder } from '@reduxjs/to
 import { RootState } from '../../../common/store/store';
 import { DEPENDENCY, REDUCER } from '../../../common/constants';
 import { DetailAction, DetailSelector } from '../Detail';
-import { TemperatureLogRow, PaginationConfig } from './LogTableManager';
+import { TemperatureLogRow, PaginationConfig, LogTableManager } from './LogTableManager';
 
+export type SortKey = 'timestamp' | 'temperature' | 'isInBreach';
+export type SortDirection = 'asc' | 'desc';
+export interface SortConfig {
+  sortKey: SortKey;
+  sortDirection: SortDirection;
+}
 interface LogTableSliceState {
   data: TemperatureLogRow[];
   offset: number;
   limit: number;
   isLoading: boolean;
+  sortKey: SortKey;
+  sortDirection: SortDirection;
 }
 
 const initialState: LogTableSliceState = {
@@ -18,6 +26,8 @@ const initialState: LogTableSliceState = {
   offset: 0,
   limit: 50,
   isLoading: false,
+  sortKey: 'timestamp',
+  sortDirection: 'desc',
 };
 
 interface FetchPayload {
@@ -34,7 +44,57 @@ interface FetchMoreSuccess {
   logs: TemperatureLogRow[];
 }
 
+const getNewSortDirection = (
+  currentSortKey: SortKey,
+  newSortKey: SortKey,
+  currentDirection: SortDirection
+): SortDirection => {
+  const sameKey = currentSortKey === newSortKey;
+
+  // If it's the same key, then just swap the direction.
+  if (sameKey) {
+    const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+    return newDirection;
+  }
+
+  // Otherwise, start it off asc
+  return 'asc';
+};
+
 const reducers = {
+  trySortData: {
+    prepare: (sortKey: SortKey) => ({ payload: { sortKey } }),
+    reducer: (
+      draftState: LogTableSliceState,
+      { payload: { sortKey } }: { payload: { sortKey: SortKey } }
+    ) => {
+      draftState.offset = 0;
+      draftState.limit = 50;
+      draftState.data = [];
+      draftState.isLoading = true;
+      draftState.sortDirection = getNewSortDirection(
+        draftState.sortKey,
+        sortKey,
+        draftState.sortDirection
+      );
+      draftState.sortKey = sortKey;
+    },
+  },
+  sortDataSuccess: {
+    prepare: (data: TemperatureLogRow[]) => ({ payload: { data } }),
+    reducer: (
+      draftState: LogTableSliceState,
+      { payload: { data } }: { payload: { data: TemperatureLogRow[] } }
+    ) => {
+      draftState.data = data;
+    },
+  },
+  sortDataFailure: {
+    prepare: (errorMessage: string): { payload: { errorMessage: string } } => ({
+      payload: { errorMessage },
+    }),
+    reducer: () => {},
+  },
   fetch: {
     prepare: (id: string, from: number, to: number) => ({ payload: { from, to, id } }),
     reducer: (draftState: LogTableSliceState) => {
@@ -55,7 +115,12 @@ const reducers = {
       draftState.offset = offset + limit;
     },
   },
-  fetchFail: () => {},
+  fetchFail: {
+    prepare: (errorMessage: string): { payload: { errorMessage: string } } => ({
+      payload: { errorMessage },
+    }),
+    reducer: () => {},
+  },
 
   fetchMore: {
     prepare: (from: number, to: number, id: string) => ({ payload: { from, to, id } }),
@@ -102,6 +167,10 @@ const LogTableSelector = {
     const { limit, offset } = logTable;
     return { limit, offset };
   },
+  sortConfig({ sensorDetail: { logTable } }: RootState): SortConfig {
+    const { sortKey, sortDirection } = logTable;
+    return { sortKey, sortDirection };
+  },
 };
 
 function* fetchMore({ payload: { id } }: PayloadAction<FetchPayload>): SagaIterator {
@@ -110,9 +179,10 @@ function* fetchMore({ payload: { id } }: PayloadAction<FetchPayload>): SagaItera
 
   const { from, to } = yield select(DetailSelector.fromTo);
   const pagination = yield select(LogTableSelector.pagination);
+  const sortConfig = yield select(LogTableSelector.sortConfig);
 
   try {
-    const logs = yield call(logTableManager.getLogs, from, to, id, pagination);
+    const logs = yield call(logTableManager.getLogs, from, to, id, pagination, sortConfig);
     yield put(LogTableAction.fetchMoreSuccess(logs));
   } catch (error) {
     yield put(LogTableAction.fetchMoreFail());
@@ -129,7 +199,7 @@ function* fetch({ payload: { from, to, id } }: PayloadAction<FetchPayload>): Sag
 
     yield put(LogTableAction.fetchSuccess(logs));
   } catch (error) {
-    yield put(LogTableAction.fetchFail());
+    yield put(LogTableAction.fetchFail(error.message));
   }
 }
 
@@ -139,11 +209,40 @@ function* tryFetch({
   yield put(LogTableAction.fetch(sensorId, from, to));
 }
 
+function* trySortData(): SagaIterator {
+  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
+  const logTableManager: LogTableManager = yield call(
+    DependencyLocator.get,
+    DEPENDENCY.LOG_TABLE_MANAGER
+  );
+
+  try {
+    const sensorId: string = yield select(DetailSelector.sensorId);
+    const sortConfig: SortConfig = yield select(LogTableSelector.sortConfig);
+    const { from, to } = yield select(DetailSelector.fromTo);
+    const paginationConfig: PaginationConfig = yield select(LogTableSelector.pagination);
+
+    const logs: TemperatureLogRow[] = yield call(
+      logTableManager.getLogs,
+      from,
+      to,
+      sensorId,
+      paginationConfig,
+      sortConfig
+    );
+
+    yield put(LogTableAction.sortDataSuccess(logs));
+  } catch (error) {
+    yield put(LogTableAction.sortDataFailure(error.message));
+  }
+}
+
 function* root(): SagaIterator {
   yield takeEvery(DetailAction.fetchSuccess, tryFetch);
   yield takeEvery(DetailAction.updateDateRange, tryFetch);
   yield takeEvery(LogTableAction.fetch, fetch);
   yield takeEvery(LogTableAction.fetchMore, fetchMore);
+  yield takeEvery(LogTableAction.trySortData, trySortData);
 }
 
 const LogTableSaga = { root };

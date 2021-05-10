@@ -1,9 +1,8 @@
 import React, { ElementType, FC } from 'react';
-import { View, ViewProps } from 'react-native';
-import { TouchableNativeFeedback } from 'react-native-gesture-handler';
+import { View, Pressable, ViewStyle } from 'react-native';
 
 interface MaybeTouchableContainerProps {
-  style?: ViewProps;
+  style?: ViewStyle;
   isDisabled: boolean;
   onPress: (() => void) | null;
 }
@@ -14,7 +13,7 @@ export const MaybeTouchableContainer: FC<MaybeTouchableContainerProps> = ({
   onPress,
   children,
 }) => {
-  const Container = (isDisabled ? View : TouchableNativeFeedback) as ElementType;
+  const Container = (isDisabled ? View : Pressable) as ElementType;
 
   return (
     <Container style={style} onPress={onPress}>

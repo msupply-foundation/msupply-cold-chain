@@ -3,7 +3,7 @@ import { FlatList, View, Text, ActivityIndicator, TextStyle } from 'react-native
 import moment from 'moment';
 import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 import { useSelector, useDispatch } from 'react-redux';
-
+import { MaybeTouchableContainer } from '~layouts';
 import { COLOUR } from '../../common/constants';
 
 import { Row } from './Row';
@@ -12,9 +12,9 @@ import { LogTableAction, LogTableSelector } from '../../features';
 import { Icon, ICON_SIZE } from '../presentation/icons';
 
 const COLUMNS: Column[] = [
-  { header: 'Timestamp', flex: 1, key: 'time', textAlign: 'left' },
-  { header: 'Temperature', flex: 1, key: 'temperature', textAlign: 'right' },
-  { header: 'Exposure', flex: 1, key: 'isInBreach', textAlign: 'left' },
+  { header: 'Timestamp', flex: 1, key: 'timestamp', textAlign: 'left', sortable: true },
+  { header: 'Temperature', flex: 1, key: 'temperature', textAlign: 'right', sortable: true },
+  { header: 'Exposure', flex: 1, key: 'isInBreach', textAlign: 'left', sortable: false },
 ];
 
 interface SensorLogsCellProps extends Pick<TextStyle, 'textAlign'> {
@@ -86,7 +86,7 @@ export const SensorLogsRow: FC<SensorLogsRowProps> = React.memo(
     const rowData = {
       isInBreach: isInColdBreach || isInHotBreach ? 'yes' : '',
       temperature,
-      time,
+      timestamp: time,
     };
 
     return (
@@ -116,7 +116,8 @@ export const SensorLogsRow: FC<SensorLogsRowProps> = React.memo(
 interface Column extends Pick<TextStyle, 'textAlign'> {
   header: string;
   flex: number;
-  key: 'time' | 'temperature' | 'isInBreach';
+  key: 'timestamp' | 'temperature' | 'isInBreach';
+  sortable: boolean;
 }
 
 interface HeaderProps {
@@ -124,6 +125,9 @@ interface HeaderProps {
 }
 
 const Header = ({ columns }: HeaderProps) => {
+  const { sortKey, sortDirection } = useSelector(LogTableSelector.sortConfig);
+  const dispatch = useDispatch();
+
   return (
     <Row
       justifyContent="space-between"
@@ -133,11 +137,29 @@ const Header = ({ columns }: HeaderProps) => {
         borderTopWidth: 5,
       }}
     >
-      {columns.map(column => (
-        <Row flex={column.flex} justifyContent="center">
-          <SensorLogsCell data={column.header} isLast key={column.key} />
-        </Row>
-      ))}
+      {columns.map(column => {
+        const { key, sortable, header, flex, textAlign } = column;
+
+        return (
+          <MaybeTouchableContainer
+            isDisabled={!sortable}
+            style={{ flex }}
+            onPress={() => dispatch(LogTableAction.trySortData(key))}
+          >
+            <Row
+              flex={flex}
+              justifyContent="center"
+              alignItems="center"
+              style={{ marginRight: 10 }}
+            >
+              <SensorLogsCell data={header} isLast key={key} textAlign={textAlign} flex={flex} />
+              {sortable ? (
+                <Icon.Sort isSorted={sortKey === key} isAsc={sortDirection === 'asc'} />
+              ) : null}
+            </Row>
+          </MaybeTouchableContainer>
+        );
+      })}
     </Row>
   );
 };

@@ -11,6 +11,8 @@ export enum ICON_NAME {
   COLD_BREACH = 'snowflake-o',
   CHEVRON_LEFT = 'chevron-left',
   CHEVRON_RIGHT = 'chevron-right',
+  CHEVRON_UP = 'chevron-up',
+  CHEVRON_DOWN = 'chevron-down',
   LOW_BATTERY = 'battery-1',
   CALENDAR = 'calendar',
   SETTINGS = 'cog',
