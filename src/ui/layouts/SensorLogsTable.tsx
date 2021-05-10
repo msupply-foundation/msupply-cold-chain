@@ -129,7 +129,7 @@ const Header = ({ columns }: HeaderProps) => {
     <Row
       justifyContent="space-between"
       style={{
-        backgroundColor: COLOUR.BACKGROUND_TWO,
+        backgroundColor: COLOUR.BACKGROUND_GRADIENT_END,
         borderTopColor: COLOUR.DIVIDER_TWO,
         borderTopWidth: 5,
       }}
@@ -188,7 +188,7 @@ export const SensorLogsTable: FC<SensorLogsTableProps> = React.memo(({ id }) => 
   );
 
   const onEndReached = useCallback(() => {
-    dispatch(LogTableAction.fetchMore(moment().subtract(3, 'days').unix(), moment().unix(), id));
+    dispatch(LogTableAction.fetchMore(id));
   }, [dispatch, id]);
 
   return (
