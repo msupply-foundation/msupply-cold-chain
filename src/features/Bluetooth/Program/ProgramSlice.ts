@@ -1,5 +1,5 @@
 import { SettingManager } from './../../Entities/Setting/SettingManager';
-import { BleService } from './../../../common/services/Bluetooth/BleService';
+import { BleService, InfoLog } from './../../../common/services/Bluetooth/BleService';
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ToastAndroid } from 'react-native';
@@ -110,8 +110,8 @@ export function* tryProgramNewSensor({
   ] = yield call(DependencyLocator.get, [DEPENDENCY.BLUETOOTH, DEPENDENCY.SETTING_MANAGER]);
 
   try {
-    const logInterval = yield call(settingManager.getSetting, 'defaultLogInterval');
-    const { batteryLevel, isDisabled } = yield retry(10, 0, btService.getInfo, macAddress);
+    const logInterval: number = yield call(settingManager.getSetting, 'defaultLogInterval');
+    const { batteryLevel, isDisabled }: InfoLog = yield retry(10, 0, btService.getInfo, macAddress);
     yield retry(10, 0, btService.updateLogInterval, macAddress, logInterval);
 
     if (!isDisabled) {
