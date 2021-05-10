@@ -71,9 +71,16 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
   );
   return (
     <FullScreenModal isOpen={isOpen} animationIn="bounceIn" animationOut="bounceOut">
-      <View style={{ width: '100%' }}>
+      <View
+        style={{
+          width: '90%',
+          marginBottom: 10,
+          borderRadius: 5,
+        }}
+      >
         <LoadAfterInteractions Loading={Loading}>
           <Calendar
+            style={{ borderRadius: 5 }}
             current={range.start().format('YYYY-MM-DD')}
             markingType="period"
             onDayPress={onDayPress}
