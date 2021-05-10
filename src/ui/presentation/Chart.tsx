@@ -48,12 +48,7 @@ interface ChartProps {
   isLoading: boolean;
 }
 
-export const Chart: FC<ChartProps> = ({
-  data = [],
-  width = STYLE.WIDTH.NORMAL_CHART,
-  height = STYLE.HEIGHT.NORMAL_CHART,
-  isLoading,
-}) => {
+export const Chart: FC<ChartProps> = ({ data = [], isLoading, width, height }) => {
   const formatter = useDependency(DEPENDENCY.FORMAT_SERVICE) as FormatService;
 
   const tickFormatter = formatter.getTickFormatter();
@@ -76,8 +71,6 @@ export const Chart: FC<ChartProps> = ({
   return (
     <View
       style={{
-        minHeight: height,
-        minWidth: width,
         justifyContent: 'center',
         alignItems: 'center',
       }}
@@ -85,8 +78,9 @@ export const Chart: FC<ChartProps> = ({
       {!isLoading ? (
         data.length ? (
           <VictoryChart
-            height={height}
             width={width}
+            height={height}
+            padding={{ top: 10, bottom: 30, left: 30, right: 30 }}
             domain={{ y: [domainMin, domainMax], x: [minTime, maxTime] }}
           >
             {/* X AXIS */}

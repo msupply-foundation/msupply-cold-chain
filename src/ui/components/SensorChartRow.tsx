@@ -15,6 +15,7 @@ import { SensorRowLayout } from '../layouts';
 import { Chart } from '../presentation';
 import { SensorStatus } from './SensorStatus';
 import { RootState } from '../../common/store/store';
+import { useWindowDimensions } from 'react-native';
 
 interface SensorChartRowProps {
   id: string;
@@ -22,6 +23,7 @@ interface SensorChartRowProps {
 }
 
 export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, onPress }) => {
+  const { width, height } = useWindowDimensions();
   const dispatch = useDispatch();
   const fetchStatus = () => dispatch(SensorStatusAction.fetch(id));
   const fetchChartData = () => dispatch(ChartAction.getListChartData(id));
@@ -42,7 +44,14 @@ export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, onPress
   return (
     <SensorRowLayout
       onPress={hasData && !isLoadingChartData ? () => onPress() : undefined}
-      Chart={<Chart isLoading={isLoadingChartData} data={data} />}
+      Chart={
+        <Chart
+          isLoading={isLoadingChartData}
+          data={data}
+          width={width * 0.6}
+          height={height * 0.15}
+        />
+      }
       SensorStatus={
         <SensorStatus name={name} isLoading={isLoadingStatus} hasData={hasData} id={id} />
       }

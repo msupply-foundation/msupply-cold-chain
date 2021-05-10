@@ -30,8 +30,10 @@ export const SensorRowLayout: FC<SensorRowLayoutProps> = ({
 }) => {
   return (
     <TouchableOpacity onPress={onPress}>
-      <Row justifyContent="space-between" alignItems="center" style={styles.row}>
-        <Column justifyContent="center">{Chart}</Column>
+      <Row style={styles.row}>
+        <Column flex={1} justifyContent="center">
+          {Chart}
+        </Column>
         <Column justifyContent="center">{SensorStatus}</Column>
         <Column justifyContent="center">
           {!!onPress && (
