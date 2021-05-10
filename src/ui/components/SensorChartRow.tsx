@@ -27,7 +27,8 @@ export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, onPress
   const dispatch = useDispatch();
   const fetchStatus = () => dispatch(SensorStatusAction.fetch(id));
   const fetchChartData = () => dispatch(ChartAction.getListChartData(id));
-  const fetchCumulative = () => dispatch(CumulativeBreachAction.fetchListForSensor(id));
+
+  // const fetchCumulative = () => dispatch(CumulativeBreachAction.fetchListForSensor(id));
 
   const isLoadingChartData = useSelector((state: RootState) =>
     ChartSelector.isLoading(state, { id })
@@ -39,7 +40,7 @@ export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, onPress
   const name = useSelector((state: RootState) => SensorSelector.getName(state, { id }));
   const hasData = useSelector((state: RootState) => SensorStatusSelector.hasData(state, { id }));
 
-  useOnMount([fetchStatus, fetchChartData, fetchCumulative]);
+  useOnMount([fetchStatus, fetchChartData]);
 
   return (
     <SensorRowLayout

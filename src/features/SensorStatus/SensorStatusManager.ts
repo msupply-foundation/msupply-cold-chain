@@ -19,7 +19,7 @@ with breach as (
   s.name        name,
   s.logDelay    logDelay,
   mostRecentLogTimestamp,
-  s.batteryLevel < 75 isLowBattery,
+  s.batteryLevel < 25 isLowBattery,
   firstTimestamp,
   coalesce(numberOfLogs,0) > 0 hasLogs,
   coalesce(numberOfLogs,0) numberOfLogs,

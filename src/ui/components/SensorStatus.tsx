@@ -23,7 +23,7 @@ export const SensorStatus: FC<SensorStatusProps> = ({ isLoading, hasData, id, na
       SensorStatusBar={<SensorStatusBar id={id} />}
       SensorName={SensorName}
       TemperatureStatus={<SensorTemperatureStatus id={id} />}
-      CumulativeBreach={<SensorListCumulativeBreachStatus id={id} />}
+      CumulativeBreach={null}
       LastDownload={<SensorLastDownloadTime id={id} />}
     />
   ) : (
