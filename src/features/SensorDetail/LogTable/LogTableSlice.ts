@@ -123,8 +123,11 @@ const reducers = {
   },
 
   fetchMore: {
-    prepare: (from: number, to: number, id: string) => ({ payload: { from, to, id } }),
-    reducer: () => {},
+    prepare: (id: string) => ({ payload: { id } }),
+    reducer: (draftState: LogTableSliceState) => {
+      const { limit, offset } = draftState;
+      draftState.offset = offset + limit;
+    },
   },
   fetchMoreSuccess: {
     prepare: (logs: TemperatureLogRow[]) => ({ payload: { logs } }),
@@ -132,9 +135,7 @@ const reducers = {
       draftState: LogTableSliceState,
       { payload: { logs } }: PayloadAction<FetchMoreSuccess>
     ) => {
-      const { limit, offset } = draftState;
       draftState.data = draftState.data.concat(logs);
-      draftState.offset = offset + limit;
     },
   },
   fetchMoreFail: () => {},
