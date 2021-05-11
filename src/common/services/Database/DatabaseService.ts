@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { EntitySubscriberInterface } from 'typeorm/browser';
-
 import { Database } from './Database';
 import { ENTITIES, MILLISECONDS } from '~constants';
 import { classToPlain } from 'class-transformer';
@@ -87,6 +86,21 @@ export class DatabaseService {
 
   registerSubscribers = (subscribers: EntitySubscriberInterface[]): void => {
     subscribers.forEach(subscriber => this.database.connection?.subscribers.push(subscriber));
+  };
+
+  update = async (entityName: string, id: string, object: any): Promise<any | any[]> => {
+    const repository = await this.database.getRepository(entityName);
+    return repository.update(id, object);
+  };
+
+  insert = async (entityName: string, objectOrArray: any | any[]): Promise<any | any[]> => {
+    if (Array.isArray(objectOrArray)) {
+      const repository = await this.database.getRepository(entityName);
+      const chunks = _.chunk(objectOrArray, 100);
+      return Promise.all(chunks.map(chunk => repository.insert(chunk)));
+    }
+    const repository = await this.database.getRepository(entityName);
+    return repository.insert(objectOrArray);
   };
 
   save = async (entityName: string, objectOrArray: any | any[]): Promise<any | any[]> => {
