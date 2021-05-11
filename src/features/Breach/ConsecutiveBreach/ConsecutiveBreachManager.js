@@ -161,9 +161,7 @@ export class ConsecutiveBreachManager {
   };
 
   updateBreaches = async (breaches, temperatureLogs) => {
-    // eslint-disable-next-line no-param-reassign
-
-    const updatedBreaches = await this.databaseService.upsert(
+    const updatedBreaches = await this.databaseService.insert(
       ENTITIES.TEMPERATURE_BREACH,
       breaches
     );
@@ -176,8 +174,8 @@ export class ConsecutiveBreachManager {
 
     // TODO: SQLite playing funny bugger games when inserting with a FK straight after
     // creating with a FK
-    await this.databaseService.upsert(ENTITIES.TEMPERATURE_LOG, mapped);
-    const updatedLogs = await this.databaseService.upsert(
+    await this.databaseService.update(ENTITIES.TEMPERATURE_LOG, mapped);
+    const updatedLogs = await this.databaseService.update(
       ENTITIES.TEMPERATURE_LOG,
       temperatureLogs
     );

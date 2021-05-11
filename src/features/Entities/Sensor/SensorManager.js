@@ -146,6 +146,10 @@ export class SensorManager {
     return this.databaseService.upsert(ENTITIES.SENSOR, ...params);
   };
 
+  update = async (id: string, params: any) => {
+    return this.databaseService.update(ENTITIES.SENSOR, id, params);
+  };
+
   getAll = async () => {
     return this.databaseService.getAll(ENTITIES.SENSOR);
   };
@@ -201,7 +205,7 @@ export class SensorManager {
     const lastDownloadTime = moment().unix();
     const nextDownloadTime = moment().add(logInterval, 's').unix();
 
-    return this.upsert({ id, lastDownloadTime, nextDownloadTime });
+    return this.update({ id, lastDownloadTime, nextDownloadTime });
   };
 
   getSensorState = async sensorId => {
@@ -255,23 +259,23 @@ export class SensorManager {
   };
 
   updateField = async (id, key, value) => {
-    return this.upsert({ id, [key]: value });
+    return this.update(id, { id, [key]: value });
   };
 
   updateName = async (id, name) => {
-    return this.upsert({ id, name });
+    return this.update(id, { id, name });
   };
 
   updateLogDelay = async (id, logDelay) => {
-    return this.upsert({ id, logDelay });
+    return this.update(id, { id, logDelay });
   };
 
   updateLogInterval = async (id, logInterval) => {
-    return this.upsert({ id, logInterval });
+    return this.update(id, { id, logInterval });
   };
 
   updateBatteryLevel = async (id, batteryLevel) => {
-    return this.upsert({ id, batteryLevel });
+    return this.update(id, { id, batteryLevel });
   };
 
   getSensorReport = async id => {

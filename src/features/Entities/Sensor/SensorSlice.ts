@@ -114,7 +114,10 @@ const reducers = {
       draftState.byId[id] = { ...draftState.byId[id], [key]: value };
     },
   },
-  updateFail: () => {},
+  updateFail: {
+    prepare: (errorMessage: string) => ({ payload: { errorMessage } }),
+    reducer: () => {},
+  },
   create: {
     prepare: (
       macAddress: string,
@@ -169,7 +172,7 @@ function* update({ payload: { sensorId, key, value } }: UpdateAction): SagaItera
     yield call(manager.updateField, sensorId, key, value);
     yield put(SensorAction.updateSuccess(sensorId, key, value));
   } catch (e) {
-    yield put(SensorAction.updateFail());
+    yield put(SensorAction.updateFail(e.message));
   }
 }
 

@@ -81,6 +81,6 @@ export class DownloadManager {
   };
 
   saveLogs = async (logsToSave: Partial<TemperatureLog>[]): Promise<TemperatureLog[]> => {
-    return this.databaseService.upsert(ENTITIES.TEMPERATURE_LOG, logsToSave);
+    return this.databaseService.insert(ENTITIES.TEMPERATURE_LOG, logsToSave);
   };
 }
