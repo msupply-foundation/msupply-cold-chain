@@ -1,6 +1,6 @@
 {
   "name": "mSupplyColdChain",
-  "version": "0.0.3-rc3",
+  "version": "0.0.3-rc4",
   "description": "Cold chain temperature monitoring",
   "author": "mSupply Foundation",
   "main": "index.ts",
@@ -10,6 +10,7 @@
     "node": ">=12.8.4"
   },
   "scripts": {
+    "upload-bugsnag": "./scripts/upload.sh",
     "test": "jest",
     "reset": "yarn start-no-options --reset-cache",
     "build": "node ./scripts/setup.js && cd ./android && ./gradlew assembleRelease",
@@ -44,6 +45,7 @@
     "@types/react-native": "^0.63.48",
     "@types/react-native-calendars": "^1.505.0",
     "@types/react-native-mail": "^3.0.0",
+    "@types/react-native-sqlite-storage": "^5.0.0",
     "@types/react-native-vector-icons": "^6.4.6",
     "@types/react-navigation": "^3.4.0",
     "@types/react-redux": "^7.1.16",
