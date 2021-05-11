@@ -246,7 +246,7 @@ export class SensorManager {
 
   addNewSensor = async (macAddress, logInterval, logDelay, batteryLevel) => {
     const id = this.utils.uuid();
-    const name = id.slice(0, 8);
+    const name = macAddress;
     return this.upsert({
       name,
       logInterval,
@@ -288,5 +288,9 @@ export class SensorManager {
 
   getLogsReport = async id => {
     return this.databaseService.query(LOGS_REPORT, [id, id, id]);
+  };
+
+  remove = async id => {
+    return this.databaseService.update(ENTITIES.SENSOR, id, { isActive: false });
   };
 }
