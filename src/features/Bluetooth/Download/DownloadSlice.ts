@@ -120,7 +120,7 @@ function* tryDownloadForSensor({
         downloadManager.createLogs,
         logs,
         sensor,
-        numberOfLogsToSave,
+        Math.min(numberOfLogsToSave, logs?.length),
         mostRecentLogTime
       );
 
