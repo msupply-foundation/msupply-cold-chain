@@ -60,8 +60,16 @@ export class Database {
   };
 
   getConnection = async (): Promise<Connection | null> => {
-    if (!this.connection) await this.createConnection();
-    return this.connection;
+    let conn = this.connection;
+    if (!this.connection) {
+      conn = await this.createConnection();
+      conn?.query('pragma journal_mode = "wal"');
+      conn?.query('pragma locking_mode = "exclusive"');
+      conn?.query('pragma synchronous=OFF');
+      conn?.query('pragma temp_store = "memory"');
+    }
+
+    return conn;
   };
 
   getRepository = async (repo: string): Promise<any | any[]> => {
