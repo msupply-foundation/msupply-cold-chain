@@ -85,6 +85,19 @@ left join cumulativeBreachFields cbf
 where sensorid = ?
 group by sensorid`;
 
+const specialChars = /[\/\?<>\\:\*\|":]/g;
+const apparentlyTheseOnesAlso = /[\x00-\x1f\x80-\x9f]/g;
+const andTheseOnes = /^\.+$/;
+
+const sanitize = (input, replacement = '') =>
+  input
+    .replace(specialChars, replacement)
+    .replace(apparentlyTheseOnesAlso, replacement)
+    .replace(andTheseOnes, replacement)
+    .split('')
+    .splice(0, 255)
+    .join('');
+
 export class ReportManager {
   constructor(databaseService, exportService, deviceFeatureService) {
     this.databaseService = databaseService;
@@ -215,18 +228,19 @@ export class ReportManager {
 
     const directory = '/Download/cce';
     const now = moment().format('DD-MM-YYYY-HHmm');
-    const file = `/${now}.csv`;
 
+    const file = `/${sanitize(`${now}-${sensor.name}`)}.csv`;
     const path = `${RNFS.ExternalStorageDirectoryPath}${directory}${file}`;
 
     try {
       await RNFS.mkdir(`${RNFS.ExternalStorageDirectoryPath}${directory}`);
       await RNFS.writeFile(path, csv, 'utf8');
+
       return path;
       // eslint-disable-next-line no-empty
     } catch (e) {}
 
-    return null;
+    return path;
   };
 
   emailLogFile = async (
@@ -329,8 +343,7 @@ export class ReportManager {
 
     const directory = '/Download/cce';
     const now = moment().format('DD-MM-YYYY-HHmm:ss');
-    const file = `/${now}-${sensor.name}.csv`;
-
+    const file = `/${sanitize(`${now}-${sensor.name}`)}.csv`;
     const path = `${RNFS.ExternalStorageDirectoryPath}${directory}${file}`;
 
     try {
