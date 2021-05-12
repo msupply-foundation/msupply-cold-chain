@@ -28,6 +28,9 @@ class Sensor {
   @Column({ nullable: true, type: 'int' })
   programmedDate!: number;
 
+  @Column({ nullable: true, default: true, type: 'boolean' })
+  isActive!: boolean;
+
   @OneToMany(() => TemperatureLog, temperatureLog => temperatureLog.sensor, {
     cascade: ['insert', 'update'],
   })

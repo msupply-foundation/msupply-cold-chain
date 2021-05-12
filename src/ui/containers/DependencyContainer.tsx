@@ -110,6 +110,16 @@ export const DependencyContainer: FC = ({ children }) => {
       await db.getConnection();
       await dbService.init();
 
+      // TODO: Implement more robust database migration strategy
+      const result = await dbService.query('PRAGMA table_info(Sensor);');
+      const isActiveColumnDefinition = result.find(
+        (column: { cid: number; dflt_value: string; name: string }) => column.name === 'isActive'
+      );
+      if (!isActiveColumnDefinition) {
+        await dbService.query('ALTER TABLE Sensor ADD COLUMN isActive integer default 1');
+      }
+
+      // TODO: Re enable these
       // dbService.registerSubscribers([
       //   new SensorSubscriber(syncQueueManager),
       //   new TemperatureLogSubscriber(syncQueueManager),

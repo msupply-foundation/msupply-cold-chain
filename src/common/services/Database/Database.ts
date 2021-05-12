@@ -20,7 +20,7 @@ export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
   // },
   logging: ENVIRONMENT.QUERY_LOGGER ? ['error', 'query', 'schema'] : [],
   maxQueryExecutionTime: 3000,
-  synchronize: true,
+  // synchronize: true,
   entities: [
     Sensor,
     TemperatureLog,
