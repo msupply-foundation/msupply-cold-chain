@@ -1,14 +1,13 @@
 import React, { FC } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RouteProp } from '@react-navigation/core';
+import { RouteProp, useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as Yup from 'yup';
-import { t } from '../../../common/translations';
 
-import { useRouteProps } from '../../hooks';
-
-import { SettingsList } from '../../layouts';
-import { RootState } from '../../../common/store/store';
+import { t } from '~common/translations';
+import { useRouteProps } from '~hooks';
+import { SettingsList } from '~layouts';
+import { RootState } from '~store/store';
 import { SettingsStackParameters } from '../../containers/SettingsStackNavigator';
 import {
   SettingsLoadingIndicatorRow,
@@ -17,16 +16,11 @@ import {
   SettingsNumberInputRow,
   SettingsButtonRow,
   SettingsItem,
-} from '../../components/settings';
-
-import {
-  ProgramAction,
-  DownloadAction,
-  BlinkAction,
-  BlinkSelector,
-  SensorAction,
-} from '../../../features';
-import { SETTINGS_STACK } from '../../../common/constants';
+  SettingsConfirmRow,
+} from '~components/settings';
+import { ProgramAction, DownloadAction, BlinkAction, BlinkSelector, SensorAction } from '~features';
+import { SETTINGS_STACK } from '~constants';
+import { SensorState } from '~features/Entities/Sensor/SensorSlice';
 
 export type SensorDetailSettingsScreenRouteProp = RouteProp<
   SettingsStackParameters,
@@ -45,12 +39,15 @@ type SensorDetailSettingsScreenProps = {
 
 export const SensorDetailSettingsScreen: FC<SensorDetailSettingsScreenProps> = () => {
   const { id } = useRouteProps<SettingsStackParameters, SETTINGS_STACK.SENSOR_DETAIL>();
+  const sensor: SensorState | undefined = useSelector(
+    (state: RootState) => state.entities.sensor.byId[id]
+  );
 
-  const sensor = useSelector((state: RootState) => state.entities.sensor.byId[id]);
-
+  const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { name, logInterval, macAddress } = sensor;
+  const { name, logInterval, macAddress, batteryLevel } = sensor ?? {};
   const { [macAddress]: isBlinking } = useSelector(BlinkSelector.isBlinking);
+
   return (
     <SettingsList>
       <SettingsLoadingIndicatorRow
@@ -63,13 +60,18 @@ export const SensorDetailSettingsScreen: FC<SensorDetailSettingsScreenProps> = (
         label="Download"
         onPress={() => dispatch(DownloadAction.tryManualDownloadForSensor(id))}
       />
+      <SettingsConfirmRow
+        subtext=""
+        label="Remove"
+        onPress={() => {
+          navigation.goBack();
+          dispatch(SensorAction.tryRemove(id));
+        }}
+        confirmText={t('REMOVE_SENSOR_CONFIRMATION')}
+      />
       <SettingsGroup title="SENSOR DETAILS">
         <SettingsItem label={macAddress} subtext="This sensors mac address" isDisabled />
-        <SettingsItem
-          label={`${sensor.batteryLevel}%`}
-          subtext="This sensors battery level"
-          isDisabled
-        />
+        <SettingsItem label={`${batteryLevel}%`} subtext="This sensors battery level" isDisabled />
       </SettingsGroup>
       <SettingsGroup title={t('EDIT_SENSOR_DETAILS')}>
         <SettingsTextInputRow

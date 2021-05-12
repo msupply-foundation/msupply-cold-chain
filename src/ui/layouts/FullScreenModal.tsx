@@ -1,8 +1,7 @@
 import React, { FC, ReactNode } from 'react';
-import { Pressable, ViewStyle } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 import Modal, { ModalProps } from 'react-native-modal';
-
-import { COLOUR } from '../../common/constants';
+import { COLOUR } from '~constants';
 
 const styles: { container: ViewStyle } = {
   container: {
@@ -38,10 +37,10 @@ export const FullScreenModal: FC<FullScreenModalProps> = ({
       coverScreen
       style={{ margin: 0 }}
       useNativeDriver
+      useNativeDriverForBackdrop
+      onBackdropPress={onClose}
     >
-      <Pressable style={internalStyle} onPress={onClose}>
-        {children}
-      </Pressable>
+      <View style={internalStyle}>{children}</View>
     </Modal>
   );
 };

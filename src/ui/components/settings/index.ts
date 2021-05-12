@@ -13,3 +13,4 @@ export { SettingsAddSensorModal } from './SettingsAddSensorModal';
 export { SettingsAddSensorRow } from './SettingsAddSensorRow';
 export { SettingsLoadingIndicatorRow } from './SettingsLoadingIndicatorRow';
 export { SettingsStackHeader } from './SettingsStackHeader';
+export { SettingsConfirmRow } from './SettingsConfirmRow';

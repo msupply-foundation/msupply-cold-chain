@@ -146,7 +146,7 @@ function* downloadTemperatures(): SagaIterator {
   const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
 
   try {
-    const sensors = yield call(sensorManager.getSensors);
+    const sensors = yield call(sensorManager.getAll);
     const mapper = ({ id }: SensorState) => put(DownloadAction.tryPassiveDownloadForSensor(id));
     const actions = (sensors as SensorState[]).map(mapper);
     yield all(actions);

@@ -2,6 +2,8 @@ import moment from 'moment';
 import { classToPlain } from 'class-transformer';
 import { ENTITIES } from '../../../common/constants';
 
+import { IsNull } from 'typeorm/browser';
+
 const SENSOR_STATE = `
 with breach as (
   select (select count(*) > 0
@@ -151,7 +153,9 @@ export class SensorManager {
   };
 
   getAll = async () => {
-    return this.databaseService.getAll(ENTITIES.SENSOR);
+    return this.databaseService.queryWith(ENTITIES.SENSOR, {
+      where: [{ isActive: IsNull() }, { isActive: 1 }],
+    });
   };
 
   getSensor = async macAddress => {
