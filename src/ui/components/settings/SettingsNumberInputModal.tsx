@@ -1,10 +1,10 @@
 import React, { FC, useState } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { TextInput, useWindowDimensions } from 'react-native';
 import { SettingsEditModal } from './SettingsEditModal';
 import { Slider } from '../../presentation';
 import { Column, Row } from '../../layouts';
 import { LargeText } from '../../presentation/typography';
-import { COLOUR } from '../../../common/constants';
+import { COLOUR, FONT } from '../../../common/constants';
 import { useCombinedCallback } from '../../hooks';
 
 interface SettingsNumberInputModalProps {
@@ -18,6 +18,10 @@ interface SettingsNumberInputModalProps {
   onClose: () => void;
   isOpen: boolean;
 }
+
+const isInRange = (input: number, min: number, max: number) => {
+  return input >= min && input <= max;
+};
 
 export const SettingsNumberInputModal: FC<SettingsNumberInputModalProps> = ({
   title,
@@ -45,9 +49,23 @@ export const SettingsNumberInputModal: FC<SettingsNumberInputModalProps> = ({
       Content={
         <Column alignItems="center" justifyContent="center">
           <Row justifyContent="space-between" alignItems="center">
-            <LargeText color={COLOUR.SECONDARY}>
-              {`${value} ${metric ? `(${metric})` : ''}`}
-            </LargeText>
+            <TextInput
+              underlineColorAndroid={COLOUR.SECONDARY}
+              style={{
+                fontSize: FONT.SIZE.L,
+                fontFamily: FONT.FAMILY.REGULAR,
+                color: COLOUR.SECONDARY,
+              }}
+              value={String(value)}
+              keyboardType="numeric"
+              onChangeText={(newInput: string) => {
+                const asNumber = Number(newInput);
+                if (!isNaN(asNumber) && isInRange(asNumber, minimumValue, maximumValue)) {
+                  setValue(asNumber);
+                }
+              }}
+            />
+            <LargeText color={COLOUR.SECONDARY}>{`${metric ? `(${metric})` : ''}`}</LargeText>
           </Row>
 
           <Slider
