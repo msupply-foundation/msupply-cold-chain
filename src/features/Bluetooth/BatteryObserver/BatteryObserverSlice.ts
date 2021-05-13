@@ -66,7 +66,7 @@ function* updateBatteryLevels(): SagaIterator {
 function* start(): SagaIterator {
   while (true) {
     yield call(updateBatteryLevels);
-    yield delay(MILLISECONDS.THIRTY_SECONDS);
+    yield delay(MILLISECONDS.TEN_MINUTES);
   }
 }
 
