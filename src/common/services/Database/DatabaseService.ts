@@ -3,6 +3,7 @@ import { EntitySubscriberInterface } from 'typeorm/browser';
 import { Database } from './Database';
 import { ENTITIES, MILLISECONDS } from '~constants';
 import { classToPlain } from 'class-transformer';
+import { migrations } from '~common/services/Database/migrations';
 
 export class DatabaseService {
   database: Database;
@@ -47,7 +48,7 @@ export class DatabaseService {
     const configs = await this.getAll(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION);
 
     if (configs.length !== 4) {
-      this.upsert(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION, [
+      await this.upsert(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION, [
         HOT_BREACH,
         HOT_CUMULATIVE,
         COLD_BREACH,
@@ -57,14 +58,18 @@ export class DatabaseService {
 
     const isIntegrating = await this.get(ENTITIES.SETTING, { key: 'isIntegrating' });
     if (!isIntegrating) {
-      this.upsert(ENTITIES.SETTING, { id: 'isIntegrating', key: 'isIntegrating', value: 'false' });
+      await this.upsert(ENTITIES.SETTING, {
+        id: 'isIntegrating',
+        key: 'isIntegrating',
+        value: 'false',
+      });
     }
 
     const lastSync = await this.get(ENTITIES.SETTING, {
       key: 'lastSync',
     });
     if (!lastSync) {
-      this.upsert(ENTITIES.SETTING, {
+      await this.upsert(ENTITIES.SETTING, {
         id: 'lastSync',
         key: 'lastSync',
         value: '0',
@@ -76,11 +81,32 @@ export class DatabaseService {
     });
 
     if (!defaultLogInterval) {
-      this.upsert(ENTITIES.SETTING, {
+      await this.upsert(ENTITIES.SETTING, {
         id: 'defaultLogInterval',
         key: 'defaultLogInterval',
         value: '300',
       });
+    }
+
+    for (const migration of migrations) {
+      await migration.migrate(this);
+    }
+  };
+
+  transaction = async (callback: () => Promise<void>): Promise<void> => {
+    const connection = await this.database.getConnection();
+
+    if (!connection) throw new Error('Database is not connected!');
+
+    const queryRunner = await connection.createQueryRunner();
+    try {
+      await queryRunner.startTransaction();
+      await callback();
+      await queryRunner.commitTransaction();
+    } catch (e) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
     }
   };
 

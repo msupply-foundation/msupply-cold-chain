@@ -27,7 +27,7 @@ export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
     TemperatureBreach,
     TemperatureBreachConfiguration,
     Setting,
-    SyncLog,
+    // SyncLog,
   ],
 });
 
@@ -55,6 +55,12 @@ export class Database {
       return this.connection;
     } catch (e) {
       this.connection = await createConnection(this.config);
+
+      // Build schema from entity objects
+      this.config.entities?.forEach((entity: any) => {
+        this.connection?.query(entity.getTableDefinition());
+      });
+
       return this.connection;
     }
   };
