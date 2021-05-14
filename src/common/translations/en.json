@@ -110,5 +110,9 @@
   "START_INTEGRATION_SUBTEXT": "Begin sending records to your server",
   "STOP_INTEGRATION": "Stop integration",
   "STOP_INTEGRATION_SUBTEXT": "Stop sending records to your server",
-  "REMOVE_SENSOR_CONFIRMATION": "This will disconnect the sensor from the tablet and no temperatures will be downloaded. Are you sure?"
+  "REMOVE_SENSOR_CONFIRMATION": "This will disconnect the sensor from the tablet and no temperatures will be downloaded. Are you sure?",
+  "ERROR_MESSAGE": "Sorry! somethings gone wrong.",
+  "ERROR_SUBTEXT": "Click below to restart.",
+  "MIGRATION_ERROR": "Sorry! There has been an error starting the database. Please contact an administrator.",
+  "RESTART": "RESTART"
 }
