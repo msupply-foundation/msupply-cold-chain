@@ -57,9 +57,9 @@ export class Database {
       this.connection = await createConnection(this.config);
 
       // Build schema from entity objects
-      this.config.entities?.forEach((entity: any) => {
-        this.connection?.query(entity.getTableDefinition());
-      });
+      for (const entity of this.config.entities as any) {
+        await this.connection.query((entity as any).getTableDefinition());
+      }
 
       return this.connection;
     }
