@@ -27,7 +27,7 @@ export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
     TemperatureBreach,
     TemperatureBreachConfiguration,
     Setting,
-    SyncLog,
+    // SyncLog,
   ],
 });
 
@@ -55,6 +55,12 @@ export class Database {
       return this.connection;
     } catch (e) {
       this.connection = await createConnection(this.config);
+
+      // Build schema from entity objects
+      for (const entity of this.config.entities as any) {
+        await this.connection.query((entity as any).getTableDefinition());
+      }
+
       return this.connection;
     }
   };
@@ -63,10 +69,10 @@ export class Database {
     let conn = this.connection;
     if (!this.connection) {
       conn = await this.createConnection();
-      conn?.query('pragma journal_mode = "wal"');
-      conn?.query('pragma locking_mode = "exclusive"');
-      conn?.query('pragma synchronous=OFF');
-      conn?.query('pragma temp_store = "memory"');
+      // conn?.query('pragma journal_mode = "wal"');
+      // conn?.query('pragma locking_mode = "exclusive"');
+      // conn?.query('pragma synchronous=OFF');
+      // conn?.query('pragma temp_store = "memory"');
     }
 
     return conn;

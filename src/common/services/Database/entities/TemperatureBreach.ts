@@ -8,6 +8,29 @@ import { Sensor } from './Sensor';
 
 @Entity('TemperatureBreach')
 class TemperatureBreach {
+  static getTableDefinition = () => `
+  CREATE TABLE IF NOT EXISTS  TemperatureBreach (
+    id                               VARCHAR PRIMARY KEY
+                                             NOT NULL,
+    endTimestamp                     INTEGER,
+    startTimestamp                   INTEGER NOT NULL,
+    temperatureBreachConfigurationId VARCHAR NOT NULL,
+    acknowledged                     BOOLEAN NOT NULL
+                                             DEFAULT (0),
+    sensorId                         VARCHAR NOT NULL,
+    CONSTRAINT FK_temperatureBreach_temperatureBreachConfig FOREIGN KEY (
+        temperatureBreachConfigurationId
+    )
+    REFERENCES TemperatureBreachConfiguration (id) ON DELETE NO ACTION
+                                                   ON UPDATE NO ACTION,
+    CONSTRAINT FK_temperatureBreach_sensor FOREIGN KEY (
+        sensorId
+    )
+    REFERENCES Sensor (id) ON DELETE NO ACTION
+                           ON UPDATE NO ACTION
+);
+`;
+
   @PrimaryColumn({ type: 'varchar', nullable: false })
   id!: string;
 

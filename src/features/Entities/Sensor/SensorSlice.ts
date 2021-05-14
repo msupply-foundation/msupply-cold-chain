@@ -214,7 +214,7 @@ function* fetchAll(): SagaIterator {
   const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
   const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
   try {
-    const sensors = yield call(sensorManager.getSensors);
+    const sensors = yield call(sensorManager.getAll);
     const mapped = sensors.map((sensor: SensorState) => ({ ...sensor }));
     yield put(SensorAction.fetchAllSuccess(mapped));
   } catch (error) {

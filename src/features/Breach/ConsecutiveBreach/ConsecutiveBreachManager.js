@@ -161,26 +161,21 @@ export class ConsecutiveBreachManager {
   };
 
   updateBreaches = async (breaches, temperatureLogs) => {
-    const updatedBreaches = await this.databaseService.insert(
+    const updatedBreaches = await this.databaseService.upsert(
       ENTITIES.TEMPERATURE_BREACH,
       breaches
     );
 
-    const mapped = temperatureLogs.map(({ id, temperature, timestamp }) => ({
+    const mapped = temperatureLogs.map(({ id, temperatureBreachId }) => ({
       id,
-      temperature,
-      timestamp,
+      temperatureBreachId,
     }));
 
     // TODO: SQLite playing funny bugger games when inserting with a FK straight after
     // creating with a FK
-    await this.databaseService.update(ENTITIES.TEMPERATURE_LOG, mapped);
-    const updatedLogs = await this.databaseService.update(
-      ENTITIES.TEMPERATURE_LOG,
-      temperatureLogs
-    );
+    await this.databaseService.upsert(ENTITIES.TEMPERATURE_LOG, mapped);
 
-    return [updatedBreaches, updatedLogs];
+    return [updatedBreaches, temperatureLogs];
   };
 
   getBreachConfigs = async () => {
