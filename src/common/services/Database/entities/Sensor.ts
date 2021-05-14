@@ -7,6 +7,20 @@ import { TemperatureBreach } from './TemperatureBreach';
 
 @Entity('Sensor')
 class Sensor {
+  static getTableDefinition = (): string =>
+    `CREATE TABLE IF NOT EXISTS Sensor (
+    id             VARCHAR       PRIMARY KEY
+                                 NOT NULL,
+    macAddress     VARCHAR (17)  NOT NULL,
+    batteryLevel   INTEGER,
+    logInterval    INTEGER       NOT NULL,
+    name           VARCHAR (101),
+    logDelay       INTEGER,
+    programmedDate INTEGER,
+    isActive       BOOLEAN       DEFAULT (1)
+);
+`;
+
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
