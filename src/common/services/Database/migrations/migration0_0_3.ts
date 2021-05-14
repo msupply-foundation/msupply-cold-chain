@@ -1,6 +1,5 @@
-import { ENTITIES } from './../../../constants/Entities';
-import { DatabaseService } from '~common/services/Database/DatabaseService';
-import { Sensor } from '~common/services/Database/entities';
+import { ENTITIES } from '~constants';
+import { Sensor, DatabaseService } from '~common/services/Database';
 
 export const migration0_0_3 = {
   // This migration performs the following:
@@ -12,16 +11,8 @@ export const migration0_0_3 = {
     );
     const createSensorTableQuery = Sensor.getTableDefinition();
 
-    await dbService.query('PRAGMA foreign_keys=OFF');
-
-    try {
-      await dbService.transaction(async () => {
-        await dbService.query('DROP TABLE Sensor;');
-        await dbService.query(createSensorTableQuery);
-        await dbService.insert(ENTITIES.SENSOR, sensors);
-      });
-    } finally {
-      await dbService.query('PRAGMA foreign_keys=ON');
-    }
+    await dbService.query('DROP TABLE Sensor;');
+    await dbService.query(createSensorTableQuery);
+    await dbService.insert(ENTITIES.SENSOR, sensors);
   },
 };
