@@ -1,4 +1,5 @@
 export enum DEPENDENCY {
+  MIGRATION = 'migrationService',
   LOCATOR = 'DependencyLocator',
   BLUETOOTH = 'bluetooth',
   DATABASE = 'database',
