@@ -1,6 +1,5 @@
 import React, { FC, useEffect } from 'react';
-import { useToggle } from '~hooks';
-import { useMigrationService } from '~hooks/useDependency';
+import { useMigrationService, useToggle } from '~hooks';
 import { FatalError } from '~components/modal/FatalError';
 import { t } from '~common/translations';
 
