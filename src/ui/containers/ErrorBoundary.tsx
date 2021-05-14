@@ -1,11 +1,7 @@
 import React from 'react';
-import { View } from 'react-native';
 import Bugsnag from '@bugsnag/react-native';
-import RNRestart from 'react-native-restart';
-import { COLOUR } from '../../common/constants';
-import { LargeText } from '../presentation/typography';
-import { Centered } from '../layouts';
-import { Button } from '../components/buttons';
+import { t } from '~common/translations';
+import { FatalError } from '~components/modal/FatalError';
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -34,13 +30,6 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
     if (!hasError) return children;
 
-    return (
-      <Centered style={{ width: '100%', height: '100%', backgroundColor: COLOUR.DANGER }}>
-        <LargeText>Sorry! somethings gone wrong.</LargeText>
-        <LargeText>Click below to restart.</LargeText>
-        <View style={{ height: 50 }} />
-        <Button text="RESTART" onPress={() => RNRestart.Restart()} />
-      </Centered>
-    );
+    return <FatalError errorMessage={t('ERROR_MESSAGE')} />;
   }
 }

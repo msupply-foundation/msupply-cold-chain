@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { StatusBar } from 'react-native';
-
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 
 import { NAVIGATION } from '../common/constants';
@@ -18,35 +18,40 @@ import {
   MainTabScreen,
   PermissionsContainer,
   ErrorBoundary,
+  MigrationRunner,
 } from './containers';
 
 const App: FC = () => {
   return (
     <ErrorBoundary>
-      <StorybookContainer>
-        <ReduxContainer>
-          <KeepAwakeContainer>
-            <DependencyContainer>
-              <PermissionsContainer>
-                <NavigationContainer>
-                  <StatusBar hidden />
-                  <MainHeader />
-                  <MainTabNavigator>
-                    <MainTabScreen
-                      name={NAVIGATION.SCREENS.MAIN_TABS.SENSORS}
-                      component={Sensors}
-                    />
-                    <MainTabScreen
-                      name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS}
-                      component={Settings}
-                    />
-                  </MainTabNavigator>
-                </NavigationContainer>
-              </PermissionsContainer>
-            </DependencyContainer>
-          </KeepAwakeContainer>
-        </ReduxContainer>
-      </StorybookContainer>
+      <SafeAreaProvider>
+        <StorybookContainer>
+          <ReduxContainer>
+            <KeepAwakeContainer>
+              <DependencyContainer>
+                <MigrationRunner>
+                  <PermissionsContainer>
+                    <NavigationContainer>
+                      <StatusBar hidden />
+                      <MainHeader />
+                      <MainTabNavigator>
+                        <MainTabScreen
+                          name={NAVIGATION.SCREENS.MAIN_TABS.SENSORS}
+                          component={Sensors}
+                        />
+                        <MainTabScreen
+                          name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS}
+                          component={Settings}
+                        />
+                      </MainTabNavigator>
+                    </NavigationContainer>
+                  </PermissionsContainer>
+                </MigrationRunner>
+              </DependencyContainer>
+            </KeepAwakeContainer>
+          </ReduxContainer>
+        </StorybookContainer>
+      </SafeAreaProvider>
     </ErrorBoundary>
   );
 };

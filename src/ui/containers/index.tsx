@@ -7,3 +7,4 @@ export { SettingsStackNavigator, SettingsStackScreen } from './SettingsStackNavi
 export { PermissionsContainer } from './PermissionsContainer';
 export { StorybookContainer } from './StorybookContainer';
 export { ErrorBoundary } from './ErrorBoundary';
+export { MigrationRunner } from './MigrationRunner';

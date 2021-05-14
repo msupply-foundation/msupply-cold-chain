@@ -38,11 +38,7 @@ import {
   DevManager,
 } from '../../features';
 
-import {
-  SensorSubscriber,
-  TemperatureLogSubscriber,
-  TemperatureBreachSubscriber,
-} from '../../common/services/Database/subscribers';
+import { MigrationService } from '~common/services/Database/migrations';
 
 export const DependencyContainer: FC = ({ children }) => {
   const [ready, setReady] = useState(false);
@@ -50,6 +46,7 @@ export const DependencyContainer: FC = ({ children }) => {
   useEffect(() => {
     const db = new Database();
     const dbService = new DatabaseService(db);
+    const migrationService = new MigrationService(dbService);
     const permissionService = new PermissionService();
     const btService = new BleService();
     const devBtService = new BleService(new DevBleManager());
@@ -60,6 +57,7 @@ export const DependencyContainer: FC = ({ children }) => {
     const bugsnagLogger = new BugsnagLoggerService();
     const devService = new DevService();
 
+    DependencyLocator.register(DEPENDENCY.MIGRATION, migrationService);
     DependencyLocator.register(DEPENDENCY.PERMISSION_SERVICE, permissionService);
     DependencyLocator.register(
       DEPENDENCY.BLUETOOTH,
@@ -118,13 +116,6 @@ export const DependencyContainer: FC = ({ children }) => {
       if (!isActiveColumnDefinition) {
         await dbService.query('ALTER TABLE Sensor ADD COLUMN isActive integer default 1');
       }
-
-      // TODO: Re enable these
-      // dbService.registerSubscribers([
-      //   new SensorSubscriber(syncQueueManager),
-      //   new TemperatureLogSubscriber(syncQueueManager),
-      //   new TemperatureBreachSubscriber(syncQueueManager),
-      // ]);
 
       setReady(true);
       SplashScreen.hideAsync();
