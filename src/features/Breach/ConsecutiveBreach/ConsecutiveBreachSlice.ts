@@ -28,6 +28,7 @@ interface CreateSuccessPayload {
 
 interface CreateFailPayload {
   sensor: Sensor;
+  errorMessage: string;
 }
 
 const reducers = {
@@ -53,17 +54,17 @@ const reducers = {
       draftState: ConsecutiveBreachSliceState,
       { payload: { sensorId } }: PayloadAction<CreateSuccessPayload>
     ) => {
-      draftState.creatingById[sensorId] = true;
+      draftState.creatingById[sensorId] = false;
     },
   },
   createFail: {
-    prepare: (sensor: Sensor) => ({ payload: { sensor } }),
+    prepare: (sensor: Sensor, errorMessage: string) => ({ payload: { sensor, errorMessage } }),
     reducer: (
       draftState: ConsecutiveBreachSliceState,
       { payload: { sensor } }: PayloadAction<CreateFailPayload>
     ) => {
       const { id } = sensor;
-      draftState.creatingById[id] = true;
+      draftState.creatingById[id] = false;
     },
   },
 };
@@ -97,7 +98,7 @@ function* create({ payload: { sensor } }: PayloadAction<CreatePayload>): SagaIte
     yield put(ChartAction.getListChartData(id));
     yield put(ConsecutiveBreachAction.createSuccess(id, breaches, updatedLogs));
   } catch (e) {
-    yield put(ConsecutiveBreachAction.createFail(sensor));
+    yield put(ConsecutiveBreachAction.createFail(sensor, e.message));
   }
 }
 
