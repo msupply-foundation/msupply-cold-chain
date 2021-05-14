@@ -1,23 +1,17 @@
 import React, { FC } from 'react';
 import { View } from 'react-native';
 import { usePowerState } from 'react-native-device-info';
-import { COLOUR } from '../../common/constants';
-
-import { Row } from '../layouts';
-import { Icon } from '../presentation/icons';
+import { COLOUR } from '~constants';
+import { Row } from '~layouts';
+import { Icon } from '~presentation/icons';
 import { BatteryStatus } from './BatteryStatus';
-import { withFormatService } from '../hoc/withFormatService';
-import { useTime } from '../hooks/useTime';
-import { DateAndTime } from '../presentation/DateAndTime';
-import { FormatService } from '../../common/services';
+import { DateAndTime } from '~presentation/DateAndTime';
+import { useTime, useFormatter } from '~hooks';
 
 const style = { container: { padding: 10, backgroundColor: COLOUR.HIGHLIGHT } };
 
-interface MainHeaderProps {
-  formatter: FormatService;
-}
-
-export const MainHeader: FC = withFormatService(({ formatter }: MainHeaderProps) => {
+export const MainHeader: FC = () => {
+  const formatter = useFormatter();
   const { batteryLevel = 0, batteryState } = usePowerState();
 
   const isCharging = batteryState === 'charging';
@@ -37,4 +31,4 @@ export const MainHeader: FC = withFormatService(({ formatter }: MainHeaderProps)
       </Row>
     </Row>
   );
-});
+};

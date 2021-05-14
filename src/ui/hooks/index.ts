@@ -1,3 +1,4 @@
+export { useTime } from './useTime';
 export { useIsKeyboardOpen } from './useIsKeyboardOpen';
 export { useDatePicker } from './useDatePicker';
 export { useCombinedCallback } from './useCombinedCallback';
