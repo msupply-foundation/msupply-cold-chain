@@ -18,12 +18,12 @@ class TemperatureBreach {
     acknowledged                     BOOLEAN NOT NULL
                                              DEFAULT (0),
     sensorId                         VARCHAR NOT NULL,
-    CONSTRAINT FK_988915a7ee90e3c78fb01af1e1a FOREIGN KEY (
+    CONSTRAINT FK_temperatureBreach_temperatureBreachConfig FOREIGN KEY (
         temperatureBreachConfigurationId
     )
     REFERENCES TemperatureBreachConfiguration (id) ON DELETE NO ACTION
                                                    ON UPDATE NO ACTION,
-    CONSTRAINT FK_8859171c57ea11f4b4c4572af71 FOREIGN KEY (
+    CONSTRAINT FK_temperatureBreach_sensor FOREIGN KEY (
         sensorId
     )
     REFERENCES Sensor (id) ON DELETE NO ACTION

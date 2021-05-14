@@ -15,12 +15,12 @@ class TemperatureLog {
     logInterval         INTEGER NOT NULL,
     temperatureBreachId VARCHAR,
     sensorId            VARCHAR,
-    CONSTRAINT FK_a402bdeb5afaa9db6a3cf994200 FOREIGN KEY (
+    CONSTRAINT FK_temperatureLog_temperatureBreach FOREIGN KEY (
         temperatureBreachId
     )
     REFERENCES TemperatureBreach (id) ON DELETE NO ACTION
                                       ON UPDATE NO ACTION,
-    CONSTRAINT FK_622389bedd377985ef49786f09f FOREIGN KEY (
+    CONSTRAINT FK_temperatureLog_sensor FOREIGN KEY (
         sensorId
     )
     REFERENCES Sensor (id) ON DELETE NO ACTION
