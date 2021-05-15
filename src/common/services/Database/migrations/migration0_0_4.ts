@@ -27,9 +27,8 @@ export const migration0_0_4 = {
 
     // Checking here if the column exists already before doing this migration. If migrating from 0.0.2 to 0.0.4
     // then the column will not exist, but 0.0.3 -> 0.0.4 will have the column as the code has been refactored.
-    const result = await dbService.rawQuery('PRAGMA table_info(Sensor);');
-
-    const isActiveColumnDefinition = result.find(
+    const sensorTableInfo = await dbService.rawQuery('PRAGMA table_info(Sensor);');
+    const isActiveColumnDefinition = sensorTableInfo.find(
       (column: { cid: number; dflt_value: string; name: string }) => column.name === 'isActive'
     );
 
@@ -37,18 +36,25 @@ export const migration0_0_4 = {
       await dbService.query('ALTER TABLE Sensor ADD COLUMN isActive integer default 1');
     }
 
-    const breaches: OldTemperatureBreach[] = await dbService.rawQuery(
-      'SELECT id, endTimestamp, startTimestamp, temperatureBreachConfigurationId, sensorId, handled from TemperatureBreach'
+    const breachTableInfo = await dbService.rawQuery('PRAGMA table_info(TemperatureBreach);');
+    const handledColumnDefinition = breachTableInfo.find(
+      (column: { cid: number; dflt_value: string; name: string }) => column.name === 'handled'
     );
-    const updatedBreaches = breaches.map(({ handled, ...rest }) => ({
-      ...rest,
-      acknowledged: Boolean(handled),
-    }));
 
-    const createBreachTableQuery = TemperatureBreach.getTableDefinition();
+    if (handledColumnDefinition) {
+      const breaches: OldTemperatureBreach[] = await dbService.rawQuery(
+        'SELECT id, endTimestamp, startTimestamp, temperatureBreachConfigurationId, sensorId, handled from TemperatureBreach'
+      );
+      const updatedBreaches = breaches.map(({ handled, ...rest }) => ({
+        ...rest,
+        acknowledged: Boolean(handled),
+      }));
 
-    await dbService.rawQuery('DROP TABLE TemperatureBreach;');
-    await dbService.rawQuery(createBreachTableQuery);
-    await dbService.insert(ENTITIES.TEMPERATURE_BREACH, updatedBreaches);
+      const createBreachTableQuery = TemperatureBreach.getTableDefinition();
+
+      await dbService.rawQuery('DROP TABLE TemperatureBreach;');
+      await dbService.rawQuery(createBreachTableQuery);
+      await dbService.insert(ENTITIES.TEMPERATURE_BREACH, updatedBreaches);
+    }
   },
 };
