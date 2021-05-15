@@ -173,7 +173,7 @@ export class ConsecutiveBreachManager {
 
     // TODO: SQLite playing funny bugger games when inserting with a FK straight after
     // creating with a FK
-    await this.databaseService.upsert(ENTITIES.TEMPERATURE_LOG, mapped);
+    await this.databaseService.updateMany(ENTITIES.TEMPERATURE_LOG, mapped);
 
     return [updatedBreaches, temperatureLogs];
   };

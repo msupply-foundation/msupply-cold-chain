@@ -118,6 +118,31 @@ export class DatabaseService {
     subscribers.forEach(subscriber => this.database.connection?.subscribers.push(subscriber));
   };
 
+  updateMany = async (entityName: string, objects: any[]) => {
+    const conn = this.database.connection;
+
+    if (!conn) throw new Error('Database not connected');
+
+    const driver = conn.driver;
+
+    const chunks = _.chunk(objects, 250);
+    const queries = chunks.map((chunk: any) => {
+      return chunk.map((obj: any) => {
+        // NOTE: Calling to get qb outside of this loop causes a a degradation of speed!
+        // Seems there is some memory leak with the query builder which will slowly increase
+        // the amount taking to build a query. After around 5000 records, each string takes
+        // around 200ms to create. By calling to get it each iteration, strings are created in
+        // the more expected time of less than a ms.
+        const qb = this.getQueryBuilder();
+        return qb.update(entityName).set(obj).where('id == :id', obj).getQueryAndParameters();
+      });
+    });
+
+    for (const queryChunk of queries) {
+      await (driver as any).databaseConnection.sqlBatch(queryChunk);
+    }
+  };
+
   update = async (entityName: string, id: string, object: any): Promise<any | any[]> => {
     const repository = await this.database.getRepository(entityName);
     return repository.update(id, object);
