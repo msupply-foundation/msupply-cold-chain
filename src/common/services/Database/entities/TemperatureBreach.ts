@@ -15,7 +15,7 @@ class TemperatureBreach {
     endTimestamp                     INTEGER,
     startTimestamp                   INTEGER NOT NULL,
     temperatureBreachConfigurationId VARCHAR NOT NULL,
-    acknowledged                     BOOLEAN NOT NULL
+    handled                     BOOLEAN NOT NULL
                                              DEFAULT (0),
     sensorId                         VARCHAR NOT NULL,
     CONSTRAINT FK_temperatureBreach_temperatureBreachConfig FOREIGN KEY (
@@ -44,7 +44,7 @@ class TemperatureBreach {
   temperatureBreachConfigurationId!: string;
 
   @Column({ type: 'boolean', nullable: false, default: false })
-  acknowledged!: boolean;
+  handled!: boolean;
 
   @ManyToOne(() => TemperatureBreachConfiguration, config => config.temperatureBreaches, {
     cascade: ['insert', 'update'],
