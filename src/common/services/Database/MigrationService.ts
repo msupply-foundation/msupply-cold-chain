@@ -9,13 +9,13 @@ export class MigrationService {
   }
 
   async start(): Promise<boolean> {
-    const [result] = await this.dbService.query('PRAGMA user_version;');
+    const [result] = await this.dbService.rawQuery('PRAGMA user_version;');
     const { user_version: userVersion } = result;
 
     const migrationsToRun = migrations.splice(userVersion);
 
     try {
-      await this.dbService.query('PRAGMA foreign_keys=OFF');
+      await this.dbService.rawQuery('PRAGMA foreign_keys=OFF');
 
       await this.dbService.transaction(async () => {
         for (const migration of migrationsToRun) {
@@ -23,13 +23,13 @@ export class MigrationService {
         }
       });
 
-      await this.dbService.query(`PRAGMA user_version=${userVersion + migrationsToRun.length}`);
+      await this.dbService.rawQuery(`PRAGMA user_version=${userVersion + migrationsToRun.length}`);
 
       return true;
     } catch (error) {
       return false;
     } finally {
-      await this.dbService.query('PRAGMA foreign_keys=ON');
+      await this.dbService.rawQuery('PRAGMA foreign_keys=ON');
     }
   }
 }

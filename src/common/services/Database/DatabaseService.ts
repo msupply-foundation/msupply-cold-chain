@@ -87,10 +87,13 @@ export class DatabaseService {
         value: '300',
       });
     }
+  };
 
-    for (const migration of migrations) {
-      await migration.migrate(this);
-    }
+  getQueryBuilder = () => {
+    const conn = this.database.connection;
+    if (!conn) throw new Error('Database not connected!');
+
+    return conn.createQueryBuilder();
   };
 
   transaction = async (callback: () => Promise<void>): Promise<void> => {
@@ -105,6 +108,7 @@ export class DatabaseService {
       await queryRunner.commitTransaction();
     } catch (e) {
       await queryRunner.rollbackTransaction();
+      throw new Error(e);
     } finally {
       await queryRunner.release();
     }
@@ -161,6 +165,15 @@ export class DatabaseService {
   get = async (entityName: string, idOrQueryObject: string | any): Promise<any | any[]> => {
     const repository = await this.database.getRepository(entityName);
     return repository.findOne(idOrQueryObject);
+  };
+
+  rawQuery = async (query: string): Promise<any> => {
+    const conn = await this.database.getConnection();
+
+    if (!conn) throw new Error('Database not connected!');
+
+    const qr = conn.createQueryRunner();
+    return qr.query(query);
   };
 
   query = async (entityName: string, query?: (string | number)[]): Promise<any | any[]> => {

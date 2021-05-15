@@ -30,7 +30,7 @@ class TemperatureBreachSubscriber implements EntitySubscriberInterface {
   ): Promise<void> {
     const { entity, manager, metadata } = event;
 
-    const { id, startTimestamp, handled, sensorId, temperatureBreachConfigurationId } = entity;
+    const { id, startTimestamp, acknowledged, sensorId, temperatureBreachConfigurationId } = entity;
 
     const { tableName } = metadata;
 
@@ -53,7 +53,7 @@ class TemperatureBreachSubscriber implements EntitySubscriberInterface {
     const payload = JSON.stringify({
       id,
       startTimestamp,
-      handled,
+      acknowledged,
       sensorId,
       thresholdMinimumTemperature,
       thresholdMaximumTemperature,

@@ -51,7 +51,8 @@ export type DependencyKey =
   | 'cumulativeBreachManager'
   | 'acknowledgeBreachManager'
   | 'syncQueueManager'
-  | 'syncOutManager';
+  | 'syncOutManager'
+  | 'breachConfigurationManager';
 
 export type Dependency =
   | BleService
@@ -99,6 +100,7 @@ interface DependencyShape {
   acknowledgeBreachManager: AcknowledgeBreachManager;
   syncQueueManager: SyncQueueManager;
   syncOutManager: SyncOutManager;
+  breachConfigurationManager: BreachConfigurationManager;
 }
 
 class DependencyLocator {
