@@ -1,9 +1,8 @@
+import { installTriggers } from './triggers/index';
 import _ from 'lodash';
-import { EntitySubscriberInterface } from 'typeorm/browser';
 import { Database } from './Database';
 import { ENTITIES, MILLISECONDS } from '~constants';
 import { classToPlain } from 'class-transformer';
-import { migrations } from '~common/services/Database/migrations';
 
 export class DatabaseService {
   database: Database;
@@ -87,6 +86,8 @@ export class DatabaseService {
         value: '300',
       });
     }
+
+    await installTriggers(this);
   };
 
   getQueryBuilder = () => {
@@ -112,10 +113,6 @@ export class DatabaseService {
     } finally {
       await queryRunner.release();
     }
-  };
-
-  registerSubscribers = (subscribers: EntitySubscriberInterface[]): void => {
-    subscribers.forEach(subscriber => this.database.connection?.subscribers.push(subscriber));
   };
 
   updateMany = async (entityName: string, objects: any[]) => {

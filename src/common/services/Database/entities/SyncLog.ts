@@ -3,6 +3,16 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm/browser';
 @Entity('SyncLog')
 export class SyncLog {
+  static getTableDefinition = (): string => `
+  CREATE TABLE IF NOT EXISTS  SyncLog (
+    id                  VARCHAR PRIMARY KEY
+                                NOT NULL,
+    payload             VARCHAR  NOT NULL,
+    timestamp           INTEGER NOT NULL,
+    type                VARCHAR NOT NULL
+);
+`;
+
   @PrimaryColumn('uuid')
   id!: string;
 

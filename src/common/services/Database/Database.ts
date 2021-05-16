@@ -27,7 +27,7 @@ export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
     TemperatureBreach,
     TemperatureBreachConfiguration,
     Setting,
-    // SyncLog,
+    SyncLog,
   ],
 });
 
