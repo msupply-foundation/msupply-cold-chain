@@ -10,8 +10,8 @@ const syncOnUpdate: Trigger = {
     BEGIN
         INSERT OR REPLACE INTO
             SyncLog (id, payload, type, timestamp)
-	    VALUES
-	        (NEW.id, NEW.id, "Sensor", strftime("%s", "now"));
+	      VALUES
+	          (NEW.id, NEW.id, "Sensor", strftime("%s", "now"));
     END
     `;
 

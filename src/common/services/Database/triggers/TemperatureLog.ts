@@ -11,7 +11,7 @@ const syncOnUpdate: Trigger = {
         INSERT OR REPLACE INTO
             SyncLog (id, payload, type, timestamp)
 	    VALUES
-	        (NEW.id, NEW.id, "Sensor", strftime("%s", "now"));
+	        (NEW.id, NEW.id, "TemperatureLog", strftime("%s", "now"));
     END
     `;
 
@@ -34,7 +34,7 @@ const syncOnInsert: Trigger = {
 	    INSERT INTO
 	        SyncLog (id, payload, type, timestamp)
 	    VALUES
-	        (NEW.id, NEW.id, "Sensor", strftime("%s", "now"));
+	        (NEW.id, NEW.id, "TemperatureLog", strftime("%s", "now"));
     END
     `;
 
