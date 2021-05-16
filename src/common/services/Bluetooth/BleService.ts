@@ -45,9 +45,8 @@ export interface BluetoothManager {
   ): Subscription;
 }
 
-// listenerCallback(error: BleError | null, scannedDevice: Device | null): void
 interface InfoLog {
-  batteryLevel: number;
+  batteryLevel: null | number;
   isDisabled: boolean;
 }
 
@@ -249,20 +248,29 @@ export class BleService {
 
     const monitorResultCallback: MonitorCharacteristicParser<string[], InfoLog> = data => {
       const parsedBase64 = data.map(stringFromBase64);
-      const defaultInfoLog = { batteryLevel: 0, isDisabled: true };
+      const defaultInfoLog: InfoLog = { batteryLevel: null, isDisabled: true };
 
-      const parsedBatteryLevel = (info: string): number =>
-        Number(info.match(/[0-9]{1,3}/)?.[0]) ?? 0;
+      const parsedBatteryLevel = (info: string): number | null => {
+        const batteryLevelStringOrNull = info.match(/Batt lvl: [0-9]{1,3}/);
+
+        if (!batteryLevelStringOrNull) return batteryLevelStringOrNull;
+
+        const batteryLevel = Number(batteryLevelStringOrNull[0].match(/[0-9]{1,3}/));
+
+        return Number.isNaN(batteryLevel) ? null : batteryLevel;
+      };
+
       const parsedIsDisabled = (info: string): boolean => !!info.match(/Btn on\/off: 1/);
 
-      return parsedBase64.reduce(
-        (acc, info) => ({
-          ...acc,
-          batteryLevel: parsedBatteryLevel(info),
-          isDisabled: parsedIsDisabled(info),
-        }),
-        defaultInfoLog
-      );
+      return parsedBase64.reduce((acc, info) => {
+        const isDisabled = parsedIsDisabled(info);
+        const batteryLevel = parsedBatteryLevel(info);
+
+        if (isDisabled) return { ...acc, isDisabled };
+        if (batteryLevel) return { ...acc, batteryLevel };
+
+        return acc;
+      }, defaultInfoLog);
     };
 
     const result: InfoLog = (await this.writeAndMonitor(
