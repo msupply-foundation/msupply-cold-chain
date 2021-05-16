@@ -483,6 +483,15 @@ function* enablePassiveSync(): SagaIterator {
   });
 }
 
+function* tryStartPassiveIntegration(): SagaIterator {
+  const settingManager: SettingManager = yield call(getDependency, DEPENDENCY.SETTING_MANAGER);
+  const isIntegrating = yield call(settingManager.getBool, 'isIntegrating');
+
+  if (isIntegrating) {
+    yield put(SyncAction.enablePassiveSync());
+  }
+}
+
 function* tryTestConnection({
   payload: { loginUrl, username, password },
 }: AuthenticateAction): SagaIterator {
@@ -505,15 +514,6 @@ function* testConnectionFailure({
 
 function* testConnectionSuccess(): SagaIterator {
   ToastAndroid.show('Connection established!', ToastAndroid.SHORT);
-}
-
-function* tryStartPassiveIntegration(): SagaIterator {
-  const settingManager: SettingManager = yield call(getDependency, DEPENDENCY.SETTING_MANAGER);
-  const isIntegrating = yield call(settingManager.getBool, 'isIntegrating');
-
-  if (isIntegrating) {
-    yield put(SyncAction.enablePassiveSync());
-  }
 }
 
 function* tryCountSyncQueue(): SagaIterator {
