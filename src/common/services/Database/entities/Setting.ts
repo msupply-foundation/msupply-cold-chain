@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm/browser';
+import { Entity, Column } from 'typeorm/browser';
 
 @Entity('Setting')
 class Setting {
