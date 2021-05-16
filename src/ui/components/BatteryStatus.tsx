@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import { Icon, ICON_SIZE } from '../presentation/icons';
 import { Row } from '../layouts';
 import { LargeText, SmallText } from '../presentation/typography';
+import { t } from '~common/translations';
 
 interface BatteryStatusProps {
   batteryLevel: number;
@@ -18,12 +19,16 @@ export const BatteryStatus: FC<BatteryStatusProps> = ({
   const Text = variant === 'large' ? LargeText : SmallText;
 
   return batteryLevel ? (
-    <Row>
+    <Row alignItems="center">
       <Text>{String(batteryLevel)}</Text>
-      <Row style={{ marginLeft: 10 }} />
+      <Row style={{ marginLeft: 5 }} />
       <Icon.Battery isCharging={isCharging} batteryLevel={batteryLevel} size={iconSize} />
     </Row>
   ) : (
-    <Icon.Battery isCharging={isCharging} batteryLevel={batteryLevel} size={iconSize} />
+    <Row>
+      <Text>{t('NOT_AVAILABLE')}</Text>
+      <Row style={{ marginLeft: 10 }} />
+      <Icon.Battery isCharging={isCharging} batteryLevel={batteryLevel} size={iconSize} />
+    </Row>
   );
 };

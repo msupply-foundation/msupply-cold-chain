@@ -25,6 +25,7 @@ export const SensorStatusLayout: FC<SensorStatusLayoutProps> = ({
     <Column flex={1}>
       <Row justifyContent="space-between" alignItems="flex-end" flex={1}>
         {SensorName}
+        <Row style={{ marginLeft: 5 }} />
         {SensorStatusBar}
       </Row>
       <View>{TemperatureStatus}</View>
