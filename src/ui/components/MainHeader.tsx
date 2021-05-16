@@ -1,20 +1,18 @@
 import React, { FC } from 'react';
 import { View } from 'react-native';
-import { usePowerState } from 'react-native-device-info';
+
 import { COLOUR } from '~constants';
 import { Row } from '~layouts';
 import { Icon } from '~presentation/icons';
 import { BatteryStatus } from './BatteryStatus';
 import { DateAndTime } from '~presentation/DateAndTime';
-import { useTime, useFormatter } from '~hooks';
+import { useTime, useFormatter, usePowerState } from '~hooks';
 
 const style = { container: { padding: 10, backgroundColor: COLOUR.HIGHLIGHT } };
 
 export const MainHeader: FC = () => {
   const formatter = useFormatter();
-  const { batteryLevel = 0, batteryState } = usePowerState();
-
-  const isCharging = batteryState === 'charging';
+  const { batteryLevel, isCharging } = usePowerState();
   const timeNow = useTime();
 
   return (
@@ -22,7 +20,7 @@ export const MainHeader: FC = () => {
       <Icon.MsupplyMan />
 
       <Row>
-        <BatteryStatus batteryLevel={Math.ceil(batteryLevel * 100)} isCharging={isCharging} />
+        <BatteryStatus batteryLevel={batteryLevel} isCharging={isCharging} />
         <View style={{ width: 20 }} />
         <DateAndTime
           date={formatter.headerDate(timeNow.toDate())}
