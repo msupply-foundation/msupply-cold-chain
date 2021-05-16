@@ -1,6 +1,6 @@
 import { ENTITIES } from '~constants';
 import { Sensor, DatabaseService } from '~services/Database';
-import { TemperatureBreach } from '~services/Database/entities';
+import { Setting, TemperatureBreach } from '~services/Database/entities';
 
 interface OldTemperatureBreach {
   id: string;
@@ -56,5 +56,12 @@ export const migration0_0_4 = {
       await dbService.rawQuery(createBreachTableQuery);
       await dbService.insert(ENTITIES.TEMPERATURE_BREACH, updatedBreaches);
     }
+
+    const settings = await dbService.rawQuery('SELECT key, value from Setting;');
+    const createSettingTableQuery = Setting.getTableDefinition();
+
+    await dbService.rawQuery('DROP TABLE Setting;');
+    await dbService.rawQuery(createSettingTableQuery);
+    await dbService.insert(ENTITIES.SETTING, settings);
   },
 };

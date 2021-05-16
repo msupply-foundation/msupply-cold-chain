@@ -58,7 +58,6 @@ export class DatabaseService {
     const isIntegrating = await this.get(ENTITIES.SETTING, { key: 'isIntegrating' });
     if (!isIntegrating) {
       await this.upsert(ENTITIES.SETTING, {
-        id: 'isIntegrating',
         key: 'isIntegrating',
         value: 'false',
       });
@@ -69,7 +68,6 @@ export class DatabaseService {
     });
     if (!lastSync) {
       await this.upsert(ENTITIES.SETTING, {
-        id: 'lastSync',
         key: 'lastSync',
         value: '0',
       });
@@ -81,7 +79,6 @@ export class DatabaseService {
 
     if (!defaultLogInterval) {
       await this.upsert(ENTITIES.SETTING, {
-        id: 'defaultLogInterval',
         key: 'defaultLogInterval',
         value: '300',
       });
@@ -113,6 +110,13 @@ export class DatabaseService {
     } finally {
       await queryRunner.release();
     }
+  };
+
+  sqlBatch = async (queries: any[]): Promise<void> => {
+    const conn = this.database.connection;
+    if (!conn) throw new Error('Database not connected');
+    const driver = conn.driver;
+    await (driver as any).databaseConnection.sqlBatch(queries);
   };
 
   updateMany = async (entityName: string, objects: any[]) => {
@@ -189,13 +193,13 @@ export class DatabaseService {
     return repository.findOne(idOrQueryObject);
   };
 
-  rawQuery = async (query: string): Promise<any> => {
+  rawQuery = async (query: string, params: any[] = []): Promise<any> => {
     const conn = await this.database.getConnection();
 
     if (!conn) throw new Error('Database not connected!');
 
     const qr = conn.createQueryRunner();
-    return qr.query(query);
+    return qr.query(query, params);
   };
 
   query = async (entityName: string, query?: (string | number)[]): Promise<any | any[]> => {
