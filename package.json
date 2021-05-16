@@ -58,6 +58,7 @@
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-import-resolver-typescript": "^2.3.0",
     "eslint-plugin-jest": "^24.3.6",
+    "expo-battery": "^4.1.0",
     "expo-keep-awake": "^8.3.0",
     "expo-splash-screen": "0.6.2",
     "fbjs": "^3.0.0",
