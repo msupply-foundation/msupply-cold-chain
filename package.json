@@ -15,15 +15,16 @@
     "upload-bugsnag": "./scripts/upload.sh",
     "test": "jest",
     "storybook": "(adb reverse tcp:7007 tcp:7007 || true) && start-storybook",
-    "clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf node_modules/ && npm cache verify && cd ./android && ./gradlew clean && cd .. npm install && npm start --reset-cache",
+    "clean": "npx react-native-clean-project",
+    "clean:dev": "npm run clean && npm run start",
     "start": "APP_ENV=development npx react-native run-android",
     "start:nologging": "APP_ENV=development.nologging react-native start",
-    "clean:emulator": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf node_modules/ && npm cache verify && cd ./android && ./gradlew clean && cd .. npm install && npm start:emulator --reset-cache",
+    "clean:emulator": "npm run clean && npm run start:emulator",
     "start:emulator": "APP_ENV=emulator npx react-native run-android",
     "start:emulator:nologging": "APP_ENV=emulator.nologging react-native start",
     "prepare": "patch-package",
     "build": "APP_ENV=production cd ./android && ./gradlew assembleRelease",
-    "clean:build": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf node_modules/ && npm cache verify && cd ./android && ./gradlew clean && cd .. npm install && npm build --reset-cache"
+    "clean:build": "npm run clean && npm run build --reset-cache"
   },
   "dependencies": {
     "@bugsnag/react-native": "^7.9.4",
