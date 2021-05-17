@@ -13,10 +13,10 @@ class Setting {
 `;
 
   @Column({ primary: true, nullable: true, type: 'varchar', length: 100 })
-  key!: string;
+  key: string;
 
   @Column({ nullable: true, type: 'varchar', length: 100 })
-  value!: string;
+  value: string;
 }
 
 export { Setting };

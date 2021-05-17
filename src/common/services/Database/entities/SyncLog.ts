@@ -14,16 +14,16 @@ export class SyncLog {
 `;
 
   @PrimaryColumn('uuid')
-  id!: string;
+  id: string;
 
   @Column({ type: 'varchar', nullable: true })
-  type!: string;
+  type: string;
 
   @Column({ type: 'varchar', nullable: true })
-  payload!: string;
+  payload: string;
 
   @Column({ type: 'integer', nullable: true })
-  timestamp!: number;
+  timestamp: number;
 }
 
 export default SyncLog;

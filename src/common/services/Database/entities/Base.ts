@@ -4,7 +4,7 @@ import { PrimaryGeneratedColumn } from 'typeorm/browser';
 
 abstract class Base {
   @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  id: string;
 }
 
 export { Base };

@@ -20,19 +20,19 @@ class TemperatureBreachConfiguration extends Base {
 `;
 
   @Column({ type: 'double', nullable: false })
-  minimumTemperature!: number;
+  minimumTemperature: number;
 
   @Column({ type: 'double', nullable: false })
-  maximumTemperature!: number;
+  maximumTemperature: number;
 
   @Column({ type: 'integer', nullable: false })
-  duration!: number;
+  duration: number;
 
   @Column({ type: 'varchar', length: 7, nullable: true })
-  colour!: string;
+  colour: string;
 
   @Column({ type: 'varchar', nullable: true })
-  description!: string;
+  description: string;
 
   @OneToMany(
     () => TemperatureBreach,
@@ -41,7 +41,7 @@ class TemperatureBreachConfiguration extends Base {
       cascade: ['insert', 'update'],
     }
   )
-  temperatureBreaches!: TemperatureBreach[];
+  temperatureBreaches: TemperatureBreach[];
 }
 
 export { TemperatureBreachConfiguration };
