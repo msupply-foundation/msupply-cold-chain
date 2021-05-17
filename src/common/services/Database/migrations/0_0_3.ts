@@ -12,16 +12,22 @@ export const migration0_0_3 = {
     );
     const createSensorTableQuery = Sensor.getTableDefinition();
 
-    await dbService.query('PRAGMA foreign_keys=OFF');
+    const [result] = await dbService.query('PRAGMA user_version');
+    const { user_version: userVersion } = result;
 
-    try {
-      await dbService.transaction(async () => {
-        await dbService.query('DROP TABLE Sensor;');
-        await dbService.query(createSensorTableQuery);
-        await dbService.insert(ENTITIES.SENSOR, sensors);
-      });
-    } finally {
-      await dbService.query('PRAGMA foreign_keys=ON');
+    if (userVersion === 0) {
+      await dbService.query('PRAGMA foreign_keys=OFF');
+
+      try {
+        await dbService.transaction(async () => {
+          await dbService.query('DROP TABLE Sensor;');
+          await dbService.query(createSensorTableQuery);
+          await dbService.insert(ENTITIES.SENSOR, sensors);
+          await dbService.query('PRAGMA user_version=1');
+        });
+      } finally {
+        await dbService.query('PRAGMA foreign_keys=ON');
+      }
     }
   },
 };
