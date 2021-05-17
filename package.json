@@ -10,19 +10,20 @@
     "node": ">=12.8.4"
   },
   "scripts": {
+    "make-debug-keystore": "keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000",
+    "update-splash": "configure-splash-screen --statusbar-hidden -p \"android\" --resize-mode \"cover\" \"#282F46\" \"./assets/splash.png\"",
     "upload-bugsnag": "./scripts/upload.sh",
     "test": "jest",
-    "reset": "yarn start-no-options --reset-cache",
-    "build": "node ./scripts/setup.js && cd ./android && ./gradlew assembleRelease",
-    "start": "APP_ENV=emulator npx react-native run-android",
+    "storybook": "(adb reverse tcp:7007 tcp:7007 || true) && start-storybook",
+    "clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf node_modules/ && npm cache verify && cd ./android && ./gradlew clean && cd .. npm install && npm start --reset-cache",
+    "start": "APP_ENV=development npx react-native run-android",
     "start:nologging": "APP_ENV=development.nologging react-native start",
+    "clean:emulator": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf node_modules/ && npm cache verify && cd ./android && ./gradlew clean && cd .. npm install && npm start:emulator --reset-cache",
     "start:emulator": "APP_ENV=emulator npx react-native run-android",
     "start:emulator:nologging": "APP_ENV=emulator.nologging react-native start",
-    "make-debug-keystore": "keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000",
-    "storybook": "(adb reverse tcp:7007 tcp:7007 || true) && start-storybook",
     "prepare": "patch-package",
-    "update-splash": "configure-splash-screen --statusbar-hidden -p \"android\" --resize-mode \"cover\" \"#282F46\" \"./assets/splash.png\"",
-    "clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* &&  rm -rf node_modules/ && npm cache verify && npm install && npm start --reset-cache"
+    "build": "APP_ENV=production cd ./android && ./gradlew assembleRelease",
+    "clean:build": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf node_modules/ && npm cache verify && cd ./android && ./gradlew clean && cd .. npm install && npm build --reset-cache"
   },
   "dependencies": {
     "@bugsnag/react-native": "^7.9.4",
