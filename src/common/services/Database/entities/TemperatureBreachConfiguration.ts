@@ -1,13 +1,11 @@
 /* istanbul ignore file */
 
-import { OneToMany, Entity, Column } from 'typeorm/browser';
-
-import { Base } from './Base';
+import { OneToMany, Entity, Column, PrimaryGeneratedColumn } from 'typeorm/browser';
 import { TemperatureBreach } from './TemperatureBreach';
 
 @Entity('TemperatureBreachConfiguration')
-class TemperatureBreachConfiguration extends Base {
-  static getTableDefinition = () => `
+class TemperatureBreachConfiguration {
+  static getTableDefinition = (): string => `
   CREATE TABLE IF NOT EXISTS TemperatureBreachConfiguration (
     id                 VARCHAR     PRIMARY KEY
                                    NOT NULL,
@@ -18,6 +16,9 @@ class TemperatureBreachConfiguration extends Base {
     description        VARCHAR
 );
 `;
+
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ type: 'double', nullable: false })
   minimumTemperature: number;

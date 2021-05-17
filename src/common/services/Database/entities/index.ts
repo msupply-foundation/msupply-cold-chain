@@ -1,4 +1,3 @@
-export { Base } from './Base';
 export { Sensor } from './Sensor';
 export { TemperatureLog } from './TemperatureLog';
 export { TemperatureBreach } from './TemperatureBreach';
