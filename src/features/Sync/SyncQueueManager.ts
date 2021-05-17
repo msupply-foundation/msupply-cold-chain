@@ -1,8 +1,12 @@
+import { TemperatureLog } from '~services/Database/entities';
+import { Sensor, TemperatureBreach } from '~common/services/Database/entities';
 import _ from 'lodash';
 import { In } from 'typeorm/browser';
 import { ENTITIES } from '../../common/constants';
-import { DatabaseService, UtilService } from '../../common/services';
+import { DatabaseService } from '../../common/services';
 import { SyncLog } from '../../common/services/Database/entities';
+
+export type Syncable = Sensor | TemperatureLog | TemperatureBreach;
 
 const SYNC_QUEUE_PEEK_NEXT = `
     SELECT * FROM synclog
@@ -10,24 +14,6 @@ const SYNC_QUEUE_PEEK_NEXT = `
     ORDER BY timestamp
     LIMIT ?
 `;
-
-const SYNC_QUEUE_PEEK_ALL = `
-    SELECT * FROM synclog 
-    WHERE type = ? 
-    ORDER BY timestamp
-`;
-
-// const SYNC_QUEUE_DROP_NEXT = `
-//   DELETE FROM synclog
-//   WHERE synclog.id IN
-//   (
-//     SELECT id
-//     FROM synclog
-//     WHERE type = ?
-//     ORDER BY timestamp
-//     LIMIT ?
-//   )
-// `;
 
 const SYNC_QUEUE_DROP = `
   DELETE FROM synclog
@@ -46,55 +32,40 @@ const SYNC_QUEUE_LENGTH_FOR_TYPE = `
 class SyncQueueManager {
   private databaseService: DatabaseService;
 
-  private utilService: UtilService;
-
-  constructor(databaseService: DatabaseService, utilService: UtilService) {
+  constructor(databaseService: DatabaseService) {
     this.databaseService = databaseService;
-    this.utilService = utilService;
   }
-
-  pushLog = async (id: string, type: string, payload: string): Promise<SyncLog> => {
-    return this.databaseService.save(ENTITIES.SYNC_LOG, {
-      id,
-      type,
-      payload,
-      timestamp: this.utilService.now(),
-    });
-  };
 
   nextSyncLogs = async (entity: string, count = 999): Promise<SyncLog[]> => {
     return this.databaseService.query(SYNC_QUEUE_PEEK_NEXT, [entity, count]);
   };
 
-  nextSensors = async (count = 999): Promise<SyncLog[]> => {
+  nextSensors = async (count = 999): Promise<Sensor[]> => {
     const syncOuts = await this.nextSyncLogs(ENTITIES.SENSOR, count);
-    const sensors = await this.databaseService.queryWith(ENTITIES.SENSOR, {
+    return await this.databaseService.queryWith(ENTITIES.SENSOR, {
       where: { id: In(syncOuts.map(({ id }) => id)) },
     });
-    return sensors;
   };
 
-  nextTemperatureLogs = async (count = 999): Promise<SyncLog[]> => {
+  nextTemperatureLogs = async (count = 999): Promise<TemperatureLog[]> => {
     const syncOuts = await this.nextSyncLogs(ENTITIES.TEMPERATURE_LOG, count);
-    const temperatureLogs = await this.databaseService.queryWith(ENTITIES.TEMPERATURE_LOG, {
+    return await this.databaseService.queryWith(ENTITIES.TEMPERATURE_LOG, {
       where: { id: In(syncOuts.map(({ id }) => id)) },
     });
-    return temperatureLogs;
   };
 
-  nextTemperatureBreaches = async (count = 999): Promise<SyncLog[]> => {
+  nextTemperatureBreaches = async (count = 999): Promise<TemperatureBreach[]> => {
     const syncOuts = await this.nextSyncLogs(ENTITIES.TEMPERATURE_BREACH, count);
-    const breaches = await this.databaseService.queryWith(ENTITIES.TEMPERATURE_BREACH, {
+    return await this.databaseService.queryWith(ENTITIES.TEMPERATURE_BREACH, {
       where: { id: In(syncOuts.map(({ id }) => id)) },
     });
-    return breaches;
   };
 
-  dropLogs = async (logs: any[]): Promise<void> => {
-    const chunks: any[][] = _.chunk(logs, 100);
+  dropLogs = async (logs: Syncable[]): Promise<void> => {
+    const chunks: Syncable[][] = _.chunk(logs, 100);
 
     const queries: string[][] = chunks.map((chunk: any) => {
-      return chunk.map(({ id }: any) => {
+      return chunk.map(({ id }: Syncable) => {
         const qb = this.databaseService.getQueryBuilder();
         return qb.delete().from('SyncLog').where('id = :id', { id }).getQueryAndParameters();
       });
