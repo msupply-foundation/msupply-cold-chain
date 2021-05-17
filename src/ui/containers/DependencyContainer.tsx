@@ -18,7 +18,8 @@ import {
   DevService,
   DevBleManager,
   DependencyLocatorContext,
-} from '../../common/services';
+  MigrationService,
+} from '~services';
 
 import {
   SensorStatusManager,
@@ -36,9 +37,7 @@ import {
   SyncQueueManager,
   SyncOutManager,
   DevManager,
-} from '../../features';
-
-import { MigrationService } from '~common/services/Database/migrations';
+} from '~features';
 
 export const DependencyContainer: FC = ({ children }) => {
   const [ready, setReady] = useState(false);
