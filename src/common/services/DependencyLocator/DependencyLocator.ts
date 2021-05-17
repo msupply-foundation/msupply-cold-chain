@@ -28,6 +28,10 @@ import {
   MigrationService,
 } from '~services';
 
+export enum DepKey {
+  syncQueueManager = 'syncQueueManager',
+}
+
 export type DependencyKey =
   | 'migrationService'
   | 'dependencyLocator'
@@ -76,7 +80,7 @@ export type Dependency =
   | SyncQueueManager
   | SyncOutManager;
 
-interface DependencyShape {
+export interface DependencyShape {
   migrationService: MigrationService;
   dependencyLocator: DependencyLocator;
   bleService: BleService;
@@ -103,7 +107,7 @@ interface DependencyShape {
   breachConfigurationManager: BreachConfigurationManager;
 }
 
-class DependencyLocator {
+export class DependencyLocator {
   dependencies: Partial<DependencyShape>;
 
   constructor() {
