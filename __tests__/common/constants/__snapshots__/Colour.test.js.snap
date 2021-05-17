@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Constants: COLOUR Matches snapshot 1`] = `
+Object {
+  "BACKGROUND_GRADIENT_END": "#4C68A3",
+  "BACKGROUND_GRADIENT_START": "#282F46",
+  "BACKGROUND_ONE": "rgba(255,255,255,0.1)",
+  "BACKGROUND_THREE": "rgba(74,74,74,0.2)",
+  "BACKGROUND_TWO": "rgba(74,74,74,0.3)",
+  "DANGER": "#FA6400",
+  "DIVIDER": "#E7EBEF",
+  "DIVIDER_TWO": "rgba(74, 144, 266, 0.05)",
+  "GOOD": "green",
+  "GREY_ONE": "#4A4A4A",
+  "GREY_THREE": "#F5F7F8",
+  "GREY_TWO": "#EEEEEE",
+  "HIGHLIGHT": "#282F46",
+  "OFF_WHITE": "rgba(255,255,255,0.4)",
+  "PRIMARY": "#22C7FC",
+  "SECONDARY": "#4C68A3",
+  "TRANSPARENT": "transparent",
+  "WHITE": "#FFFFFF",
+}
+`;

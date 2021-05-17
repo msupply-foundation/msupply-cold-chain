@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Constants: NAVIGATION Matches snapshot 1`] = `
+Object {
+  "CONFIG": Object {
+    "SENSOR_STACK": Object {
+      "GESTURE_DIRECTION": "horizontal",
+      "HEADER_MODE": "none",
+    },
+  },
+  "SCREENS": Object {
+    "MAIN_TABS": Object {
+      "MAP": "MAIN_TABS/Map",
+      "SENSORS": "MAIN_TABS/Sensors",
+      "SETTINGS": "MAIN_TABS/Settings",
+    },
+    "SENSOR_STACK": Object {
+      "SENSOR_DETAIL": "SENSOR_STACK/SensorDetail",
+      "TABS": "SENSOR_STACK/Tabs",
+    },
+    "SETTINGS_STACK": Object {
+      "BLUETOOTH": "SETTINGS_STACK/Bluetooth",
+      "DEVELOPER": "SETTINGS_STACK/Developer",
+      "MENU": "SETTINGS_STACK/Menu",
+      "SENSORS": "SETTINGS_STACK/Sensors",
+      "SENSOR_DETAIL": "SETTINGS_STACK/SensorDetail",
+      "SYNC": "SETTINGS_STACK/Sync",
+      "TEMPERATURE_BREACH": "SETTINGS_STACK/TemperatureBreach",
+      "TEMPERATURE_BREACH_DETAIL": "SETTINGS_STACK/TemperatureBreachDetail",
+      "TEMPERATURE_CUMULATIVE_DETAIL": "SETTINGS_STACK/TemperatureCumulativeDetail",
+    },
+  },
+}
+`;

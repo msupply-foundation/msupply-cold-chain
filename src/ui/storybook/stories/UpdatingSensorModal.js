@@ -1,6 +1,6 @@
 import { Provider } from 'react-redux';
 import { storiesOf } from '@storybook/react-native';
-import { UpdatingSensorModal } from '../../components';
+import { UpdatingSensorModal } from '../../components/modal';
 import { store } from '~store';
 
 const UpdatingSensorModalStories = {

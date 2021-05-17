@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Constants: CHART Matches snapshot 1`] = `
+Object {
+  "2": "X_DOMAIN_PADDING",
+  "20": "Y_DOMAIN_PADDING",
+  "5": "NUMBER_OF_TICKS_Y",
+  "INTERPOLATION": "natural",
+  "LINE_GRADIENT_ID": "url(#grad)",
+  "NUMBER_OF_TICKS_Y": 5,
+  "X_DOMAIN_PADDING": 2,
+  "X_KEY": "timestamp",
+  "Y_DOMAIN_PADDING": 20,
+  "Y_KEY": "temperature",
+}
+`;

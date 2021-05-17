@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Constants: PERMISSION Matches snapshot 1`] = `
+Object {
+  "CELSIUS": "C",
+  "DASH": "-",
+  "DEGREE": "°",
+  "DEGREE_CELSIUS": "°C",
+}
+`;

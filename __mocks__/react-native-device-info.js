@@ -1,4 +1,3 @@
-const getBatteryLevel = async () => 15;
-const isBatteryCharging = async () => false;
+const getModel = () => 'model';
 
-export { getBatteryLevel, isBatteryCharging };
+export default { getModel };

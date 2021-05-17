@@ -1,0 +1,3 @@
+class BleManager {}
+
+export { BleManager };

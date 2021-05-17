@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { BLUETOOTH_STATE } from '~constants';
+import { BLUETOOTH_STATE } from '../src/common/constants/Bluetooth';
 
 class MockedBluetoothStatus {
   async getState() {

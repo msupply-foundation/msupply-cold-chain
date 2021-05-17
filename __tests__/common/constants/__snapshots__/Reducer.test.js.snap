@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Constants: REDUCER Matches snapshot 1`] = `
+Object {
+  "ACKNOWLEDGE_BREACH": "acknowledgeBreach",
+  "BATTERY_OBSERVER": "batteryObserver",
+  "BLINK": "blink",
+  "BLUETOOTH": "bluetooth",
+  "BREACH": "breach",
+  "BREACH_CONFIGURATION": "breachConfiguration",
+  "CHART": "chart",
+  "CONSECUTIVE_BREACH": "consecutive",
+  "CUMULATIVE_BREACH": "cumulative",
+  "DATABASE": "database",
+  "DETAIL": "detail",
+  "DETAIL_CHART": "detailChart",
+  "DETAIL_CUMULATIVE_BREACH": "detailCumulative",
+  "DEV": "dev",
+  "DEVICE": "device",
+  "DOWNLOAD": "download",
+  "ENTITIES": "entities",
+  "LOG_TABLE": "logTable",
+  "NEW_SENSOR": "new_sensor",
+  "PERMISSION": "permission",
+  "PROGRAM": "program",
+  "REPORT": "report",
+  "SCAN": "scan",
+  "SENSOR": "sensor",
+  "SENSORS": "sensors",
+  "SENSOR_DETAIL": "sensorDetail",
+  "SENSOR_STATUS": "sensorStatus",
+  "SETTING": "setting",
+  "SYNC": "sync",
+  "TEMPERATURE_LOGS": "temperatureLogs",
+  "UPDATE": "update",
+}
+`;

@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Constants: STYLE Matches snapshot 1`] = `
+Object {
+  "BORDER": Object {
+    "RADIUS": Object {
+      "CIRCLE": 50,
+      "NORMAL": 37.5,
+      "RECTANGLE": 5.33,
+    },
+    "WIDTH": Object {
+      "NORMAL": 2,
+    },
+  },
+  "HEIGHT": Object {
+    "CIRCLE_BUTTON": 86,
+    "DETAIL_CHART_RATIO": 0.3,
+    "HALF_CIRCLE": 60,
+    "LARGE_RECTANGLE": 60,
+    "NORMAL_BUTTON": 60,
+    "NORMAL_CHART": 140,
+    "PICKER": 50,
+    "SENSOR_ROW": 300,
+    "SETTINGS_EDIT_BUTTON": 100,
+    "SETTINGS_EDIT_CONTENT_AREA": 275,
+    "SETTINGS_EDIT_MODAL": 500,
+    "SETTINGS_ITEM": 100,
+    "SUB_TEXT": 10,
+  },
+  "ICON": Object {
+    "SIZE": Object {
+      "L": 60,
+      "S": 20,
+    },
+  },
+  "PADDING": Object {
+    "HORIZONTAL": 50,
+    "VERTICAL": 50,
+  },
+  "WIDTH": Object {
+    "CIRCLE_BUTTON": 87,
+    "DETAIL_CHART_RATIO": 0.975,
+    "DIVIDER_FULL": "100%",
+    "DIVIDER_NEARLY_FULL": "90%",
+    "HALF_CIRCLE": 30,
+    "LARGE_RECTANGLE": 180,
+    "NORMAL_BUTTON": 200,
+    "NORMAL_CHART": 500,
+    "SETTINGS_ICON": 50,
+    "TEXT_INPUT": 200,
+  },
+}
+`;

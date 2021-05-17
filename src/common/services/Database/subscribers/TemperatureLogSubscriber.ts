@@ -1,0 +1,52 @@
+/* istanbul ignore file */
+
+import {
+  EventSubscriber,
+  EntitySubscriberInterface,
+  AfterUpdate,
+  AfterInsert,
+  UpdateEvent,
+  InsertEvent,
+} from 'typeorm/browser';
+
+import { TemperatureLog } from '../entities';
+
+import { SyncQueueManager } from '../../../../features';
+
+@EventSubscriber()
+class TemperatureLogSubscriber implements EntitySubscriberInterface {
+  private syncQueueManager: SyncQueueManager;
+
+  public constructor(syncQueueManager: SyncQueueManager) {
+    this.syncQueueManager = syncQueueManager;
+  }
+
+  public listenTo(): typeof TemperatureLog {
+    return TemperatureLog;
+  }
+
+  public async updateSyncQueue(
+    event: InsertEvent<TemperatureLog> | UpdateEvent<TemperatureLog>
+  ): Promise<void> {
+    const { entity, metadata } = event;
+
+    const { id } = entity;
+    const { tableName } = metadata;
+
+    const payload = JSON.stringify(entity);
+
+    this.syncQueueManager.pushLog(id, tableName, payload);
+  }
+
+  @AfterInsert()
+  public async afterInsert(event: InsertEvent<TemperatureLog>): Promise<void> {
+    return this.updateSyncQueue(event);
+  }
+
+  @AfterUpdate()
+  public async afterUpdate(event: UpdateEvent<TemperatureLog>): Promise<void> {
+    return this.updateSyncQueue(event);
+  }
+}
+
+export { TemperatureLogSubscriber };

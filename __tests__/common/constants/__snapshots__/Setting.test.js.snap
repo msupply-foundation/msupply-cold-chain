@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Constants: SETTING Matches snapshot 1`] = `
+Object {
+  "BLUETOOTH": Object {
+    "DEFAULT_LOG_INTERVAL": "DEFAULT_LOG_INTERVAL",
+  },
+  "SYNC": Object {
+    "AUTH_PASSWORD": "authPassword",
+    "AUTH_URL": "authUrl",
+    "AUTH_USERNAME": "authUsername",
+    "IS_INTEGRATING": "isIntegrating",
+    "IS_PASSIVE_SYNC_ENABLED": "isPassiveSyncEnabled",
+    "LAST_SYNC": "lastSync",
+    "SENSOR_URL": "sensorUrl",
+    "TEMPERATURE_BREACH_URL": "temperatureBreachUrl",
+    "TEMPERATURE_LOG_URL": "temperatureLogUrl",
+  },
+}
+`;

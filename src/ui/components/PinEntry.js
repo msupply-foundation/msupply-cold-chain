@@ -1,10 +1,10 @@
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import PinView from 'react-native-pin-view';
 import LinearGradient from 'react-native-linear-gradient';
 
 import { COLOUR, FONT } from '~constants';
 import { FullScreenModal, Column, Row } from '~layouts';
-import { Chevron } from '~presentation/icons';
+import { Icon } from '~presentation/icons';
 
 export const PinEntry = ({ onComplete, onCancel }) => {
   const ref = useRef();
@@ -69,7 +69,7 @@ export const PinEntry = ({ onComplete, onCancel }) => {
                 fontFamily: FONT.FAMILY.REGULAR,
               }}
               onButtonPress={onKeyPress}
-              customLeftButton={<Chevron direction="left" colour={COLOUR.WHITE} />}
+              customLeftButton={<Icon.Chevron direction="left" color={COLOUR.WHITE} />}
             />
           </Column>
           <Column flex={2} />
