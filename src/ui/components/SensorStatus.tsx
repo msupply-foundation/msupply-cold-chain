@@ -2,7 +2,6 @@ import React, { FC } from 'react';
 import { COLOUR } from '../../common/constants';
 import { SensorStatusLayout } from '../layouts/SensorStatusLayout';
 import { BoldText } from '../presentation/typography';
-import { SensorListCumulativeBreachStatus } from './SensorListCumulativeBreachStatus';
 import { SensorLastDownloadTime } from './SensorLastDownloadTime';
 import { SensorStatusBar } from './SensorStatusBar';
 import { SensorTemperatureStatus } from './SensorTemperatureStatus';

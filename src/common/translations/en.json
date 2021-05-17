@@ -114,5 +114,6 @@
   "ERROR_MESSAGE": "Sorry! somethings gone wrong.",
   "ERROR_SUBTEXT": "Click below to restart.",
   "MIGRATION_ERROR": "Sorry! There has been an error starting the database. Please contact an administrator.",
-  "RESTART": "RESTART"
+  "RESTART": "RESTART",
+  "NOT_AVAILABLE": "N/A"
 }
