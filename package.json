@@ -1,6 +1,6 @@
 {
   "name": "mSupplyColdChain",
-  "version": "0.1.0",
+  "version": "0.1.1-rc1",
   "description": "Cold chain temperature monitoring",
   "author": "mSupply Foundation",
   "main": "index.ts",
