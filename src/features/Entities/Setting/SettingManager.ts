@@ -114,7 +114,7 @@ export class SettingManager {
   };
 
   setSetting = async (key: SettingKey, value: string): Promise<Setting> => {
-    const result = await this.dbService.upsert(ENTITIES.SETTING, { key, value });
+    const result = await this.dbService.upsert(ENTITIES.SETTING, { id: key, key, value });
     return classToPlain(result) as Setting;
   };
 
