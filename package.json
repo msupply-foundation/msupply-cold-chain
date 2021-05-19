@@ -11,7 +11,6 @@
   },
   "scripts": {
     "make-debug-keystore": "keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000",
-    "update-splash": "configure-splash-screen --statusbar-hidden -p \"android\" --resize-mode \"cover\" \"#282F46\" \"./assets/splash.png\"",
     "upload-bugsnag": "./scripts/upload.sh",
     "test": "jest",
     "storybook": "(adb reverse tcp:7007 tcp:7007 || true) && start-storybook",
@@ -23,7 +22,7 @@
     "start:emulator": "APP_ENV=emulator npx react-native run-android",
     "start:emulator:nologging": "APP_ENV=emulator.nologging react-native start",
     "prepare": "patch-package",
-    "build": "APP_ENV=production cd ./android && ./gradlew assembleRelease",
+    "update-splash": "configure-splash-screen --status-bar-hidden -p \"android\" --image-resize-mode \"cover\" --background-color \"#282F46\" --image-path \"./assets/splash.png\"",
     "clean:build": "npm run clean && npm run build --reset-cache"
   },
   "dependencies": {
