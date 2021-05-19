@@ -1,9 +1,8 @@
+import { installTriggers } from './triggers/index';
 import _ from 'lodash';
-import { EntitySubscriberInterface } from 'typeorm/browser';
 import { Database } from './Database';
 import { ENTITIES, MILLISECONDS } from '~constants';
 import { classToPlain } from 'class-transformer';
-import { migrations } from '~common/services/Database/migrations';
 
 export class DatabaseService {
   database: Database;
@@ -59,7 +58,6 @@ export class DatabaseService {
     const isIntegrating = await this.get(ENTITIES.SETTING, { key: 'isIntegrating' });
     if (!isIntegrating) {
       await this.upsert(ENTITIES.SETTING, {
-        id: 'isIntegrating',
         key: 'isIntegrating',
         value: 'false',
       });
@@ -70,7 +68,6 @@ export class DatabaseService {
     });
     if (!lastSync) {
       await this.upsert(ENTITIES.SETTING, {
-        id: 'lastSync',
         key: 'lastSync',
         value: '0',
       });
@@ -82,15 +79,19 @@ export class DatabaseService {
 
     if (!defaultLogInterval) {
       await this.upsert(ENTITIES.SETTING, {
-        id: 'defaultLogInterval',
         key: 'defaultLogInterval',
         value: '300',
       });
     }
 
-    for (const migration of migrations) {
-      await migration.migrate(this);
-    }
+    await installTriggers(this);
+  };
+
+  getQueryBuilder = () => {
+    const conn = this.database.connection;
+    if (!conn) throw new Error('Database not connected!');
+
+    return conn.createQueryBuilder();
   };
 
   transaction = async (callback: () => Promise<void>): Promise<void> => {
@@ -105,13 +106,42 @@ export class DatabaseService {
       await queryRunner.commitTransaction();
     } catch (e) {
       await queryRunner.rollbackTransaction();
+      throw new Error(e);
     } finally {
       await queryRunner.release();
     }
   };
 
-  registerSubscribers = (subscribers: EntitySubscriberInterface[]): void => {
-    subscribers.forEach(subscriber => this.database.connection?.subscribers.push(subscriber));
+  sqlBatch = async (queries: any[]): Promise<void> => {
+    const conn = this.database.connection;
+    if (!conn) throw new Error('Database not connected');
+    const driver = conn.driver;
+    await (driver as any).databaseConnection.sqlBatch(queries);
+  };
+
+  updateMany = async (entityName: string, objects: any[]) => {
+    const conn = this.database.connection;
+
+    if (!conn) throw new Error('Database not connected');
+
+    const driver = conn.driver;
+
+    const chunks = _.chunk(objects, 250);
+    const queries = chunks.map((chunk: any) => {
+      return chunk.map((obj: any) => {
+        // NOTE: Calling to get qb outside of this loop causes a a degradation of speed!
+        // Seems there is some memory leak with the query builder which will slowly increase
+        // the amount taking to build a query. After around 5000 records, each string takes
+        // around 200ms to create. By calling to get it each iteration, strings are created in
+        // the more expected time of less than a ms.
+        const qb = this.getQueryBuilder();
+        return qb.update(entityName).set(obj).where('id == :id', obj).getQueryAndParameters();
+      });
+    });
+
+    for (const queryChunk of queries) {
+      await (driver as any).databaseConnection.sqlBatch(queryChunk);
+    }
   };
 
   update = async (entityName: string, id: string, object: any): Promise<any | any[]> => {
@@ -161,6 +191,15 @@ export class DatabaseService {
   get = async (entityName: string, idOrQueryObject: string | any): Promise<any | any[]> => {
     const repository = await this.database.getRepository(entityName);
     return repository.findOne(idOrQueryObject);
+  };
+
+  rawQuery = async (query: string, params: any[] = []): Promise<any> => {
+    const conn = await this.database.getConnection();
+
+    if (!conn) throw new Error('Database not connected!');
+
+    const qr = conn.createQueryRunner();
+    return qr.query(query, params);
   };
 
   query = async (entityName: string, query?: (string | number)[]): Promise<any | any[]> => {

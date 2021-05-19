@@ -1,21 +1,15 @@
 import React, { FC } from 'react';
 import { useSelector } from 'react-redux';
-import { FormatService } from '../../common/services';
+import { useFormatter } from '~hooks';
 import { RootState } from '../../common/store/store';
 import { DetailCumulativeSelector } from '../../features';
-
-import { withFormatService } from '../hoc/withFormatService';
 import { Row } from '../layouts';
 import { NormalText } from '../presentation/typography';
 import { LoadAfterInteractions } from './LoadAfterInteractions';
 
-interface SensorDetailCumulativeBreachStatus {
-  formatter: FormatService;
-}
+export const SensorDetailCumulativeBreachStatus: FC = () => {
+  const formatter = useFormatter();
 
-export const SensorDetailCumulativeBreachStatusComponent: FC<SensorDetailCumulativeBreachStatus> = ({
-  formatter,
-}) => {
   const coldCumulative = useSelector((state: RootState) =>
     DetailCumulativeSelector.coldCumulative(state, { formatter })
   );
@@ -42,7 +36,3 @@ export const SensorDetailCumulativeBreachStatusComponent: FC<SensorDetailCumulat
     </LoadAfterInteractions>
   );
 };
-
-export const SensorDetailCumulativeBreachStatus = withFormatService(
-  SensorDetailCumulativeBreachStatusComponent
-);

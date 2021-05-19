@@ -8,14 +8,14 @@ import { Sensor } from './Sensor';
 
 @Entity('TemperatureBreach')
 class TemperatureBreach {
-  static getTableDefinition = () => `
+  static getTableDefinition = (): string => `
   CREATE TABLE IF NOT EXISTS  TemperatureBreach (
     id                               VARCHAR PRIMARY KEY
                                              NOT NULL,
     endTimestamp                     INTEGER,
     startTimestamp                   INTEGER NOT NULL,
     temperatureBreachConfigurationId VARCHAR NOT NULL,
-    handled                     BOOLEAN NOT NULL
+    acknowledged                     BOOLEAN NOT NULL
                                              DEFAULT (0),
     sensorId                         VARCHAR NOT NULL,
     CONSTRAINT FK_temperatureBreach_temperatureBreachConfig FOREIGN KEY (
@@ -32,40 +32,40 @@ class TemperatureBreach {
 `;
 
   @PrimaryColumn({ type: 'varchar', nullable: false })
-  id!: string;
+  id: string;
 
   @Column({ type: 'integer', nullable: true })
-  endTimestamp!: number;
+  endTimestamp: number;
 
   @Column({ type: 'integer', nullable: false })
-  startTimestamp!: number;
+  startTimestamp: number;
 
   @Column({ type: 'varchar', nullable: false })
-  temperatureBreachConfigurationId!: string;
+  temperatureBreachConfigurationId: string;
 
   @Column({ type: 'boolean', nullable: false, default: false })
-  handled!: boolean;
+  acknowledged: boolean;
 
   @ManyToOne(() => TemperatureBreachConfiguration, config => config.temperatureBreaches, {
     cascade: ['insert', 'update'],
     eager: true,
   })
   @JoinColumn({ name: 'temperatureBreachConfigurationId' })
-  temperatureBreachConfiguration!: TemperatureBreachConfiguration;
+  temperatureBreachConfiguration: TemperatureBreachConfiguration;
 
   @OneToMany(() => TemperatureLog, temperatureLog => temperatureLog.temperatureBreach, {
     cascade: ['insert', 'update'],
   })
-  temperatureLogs!: TemperatureLog[];
+  temperatureLogs: TemperatureLog[];
 
   @Column({ type: 'varchar', nullable: false })
-  sensorId!: string | null;
+  sensorId: string;
 
   @ManyToOne(() => Sensor, sensor => sensor.temperatureBreaches, {
     cascade: ['insert', 'update'],
   })
   @JoinColumn({ name: 'sensorId' })
-  sensor!: Sensor;
+  sensor: Sensor;
 }
 
 export { TemperatureBreach };

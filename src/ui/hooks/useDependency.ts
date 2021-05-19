@@ -1,11 +1,21 @@
 import { useContext } from 'react';
-import { DEPENDENCY } from '../../common/constants';
-import { DependencyLocatorContext } from '../../common/services/DependencyLocator';
-import { Dependencies } from '../../common/services/DependencyLocator/DependencyLocator';
+import { Dependency, DependencyKey } from '~services/DependencyLocator/DependencyLocator';
+import { DependencyLocatorContext, FormatService, MigrationService } from '~services';
+import { DEPENDENCY } from '~constants';
 
-export const useDependency = (service: DEPENDENCY): Dependencies[keyof Dependencies] => {
+export const useDependency = (service: DependencyKey): Dependency | undefined => {
   const depsLocator = useContext(DependencyLocatorContext);
-  const dependency = depsLocator.get(service);
+  const dependency: Dependency | undefined = depsLocator.get(service);
 
   return dependency;
+};
+
+export const useMigrationService = (): MigrationService => {
+  const migrationService = useDependency(DEPENDENCY.MIGRATION);
+  return migrationService as MigrationService;
+};
+
+export const useFormatter = (): FormatService => {
+  const formatter = useDependency(DEPENDENCY.FORMAT_SERVICE);
+  return formatter as FormatService;
 };

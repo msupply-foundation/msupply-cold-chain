@@ -24,7 +24,7 @@ public class MainActivity extends ReactActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+    super.onCreate(null);
     Bugsnag.start(this); 
 
     // SplashScreen.show(...) has to be called after super.onCreate(...)

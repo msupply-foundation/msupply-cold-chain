@@ -1,26 +1,22 @@
 /* istanbul ignore file */
 
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm/browser';
+import { Entity, Column } from 'typeorm/browser';
 
 @Entity('Setting')
 class Setting {
   static getTableDefinition = () => `
   CREATE TABLE IF NOT EXISTS  Setting (
-    id    VARCHAR       PRIMARY KEY
+    [key] VARCHAR (100) PRIMARY KEY
                         NOT NULL,
-    [key] VARCHAR (100),
     value VARCHAR (100) 
 );
 `;
 
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  @Column({ primary: true, nullable: true, type: 'varchar', length: 100 })
+  key: string;
 
   @Column({ nullable: true, type: 'varchar', length: 100 })
-  key!: string;
-
-  @Column({ nullable: true, type: 'varchar', length: 100 })
-  value!: string;
+  value: string;
 }
 
 export { Setting };

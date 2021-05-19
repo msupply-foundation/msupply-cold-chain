@@ -42,6 +42,7 @@ const screenOptions = ({
 
 // TabBar styling options
 const tabBarOptions: BottomTabBarOptions = {
+  keyboardHidesTabBar: true,
   activeTintColor: COLOUR.WHITE,
   inactiveTintColor: COLOUR.OFF_WHITE,
   activeBackgroundColor: COLOUR.SECONDARY,
