@@ -21,7 +21,7 @@
     "make-debug-keystore": "keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000",
     "storybook": "(adb reverse tcp:7007 tcp:7007 || true) && start-storybook",
     "prepare": "patch-package",
-    "update-splash": "configure-splash-screen --statusbar-hidden -p \"android\" --resize-mode \"cover\" \"#282F46\" \"./assets/splash.png\"",
+    "update-splash": "configure-splash-screen --status-bar-hidden -p \"android\" --image-resize-mode \"cover\" --background-color \"#282F46\" --image-path \"./assets/splash.png\"",
     "clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* &&  rm -rf node_modules/ && npm cache verify && npm install && npm start --reset-cache"
   },
   "dependencies": {
