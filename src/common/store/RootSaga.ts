@@ -28,5 +28,5 @@ export function* RootSaga(): SagaIterator {
 }
 
 export const SagaMiddleware = createSagaMiddleware({
-  context: { DependencyLocator },
+  context: { dependencyLocator: DependencyLocator, DependencyLocator },
 });

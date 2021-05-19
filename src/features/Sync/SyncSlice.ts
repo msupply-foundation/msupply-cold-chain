@@ -379,4 +379,4 @@ const SyncSaga = {
   enablePassiveSync,
 };
 
-export { SyncAction, SyncReducer, SyncSaga, SyncSelector };
+export { SyncAction, SyncReducer, SyncSaga, SyncSelector, initialState };

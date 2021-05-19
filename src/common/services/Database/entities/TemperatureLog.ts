@@ -50,7 +50,7 @@ class TemperatureLog {
     eager: false,
   })
   @JoinColumn({ name: 'temperatureBreachId' })
-  temperatureBreach: string;
+  temperatureBreach?: TemperatureBreach;
 
   @Index()
   @Column({ type: 'varchar', nullable: true })
