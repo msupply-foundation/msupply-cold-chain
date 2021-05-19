@@ -3,7 +3,7 @@
 exports[`Constants: DEPENDENCY Matches snapshot 1`] = `
 Object {
   "ACKNOWLEDGE_BREACH_MANAGER": "acknowledgeBreachManager",
-  "BLUETOOTH": "bluetooth",
+  "BLUETOOTH": "bleService",
   "BREACH_CONFIGURATION_MANAGER": "breachConfigurationManager",
   "BREACH_MANAGER": "breachManager",
   "CHART_MANAGER": "chartManager",
@@ -19,6 +19,7 @@ Object {
   "LOCATOR": "DependencyLocator",
   "LOGGER_SERVICE": "loggerService",
   "LOG_TABLE_MANAGER": "logTableManager",
+  "MIGRATION": "migrationService",
   "PERMISSION_SERVICE": "permissionService",
   "REPORT_MANAGER": "reportManager",
   "SENSOR_MANAGER": "sensorManager",
