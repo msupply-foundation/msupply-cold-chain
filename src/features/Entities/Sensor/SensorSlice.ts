@@ -5,7 +5,7 @@ import { getContext, call, put, takeEvery, takeLatest } from 'redux-saga/effects
 
 import { RootState } from '../../../common/store/store';
 import { REDUCER, DEPENDENCY } from '../../../common/constants';
-import { ProgramAction } from '../../Bluetooth';
+import { ProgramAction } from '~features/Bluetooth/Program/ProgramSlice';
 
 export interface SensorState {
   id: string;

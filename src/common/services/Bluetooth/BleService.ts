@@ -5,6 +5,7 @@ import {
   BleManager,
   Device,
   ScanOptions,
+  ScanMode,
 } from 'react-native-ble-plx';
 import { Buffer } from 'buffer';
 import { BLUE_MAESTRO, BLUETOOTH } from '~constants';
@@ -45,7 +46,7 @@ export interface BluetoothManager {
   ): Subscription;
 }
 
-interface InfoLog {
+export interface InfoLog {
   batteryLevel: null | number;
   isDisabled: boolean;
 }
@@ -105,7 +106,7 @@ export class BleService {
   };
 
   scanForSensors = (callback: ScanCallback): void => {
-    const scanOptions: ScanOptions = { scanMode: BLUETOOTH.SCAN_MODE_LOW_LATENCY };
+    const scanOptions: ScanOptions = { scanMode: ScanMode.LowLatency };
     this.manager.startDeviceScan(null, scanOptions, callback);
   };
 

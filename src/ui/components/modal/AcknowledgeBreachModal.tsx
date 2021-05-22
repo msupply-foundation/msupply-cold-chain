@@ -3,15 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import { ActivityIndicator, FlatList } from 'react-native';
 
-import { SettingsEditButtonGroup, SettingsEditModalLayout, Column, Centered } from '../../layouts';
-
-import { t } from '../../../common/translations';
-import { AcknowledgeBreachAction } from '../../../features';
-import { NormalText } from '../../presentation/typography';
-import { Divider } from '../../presentation';
-import { COLOUR } from '../../../common/constants';
+import { SettingsEditButtonGroup, SettingsEditModalLayout, Column, Centered } from '~layouts';
+import { t } from '~translations';
+import { AcknowledgeBreachAction } from '~features';
+import { NormalText } from '~presentation/typography';
+import { Divider } from '~presentation';
+import { COLOUR } from '~common/constants';
 import { SettingsEditButton } from '../buttons';
-import { RootState } from '../../../common/store/store';
+import { RootState } from '~store/store';
 
 interface AcknowledgeBreachModalProps {
   id: string;
@@ -79,7 +78,9 @@ export const AcknowledgeBreachModal: FC<AcknowledgeBreachModalProps> = ({ id }) 
                     </Centered>
                     <Centered>
                       <NormalText style={{ textAlign: 'left' }} color={COLOUR.GREY_ONE}>
-                        {`ended: ${moment(item.endTimestamp * 1000).format('DD/MM/YYYY HH:mm:ss')}`}
+                        {`ended: ${moment(item?.endTimestamp ?? 0 * 1000).format(
+                          'DD/MM/YYYY HH:mm:ss'
+                        )}`}
                       </NormalText>
                     </Centered>
                     <Divider />

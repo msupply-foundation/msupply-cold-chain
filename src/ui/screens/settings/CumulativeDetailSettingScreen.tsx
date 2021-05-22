@@ -2,26 +2,18 @@ import React, { FC } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 
-import { t } from '../../../common/translations';
-import { SettingsList } from '../../layouts';
-import { useRouteProps } from '../../hooks';
+import { t } from '~translations';
+import { SettingsList } from '~layouts';
+import { useRouteProps } from '~hooks';
 
-import {
-  SettingsTextInputRow,
-  SettingsGroup,
-  SettingsNumberInputRow,
-} from '../../components/settings';
-import { BreachConfigurationAction } from '../../../features/Entities';
-import { RootState } from '../../../common/store/store';
-import { SETTINGS_STACK } from '../../../common/constants';
+import { SettingsTextInputRow, SettingsGroup, SettingsNumberInputRow } from '~components/settings';
+import { BreachConfigurationAction, BreachConfigurationSelector } from '~features/Entities';
+import { SETTINGS_STACK } from '~constants';
 import { SettingsStackParameters } from '../../containers/SettingsStackNavigator';
 
 export const CumulativeDetailSettingScreen: FC = () => {
   const { id } = useRouteProps<SettingsStackParameters, SETTINGS_STACK.SENSOR_DETAIL>();
-  const config = useSelector(({ entities: { breachConfiguration } }: RootState) => {
-    const { byId } = breachConfiguration;
-    return byId[id];
-  });
+  const { [id]: config } = useSelector(BreachConfigurationSelector.byId);
 
   const dispatch = useDispatch();
 

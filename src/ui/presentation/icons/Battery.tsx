@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { TextStyle } from 'react-native';
-import { COLOUR } from '../../../common/constants';
+import { COLOUR } from '~common/constants';
 import { ICON_NAME, Icon, ICON_SIZE } from './Icon';
 
 interface BatteryProps extends TextStyle {
@@ -16,7 +16,7 @@ export const Battery: FC<BatteryProps> = ({
   size = ICON_SIZE.L,
   style = { marginRight: 10 },
 }) => {
-  const getIconProps = (level: number, charging: boolean): [ICON_NAME, string] => {
+  const getIconProps = (level: number, charging: boolean): [ICON_NAME, COLOUR] => {
     if (charging) return [ICON_NAME.BATTERY_CHARGING, COLOUR.PRIMARY];
     if (level < 5) return [ICON_NAME.BATTERY_EMPTY, COLOUR.DANGER];
     if (level < 25) return [ICON_NAME.BATTERY_ONE, COLOUR.DANGER];
