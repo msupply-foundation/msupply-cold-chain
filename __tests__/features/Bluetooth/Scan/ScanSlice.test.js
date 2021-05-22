@@ -2,7 +2,7 @@ import { expectSaga } from 'redux-saga-test-plan';
 
 import { ScanReducer, ScanInitialState, ScanAction, ScanSaga } from '~features/Bluetooth';
 
-import { SensorAction, SensorInitialState } from '../../../../src/features/Entities';
+import { SensorAction, SensorInitialState } from '../../../../src/features/Entities/Sensor';
 
 describe('ScanAction', () => {
   it('has matching snapshots', () => {
