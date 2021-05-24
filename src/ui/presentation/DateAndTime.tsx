@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { COLOUR } from '~constants';
 import { Column } from '../layouts';
-import { LargeText, MediumText, SmallText } from './typography';
+import { MediumText, SmallText } from './typography';
 
 interface DateAndTimeProps {
   date: string;

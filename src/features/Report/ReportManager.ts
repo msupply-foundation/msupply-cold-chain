@@ -130,22 +130,22 @@ type TemperatureLogsReportShape = {
 };
 
 enum SensorReportKey {
-  ProgrammedOn = 'Programmed on',
+  ProgrammedOn = 'Programmed On',
   LoggingStart = 'Logging Start',
   LoggingInterval = 'Logging Interval',
 }
 
 type SensorReportShape = {
-  [SensorReportKey.ProgrammedOn]: number;
-  [SensorReportKey.LoggingStart]: number;
+  [SensorReportKey.ProgrammedOn]: string;
+  [SensorReportKey.LoggingStart]: string;
   [SensorReportKey.LoggingInterval]: number;
 };
 
 enum BreachReportKey {
   BreachType = 'Breach Type',
   BreachName = 'Breach Name',
-  StartDate = 'Start Date',
-  EndDate = 'End Date',
+  StartDate = 'Start date',
+  EndDate = 'End date',
   ExposureDuration = 'Exposure Duration (minutes)',
   MaxTemperature = 'Max Temp',
   MinTemperature = 'Min Temp',
@@ -154,8 +154,8 @@ enum BreachReportKey {
 type BreachReportShape = {
   [BreachReportKey.BreachType]: 'Continuous';
   [BreachReportKey.BreachName]: string;
-  [BreachReportKey.StartDate]: number;
-  [BreachReportKey.EndDate]: number;
+  [BreachReportKey.StartDate]: string;
+  [BreachReportKey.EndDate]: string;
   [BreachReportKey.ExposureDuration]: number;
   [BreachReportKey.MaxTemperature]: number;
   [BreachReportKey.MinTemperature]: number;
@@ -247,38 +247,38 @@ export class ReportManager {
       [GeneralReportKey.ExportedBy]: username,
       [GeneralReportKey.JobDescription]: comment,
     };
-    const generalReportParser = new Parser({ fields: Object.keys(GeneralReportKey) });
+    const generalReportParser = new Parser({ fields: Object.values(GeneralReportKey) });
 
     try {
       csv += `${generalReportParser.parse(generalReport)} \n\n`;
     } catch (e) {}
 
     const sensorReportParser = new Parser<SensorReportShape>({
-      fields: Object.keys(SensorReportKey),
+      fields: Object.values(SensorReportKey),
     });
 
     try {
       csv += `LAST PROGRAMMED\n${sensorReportParser.parse(sensorReport)}\n\n`;
     } catch (e) {}
 
-    const breachConfigReportParser = new Parser({ fields: Object.keys(BreachConfigReportKey) });
+    const breachConfigReportParser = new Parser({ fields: Object.values(BreachConfigReportKey) });
 
     try {
       csv += `BREACH CONFIGURATIONS\n${breachConfigReportParser.parse(breachConfigReport)}\n\n`;
     } catch (e) {}
 
-    const sensorStatsParser = new Parser({ fields: Object.keys(SensorStatsReportKey) });
+    const sensorStatsParser = new Parser({ fields: Object.values(SensorStatsReportKey) });
 
     try {
       csv += `STATISTICS\n${sensorStatsParser.parse(sensorStats)}\n\n`;
     } catch (e) {}
 
-    const breachReportParser = new Parser({ fields: Object.keys(BreachReportKey) });
+    const breachReportParser = new Parser({ fields: Object.values(BreachReportKey) });
     try {
       csv += `BREACHES\n${breachReportParser.parse(breachReport)}\n\n`;
     } catch (e) {}
 
-    const logReportParser = new Parser({ fields: Object.keys(TemperatureLogsReportKey) });
+    const logReportParser = new Parser({ fields: Object.values(TemperatureLogsReportKey) });
 
     try {
       csv += `LOGS\n${logReportParser.parse(logsReport)}`;
