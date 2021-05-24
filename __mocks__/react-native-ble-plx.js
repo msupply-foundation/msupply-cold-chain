@@ -1,3 +1,0 @@
-class BleManager {}
-
-export { BleManager };
