@@ -51,7 +51,7 @@ export interface InfoLog {
   isDisabled: boolean;
 }
 
-interface SensorLog {
+export interface SensorLog {
   temperature: number;
 }
 

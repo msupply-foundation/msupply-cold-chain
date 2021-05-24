@@ -148,7 +148,7 @@ export class SensorManager {
     return this.databaseService.upsert(ENTITIES.SENSOR, ...params);
   };
 
-  update = async (id: string, params: any) => {
+  update = async (id, params) => {
     return this.databaseService.update(ENTITIES.SENSOR, id, params);
   };
 

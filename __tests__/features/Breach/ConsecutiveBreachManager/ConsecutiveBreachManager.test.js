@@ -246,7 +246,8 @@ describe('ConsecutiveBreachManager: getBreachConfigs', () => {
 describe('ConsecutiveBreachManager: updateBreaches', () => {
   it('returns updated records', async () => {
     const upsertMock = jest.fn((_, entities) => entities);
-    const mockDbService = { upsert: upsertMock };
+    const updateManyMock = jest.fn(() => {});
+    const mockDbService = { upsert: upsertMock, updateMany: updateManyMock };
 
     const breachManager = new ConsecutiveBreachManager(mockDbService);
 

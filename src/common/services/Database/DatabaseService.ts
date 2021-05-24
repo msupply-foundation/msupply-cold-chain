@@ -1,17 +1,38 @@
-import { installTriggers } from './triggers/index';
+import { installTriggers, Trigger, triggers } from './triggers/index';
 import _ from 'lodash';
 import { Database } from './Database';
 import { ENTITIES, MILLISECONDS } from '~constants';
 import { classToPlain } from 'class-transformer';
 
+export type DatabaseConfiguration = {
+  triggers?: Trigger[];
+};
+
+const defaultConfig: DatabaseConfiguration = {
+  triggers,
+};
+
 export class DatabaseService {
   database: Database;
 
-  constructor(database: Database) {
+  config: DatabaseConfiguration;
+
+  constructor(database: Database, config: DatabaseConfiguration = defaultConfig) {
     this.database = database;
+    this.config = config;
   }
 
+  installTriggers = async (): Promise<void> => {
+    if (this.config.triggers) {
+      for (const trigger of this.config.triggers) {
+        await trigger.install(this);
+      }
+    }
+  };
+
   init = async (): Promise<any> => {
+    await this.installTriggers();
+
     const COLD_BREACH = {
       id: 'COLD_BREACH',
       minimumTemperature: -999,

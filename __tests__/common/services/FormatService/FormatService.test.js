@@ -13,12 +13,13 @@ describe('FormatService: lastDownloadTime', () => {
       formatter.lastDownloadTime(
         (new Date().getTime() - MILLISECONDS.ONE_MINUTE) / MILLISECONDS.ONE_SECOND
       )
-    ).toBe('a few seconds ago');
+    ).toBe('a minute ago');
+
     expect(
       formatter.lastDownloadTime(
         (new Date().getTime() - MILLISECONDS.ONE_MINUTE * 5) / MILLISECONDS.ONE_SECOND
       )
-    ).toBe('a few seconds ago');
+    ).toBe('5 minutes ago');
   });
 });
 
