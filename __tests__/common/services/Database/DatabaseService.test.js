@@ -1,5 +1,4 @@
 import { DatabaseService } from '~common/services';
-import { ENTITIES, MILLISECONDS } from '~common/constants';
 
 const createMockDB = ({ findReturn = [] } = {}) => {
   const mockSave = jest.fn(async object => object);
