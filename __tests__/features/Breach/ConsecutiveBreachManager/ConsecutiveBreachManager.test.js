@@ -30,6 +30,7 @@ describe('ConsecutiveBreachManager: createBreach', () => {
       temperatureBreachConfigurationId: 'a',
       temperatureBreachConfiguration: config,
       startTimestamp: 0,
+      acknowledged: false,
     };
 
     expect(closedBreach).toEqual(closedBreachShouldBe);

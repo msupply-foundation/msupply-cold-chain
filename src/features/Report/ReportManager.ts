@@ -2,7 +2,8 @@ import RNFS from 'react-native-fs';
 import Mailer from 'react-native-mail';
 import moment from 'moment';
 import { Parser } from 'json2csv';
-import { ENTITIES } from '../../common/constants';
+import { DatabaseService, ExportService } from '~common/services';
+import { Sensor } from '~common/services/Database';
 
 const BREACH_CONFIG_REPORT = `
 select description "Breach Name", duration / 60000 "Number of Minutes", 
@@ -89,7 +90,7 @@ const specialChars = /[\/\?<>\\:\*\|":]/g;
 const apparentlyTheseOnesAlso = /[\x00-\x1f\x80-\x9f]/g;
 const andTheseOnes = /^\.+$/;
 
-const sanitize = (input, replacement = '') =>
+const sanitize = (input: string, replacement = '') =>
   input
     .replace(specialChars, replacement)
     .replace(apparentlyTheseOnesAlso, replacement)
@@ -98,132 +99,189 @@ const sanitize = (input, replacement = '') =>
     .splice(0, 255)
     .join('');
 
+enum SensorStatsReportKey {
+  MaxTemperature = 'Max Temperature',
+  MinTemperature = 'Min Temperature',
+  NumberOfCumulativeBreaches = 'Number of cumulative breaches',
+  NumberOfContinuousBreaches = 'Number of continuous breaches',
+}
+
+type SensorStatsReportShape = {
+  [SensorStatsReportKey.MaxTemperature]: number;
+  [SensorStatsReportKey.MinTemperature]: number;
+  [SensorStatsReportKey.NumberOfContinuousBreaches]: number;
+  [SensorStatsReportKey.NumberOfCumulativeBreaches]: number;
+};
+
+enum TemperatureLogsReportKey {
+  IsCumulativeBreach = 'Is cumulative breach',
+  Timestamp = 'Timestamp',
+  Temperature = 'Temperature',
+  LoggingInterval = 'Logging Interval (Minutes)',
+  IsContinuousBreach = 'Is continuous breach',
+}
+
+type TemperatureLogsReportShape = {
+  [TemperatureLogsReportKey.IsCumulativeBreach]: 'Hot' | 'Cold' | 'x';
+  [TemperatureLogsReportKey.Timestamp]: number;
+  [TemperatureLogsReportKey.Temperature]: number;
+  [TemperatureLogsReportKey.LoggingInterval]: number;
+  [TemperatureLogsReportKey.IsContinuousBreach]: 'Hot' | 'Cold' | '';
+};
+
+enum SensorReportKey {
+  ProgrammedOn = 'Programmed on',
+  LoggingStart = 'Logging Start',
+  LoggingInterval = 'Logging Interval',
+}
+
+type SensorReportShape = {
+  [SensorReportKey.ProgrammedOn]: number;
+  [SensorReportKey.LoggingStart]: number;
+  [SensorReportKey.LoggingInterval]: number;
+};
+
+enum BreachReportKey {
+  BreachType = 'Breach Type',
+  BreachName = 'Breach Name',
+  StartDate = 'Start Date',
+  EndDate = 'End Date',
+  ExposureDuration = 'Exposure Duration (minutes)',
+  MaxTemperature = 'Max Temp',
+  MinTemperature = 'Min Temp',
+}
+
+type BreachReportShape = {
+  [BreachReportKey.BreachType]: 'Continuous';
+  [BreachReportKey.BreachName]: string;
+  [BreachReportKey.StartDate]: number;
+  [BreachReportKey.EndDate]: number;
+  [BreachReportKey.ExposureDuration]: number;
+  [BreachReportKey.MaxTemperature]: number;
+  [BreachReportKey.MinTemperature]: number;
+};
+
+enum BreachConfigReportKey {
+  BreachName = 'Breach Name',
+  NumberOfMinutes = 'Number of Minutes',
+  BreachType = 'Breach Type',
+  Temperature = 'Temperature',
+  Direction = 'Direction',
+}
+
+type BreachConfigReportShape = {
+  [BreachConfigReportKey.BreachName]: string;
+  [BreachConfigReportKey.NumberOfMinutes]: number;
+  [BreachConfigReportKey.BreachType]: 'Continuous' | 'Cumulative';
+  [BreachConfigReportKey.Temperature]: number;
+  [BreachConfigReportKey.Direction]: 'Max' | 'Min';
+};
+
+enum GeneralReportKey {
+  'Timezone' = 'Timezone',
+  'Device' = 'Device',
+  'SensorName' = 'Sensor Name',
+  'ExportedBy' = 'Exported By',
+  'JobDescription' = 'Job description',
+}
+
+type GeneralReportShape = {
+  [GeneralReportKey.Timezone]: string;
+  [GeneralReportKey.Device]: string;
+  [GeneralReportKey.SensorName]: string;
+  [GeneralReportKey.ExportedBy]: string;
+  [GeneralReportKey.JobDescription]: string;
+};
+
 export class ReportManager {
-  constructor(databaseService, exportService, deviceFeatureService) {
+  databaseService: DatabaseService;
+  exportService: ExportService;
+  deviceFeatureService: any;
+
+  constructor(
+    databaseService: DatabaseService,
+    exportService: ExportService,
+    deviceFeatureService: any
+  ) {
     this.databaseService = databaseService;
     this.exportService = exportService;
     this.deviceFeatureService = deviceFeatureService;
   }
 
-  getSensorById = async id => {
-    const sensor = await this.databaseService.queryWith(ENTITIES.SENSOR, { id });
-    return sensor[0];
-  };
-
-  getStats = async id => {
+  getStats = async (id: string): Promise<SensorStatsReportShape> => {
     return this.databaseService.query(STATS, [id, id, id, id]);
   };
 
-  getSensorReport = async id => {
+  getSensorReport = async (id: string): Promise<SensorReportShape> => {
     return this.databaseService.query(REPORT, [id]);
   };
 
-  getLogsReport = async id => {
+  getLogsReport = async (id: string): Promise<TemperatureLogsReportShape> => {
     return this.databaseService.query(LOGS_REPORT, [id, id, id]);
   };
 
-  getBreachReport = async id => {
+  getBreachReport = async (id: string): Promise<BreachReportShape> => {
     return this.databaseService.query(BREACH_REPORT, [id]);
   };
 
-  breachConfigReport = async () => {
+  breachConfigReport = async (): Promise<BreachConfigReportShape> => {
     return this.databaseService.query(BREACH_CONFIG_REPORT);
   };
 
   writeLogFile = async (
-    sensor,
-    sensorReport,
-    sensorStats,
-    logsReport,
-    breachReport,
-    breachConfigReport,
-    username,
-    comment
-  ) => {
+    sensor: Sensor,
+    sensorReport: SensorReportShape,
+    sensorStats: SensorStatsReportShape,
+    logsReport: TemperatureLogsReportShape,
+    breachReport: BreachReportShape,
+    breachConfigReport: BreachConfigReportShape,
+    username: string,
+    comment: string
+  ): Promise<string> => {
     let csv = '';
 
-    const generalReportFields = [
-      'Timezone',
-      'Device',
-      'Sensor Name',
-      'Exported By',
-      'Job description',
-    ];
-    const generalReport = {
-      Timezone: this.deviceFeatureService.getDeviceTimezone(),
-      Device: this.deviceFeatureService.getDeviceModel(),
-      'Sensor Name': sensor.name ?? sensor.macAddress,
-      'Exported By': username,
-      'Job description': comment,
+    const generalReport: GeneralReportShape = {
+      [GeneralReportKey.Timezone]: this.deviceFeatureService.getDeviceTimezone(),
+      [GeneralReportKey.Device]: this.deviceFeatureService.getDeviceModel(),
+      [GeneralReportKey.SensorName]: sensor.name ?? sensor.macAddress,
+      [GeneralReportKey.ExportedBy]: username,
+      [GeneralReportKey.JobDescription]: comment,
     };
-    const generalReportParser = new Parser({ fields: generalReportFields });
+    const generalReportParser = new Parser({ fields: Object.keys(GeneralReportKey) });
+
     try {
       csv += `${generalReportParser.parse(generalReport)} \n\n`;
-      // eslint-disable-next-line no-empty
     } catch (e) {}
 
-    const sensorReportFields = ['Programmed On', 'Logging Start', 'Logging Interval'];
-    const sensorReportParser = new Parser(sensorReportFields);
+    const sensorReportParser = new Parser<SensorReportShape>({
+      fields: Object.keys(SensorReportKey),
+    });
 
     try {
       csv += `LAST PROGRAMMED\n${sensorReportParser.parse(sensorReport)}\n\n`;
-      // eslint-disable-next-line no-empty
     } catch (e) {}
 
-    const breachConfigReportFields = [
-      'Breach Type',
-      'Breach Name',
-      'Number of Minutes',
-      'Temperature',
-      'Direction',
-    ];
-    const breachConfigReportParser = new Parser(breachConfigReportFields);
+    const breachConfigReportParser = new Parser({ fields: Object.keys(BreachConfigReportKey) });
 
     try {
       csv += `BREACH CONFIGURATIONS\n${breachConfigReportParser.parse(breachConfigReport)}\n\n`;
-      // eslint-disable-next-line no-empty
     } catch (e) {}
 
-    const sensorStatsFields = [
-      'Max Temperature',
-      'Min Temperature',
-      'Number of continuous breaches',
-    ];
-    const sensorStatsParser = new Parser({ fields: sensorStatsFields });
+    const sensorStatsParser = new Parser({ fields: Object.keys(SensorStatsReportKey) });
 
     try {
       csv += `STATISTICS\n${sensorStatsParser.parse(sensorStats)}\n\n`;
-      // eslint-disable-next-line no-empty
     } catch (e) {}
 
-    const breachReportFields = [
-      'Breach Type',
-      'Breach Name',
-      'Start',
-      'End',
-      'Exposure Duration (minutes)',
-      'Min Temp',
-      'Max Temp',
-    ];
-    const breachReportParser = new Parser({ fields: breachReportFields });
+    const breachReportParser = new Parser({ fields: Object.keys(BreachReportKey) });
     try {
       csv += `BREACHES\n${breachReportParser.parse(breachReport)}\n\n`;
-      // eslint-disable-next-line no-empty
     } catch (e) {}
 
-    const logReportFields = [
-      'Timestamp',
-      'Temperature',
-      'Is cumulative breach',
-      'Is continuous breach',
-      'Logging Interval (Minutes)',
-    ];
-
-    const logReportParser = new Parser({ fields: logReportFields });
+    const logReportParser = new Parser({ fields: Object.keys(TemperatureLogsReportKey) });
 
     try {
       csv += `LOGS\n${logReportParser.parse(logsReport)}`;
-      // eslint-disable-next-line no-empty
     } catch (e) {}
 
     const directory = '/Download/cce';
@@ -237,131 +295,46 @@ export class ReportManager {
       await RNFS.writeFile(path, csv, 'utf8');
 
       return path;
-      // eslint-disable-next-line no-empty
     } catch (e) {}
 
     return path;
   };
 
   emailLogFile = async (
-    sensor,
-    sensorReport,
-    sensorStats,
-    logsReport,
-    breachReport,
-    breachConfigReport,
-    username,
-    comment
-  ) => {
-    let csv = '';
-
-    const generalReportFields = [
-      'Timezone',
-      'Device',
-      'Sensor Name',
-      'Exported By',
-      'Exported On',
-      'Job description',
-    ];
-    const generalReport = {
-      Timezone: this.deviceFeatureService.getDeviceTimezone(),
-      Device: this.deviceFeatureService.getDeviceModel(),
-      'Sensor Name': sensor.name ?? sensor.macAddress,
-      'Exported By': username,
-      'Exported On': moment().format('YYYY-MM-DD HH:mm:ss'),
-      'Job description': comment,
-    };
-    const generalReportParser = new Parser({ fields: generalReportFields });
+    sensor: Sensor,
+    sensorReport: SensorReportShape,
+    sensorStats: SensorStatsReportShape,
+    logsReport: TemperatureLogsReportShape,
+    breachReport: BreachReportShape,
+    breachConfigReport: BreachConfigReportShape,
+    username: string,
+    comment: string
+  ): Promise<string> => {
     try {
-      csv += `${generalReportParser.parse(generalReport)} \n\n`;
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
+      const path = await this.writeLogFile(
+        sensor,
+        sensorReport,
+        sensorStats,
+        logsReport,
+        breachReport,
+        breachConfigReport,
+        username,
+        comment
+      );
+      Mailer.mail(
+        {
+          subject: `Temperature log report for ${
+            sensor.name ?? sensor.macAddress
+          } from ${username}`,
+          body: comment,
+          attachments: [{ path, type: 'csv' }],
+        },
+        () => {}
+      );
 
-    const sensorReportFields = ['Programmed On', 'Logging Start', 'Logging Interval'];
-    const sensorReportParser = new Parser(sensorReportFields);
-
-    try {
-      csv += `LAST PROGRAMMED\n${sensorReportParser.parse(sensorReport)}\n\n`;
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-
-    const breachConfigReportFields = [
-      'Breach Type',
-      'Breach Name',
-      'Number of Minutes',
-      'Temperature',
-      'Direction',
-    ];
-    const breachConfigReportParser = new Parser(breachConfigReportFields);
-
-    try {
-      csv += `BREACH CONFIGURATIONS\n${breachConfigReportParser.parse(breachConfigReport)}\n\n`;
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-
-    const sensorStatsFields = [
-      'Max Temperature',
-      'Min Temperature',
-      'Number of continuous breaches',
-    ];
-    const sensorStatsParser = new Parser({ fields: sensorStatsFields });
-
-    try {
-      csv += `STATISTICS\n${sensorStatsParser.parse(sensorStats)}\n\n`;
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-
-    const breachReportFields = [
-      'Breach Type',
-      'Breach Name',
-      'Start date',
-      'End date',
-      'Exposure Duration (minutes)',
-      'Min Temp',
-      'Max Temp',
-    ];
-    const breachReportParser = new Parser({ fields: breachReportFields });
-    try {
-      csv += `BREACHES\n${breachReportParser.parse(breachReport)}\n\n`;
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-
-    const logReportFields = [
-      'Timestamp',
-      'Temperature',
-      'Is cumulative breach',
-      'Is continuous breach',
-      'Logging Interval (Minutes)',
-    ];
-
-    const logReportParser = new Parser({ fields: logReportFields });
-
-    try {
-      csv += `LOGS\n${logReportParser.parse(logsReport)}`;
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-
-    const directory = '/Download/cce';
-    const now = moment().format('DD-MM-YYYY-HHmm:ss');
-    const file = `/${sanitize(`${now}-${sensor.name}`)}.csv`;
-    const path = `${RNFS.ExternalStorageDirectoryPath}${directory}${file}`;
-
-    try {
-      await RNFS.mkdir(`${RNFS.ExternalStorageDirectoryPath}${directory}`);
-      await RNFS.writeFile(path, csv, 'utf8');
-
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-
-    Mailer.mail(
-      {
-        subject: `Temperature log report for ${sensor.name ?? sensor.macAddress} from ${username}`,
-        body: comment,
-        attachments: [{ path, type: 'csv' }],
-      },
-      () => {}
-    );
-
-    return path;
+      return path;
+    } catch (e) {
+      return 'Uh oh';
+    }
   };
 }

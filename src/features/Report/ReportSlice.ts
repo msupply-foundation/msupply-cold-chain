@@ -1,9 +1,11 @@
+import { SensorManager } from '~features/Entities';
+import { ReportManager } from './ReportManager';
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ToastAndroid } from 'react-native';
 import { call, getContext, put, takeEvery } from 'redux-saga/effects';
-
-import { REDUCER, DEPENDENCY } from '../../common/constants';
+import { getDependency } from '~features/utils/saga';
+import { REDUCER, DEPENDENCY } from '~constants';
 
 interface ReportSliceState {
   creating: boolean;
@@ -63,16 +65,16 @@ const { actions: ReportAction, reducer: ReportReducer } = createSlice({
 function* tryCreate({
   payload: { sensorId, username, comment },
 }: PayloadAction<TryCreatePayload>): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const reportManager = yield call(DependencyLocator.get, DEPENDENCY.REPORT_MANAGER);
+  const reportManager: ReportManager = yield call(getDependency, 'reportManager');
+  const sensorManager: SensorManager = yield call(getDependency, 'sensorManager');
 
   try {
-    const sensor = yield call(reportManager.getSensorById, sensorId);
+    const sensor = yield call(sensorManager.getSensorById, sensorId);
     const sensorStats = yield call(reportManager.getStats, sensorId);
     const sensorReport = yield call(reportManager.getSensorReport, sensorId);
     const logsReport = yield call(reportManager.getLogsReport, sensorId);
     const breachReport = yield call(reportManager.getBreachReport, sensorId);
-    const breachConfigReport = yield call(reportManager.breachConfigReport, sensorId);
+    const breachConfigReport = yield call(reportManager.breachConfigReport);
 
     const writtenPath = yield call(
       reportManager.writeLogFile,
@@ -96,16 +98,16 @@ function* tryCreate({
 function* tryCreateAndEmail({
   payload: { sensorId, username, comment },
 }: PayloadAction<TryCreateAndEmailPayload>): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const reportManager = yield call(DependencyLocator.get, DEPENDENCY.REPORT_MANAGER);
+  const reportManager: ReportManager = yield call(getDependency, 'reportManager');
+  const sensorManager: SensorManager = yield call(getDependency, 'sensorManager');
 
   try {
-    const sensor = yield call(reportManager.getSensorById, sensorId);
+    const sensor = yield call(sensorManager.getSensorById, sensorId);
     const sensorStats = yield call(reportManager.getStats, sensorId);
     const sensorReport = yield call(reportManager.getSensorReport, sensorId);
     const logsReport = yield call(reportManager.getLogsReport, sensorId);
     const breachReport = yield call(reportManager.getBreachReport, sensorId);
-    const breachConfigReport = yield call(reportManager.breachConfigReport, sensorId);
+    const breachConfigReport = yield call(reportManager.breachConfigReport);
 
     yield call(
       reportManager.emailLogFile,
