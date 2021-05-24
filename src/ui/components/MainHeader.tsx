@@ -8,7 +8,7 @@ import { BatteryStatus } from './BatteryStatus';
 import { DateAndTime } from '~presentation/DateAndTime';
 import { useTime, useFormatter, usePowerState } from '~hooks';
 
-const style = { container: { padding: 10, backgroundColor: COLOUR.HIGHLIGHT } };
+const style = { container: { paddingHorizontal: 10, backgroundColor: COLOUR.HIGHLIGHT } };
 
 export const MainHeader: FC = () => {
   const formatter = useFormatter();
@@ -16,7 +16,7 @@ export const MainHeader: FC = () => {
   const timeNow = useTime();
 
   return (
-    <Row style={style.container} justifyContent="space-between">
+    <Row style={style.container} alignItems="center" justifyContent="space-between">
       <Icon.MsupplyMan />
 
       <Row>

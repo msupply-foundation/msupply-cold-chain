@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
+import { COLOUR } from '~constants';
 import { Column } from '../layouts';
-import { LargeText, SmallText } from './typography';
+import { LargeText, MediumText, SmallText } from './typography';
 
 interface DateAndTimeProps {
   date: string;
@@ -10,7 +11,8 @@ interface DateAndTimeProps {
 export const DateAndTime: FC<DateAndTimeProps> = ({ time, date }) => {
   return (
     <Column>
-      <LargeText>{time}</LargeText>
+      <Column style={{ height: 12 }} />
+      <MediumText color={COLOUR.WHITE}>{time}</MediumText>
       <SmallText style={{ alignSelf: 'flex-end' }}>{date}</SmallText>
     </Column>
   );
