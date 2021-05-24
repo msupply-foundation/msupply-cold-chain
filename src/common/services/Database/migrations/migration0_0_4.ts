@@ -57,7 +57,7 @@ export const migration0_0_4 = {
       await dbService.insert(ENTITIES.TEMPERATURE_BREACH, updatedBreaches);
     }
 
-    const settings = await dbService.rawQuery('SELECT key, value from Setting;');
+    const settings = await dbService.rawQuery('SELECT DISTINCT key, value from Setting;');
     const createSettingTableQuery = Setting.getTableDefinition();
 
     await dbService.rawQuery('DROP TABLE Setting;');
