@@ -105,7 +105,7 @@ function* checkLocationPermission(): SagaIterator {
 function* watchLocationPermission(): SagaIterator {
   while (true) {
     yield put(PermissionAction.checkLocationPermission());
-    yield delay(MILLISECONDS.TEN_SECONDS);
+    yield delay(MILLISECONDS.ONE_MINUTE);
   }
 }
 
