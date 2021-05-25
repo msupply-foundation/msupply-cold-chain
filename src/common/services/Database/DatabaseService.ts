@@ -105,6 +105,15 @@ export class DatabaseService {
       });
     }
 
+    await this.sqlBatch([
+      ['PRAGMA journal_mode=WAL;'],
+      ['PRAGMA synchronous=OFF;'],
+      ['PRAGMA temp_store=memory;'],
+      ['PRAGMA mmap_size=30000000000;'],
+      ['PRAGMA vacuum;'],
+      ['PRAGMA optimize;'],
+    ]);
+
     await installTriggers(this);
   };
 
