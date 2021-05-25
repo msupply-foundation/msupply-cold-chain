@@ -9,6 +9,7 @@ import {
 } from 'react-native-ble-plx';
 import { Buffer } from 'buffer';
 import { BLUE_MAESTRO, BLUETOOTH } from '~constants';
+import { MacAddress } from '~common/types/common';
 
 export interface BluetoothDevice {
   id: string;
@@ -20,10 +21,10 @@ const base64FromString = (string: string): string =>
   Buffer.from(string, 'utf-8').toString('base64');
 
 export interface BluetoothManager {
-  connectToDevice(macAddress: string): Promise<BluetoothDevice>;
-  isDeviceConnected(macAddress: string): Promise<boolean>;
-  cancelDeviceConnection(macAddress: string): Promise<BluetoothDevice>;
-  discoverAllServicesAndCharacteristicsForDevice(macAddress: string): Promise<BluetoothDevice>;
+  connectToDevice(macAddress: MacAddress): Promise<BluetoothDevice>;
+  isDeviceConnected(macAddress: MacAddress): Promise<boolean>;
+  cancelDeviceConnection(macAddress: MacAddress): Promise<BluetoothDevice>;
+  discoverAllServicesAndCharacteristicsForDevice(macAddress: MacAddress): Promise<BluetoothDevice>;
   stopDeviceScan(): void;
   startDeviceScan(
     UUIDs: string[] | null,
@@ -86,11 +87,11 @@ export class BleService {
     this.manager = manager;
   }
 
-  async connectToDevice(macAddress: string): Promise<BluetoothDevice> {
+  async connectToDevice(macAddress: MacAddress): Promise<BluetoothDevice> {
     return this.manager.connectToDevice(macAddress);
   }
 
-  connectAndDiscoverServices = async (macAddress: string): Promise<BluetoothDevice> => {
+  connectAndDiscoverServices = async (macAddress: MacAddress): Promise<BluetoothDevice> => {
     if (await this.manager.isDeviceConnected(macAddress)) {
       await this.manager.cancelDeviceConnection(macAddress);
     }
@@ -110,7 +111,10 @@ export class BleService {
     this.manager.startDeviceScan(null, scanOptions, callback);
   };
 
-  writeCharacteristic = async (macAddress: string, command: string): Promise<Characteristic> => {
+  writeCharacteristic = async (
+    macAddress: MacAddress,
+    command: string
+  ): Promise<Characteristic> => {
     return this.manager.writeCharacteristicWithoutResponseForDevice(
       macAddress,
       BLUETOOTH.UART_SERVICE_UUID,
@@ -120,7 +124,7 @@ export class BleService {
   };
 
   monitorCharacteristic = (
-    macAddress: string,
+    macAddress: MacAddress,
     callback: MonitorCharacteristicCallback<boolean | SensorLog[] | InfoLog>
   ): Promise<boolean | SensorLog[] | InfoLog> => {
     return new Promise((resolve, reject) => {
@@ -136,7 +140,7 @@ export class BleService {
   };
 
   writeAndMonitor = async (
-    macAddress: string,
+    macAddress: MacAddress,
     command: string,
     parser: MonitorCharacteristicParser<string[], SensorLog[] | InfoLog>
   ): Promise<boolean | InfoLog | SensorLog[]> => {
@@ -164,7 +168,7 @@ export class BleService {
   };
 
   writeWithSingleResponse = async (
-    macAddress: string,
+    macAddress: MacAddress,
     command: string,
     parser: MonitorCharacteristicParser<string, boolean>
   ): Promise<boolean | InfoLog | SensorLog[]> => {
@@ -188,7 +192,7 @@ export class BleService {
     return monitor;
   };
 
-  downloadLogs = async (macAddress: string): Promise<SensorLog[]> => {
+  downloadLogs = async (macAddress: MacAddress): Promise<SensorLog[]> => {
     await this.connectAndDiscoverServices(macAddress);
 
     const monitorCallback: MonitorCharacteristicParser<string[], SensorLog[]> = (
@@ -220,7 +224,7 @@ export class BleService {
     return result;
   };
 
-  updateLogInterval = async (macAddress: string, logInterval: number): Promise<boolean> => {
+  updateLogInterval = async (macAddress: MacAddress, logInterval: number): Promise<boolean> => {
     await this.connectAndDiscoverServices(macAddress);
     const result = (await this.writeWithSingleResponse(
       macAddress,
@@ -230,7 +234,7 @@ export class BleService {
     return result;
   };
 
-  blink = async (macAddress: string): Promise<boolean> => {
+  blink = async (macAddress: MacAddress): Promise<boolean> => {
     await this.connectAndDiscoverServices(macAddress);
 
     const result = (await this.writeWithSingleResponse(
@@ -244,7 +248,7 @@ export class BleService {
     return result;
   };
 
-  getInfo = async (macAddress: string): Promise<InfoLog> => {
+  getInfo = async (macAddress: MacAddress): Promise<InfoLog> => {
     await this.connectAndDiscoverServices(macAddress);
 
     const monitorResultCallback: MonitorCharacteristicParser<string[], InfoLog> = data => {
@@ -283,7 +287,7 @@ export class BleService {
     return result;
   };
 
-  toggleButton = async (macAddress: string): Promise<boolean> => {
+  toggleButton = async (macAddress: MacAddress): Promise<boolean> => {
     await this.connectAndDiscoverServices(macAddress);
     const result = (await this.writeWithSingleResponse(
       macAddress,
@@ -296,7 +300,7 @@ export class BleService {
   };
 
   getInfoWithRetries = async (
-    macAddress: string,
+    macAddress: MacAddress,
     retriesLeft: number,
     error: Error | null
   ): Promise<InfoLog> => {
@@ -308,7 +312,7 @@ export class BleService {
   };
 
   toggleButtonWithRetries = async (
-    macAddress: string,
+    macAddress: MacAddress,
     retriesLeft: number,
     error: Error | null
   ): Promise<boolean> => {
@@ -320,7 +324,7 @@ export class BleService {
   };
 
   downloadLogsWithRetries = async (
-    macAddress: string,
+    macAddress: MacAddress,
     retriesLeft: number,
     error: Error | null
   ): Promise<SensorLog[]> => {
@@ -332,7 +336,7 @@ export class BleService {
   };
 
   blinkWithRetries = async (
-    macAddress: string,
+    macAddress: MacAddress,
     retriesLeft: number,
     error: Error | null
   ): Promise<boolean> => {
@@ -344,7 +348,7 @@ export class BleService {
   };
 
   updateLogIntervalWithRetries = async (
-    macAddress: string,
+    macAddress: MacAddress,
     logInterval: number,
     retriesLeft: number,
     error: Error | null
