@@ -1,6 +1,17 @@
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { call, put, takeEvery, take, race, all, delay, takeLeading } from 'redux-saga/effects';
+import {
+  call,
+  put,
+  takeEvery,
+  take,
+  race,
+  all,
+  delay,
+  takeLeading,
+  actionChannel,
+  fork,
+} from 'redux-saga/effects';
 import { getDependency } from '~features/utils/saga';
 import { SensorState } from '~features/Entities/Sensor/SensorSlice';
 import { BleService } from '~services/Bluetooth/BleService';
@@ -160,10 +171,19 @@ function* watchPassiveDownloading(): SagaIterator {
   });
 }
 
+function* queuePassiveDownloads(): SagaIterator {
+  const channel = yield actionChannel(DownloadAction.tryPassiveDownloadForSensor);
+
+  while (true) {
+    const action = yield take(channel);
+    yield call(tryDownloadForSensor, action);
+  }
+}
+
 function* root(): SagaIterator {
   yield takeEvery(DownloadAction.tryManualDownloadForSensor, tryDownloadForSensor);
-  yield takeEvery(DownloadAction.tryPassiveDownloadForSensor, tryDownloadForSensor);
   yield takeLeading(DownloadAction.passiveDownloadingStart, watchPassiveDownloading);
+  yield fork(queuePassiveDownloads);
 }
 
 const DownloadSaga = {
