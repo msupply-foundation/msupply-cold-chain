@@ -1,5 +1,7 @@
 import { DatabaseService } from '~services/Database';
-import { migration0_0_4 } from '~common/services/Database/migrations/migration0_0_4';
+
+import { migration0_1_0 } from './migration0_1_0';
+import { migration0_2_0 } from './migration0_2_0';
 
 /**
  * Migrations are handled through creating a migration object for each change to the schema.
@@ -18,4 +20,4 @@ export interface Migration {
   // revert?: (database: DatabaseService) => Promise<void>;
 }
 
-export const migrations: Migration[] = [migration0_0_4];
+export const migrations: Migration[] = [migration0_1_0, migration0_2_0];
