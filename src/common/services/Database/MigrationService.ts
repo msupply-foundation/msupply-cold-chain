@@ -37,7 +37,7 @@ export class MigrationService {
     const versionCode = await this.utils.getVersionCode(version);
     const userVersion = await this.getUserVersion();
 
-    return versionCode === 0 && userVersion > this.utils.getVersionCode('0.1.0');
+    return userVersion === 0 && versionCode > this.utils.getVersionCode('0.1.0');
   };
 
   async start(): Promise<boolean> {
