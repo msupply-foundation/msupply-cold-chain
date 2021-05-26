@@ -2,7 +2,8 @@
 
 Android mobile application designed and developed by [Sustainable Solutions](http://sussol.net). Integrates with [mSupply](https://www.msupply.org.nz/) to provide accessible and user-friendly temperature monitoring control for medical stock. Open-source and free-to-use, mSupply ColdChain is designed and built with a specific focus on the needs of developing countries.
 
-Intended to be used with [BlueMaestro](https://bluemaestro.com/home) temperature sensors.
+Currently implemented sensors are the [BlueMaestro](https://bluemaestro.com/home) low-energy bluetooth temperature sensors.
+Support for additional sensor vendors is underway.
 
 ## Features
 
