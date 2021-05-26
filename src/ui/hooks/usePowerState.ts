@@ -125,7 +125,7 @@ export const usePowerState = (): PowerStateShape => {
 
   useEffect(() => {
     const subscription = ExpoBattery.addBatteryLevelListener(({ batteryLevel }) => {
-      dispatch(Action.batteryStateUpdated(batteryLevel));
+      dispatch(Action.batteryLevelUpdated(batteryLevel));
     });
 
     const getInitialBatteryLevel = async () => {
