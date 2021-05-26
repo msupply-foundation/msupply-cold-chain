@@ -1,11 +1,12 @@
 import { SensorManager } from '~features';
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getContext, call, put, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { RootState } from '../../../common/store/store';
-import { REDUCER, DEPENDENCY } from '../../../common/constants';
+import { REDUCER } from '../../../common/constants';
 import { ProgramAction } from '~features/Bluetooth/Program/ProgramSlice';
+import { getDependency } from '~features/utils/saga';
 
 export interface SensorState {
   id: string;
@@ -215,8 +216,7 @@ const SensorSelector = {
 };
 
 function* fetchAll(): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
+  const sensorManager: SensorManager = yield call(getDependency, 'sensorManager');
   try {
     const sensors = yield call(sensorManager.getAll);
     const mapped = sensors.map((sensor: SensorState) => ({ ...sensor }));
@@ -227,10 +227,9 @@ function* fetchAll(): SagaIterator {
 }
 
 function* update({ payload: { sensorId, key, value } }: UpdateAction): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const manager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
+  const sensorManager: SensorManager = yield call(getDependency, 'sensorManager');
   try {
-    yield call(manager.updateField, sensorId, key, value);
+    yield call(sensorManager.update, sensorId, { [key]: value });
     yield put(SensorAction.updateSuccess(sensorId, key, value));
   } catch (e) {
     yield put(SensorAction.updateFail(e.message));
@@ -240,8 +239,7 @@ function* update({ payload: { sensorId, key, value } }: UpdateAction): SagaItera
 function* create({
   payload: { macAddress, logInterval, logDelay, batteryLevel },
 }: CreateAction): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
+  const sensorManager: SensorManager = yield call(getDependency, 'sensorManager');
   try {
     const newlyAddedSensor: SensorState = yield call(
       sensorManager.addNewSensor,
@@ -276,8 +274,7 @@ function* createNewSensor({
 }
 
 function* remove({ payload: { id } }: PayloadAction<RemovePayload>): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const sensorManager: SensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
+  const sensorManager: SensorManager = yield call(getDependency, 'sensorManager');
 
   try {
     yield call(sensorManager.remove, id);
