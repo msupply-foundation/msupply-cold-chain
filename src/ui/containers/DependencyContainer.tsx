@@ -56,7 +56,7 @@ export const DependencyContainer: FC = ({ children }) => {
 
     DependencyLocator.register('migrationService', migrationService);
     DependencyLocator.register('permissionService', permissionService);
-    DependencyLocator.register('bleService', true ? devBtService : btService);
+    DependencyLocator.register('bleService', ENVIRONMENT.MOCK_BLE ? devBtService : btService);
     DependencyLocator.register('database', dbService);
     DependencyLocator.register('formatService', formatService);
     DependencyLocator.register('utilService', utilService);
