@@ -1,5 +1,4 @@
 import React, { FC, ReactNode } from 'react';
-import { View } from 'react-native';
 import { Row } from './Row';
 import { Divider } from '../presentation';
 import { COLOUR, STYLE } from '../../common/constants';

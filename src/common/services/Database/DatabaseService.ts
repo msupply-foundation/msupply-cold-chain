@@ -22,6 +22,20 @@ export class DatabaseService {
     this.config = config;
   }
 
+  installIndicies = async (): Promise<void> => {
+    await this.rawQuery(
+      'CREATE INDEX IF NOT EXISTS idx_TemperatureLog_sensorId on TemperatureLog(sensorId)'
+    );
+    await this.rawQuery(
+      'CREATE INDEX IF NOT EXISTS idx_TemperatureLog_timestamp on TemperatureLog(timestamp)'
+    );
+    await this.rawQuery(
+      'CREATE INDEX IF NOT EXISTS idx_TemperatureLog_temperature on TemperatureLog(temperature)'
+    );
+    await this.rawQuery('CREATE INDEX IF NOT EXISTS idx_Sensor_isActive on Sensor(isActive)');
+    await this.rawQuery('CREATE INDEX IF NOT EXISTS idx_Sensor_macAddress on Sensor(macAddress)');
+  };
+
   installTriggers = async (): Promise<void> => {
     if (this.config.triggers) {
       for (const trigger of this.config.triggers) {
@@ -31,7 +45,7 @@ export class DatabaseService {
   };
 
   init = async (): Promise<any> => {
-    await this.installTriggers();
+    await this.installIndicies();
 
     const COLD_BREACH = {
       id: 'COLD_BREACH',
@@ -105,14 +119,13 @@ export class DatabaseService {
       });
     }
 
-    await this.sqlBatch([
-      ['PRAGMA journal_mode=WAL;'],
-      ['PRAGMA synchronous=OFF;'],
-      ['PRAGMA temp_store=memory;'],
-      ['PRAGMA mmap_size=30000000000;'],
-      ['PRAGMA vacuum;'],
-      ['PRAGMA optimize;'],
-    ]);
+    await this.rawQuery('PRAGMA journal_mode=wal');
+    await this.rawQuery('PRAGMA synchronous=OFF');
+    await this.rawQuery('PRAGMA temp_store=memory');
+    await this.rawQuery('PRAGMA mmap_size=30000000000');
+    await this.rawQuery('PRAGMA locking_mode=exclusive');
+    await this.rawQuery('PRAGMA vacuum');
+    await this.rawQuery('PRAGMA optimize');
 
     await installTriggers(this);
   };
@@ -229,6 +242,7 @@ export class DatabaseService {
     if (!conn) throw new Error('Database not connected!');
 
     const qr = conn.createQueryRunner();
+
     return qr.query(query, params);
   };
 
