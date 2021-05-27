@@ -1,5 +1,5 @@
 import React, { FC, ReactNode } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { Row } from '~layouts/Row';
 import { COLOUR } from '../../common/constants';
 import { Column } from './Column';
@@ -28,8 +28,8 @@ export const SensorStatusLayout: FC<SensorStatusLayoutProps> = ({
         <Row style={{ marginLeft: 5 }} />
         {SensorStatusBar}
       </Row>
-      <View>{TemperatureStatus}</View>
-      <Column flex={1}>
+      <Row justifyContent="flex-end" style={{paddingRight: 20}}>{TemperatureStatus}</Row>
+      <Column flex={1} alignItems="flex-end" style={{paddingRight: 25}}>
         {LastDownload}
         {CumulativeBreach}
       </Column>
