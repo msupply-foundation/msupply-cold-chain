@@ -192,6 +192,10 @@ const getBatteryLevel = (state: RootState, { id }: { id: string }): number => {
 const SensorSelector = {
   getName,
   getBatteryLevel,
+  sensorIds: ({ entities: { sensor } }: RootState): string[] => {
+    const { ids } = sensor;
+    return ids;
+  },
   availableSensorsList: ({ entities: { sensor } }: RootState): { id: string; name: string }[] => {
     const { byId, ids } = sensor as SensorSliceState;
     return ids.map(id => ({ id, name: byId[id].name ?? byId[id].macAddress }));

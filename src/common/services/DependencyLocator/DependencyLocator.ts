@@ -1,10 +1,9 @@
-import { DEPENDENCY } from '../../constants';
-import { AcknowledgeBreachManager } from '../../../features/Breach/AcknowledgeBreach/AcknowledgeBreachManager';
-import { CumulativeBreachManager } from '../../../features/Breach/CumulativeBreach/CumulativeBreachManager';
-import { SensorStatusManager } from '../../../features/SensorStatus/SensorStatusManager';
-import { DownloadManager } from '../../../features/Bluetooth/Download/DownloadManager';
-import { LogTableManager } from '../../../features/SensorDetail/LogTable/LogTableManager';
 import {
+  AcknowledgeBreachManager,
+  CumulativeBreachManager,
+  SensorStatusManager,
+  DownloadManager,
+  LogTableManager,
   BreachConfigurationManager,
   ChartManager,
   ConsecutiveBreachManager,
@@ -13,66 +12,126 @@ import {
   SettingManager,
   SyncQueueManager,
   SyncOutManager,
-} from '../../../features';
-import { BleService } from '../Bluetooth/BleService';
-import { DatabaseService } from '../Database';
-import { ExportService } from '../ExportService';
-import { FormatService } from '../FormatService';
-import { UtilService } from '../UtilService';
-import { PermissionService } from '../PermissionService';
-import { DevLoggerService } from '../LoggerService';
+  TemperatureLogManager,
+  DevManager,
+} from '~features';
 
-export interface Dependencies {
-  [DEPENDENCY.BLUETOOTH]?: BleService;
-  [DEPENDENCY.DATABASE]?: DatabaseService;
-  [DEPENDENCY.EXPORT_SERVICE]?: ExportService;
-  [DEPENDENCY.FORMAT_SERVICE]?: FormatService;
-  [DEPENDENCY.UTIL_SERVICE]?: UtilService;
-  [DEPENDENCY.PERMISSION_SERVICE]?: PermissionService;
-  [DEPENDENCY.LOGGER_SERVICE]?: DevLoggerService;
-  [DEPENDENCY.SENSOR_MANAGER]?: SensorManager;
-  [DEPENDENCY.SETTING_MANAGER]?: SettingManager;
-  [DEPENDENCY.BREACH_CONFIGURATION_MANAGER]?: BreachConfigurationManager;
-  [DEPENDENCY.CHART_MANAGER]?: ChartManager;
-  [DEPENDENCY.LOG_TABLE_MANAGER]?: LogTableManager;
-  [DEPENDENCY.DOWNLOAD_MANAGER]?: DownloadManager;
-  [DEPENDENCY.REPORT_MANAGER]?: ReportManager;
-  [DEPENDENCY.SENSOR_STATUS_MANAGER]?: SensorStatusManager;
-  [DEPENDENCY.CONSECUTIVE_BREACH_MANAGER]?: ConsecutiveBreachManager;
-  [DEPENDENCY.CUMULATIVE_BREACH_MANAGER]?: CumulativeBreachManager;
-  [DEPENDENCY.ACKNOWLEDGE_BREACH_MANAGER]?: AcknowledgeBreachManager;
-  [DEPENDENCY.SYNC_QUEUE_MANAGER]?: SyncQueueManager;
-  [DEPENDENCY.SYNC_OUT_MANAGER]?: SyncOutManager;
+import {
+  Database,
+  BleService,
+  DatabaseService,
+  ExportService,
+  FormatService,
+  UtilService,
+  PermissionService,
+  DevLoggerService,
+  MigrationService,
+} from '~services';
+
+export enum DepKey {
+  syncQueueManager = 'syncQueueManager',
 }
 
-class DependencyLocator {
-  dependencies: Dependencies;
+export type DependencyKey =
+  | 'migrationService'
+  | 'dependencyLocator'
+  | 'bleService'
+  | 'database'
+  | 'permissionService'
+  | 'loggerService'
+  | 'exportService'
+  | 'formatService'
+  | 'utilService'
+  | 'sensorManager'
+  | 'temperatureLogManager'
+  | 'settingManager'
+  | 'chartManager'
+  | 'logTableManager'
+  | 'devManager'
+  | 'downloadManager'
+  | 'reportManager'
+  | 'sensorStatusManager'
+  | 'consecutiveBreachManager'
+  | 'cumulativeBreachManager'
+  | 'acknowledgeBreachManager'
+  | 'syncQueueManager'
+  | 'syncOutManager'
+  | 'breachConfigurationManager';
+
+export type Dependency =
+  | BleService
+  | DatabaseService
+  | ExportService
+  | FormatService
+  | UtilService
+  | PermissionService
+  | DevLoggerService
+  | SensorManager
+  | SettingManager
+  | BreachConfigurationManager
+  | ChartManager
+  | LogTableManager
+  | DownloadManager
+  | ReportManager
+  | SensorStatusManager
+  | ConsecutiveBreachManager
+  | CumulativeBreachManager
+  | AcknowledgeBreachManager
+  | SyncQueueManager
+  | SyncOutManager;
+
+export interface DependencyShape {
+  migrationService: MigrationService;
+  dependencyLocator: DependencyLocator;
+  bleService: BleService;
+  database: Database;
+  permissionService: PermissionService;
+  loggerService: DevLoggerService;
+  exportService: ExportService;
+  formatService: FormatService;
+  utilService: UtilService;
+  sensorManager: SensorManager;
+  temperatureLogManager: TemperatureLogManager;
+  settingManager: SettingManager;
+  chartManager: ChartManager;
+  logTableManager: LogTableManager;
+  devManager: DevManager;
+  downloadManager: DownloadManager;
+  reportManager: ReportManager;
+  sensorStatusManager: SensorStatusManager;
+  consecutiveBreachManager: ConsecutiveBreachManager;
+  cumulativeBreachManager: CumulativeBreachManager;
+  acknowledgeBreachManager: AcknowledgeBreachManager;
+  syncQueueManager: SyncQueueManager;
+  syncOutManager: SyncOutManager;
+  breachConfigurationManager: BreachConfigurationManager;
+}
+
+export class DependencyLocator {
+  dependencies: Partial<DependencyShape>;
 
   constructor() {
     this.dependencies = {};
   }
 
   // TODO Make two functions, get / getMany
-  get = (
-    keyOrKeys: DEPENDENCY
-  ): Dependencies[keyof Dependencies] | Dependencies[keyof Dependencies][] => {
-    if (Array.isArray(keyOrKeys)) return keyOrKeys.map(key => this.get(key));
-
-    const dependency: Dependencies[keyof Dependencies] = this.dependencies[keyOrKeys];
-
-    return dependency;
+  get = (keyOrKeys: DependencyKey | DependencyKey[]): Dependency | Dependency[] | undefined => {
+    if (Array.isArray(keyOrKeys)) {
+      const depsArray = keyOrKeys.map(key => this.get(key));
+      return depsArray;
+    }
+    return this.dependencies[keyOrKeys];
   };
 
-  register = (key: DEPENDENCY, dependency: Dependencies[keyof Dependencies]) => {
+  register = (key: DependencyKey, dependency: Dependency) => {
     this.dependencies[key] = dependency;
+
     return true;
   };
 
   deleteAll = () => {
     if (__DEV__) {
-      Object.keys(this.dependencies).forEach(key => {
-        this.dependencies[key] = null;
-      });
+      this.dependencies = {};
     } else {
       throw new Error();
     }

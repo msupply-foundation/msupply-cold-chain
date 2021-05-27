@@ -1,4 +1,4 @@
-import { MOCK_BLE, REDUX_LOGGER, DEV_LOGGER, QUERY_LOGGER } from 'react-native-dotenv';
+import { env, MOCK_BLE, REDUX_LOGGER, DEV_LOGGER, QUERY_LOGGER } from 'react-native-dotenv';
 
 type EnvironmentKey = 'MOCK_BLE' | 'DEV_LOGGER' | 'QUERY_LOGGER' | 'REDUX_LOGGER';
 type ImportedEnvironmentShape = Record<EnvironmentKey, string>;
@@ -18,7 +18,7 @@ Object.keys(ENV_VARS).forEach(key => {
   const envKey = key as EnvironmentKey;
   const envVal = ENV_VARS[envKey];
   if (envVal.toLowerCase() === 'true' || envVal.toLowerCase() === 'false') {
-    ENVIRONMENT[envKey] = Boolean(envVal);
+    ENVIRONMENT[envKey] = Boolean(envVal.toLowerCase() === 'true');
   } else {
     ENVIRONMENT[envKey] = envVal;
   }

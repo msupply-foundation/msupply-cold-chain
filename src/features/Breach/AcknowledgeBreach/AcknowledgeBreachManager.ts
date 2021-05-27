@@ -20,12 +20,12 @@ export class AcknowledgeBreachManager {
 
   getUnacknowledged = async (sensorId: string): Promise<TemperatureBreach[]> => {
     return this.databaseService.queryWith(ENTITIES.TEMPERATURE_BREACH, {
-      where: { sensorId, endTimestamp: Not(IsNull()), handled: false },
+      where: { sensorId, endTimestamp: Not(IsNull()), acknowledged: false },
     });
   };
 
   acknowledge = async (breaches: TemperatureBreach[]): Promise<TemperatureBreach[]> => {
-    const acknowledged = breaches.map(breach => ({ ...breach, handled: true }));
+    const acknowledged = breaches.map(breach => ({ ...breach, acknowledged: true }));
     return this.databaseService.upsert(ENTITIES.TEMPERATURE_BREACH, acknowledged);
   };
 }

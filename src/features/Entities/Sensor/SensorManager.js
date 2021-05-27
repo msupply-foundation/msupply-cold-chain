@@ -8,11 +8,11 @@ const SENSOR_STATE = `
 with breach as (
   select (select count(*) > 0
   from temperaturebreach tb
-  where tb.handled = 0 and sensorid = ?
+  where tb.acknowledged = 0 and sensorid = ?
   and temperaturebreachconfigurationid = "HOT_BREACH") hasHotBreach,
   (select count(*) > 0
   from temperaturebreach tb
-  where tb.handled = 0 and sensorid = ?
+  where tb.acknowledged = 0 and sensorid = ?
   and temperaturebreachconfigurationid = "COLD_BREACH") hasColdBreach
   )
   

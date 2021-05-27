@@ -21,7 +21,8 @@ import { RootState } from '~store/store';
 
 export const SensorListScreen: FC = () => {
   const navigation = useNavigation();
-  const sensors = useSelector((state: RootState) => SensorSelector.sensorsList(state));
+  const sensorIds = useSelector(SensorSelector.sensorIds);
+
   const acknowledgingSensorId = useSelector((state: RootState) =>
     AcknowledgeBreachSelector.sensorId(state)
   );
@@ -44,21 +45,20 @@ export const SensorListScreen: FC = () => {
   useOnMount([startPassiveDownloading, startBatteryObserving, startIntegrating]);
   useCallbackOnGainingFocus(getSensors);
 
-  // TODO: Typings??
   const renderItem = useCallback(
-    ({ item: { id } }: { item: { id: string } }) => {
+    ({ item }: { item: string }) => {
       const sensorDetailScreen = NAVIGATION.SCREENS.SENSOR_STACK.SENSOR_DETAIL;
       const onPress = () => {
-        navigation.navigate(sensorDetailScreen, { id });
+        navigation.navigate(sensorDetailScreen, { id: item });
       };
-      return <SensorChartRow id={id} onPress={onPress} />;
+      return <SensorChartRow id={item} onPress={onPress} />;
     },
     [navigation]
   );
 
   return (
     <Gradient>
-      <FlatList data={sensors} keyExtractor={item => item.id} renderItem={renderItem} />
+      <FlatList data={sensorIds} keyExtractor={item => item} renderItem={renderItem} />
       <AcknowledgeBreachModal id={acknowledgingSensorId} />
     </Gradient>
   );

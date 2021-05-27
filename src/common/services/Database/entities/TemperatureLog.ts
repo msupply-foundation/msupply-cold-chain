@@ -29,39 +29,39 @@ class TemperatureLog {
 `;
 
   @PrimaryColumn({ type: 'varchar', nullable: false })
-  id!: string;
+  id: string;
 
   @Column({ type: 'double' })
-  temperature!: number;
+  temperature: number;
 
   @Index()
   @Column({ type: 'integer' })
-  timestamp!: number;
+  timestamp: number;
 
   @Index()
   @Column({ type: 'integer' })
-  logInterval!: number;
+  logInterval: number;
 
   @Column({ type: 'varchar', nullable: true })
-  temperatureBreachId!: string | null;
+  temperatureBreachId: string | null;
 
   @ManyToOne(() => TemperatureBreach, temperatureBreach => temperatureBreach.temperatureLogs, {
     cascade: ['insert', 'update'],
     eager: false,
   })
   @JoinColumn({ name: 'temperatureBreachId' })
-  temperatureBreach!: string;
+  temperatureBreach: string;
 
   @Index()
   @Column({ type: 'varchar', nullable: true })
-  sensorId!: string | null;
+  sensorId: string | null;
 
   @JoinColumn({ name: 'sensorId' })
   @ManyToOne(() => Sensor, temperatureBreach => temperatureBreach.temperatureLogs, {
     cascade: ['insert', 'update'],
     eager: false,
   })
-  sensor!: Sensor;
+  sensor: Sensor;
 }
 
 export { TemperatureLog };

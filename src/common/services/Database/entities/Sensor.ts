@@ -22,38 +22,38 @@ class Sensor {
 `;
 
   @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  id: string;
 
   @Column({ type: 'varchar', length: 17, unique: true })
-  macAddress!: string;
+  macAddress: string;
 
   @Column({ type: 'integer', nullable: true })
-  batteryLevel!: number;
+  batteryLevel: number;
 
   @Column({ type: 'integer' })
-  logInterval!: number;
+  logInterval: number;
 
   @Column({ nullable: true, type: 'varchar', length: 100 })
-  name!: string;
+  name: string;
 
   @Column({ nullable: true, type: 'int' })
-  logDelay!: number;
+  logDelay: number;
 
   @Column({ nullable: true, type: 'int' })
-  programmedDate!: number;
+  programmedDate: number;
 
   @Column({ nullable: true, default: true, type: 'boolean' })
-  isActive!: boolean;
+  isActive: boolean;
 
   @OneToMany(() => TemperatureLog, temperatureLog => temperatureLog.sensor, {
     cascade: ['insert', 'update'],
   })
-  temperatureLogs!: TemperatureLog[];
+  temperatureLogs: TemperatureLog[];
 
   @OneToMany(() => TemperatureBreach, temperatureBreach => temperatureBreach.sensor, {
     cascade: ['insert', 'update'],
   })
-  temperatureBreaches!: TemperatureBreach[];
+  temperatureBreaches: TemperatureBreach[];
 }
 
 export { Sensor };
