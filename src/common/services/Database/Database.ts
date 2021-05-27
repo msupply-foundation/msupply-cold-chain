@@ -19,7 +19,7 @@ export const getDefaultDatabaseConfig = (): ConnectionOptions => ({
   //   createFromLocation: '~josh.sqlite',
   // },
   logging: ENVIRONMENT.QUERY_LOGGER ? ['error', 'query', 'schema'] : [],
-  maxQueryExecutionTime: 300,
+  maxQueryExecutionTime: __DEV__ ? 300 : 0,
   // synchronize: true,
   entities: [
     Sensor,
