@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
+import * as Yup from 'yup';
 import { SettingsList } from '~layouts';
 import {
   SettingsTextInputRow,
@@ -43,6 +43,7 @@ export const SyncSettingsScreen: FC = () => {
           }
           value={authUrl}
           editDescription={t('EDIT_LOGIN_URL')}
+          validation={Yup.string().url()}
         />
         <SettingsTextInputRow
           label={t('SENSORS')}
@@ -52,6 +53,7 @@ export const SyncSettingsScreen: FC = () => {
           }
           value={sensorUrl}
           editDescription={t('EDIT_SENSOR_URL')}
+          validation={Yup.string().url()}
         />
         <SettingsTextInputRow
           label={t('TEMPERATURES')}
@@ -61,6 +63,7 @@ export const SyncSettingsScreen: FC = () => {
           }
           value={temperatureLogUrl}
           editDescription={t('EDIT_TEMPERATURE_URL')}
+          validation={Yup.string().url()}
         />
         <SettingsTextInputRow
           label={t('TEMPERATURE_BREACHES')}
@@ -70,26 +73,27 @@ export const SyncSettingsScreen: FC = () => {
           }
           value={temperatureBreachUrl}
           editDescription={t('EDIT_TEMPERATURE_BREACHES_URL')}
+          validation={Yup.string().url()}
         />
       </SettingsGroup>
       <SettingsGroup title={t('CREDENTIALS')}>
         <SettingsTextInputRow
           label={t('USERNAME')}
-          subtext={t('USERNAME')}
           onConfirm={({ inputValue }: { inputValue: string }) =>
             dispatch(SettingAction.update('authUsername', inputValue))
           }
           value={authUsername}
           editDescription={t('EDIT_USERNAME')}
+          validation={Yup.string().url()}
         />
         <SettingsTextInputRow
           label={t('PASSWORD')}
-          subtext={t('PASSWORD')}
           onConfirm={({ inputValue }: { inputValue: string }) =>
             dispatch(SettingAction.update('authPassword', inputValue))
           }
           value={authPassword}
           editDescription={t('EDIT_PASSWORD')}
+          validation={Yup.string().url()}
         />
       </SettingsGroup>
       <SettingsGroup title="Operations">

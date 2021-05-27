@@ -1,8 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 
-import * as SplashScreen from 'expo-splash-screen';
-
-import { DEPENDENCY, ENVIRONMENT } from '../../common/constants';
+import { ENVIRONMENT } from '~common/constants';
 
 import {
   Database,
@@ -45,7 +43,6 @@ export const DependencyContainer: FC = ({ children }) => {
   useEffect(() => {
     const db = new Database();
     const dbService = new DatabaseService(db);
-    const migrationService = new MigrationService(dbService);
     const permissionService = new PermissionService();
     const btService = new BleService();
     const devBtService = new BleService(new DevBleManager());
@@ -55,21 +52,16 @@ export const DependencyContainer: FC = ({ children }) => {
     const devLogger = new DevLoggerService();
     const bugsnagLogger = new BugsnagLoggerService();
     const devService = new DevService();
+    const migrationService = new MigrationService(dbService, utilService);
 
-    DependencyLocator.register(DEPENDENCY.MIGRATION, migrationService);
-    DependencyLocator.register(DEPENDENCY.PERMISSION_SERVICE, permissionService);
-    DependencyLocator.register(
-      DEPENDENCY.BLUETOOTH,
-      ENVIRONMENT.MOCK_BLE ? devBtService : btService
-    );
-    DependencyLocator.register(DEPENDENCY.DATABASE, dbService);
-    DependencyLocator.register(DEPENDENCY.FORMAT_SERVICE, formatService);
-    DependencyLocator.register(DEPENDENCY.UTIL_SERVICE, utilService);
-    DependencyLocator.register(DEPENDENCY.EXPORT_SERVICE, exportService);
-    DependencyLocator.register(
-      DEPENDENCY.LOGGER_SERVICE,
-      ENVIRONMENT.DEV_LOGGER ? devLogger : bugsnagLogger
-    );
+    DependencyLocator.register('migrationService', migrationService);
+    DependencyLocator.register('permissionService', permissionService);
+    DependencyLocator.register('bleService', ENVIRONMENT.MOCK_BLE ? devBtService : btService);
+    DependencyLocator.register('database', dbService);
+    DependencyLocator.register('formatService', formatService);
+    DependencyLocator.register('utilService', utilService);
+    DependencyLocator.register('exportService', exportService);
+    DependencyLocator.register('loggerService', ENVIRONMENT.DEV_LOGGER ? devLogger : bugsnagLogger);
 
     const settingManager = new SettingManager(dbService);
     const breachConfigurationManager = new BreachConfigurationManager(dbService);
@@ -83,41 +75,30 @@ export const DependencyContainer: FC = ({ children }) => {
     const temperatureLogManager = new TemperatureLogManager(dbService, utilService);
     const reportManager = new ReportManager(dbService, exportService, permissionService);
     const sensorStatusManager = new SensorStatusManager(dbService);
-    const syncQueueManager = new SyncQueueManager(dbService, utilService);
+    const syncQueueManager = new SyncQueueManager(dbService);
     const syncOutManager = new SyncOutManager();
     const devManager = new DevManager(dbService, utilService, devService);
 
-    DependencyLocator.register(DEPENDENCY.BREACH_CONFIGURATION_MANAGER, breachConfigurationManager);
-    DependencyLocator.register(DEPENDENCY.SENSOR_MANAGER, sensorsManager);
-    DependencyLocator.register(DEPENDENCY.TEMPERATURE_LOG_MANAGER, temperatureLogManager);
-    DependencyLocator.register(DEPENDENCY.SETTING_MANAGER, settingManager);
-    DependencyLocator.register(DEPENDENCY.CHART_MANAGER, chartManager);
-    DependencyLocator.register(DEPENDENCY.CONSECUTIVE_BREACH_MANAGER, consecutiveBreachManager);
-    DependencyLocator.register(DEPENDENCY.CUMULATIVE_BREACH_MANAGER, cumulativeBreachManager);
-    DependencyLocator.register(DEPENDENCY.LOG_TABLE_MANAGER, logTableManager);
-    DependencyLocator.register(DEPENDENCY.DOWNLOAD_MANAGER, downloadManager);
-    DependencyLocator.register(DEPENDENCY.REPORT_MANAGER, reportManager);
-    DependencyLocator.register(DEPENDENCY.SENSOR_STATUS_MANAGER, sensorStatusManager);
-    DependencyLocator.register(DEPENDENCY.ACKNOWLEDGE_BREACH_MANAGER, ackBreachManager);
-    DependencyLocator.register(DEPENDENCY.SYNC_QUEUE_MANAGER, syncQueueManager);
-    DependencyLocator.register(DEPENDENCY.SYNC_OUT_MANAGER, syncOutManager);
-    DependencyLocator.register(DEPENDENCY.DEV_MANAGER, devManager);
+    DependencyLocator.register('breachConfigurationManager', breachConfigurationManager);
+    DependencyLocator.register('sensorManager', sensorsManager);
+    DependencyLocator.register('temperatureLogManager', temperatureLogManager);
+    DependencyLocator.register('settingManager', settingManager);
+    DependencyLocator.register('chartManager', chartManager);
+    DependencyLocator.register('consecutiveBreachManager', consecutiveBreachManager);
+    DependencyLocator.register('cumulativeBreachManager', cumulativeBreachManager);
+    DependencyLocator.register('logTableManager', logTableManager);
+    DependencyLocator.register('downloadManager', downloadManager);
+    DependencyLocator.register('reportManager', reportManager);
+    DependencyLocator.register('sensorStatusManager', sensorStatusManager);
+    DependencyLocator.register('acknowledgeBreachManager', ackBreachManager);
+    DependencyLocator.register('syncQueueManager', syncQueueManager);
+    DependencyLocator.register('syncOutManager', syncOutManager);
+    DependencyLocator.register('devManager', devManager);
 
     (async () => {
       await db.getConnection();
       await dbService.init();
-
-      // TODO: Implement more robust database migration strategy
-      const result = await dbService.query('PRAGMA table_info(Sensor);');
-      const isActiveColumnDefinition = result.find(
-        (column: { cid: number; dflt_value: string; name: string }) => column.name === 'isActive'
-      );
-      if (!isActiveColumnDefinition) {
-        await dbService.query('ALTER TABLE Sensor ADD COLUMN isActive integer default 1');
-      }
-
       setReady(true);
-      SplashScreen.hideAsync();
     })();
   }, []);
 

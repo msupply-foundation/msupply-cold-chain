@@ -15,9 +15,8 @@ import {
 } from 'redux-saga/effects';
 import { BLUE_MAESTRO } from './../../../common/constants/Bluetooth';
 import { DEPENDENCY, REDUCER } from '../../../common/constants';
-import { SensorSelector, SensorAction } from '../../Entities';
 import { RootState } from '../../../common/store/store';
-import { SensorState } from '../../Entities/Sensor/SensorSlice';
+import { SensorSelector, SensorAction, SensorState } from '~features/Entities/Sensor/SensorSlice';
 import { BleService } from '../../../common/services/Bluetooth';
 
 interface ScanSlice {

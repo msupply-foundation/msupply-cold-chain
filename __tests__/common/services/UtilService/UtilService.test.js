@@ -17,6 +17,6 @@ describe('getVersionCode', () => {
     expect(utils.getVersionCode('0.1.4')).toEqual(100499);
     expect(utils.getVersionCode('1.1.4')).toEqual(10100499);
     expect(utils.getVersionCode('1.1.4-rc1')).toEqual(10100401);
-    expect(utils.getVersionCode('0.0.4-rc98')).toEqual(10100498);
+    expect(utils.getVersionCode('0.0.4-rc98')).toEqual(498);
   });
 });

@@ -28,7 +28,7 @@ export const DevSettingsScreen: FC = () => {
               label="Create sensor logs"
               subtext={`Add logs for ${sensorState?.name ?? sensorState.macAddress}`}
               onPress={async () => {
-                const sensor = await sensorManager.getSensor(sensorState.macAddress);
+                const sensor = await sensorManager.getSensorByMac(sensorState.macAddress);
                 dispatch(DevAction.generateTemperatureBreach(sensor));
               }}
             />

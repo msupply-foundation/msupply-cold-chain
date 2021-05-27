@@ -224,7 +224,7 @@ describe('ProgramSaga', () => {
   });
   it('tryProgramSensor: success', () => {
     const settingManager = {
-      getSetting: () => ({ value: 300 }),
+      getSetting: () => 300,
     };
     const btService = {
       getInfo: () => ({ batteryLevel: 90, isDisabled: false }),

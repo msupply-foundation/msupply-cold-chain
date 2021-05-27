@@ -107,7 +107,7 @@ export const Chart: FC<ChartProps> = ({ data = [], isLoading, width, height }) =
           Empty
         )
       ) : (
-        <Centered style={{ width: '100%' }}>
+        <Centered style={{ width: '100%', minHeight: height }}>
           <ActivityIndicator size="large" color={COLOUR.PRIMARY} />
         </Centered>
       )}

@@ -1,7 +1,16 @@
 import { ToastAndroid } from 'react-native';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SagaIterator } from '@redux-saga/types';
-import { call, delay, put, takeEvery, takeLeading, take, race } from 'redux-saga/effects';
+import {
+  call,
+  delay,
+  put,
+  takeEvery,
+  takeLeading,
+  take,
+  race,
+  getContext,
+} from 'redux-saga/effects';
 
 import { UtilService } from '~services/UtilService';
 import { TemperatureLog, TemperatureBreach, Sensor } from '~services/Database/entities';
@@ -28,6 +37,7 @@ import {
   SyncTemperatureBreachesActionPayload,
   FailurePayload,
 } from './types';
+import { DependencyLocator } from '~common/services/DependencyLocator/DependencyLocator';
 
 const initialState: SyncSliceStateShape = {
   isSyncing: false,
@@ -81,7 +91,10 @@ const reducers = {
     reducer: () => {},
   },
   authenticateSuccess: () => {},
-  authenticateFailure: () => {},
+  authenticateFailure: {
+    reducer: () => {},
+    prepare: (errorMessage: string) => ({ payload: { errorMessage } }),
+  },
   syncSensors: {
     prepare: (sensorUrl: string) => ({ payload: { sensorUrl } }),
     reducer: () => {},
@@ -150,12 +163,14 @@ function* authenticate({
   payload: { loginUrl, username, password },
 }: PayloadAction<AuthenticateActionPayload>): SagaIterator {
   const syncOutManager: SyncOutManager = yield call(getDependency, 'syncOutManager');
+  // const dependencyLocator: DependencyLocator = yield getContext('dependencyLocator');
+  // const syncOutManager: SyncOutManager = yield call(dependencyLocator.get, 'syncOutManager');
 
   try {
     yield call(syncOutManager.login, loginUrl, username, password);
     yield put(SyncAction.authenticateSuccess());
   } catch (e) {
-    yield put(SyncAction.authenticateFailure());
+    yield put(SyncAction.authenticateFailure(e.message));
   }
 }
 
@@ -184,7 +199,6 @@ function* syncSensors({
     yield call(syncOutManager.syncSensors, sensorUrl, syncLogs);
     yield put(SyncAction.syncSensorsSuccess(syncLogs));
   } catch (e) {
-    console.log('SyncSensors', e.message);
     yield put(SyncAction.syncSensorsFailure(e.message));
   }
 }
@@ -214,7 +228,6 @@ function* syncTemperatureLogs({
     yield call(syncOutManager.syncTemperatureLogs, temperatureLogUrl, syncLogs);
     yield put(SyncAction.syncTemperatureLogsSuccess(syncLogs));
   } catch (e) {
-    console.log(e.message);
     yield put(SyncAction.syncTemperatureLogsFailure(e.message));
   }
 }
@@ -243,7 +256,6 @@ function* syncTemperatureBreaches({
     yield call(syncOutManager.syncTemperatureBreaches, temperatureBreachUrl, syncLogs);
     yield put(SyncAction.syncTemperatureBreachesSuccess(syncLogs));
   } catch (e) {
-    console.log(e.message);
     yield put(SyncAction.syncTemperatureBreachesFailure(e.message));
   }
 }
@@ -377,6 +389,7 @@ const SyncSaga = {
   testConnectionSuccess,
   tryStartPassiveIntegration,
   enablePassiveSync,
+  startSyncScheduler,
 };
 
-export { SyncAction, SyncReducer, SyncSaga, SyncSelector };
+export { SyncAction, SyncReducer, SyncSaga, SyncSelector, initialState };

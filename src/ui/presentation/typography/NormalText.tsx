@@ -19,5 +19,9 @@ export const NormalText: FC<NormalTextProps> = ({
 }) => {
   const internalStyle = { ...defaultStyle, ...style, marginRight, color };
 
-  return <Text style={internalStyle}>{children}</Text>;
+  return (
+    <Text numberOfLines={1} ellipsizeMode="tail" style={internalStyle}>
+      {children}
+    </Text>
+  );
 };

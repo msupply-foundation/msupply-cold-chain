@@ -1,6 +1,6 @@
 import { LogTableManager } from '~features/SensorDetail/LogTable';
 
-const GET_LOGS = `
+const GET_LOGS_DEFAULT_QUERY = `
 select tl.id id,
 tl.timestamp timestamp,
 tl.temperature temperature,
@@ -19,10 +19,11 @@ left outer join (
 ) b on b.temperaturebreachid = tl.temperaturebreachid
 where
 tl.timestamp between ? and ? and sensorId = ?
-order by timestamp
+order by timestamp desc
 limit ?
 offset ?
 `;
+
 describe('LogTableManager: getLogs', () => {
   it('returns the logs queried for', async () => {
     const query = jest.fn(() => []);
@@ -39,7 +40,7 @@ describe('LogTableManager: getLogs', () => {
     logManager.getLogs(0, 0, 'a');
 
     await expect(query).toBeCalledTimes(1);
-    await expect(query).toBeCalledWith(GET_LOGS, [0, 0, 'a', 50, 0]);
+    await expect(query).toBeCalledWith(GET_LOGS_DEFAULT_QUERY, [0, 0, 'a', 50, 0]);
   });
   it('is called with the correct pagination params', async () => {
     const query = jest.fn(() => []);
@@ -49,6 +50,6 @@ describe('LogTableManager: getLogs', () => {
     logManager.getLogs(0, 0, 'a', { offset: 1, limit: 2 });
 
     await expect(query).toBeCalledTimes(1);
-    await expect(query).toBeCalledWith(GET_LOGS, [0, 0, 'a', 2, 1]);
+    await expect(query).toBeCalledWith(GET_LOGS_DEFAULT_QUERY, [0, 0, 'a', 2, 1]);
   });
 });

@@ -31,15 +31,21 @@ export const SensorListScreen: FC = () => {
   const getSensors = () => dispatch(SensorAction.fetchAll());
 
   const startPassiveDownloading = () => {
-    dispatch(DownloadAction.passiveDownloadingStart());
+    setTimeout(() => {
+      dispatch(DownloadAction.passiveDownloadingStart());
+    }, 50000);
   };
 
   const startBatteryObserving = () => {
-    dispatch(BatteryObserverAction.start());
+    setTimeout(() => {
+      dispatch(BatteryObserverAction.start());
+    }, 50000);
   };
 
   const startIntegrating = () => {
-    dispatch(SyncAction.tryStartPassiveIntegration());
+    setTimeout(() => {
+      dispatch(SyncAction.tryStartPassiveIntegration());
+    }, 50000);
   };
 
   useOnMount([startPassiveDownloading, startBatteryObserving, startIntegrating]);

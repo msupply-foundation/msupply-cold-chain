@@ -5,7 +5,6 @@ import App from './src/ui/App';
 // Moment.js plugin for date ranges- importing at the root so it
 // injects into moment.
 import 'twix';
-
 import { name as appName } from './app.json';
 
 if (__DEV__) {

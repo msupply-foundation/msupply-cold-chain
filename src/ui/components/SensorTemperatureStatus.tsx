@@ -86,15 +86,15 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
           </Centered>
 
           <Centered>
-            <Animated.View style={styles.icon} opacity={fadeAnim1}>
+            <Animated.View style={{ ...styles.icon, opacity: fadeAnim1 }}>
               <Icon.HotBreach />
             </Animated.View>
 
-            <Animated.View style={styles.icon} opacity={fadeAnim2}>
+            <Animated.View style={{ ...styles.icon, opacity: fadeAnim2 }}>
               <Icon.ColdBreach />
             </Animated.View>
 
-            <Animated.View style={styles.icon} opacity={fadeAnim3}>
+            <Animated.View style={{ ...styles.icon, opacity: fadeAnim3 }}>
               <Icon.LowBattery />
             </Animated.View>
           </Centered>

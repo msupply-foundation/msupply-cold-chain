@@ -1,5 +1,4 @@
 import { DatabaseService } from '~common/services';
-import { ENTITIES, MILLISECONDS } from '~common/constants';
 
 const createMockDB = ({ findReturn = [] } = {}) => {
   const mockSave = jest.fn(async object => object);
@@ -27,96 +26,111 @@ const createMockDB = ({ findReturn = [] } = {}) => {
 };
 
 describe('DatabaseService: init', () => {
-  it('returns the records inserted', async () => {
-    const { database } = createMockDB();
-    const dbService = new DatabaseService(database);
+  it('Calls install on each trigger passed in the database configuration when constructed.', async () => {
+    const db = createMockDB();
+    const mockInstall = jest.fn();
+    const mockInstall2 = jest.fn();
+    const config = {
+      triggers: [{ install: mockInstall }, { install: mockInstall2 }],
+    };
 
-    const configs = [
-      {
-        id: 'HOT_BREACH',
-        minimumTemperature: 8,
-        maximumTemperature: 999,
-        duration: MILLISECONDS.ONE_MINUTE * 30,
-        description: 'Hot breach',
-      },
+    const dbService = new DatabaseService(db, config);
+    dbService.init();
 
-      {
-        id: 'HOT_CUMULATIVE',
-        minimumTemperature: 8,
-        maximumTemperature: 999,
-        duration: MILLISECONDS.ONE_MINUTE * 60,
-        description: 'Hot cumulative',
-      },
-      {
-        id: 'COLD_BREACH',
-        minimumTemperature: -999,
-        maximumTemperature: 2,
-        duration: MILLISECONDS.ONE_MINUTE * 20,
-        description: 'Cold breach',
-      },
-      {
-        id: 'COLD_CUMULATIVE',
-        minimumTemperature: -999,
-        maximumTemperature: 2,
-        duration: MILLISECONDS.ONE_MINUTE * 40,
-        description: 'Cold cumulative',
-      },
-    ];
-
-    await expect(dbService.init()).resolves.toEqual(configs);
+    await expect(mockInstall).toBeCalledTimes(1);
+    await expect(mockInstall).toBeCalledTimes(1);
   });
-  it('Calls upsert with the correct params', async () => {
-    const { mockSave, database, mockGetRepository } = createMockDB();
-    const dbService = new DatabaseService(database);
 
-    const configs = [
-      {
-        id: 'HOT_BREACH',
-        minimumTemperature: 8,
-        maximumTemperature: 999,
-        duration: MILLISECONDS.ONE_MINUTE * 30,
-        description: 'Hot breach',
-      },
+  // it('returns the records inserted', async () => {
+  //   const { database } = createMockDB();
+  //   const dbService = new DatabaseService(database);
 
-      {
-        id: 'HOT_CUMULATIVE',
-        minimumTemperature: 8,
-        maximumTemperature: 999,
-        duration: MILLISECONDS.ONE_MINUTE * 60,
-        description: 'Hot cumulative',
-      },
-      {
-        id: 'COLD_BREACH',
-        minimumTemperature: -999,
-        maximumTemperature: 2,
-        duration: MILLISECONDS.ONE_MINUTE * 20,
-        description: 'Cold breach',
-      },
-      {
-        id: 'COLD_CUMULATIVE',
-        minimumTemperature: -999,
-        maximumTemperature: 2,
-        duration: MILLISECONDS.ONE_MINUTE * 40,
-        description: 'Cold cumulative',
-      },
-    ];
+  //   const configs = [
+  //     {
+  //       id: 'HOT_BREACH',
+  //       minimumTemperature: 8,
+  //       maximumTemperature: 999,
+  //       duration: MILLISECONDS.ONE_MINUTE * 30,
+  //       description: 'Hot breach',
+  //     },
 
-    await dbService.init();
-    expect(mockSave).toBeCalledTimes(1);
-    expect(mockSave).toBeCalledWith(configs);
-    expect(mockGetRepository).toBeCalledTimes(2);
-    expect(mockGetRepository).toBeCalledWith(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION);
-  });
-  it('Prematurely returns when finding 4 configs', async () => {
-    const { mockSave, database, mockGetRepository } = createMockDB({ findReturn: [1, 2, 3, 4] });
-    const dbService = new DatabaseService(database);
+  //     {
+  //       id: 'HOT_CUMULATIVE',
+  //       minimumTemperature: 8,
+  //       maximumTemperature: 999,
+  //       duration: MILLISECONDS.ONE_MINUTE * 60,
+  //       description: 'Hot cumulative',
+  //     },
+  //     {
+  //       id: 'COLD_BREACH',
+  //       minimumTemperature: -999,
+  //       maximumTemperature: 2,
+  //       duration: MILLISECONDS.ONE_MINUTE * 20,
+  //       description: 'Cold breach',
+  //     },
+  //     {
+  //       id: 'COLD_CUMULATIVE',
+  //       minimumTemperature: -999,
+  //       maximumTemperature: 2,
+  //       duration: MILLISECONDS.ONE_MINUTE * 40,
+  //       description: 'Cold cumulative',
+  //     },
+  //   ];
 
-    await dbService.init();
+  //   await expect(dbService.init()).resolves.toEqual(configs);
+  // });
+  // it('Calls upsert with the correct params', async () => {
+  //   const { mockSave, database, mockGetRepository } = createMockDB();
+  //   const dbService = new DatabaseService(database);
 
-    expect(mockSave).toBeCalledTimes(0);
-    expect(mockGetRepository).toBeCalledTimes(1);
-    expect(mockGetRepository).toBeCalledWith(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION);
-  });
+  //   const configs = [
+  //     {
+  //       id: 'HOT_BREACH',
+  //       minimumTemperature: 8,
+  //       maximumTemperature: 999,
+  //       duration: MILLISECONDS.ONE_MINUTE * 30,
+  //       description: 'Hot breach',
+  //     },
+
+  //     {
+  //       id: 'HOT_CUMULATIVE',
+  //       minimumTemperature: 8,
+  //       maximumTemperature: 999,
+  //       duration: MILLISECONDS.ONE_MINUTE * 60,
+  //       description: 'Hot cumulative',
+  //     },
+  //     {
+  //       id: 'COLD_BREACH',
+  //       minimumTemperature: -999,
+  //       maximumTemperature: 2,
+  //       duration: MILLISECONDS.ONE_MINUTE * 20,
+  //       description: 'Cold breach',
+  //     },
+  //     {
+  //       id: 'COLD_CUMULATIVE',
+  //       minimumTemperature: -999,
+  //       maximumTemperature: 2,
+  //       duration: MILLISECONDS.ONE_MINUTE * 40,
+  //       description: 'Cold cumulative',
+  //     },
+  //   ];
+
+  //   await dbService.init();
+  //   expect(mockSave).toBeCalledTimes(1);
+  //   expect(mockSave).toBeCalledWith(configs);
+  //   expect(mockGetRepository).toBeCalledTimes(2);
+  //   expect(mockGetRepository).toBeCalledWith(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION);
+  // });
+  // it('Prematurely returns when finding 4 configs', async () => {
+  //   const { mockSave, database, mockGetRepository } = createMockDB({ findReturn: [1, 2, 3, 4] });
+  //   const dbService = new DatabaseService(database);
+
+  //   await dbService.init();
+
+  //   expect(mockSave).toBeCalledTimes(0);
+  //   expect(mockGetRepository).toBeCalledTimes(1);
+  //   expect(mockGetRepository).toBeCalledWith(ENTITIES.TEMPERATURE_BREACH_CONFIGURATION);
+  // });
 });
 
 describe('DatabaseService: save', () => {

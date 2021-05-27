@@ -55,7 +55,7 @@ const Action = {
 
 type PowerStateShape = {
   powerState: ExpoBattery.BatteryState;
-  batteryLevel: number;
+  batteryLevel: number | undefined;
   isCharging: boolean;
   isLowPowerMode: boolean;
   isFull: boolean;
@@ -63,7 +63,7 @@ type PowerStateShape = {
 
 const initialState = (): PowerStateShape => ({
   powerState: ExpoBattery.BatteryState.UNKNOWN,
-  batteryLevel: 0,
+  batteryLevel: undefined,
   isCharging: false,
   isLowPowerMode: false,
   isFull: false,
@@ -125,7 +125,7 @@ export const usePowerState = (): PowerStateShape => {
 
   useEffect(() => {
     const subscription = ExpoBattery.addBatteryLevelListener(({ batteryLevel }) => {
-      dispatch(Action.batteryStateUpdated(batteryLevel));
+      dispatch(Action.batteryLevelUpdated(batteryLevel));
     });
 
     const getInitialBatteryLevel = async () => {
