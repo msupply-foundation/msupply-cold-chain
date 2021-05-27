@@ -10,6 +10,7 @@ import { Settings } from './screens/settings';
 import { Sensors } from './screens/sensors';
 
 import {
+  SplashScreenContainer,
   StorybookContainer,
   ReduxContainer,
   KeepAwakeContainer,
@@ -31,20 +32,22 @@ const App: FC = () => {
               <DependencyContainer>
                 <MigrationRunner>
                   <PermissionsContainer>
-                    <NavigationContainer>
-                      <StatusBar hidden />
-                      <MainHeader />
-                      <MainTabNavigator>
-                        <MainTabScreen
-                          name={NAVIGATION.SCREENS.MAIN_TABS.SENSORS}
-                          component={Sensors}
-                        />
-                        <MainTabScreen
-                          name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS}
-                          component={Settings}
-                        />
-                      </MainTabNavigator>
-                    </NavigationContainer>
+                    <SplashScreenContainer>
+                      <NavigationContainer>
+                        <StatusBar hidden />
+                        <MainHeader />
+                        <MainTabNavigator>
+                          <MainTabScreen
+                            name={NAVIGATION.SCREENS.MAIN_TABS.SENSORS}
+                            component={Sensors}
+                          />
+                          <MainTabScreen
+                            name={NAVIGATION.SCREENS.MAIN_TABS.SETTINGS}
+                            component={Settings}
+                          />
+                        </MainTabNavigator>
+                      </NavigationContainer>
+                    </SplashScreenContainer>
                   </PermissionsContainer>
                 </MigrationRunner>
               </DependencyContainer>

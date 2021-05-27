@@ -1,5 +1,4 @@
 import { Buffer } from 'buffer';
-import { BleManager } from 'react-native-ble-plx';
 import { BleService } from '~common/services';
 import { BLUETOOTH, BLUE_MAESTRO } from '~constants';
 
@@ -63,14 +62,6 @@ const createMockBleManager = ({
     mockDiscoverAllServicesAndCharacteristicsForDevice,
   };
 };
-
-describe('BleService: constructor', () => {
-  it('Is constructed with a default manager when none is provided', () => {
-    const ble = new BleService();
-
-    expect(ble.manager).toEqual(new BleManager());
-  });
-});
 
 describe('BleService: connectToDevice', () => {
   it('Calls to connect to a device with the mac address passed', async () => {
@@ -450,7 +441,7 @@ describe('BleService: getInfo', () => {
 
     const btService = new BleService(manager);
     const result = await btService.getInfo('josh');
-    expect(result).toEqual({ batteryLevel: 10, isDisabled: false });
+    expect(result).toEqual({ batteryLevel: 100, isDisabled: true });
   });
 });
 
@@ -521,7 +512,7 @@ describe('BleService: getInfoWithRetries', () => {
 
     const btService = new BleService(manager);
     const result = await btService.getInfoWithRetries('josh', 10);
-    expect(result).toEqual({ batteryLevel: 10, isDisabled: false });
+    expect(result).toEqual({ batteryLevel: 100, isDisabled: true });
   });
 });
 

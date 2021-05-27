@@ -1,10 +1,11 @@
 import React, { FC } from 'react';
 import { Pressable } from 'react-native';
-import { COLOUR } from '../../../common/constants';
-import { t } from '../../../common/translations';
-import { Centered, SettingsRowLayout } from '../../layouts';
-import { LargeText } from '../../presentation/typography';
-import { Icon } from '../../presentation/icons';
+
+import { COLOUR } from '~constants';
+import { t } from '~translations';
+import { Centered, SettingsRowLayout } from '~layouts';
+import { MediumText } from '~presentation/typography';
+import { Icon } from '~presentation/icons';
 
 interface LeftIconProps {
   goBack: () => void;
@@ -27,7 +28,7 @@ export const SettingsStackHeader: FC<SettingsStackHeaderProps> = ({ name, goBack
   return (
     <SettingsRowLayout
       LeftIcon={goBack ? <LeftIcon goBack={goBack} /> : null}
-      Text={<LargeText color={COLOUR.SECONDARY}>{t(name)}</LargeText>}
+      Text={<MediumText color={COLOUR.SECONDARY}>{t(name)}</MediumText>}
     />
   );
 };

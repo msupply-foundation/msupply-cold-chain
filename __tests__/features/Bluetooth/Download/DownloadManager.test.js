@@ -1,4 +1,4 @@
-import { DownloadManager } from '~features/Bluetooth/Download';
+import { DownloadManager } from '~features/Bluetooth';
 import { UtilService } from '~common/services/UtilService';
 
 describe('DownloadManager: calculateNumberOfLogsToSave', () => {

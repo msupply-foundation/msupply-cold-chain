@@ -1,17 +1,16 @@
 import React, { FC } from 'react';
-import { COLOUR } from '../../../common/constants';
-import { SettingsItem } from './SettingsItem';
-import { Row } from '../../layouts';
+import { COLOUR } from '~constants';
+import { Row } from '~layouts';
+import { useToggle, useCombinedCallback } from '~hooks';
+import { NormalText } from '~presentation/typography';
+import { Icon } from '~presentation/icons';
 import { SettingsTextEditModal } from './SettingsTextEditModal';
-import { useToggle, useCombinedCallback } from '../../hooks';
-import { NormalText } from '../../presentation/typography';
-import { Icon } from '../../presentation/icons';
-
+import { SettingsItem } from './SettingsItem';
 interface SettingsTextInputRowProps {
   label: string;
-  subtext: string;
+  subtext?: string;
   onConfirm: ({ inputValue }: { inputValue: string }) => void;
-  value: string;
+  value?: string;
   editDescription: string;
   validation?: any;
 }
@@ -31,7 +30,7 @@ export const SettingsTextInputRow: FC<SettingsTextInputRowProps> = ({
     <>
       <SettingsItem
         label={label}
-        subtext={subtext}
+        subtext={subtext ?? ''}
         onPress={toggleModal}
         LeftIcon={<Icon.Pencil />}
         RightComponent={
@@ -49,7 +48,7 @@ export const SettingsTextInputRow: FC<SettingsTextInputRowProps> = ({
           onConfirm={wrappedOnConfirm}
           onClose={toggleModal}
           isOpen={isModalOpen}
-          initialValue={value}
+          initialValue={value ?? ''}
           validation={validation}
         />
       )}

@@ -1,35 +1,25 @@
 import { ChartManager } from '~features/Chart';
 
 const GET_CHART_DATA = `
-select 
-  avg(temperature) temperature, 
-  avg(timestamp) timestamp 
-from 
-  temperaturelog tl 
-where 
-  tl.sensorid = ?
-  and timestamp >= ?
-  and timestamp <= ?
-group by 
-  round(
-    tl.timestamp / (
-      select 
-        duration / ? as groupingInterval 
-      from 
-        (
-          select 
-            max(timestamp) - min(timestamp) duration 
-          from 
-            temperaturelog 
-          where 
-            timestamp >= ?
-            and timestamp <= ?
-            and sensorid = ?
-        )
-    )
-  ) 
-order by 
-  timestamp asc
+with filtered_logs as (
+  select
+    *
+  from
+    TemperatureLog tl
+  where
+    sensorid = ? and
+    timestamp >= ?
+    and timestamp <= ?
+    
+),
+grouping_interval as (select round((max(filtered_logs.timestamp) - min(filtered_logs.timestamp))  / ?) as grouping_interval from filtered_logs)
+select
+  avg(filtered_logs.temperature) temperature,
+  avg(filtered_logs.timestamp) timestamp
+from filtered_logs, grouping_interval
+group by round(timestamp / grouping_interval.grouping_interval)
+order by
+timestamp asc
 `;
 
 describe('ChartManager: getLogs', () => {
@@ -47,15 +37,7 @@ describe('ChartManager: getLogs', () => {
     chartManager.getLogs(from, to, sensorId, maxPoints);
 
     await expect(query).toBeCalledTimes(1);
-    await expect(query).toBeCalledWith(GET_CHART_DATA, [
-      sensorId,
-      from,
-      to,
-      maxPoints,
-      from,
-      to,
-      sensorId,
-    ]);
+    await expect(query).toBeCalledWith(GET_CHART_DATA, [sensorId, from, to, maxPoints]);
   });
   it('Returns the logs queried for', async () => {
     const mockLogs = [{ id: 'a' }];

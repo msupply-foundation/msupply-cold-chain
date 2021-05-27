@@ -8,7 +8,7 @@ export interface Trigger {
   remove: (dbService: DatabaseService) => Promise<void>;
 }
 
-const triggers: Trigger[] = [
+export const triggers: Trigger[] = [
   SensorTrigger.syncOnInsert,
   SensorTrigger.syncOnUpdate,
   TemperatureLogTrigger.syncOnInsert,

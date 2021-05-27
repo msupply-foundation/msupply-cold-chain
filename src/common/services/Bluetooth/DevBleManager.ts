@@ -118,6 +118,8 @@ export class DevBleManager implements BluetoothManager {
 
     this.scannerInterval = setInterval(
       () =>
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - Ignoring this as I don't want to create a full Device object for this development helper.
         callback(null, {
           id: 'AB:CD:EF:GH:IJ:KL',
           manufacturerData: 'MwEBDAN0AFkBtwEMA3QAWQG3AMwCrAAAAAAA',
@@ -136,6 +138,8 @@ export class DevBleManager implements BluetoothManager {
     const connectedDevice = this.connectedDevices[macAddress];
     const callback = this.connectedDevices[macAddress];
     if (connectedDevice && callback) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - ignoring this to not explicitly type the base64d commands etc
       COMMAND_TO_RESULT_LOOKUP[command](callback);
       this.connectedDevices[macAddress] = null;
     } else {

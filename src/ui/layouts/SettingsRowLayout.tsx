@@ -1,5 +1,4 @@
 import React, { FC, ReactNode } from 'react';
-import { View } from 'react-native';
 import { Row } from './Row';
 import { Divider } from '../presentation';
 import { COLOUR, STYLE } from '../../common/constants';
@@ -33,14 +32,18 @@ export const SettingsRowLayout: FC<SettingsRowLayoutProps> = ({
   return (
     <>
       <Row alignItems="center" justifyContent="space-between" style={style.row}>
-        <Row alignItems="center">
+        <Row flex={2} alignItems="center">
           <Centered style={style.leftIcon}>{LeftIcon}</Centered>
           <Column justifyContent="center">
             {Text}
             {Subtext}
           </Column>
         </Row>
-        <View style={style.iconContainer}>{RightComponent}</View>
+        {RightComponent && (
+          <Row flex={1} justifyContent="flex-end" style={style.iconContainer}>
+            {RightComponent}
+          </Row>
+        )}
       </Row>
       <Divider />
     </>

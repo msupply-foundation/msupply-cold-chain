@@ -2,7 +2,6 @@ import { SagaIterator } from '@redux-saga/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   call,
-  getContext,
   put,
   takeEvery,
   take,
@@ -10,10 +9,19 @@ import {
   all,
   delay,
   takeLeading,
+  actionChannel,
+  fork,
 } from 'redux-saga/effects';
-import { SensorState } from '../../Entities/Sensor/SensorSlice';
-import { MILLISECONDS, DEPENDENCY, REDUCER } from '../../../common/constants';
-import { CumulativeBreachAction, ConsecutiveBreachAction } from '../../Breach';
+import { getDependency } from '~features/utils/saga';
+import { SensorState } from '~features/Entities/Sensor/SensorSlice';
+import { BleService } from '~services/Bluetooth/BleService';
+import { MILLISECONDS, REDUCER } from '~common/constants';
+import {
+  DownloadManager,
+  SensorManager,
+  CumulativeBreachAction,
+  ConsecutiveBreachAction,
+} from '~features';
 
 interface DownloadSliceState {
   downloadingById: Record<string, boolean>;
@@ -91,23 +99,19 @@ const { actions: DownloadAction, reducer: DownloadReducer } = createSlice({
 function* tryDownloadForSensor({
   payload: { sensorId },
 }: PayloadAction<DownloadStartPayload>): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const [btService, sensorManager, downloadManager] = yield call(DependencyLocator.get, [
-    DEPENDENCY.BLUETOOTH,
-    DEPENDENCY.SENSOR_MANAGER,
-    DEPENDENCY.DOWNLOAD_MANAGER,
-  ]);
-
-  const sensor = yield call(sensorManager.getSensorById, sensorId);
+  const btService: BleService = yield call(getDependency, 'bleService');
+  const sensorManager: SensorManager = yield call(getDependency, 'sensorManager');
+  const downloadManager: DownloadManager = yield call(getDependency, 'downloadManager');
 
   try {
+    const sensor = yield call(sensorManager.getSensorById, sensorId);
     const [canDownload] = yield call(sensorManager.getCanDownload, sensorId);
 
     if (canDownload) {
       yield put(DownloadAction.downloadStart(sensorId));
 
       const { macAddress, logInterval, logDelay, programmedDate } = sensor;
-      const logs = yield call(btService.downloadLogsWithRetries, macAddress, 10);
+      const logs = yield call(btService.downloadLogsWithRetries, macAddress, 10, null);
       const mostRecentLogTime = yield call(sensorManager.getMostRecentLogTime, sensorId);
 
       const numberOfLogsToSave = yield call(
@@ -126,7 +130,7 @@ function* tryDownloadForSensor({
 
       yield call(downloadManager.saveLogs, sensorLogs);
       if (numberOfLogsToSave) {
-        yield call(btService.updateLogIntervalWithRetries, macAddress, logInterval, 10);
+        yield call(btService.updateLogIntervalWithRetries, macAddress, logInterval, 10, null);
       }
       yield put(ConsecutiveBreachAction.create(sensor));
       yield put(DownloadAction.passiveDownloadForSensorSuccess(sensor.id));
@@ -142,13 +146,12 @@ function* tryDownloadForSensor({
 }
 
 function* downloadTemperatures(): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
+  const sensorManager: SensorManager = yield call(getDependency, 'sensorManager');
 
   try {
-    const sensors = yield call(sensorManager.getAll);
+    const sensors: SensorState[] = yield call(sensorManager.getAll);
     const mapper = ({ id }: SensorState) => put(DownloadAction.tryPassiveDownloadForSensor(id));
-    const actions = (sensors as SensorState[]).map(mapper);
+    const actions = sensors.map(mapper);
     yield all(actions);
     // eslint-disable-next-line no-empty
   } catch (error) {}
@@ -168,10 +171,19 @@ function* watchPassiveDownloading(): SagaIterator {
   });
 }
 
+function* queuePassiveDownloads(): SagaIterator {
+  const channel = yield actionChannel(DownloadAction.tryPassiveDownloadForSensor);
+
+  while (true) {
+    const action = yield take(channel);
+    yield call(tryDownloadForSensor, action);
+  }
+}
+
 function* root(): SagaIterator {
   yield takeEvery(DownloadAction.tryManualDownloadForSensor, tryDownloadForSensor);
-  yield takeEvery(DownloadAction.tryPassiveDownloadForSensor, tryDownloadForSensor);
   yield takeLeading(DownloadAction.passiveDownloadingStart, watchPassiveDownloading);
+  yield fork(queuePassiveDownloads);
 }
 
 const DownloadSaga = {

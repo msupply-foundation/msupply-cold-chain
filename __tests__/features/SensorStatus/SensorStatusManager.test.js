@@ -18,7 +18,7 @@ with breach as (
   s.name        name,
   s.logDelay    logDelay,
   mostRecentLogTimestamp,
-  s.batteryLevel < 75 isLowBattery,
+  s.batteryLevel < 25 isLowBattery,
   firstTimestamp,
   coalesce(numberOfLogs,0) > 0 hasLogs,
   coalesce(numberOfLogs,0) numberOfLogs,
@@ -28,11 +28,10 @@ with breach as (
   WHEN endTimestamp IS NULL AND temperatureBreachConfigurationId = 'HOT_BREACH' THEN 1 ELSE 0 END AS isInHotBreach,
   CASE WHEN endTimestamp IS NULL AND temperatureBreachConfigurationId = 'COLD_BREACH' THEN 1 ELSE 0 END AS isInColdBreach
   FROM      sensor s OUTER
-  
+  LEFT JOIN (SELECT coalesce(min(timestamp), 0) firstTimestamp from temperaturelog where sensorid = ?)
   left JOIN
   (
     SELECT  max(timestamp) mostRecentLogTimestamp,
-            coalesce(min(timestamp), 0) firstTimestamp,
             temperature    currentTemperature,
             count(*) numberOfLogs,
             tl.sensorid,
@@ -56,27 +55,14 @@ with breach as (
   where s.id = ?
 `;
 
-const SENSOR_STATUS_ADDITIONAL =
-  'select s.batteryLevel batteryLevel, temperature as currentTemperature from sensor s left join temperaturelog tl on tl.sensorid = s.id where s.id = ? order by timestamp desc limit 1';
-
 describe('SensorStatusManager: ', () => {
   it('Returns sensor status', async () => {
-    const query = jest.fn(queryString => {
-      if (queryString === SENSOR_STATUS) {
-        return [{}];
-      }
-      if (queryString === SENSOR_STATUS_ADDITIONAL) {
-        return [{ currentTemperature: 10, batteryLevel: 100 }];
-      }
-      return {};
-    });
+    const query = jest.fn();
     const mockDbService = { query };
 
     const sensorStatusManager = new SensorStatusManager(mockDbService);
+    sensorStatusManager.getSensorStatus('a');
 
-    await expect(sensorStatusManager.getSensorStatus('a')).resolves.toEqual({
-      currentTemperature: 10,
-      batteryLevel: 100,
-    });
+    await expect(query).toBeCalledWith(SENSOR_STATUS, ['a', 'a', 'a', 'a']);
   });
 });

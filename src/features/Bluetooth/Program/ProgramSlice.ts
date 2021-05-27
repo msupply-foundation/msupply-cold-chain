@@ -1,12 +1,12 @@
-import { SettingManager } from './../../Entities/Setting/SettingManager';
-import { BleService, InfoLog } from './../../../common/services/Bluetooth/BleService';
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ToastAndroid } from 'react-native';
 import { call, getContext, put, retry, takeEvery, takeLeading } from 'redux-saga/effects';
-import { RootState } from '../../../common/store/store';
 
-import { DEPENDENCY, SETTING, REDUCER } from '../../../common/constants';
+import { SettingManager } from '~features/Entities/Setting/SettingManager';
+import { BleService, InfoLog } from '~services/Bluetooth/BleService';
+import { RootState } from '~store/store';
+import { DEPENDENCY, REDUCER } from '~constants';
 
 interface ProgramSliceState {
   programmingByMac: Record<string, boolean>;
@@ -28,7 +28,7 @@ interface ProgramNewSensorSuccessPayload {
   macAddress: string;
   logInterval: number;
   logDelay: number;
-  batteryLevel: number;
+  batteryLevel: number | null;
 }
 
 interface ProgramNewSensorFailPayload {
@@ -52,7 +52,12 @@ const reducers = {
     },
   },
   programNewSensorSuccess: {
-    prepare: (macAddress: string, logInterval: number, logDelay: number, batteryLevel: number) => ({
+    prepare: (
+      macAddress: string,
+      logInterval: number,
+      logDelay: number,
+      batteryLevel: number | null
+    ) => ({
       payload: { macAddress, logInterval, logDelay, batteryLevel },
     }),
     reducer: (

@@ -30,6 +30,7 @@ describe('ConsecutiveBreachManager: createBreach', () => {
       temperatureBreachConfigurationId: 'a',
       temperatureBreachConfiguration: config,
       startTimestamp: 0,
+      acknowledged: false,
     };
 
     expect(closedBreach).toEqual(closedBreachShouldBe);
@@ -246,7 +247,8 @@ describe('ConsecutiveBreachManager: getBreachConfigs', () => {
 describe('ConsecutiveBreachManager: updateBreaches', () => {
   it('returns updated records', async () => {
     const upsertMock = jest.fn((_, entities) => entities);
-    const mockDbService = { upsert: upsertMock };
+    const updateManyMock = jest.fn(() => {});
+    const mockDbService = { upsert: upsertMock, updateMany: updateManyMock };
 
     const breachManager = new ConsecutiveBreachManager(mockDbService);
 

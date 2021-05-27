@@ -35,7 +35,7 @@ class TemperatureBreach {
   id: string;
 
   @Column({ type: 'integer', nullable: true })
-  endTimestamp: number;
+  endTimestamp?: number;
 
   @Column({ type: 'integer', nullable: false })
   startTimestamp: number;

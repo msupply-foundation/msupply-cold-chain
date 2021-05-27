@@ -1,17 +1,52 @@
-import { installTriggers } from './triggers/index';
+import { installTriggers, Trigger, triggers } from './triggers/index';
 import _ from 'lodash';
 import { Database } from './Database';
 import { ENTITIES, MILLISECONDS } from '~constants';
 import { classToPlain } from 'class-transformer';
 
+export type DatabaseConfiguration = {
+  triggers?: Trigger[];
+};
+
+const defaultConfig: DatabaseConfiguration = {
+  triggers,
+};
+
 export class DatabaseService {
   database: Database;
 
-  constructor(database: Database) {
+  config: DatabaseConfiguration;
+
+  constructor(database: Database, config: DatabaseConfiguration = defaultConfig) {
     this.database = database;
+    this.config = config;
   }
 
+  installIndicies = async (): Promise<void> => {
+    await this.rawQuery(
+      'CREATE INDEX IF NOT EXISTS idx_TemperatureLog_sensorId on TemperatureLog(sensorId)'
+    );
+    await this.rawQuery(
+      'CREATE INDEX IF NOT EXISTS idx_TemperatureLog_timestamp on TemperatureLog(timestamp)'
+    );
+    await this.rawQuery(
+      'CREATE INDEX IF NOT EXISTS idx_TemperatureLog_temperature on TemperatureLog(temperature)'
+    );
+    await this.rawQuery('CREATE INDEX IF NOT EXISTS idx_Sensor_isActive on Sensor(isActive)');
+    await this.rawQuery('CREATE INDEX IF NOT EXISTS idx_Sensor_macAddress on Sensor(macAddress)');
+  };
+
+  installTriggers = async (): Promise<void> => {
+    if (this.config.triggers) {
+      for (const trigger of this.config.triggers) {
+        await trigger.install(this);
+      }
+    }
+  };
+
   init = async (): Promise<any> => {
+    await this.installIndicies();
+
     const COLD_BREACH = {
       id: 'COLD_BREACH',
       minimumTemperature: -999,
@@ -83,6 +118,14 @@ export class DatabaseService {
         value: '300',
       });
     }
+
+    await this.rawQuery('PRAGMA journal_mode=wal');
+    await this.rawQuery('PRAGMA synchronous=OFF');
+    await this.rawQuery('PRAGMA temp_store=memory');
+    await this.rawQuery('PRAGMA mmap_size=30000000000');
+    await this.rawQuery('PRAGMA locking_mode=exclusive');
+    await this.rawQuery('PRAGMA vacuum');
+    await this.rawQuery('PRAGMA optimize');
 
     await installTriggers(this);
   };
@@ -199,6 +242,7 @@ export class DatabaseService {
     if (!conn) throw new Error('Database not connected!');
 
     const qr = conn.createQueryRunner();
+
     return qr.query(query, params);
   };
 
