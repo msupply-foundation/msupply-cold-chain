@@ -5,7 +5,7 @@ Object {
   "2": "X_DOMAIN_PADDING",
   "20": "Y_DOMAIN_PADDING",
   "5": "NUMBER_OF_TICKS_Y",
-  "INTERPOLATION": "natural",
+  "INTERPOLATION": "catmullRom",
   "LINE_GRADIENT_ID": "url(#grad)",
   "NUMBER_OF_TICKS_Y": 5,
   "X_DOMAIN_PADDING": 2,

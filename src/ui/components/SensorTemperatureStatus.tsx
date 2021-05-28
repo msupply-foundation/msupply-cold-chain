@@ -81,11 +81,11 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
     <TouchableOpacity onLongPress={startAcknowledging}>
       <LargeRectangle color={hasColdBreach ? COLOUR.PRIMARY : COLOUR.DANGER}>
         <Row flex={1}>
-          <Centered style={{ left: 10 }}>
+          <Row justifyContent="flex-end" flex={1} style={{ left: 10 }}>
             <LargeText color={COLOUR.WHITE}>{temperature}</LargeText>
-          </Centered>
+          </Row>
 
-          <Centered>
+          <Row flex={1}>
             <Animated.View style={{ ...styles.icon, opacity: fadeAnim1 }}>
               <Icon.HotBreach />
             </Animated.View>
@@ -97,7 +97,7 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
             <Animated.View style={{ ...styles.icon, opacity: fadeAnim3 }}>
               <Icon.LowBattery />
             </Animated.View>
-          </Centered>
+          </Row>
         </Row>
       </LargeRectangle>
     </TouchableOpacity>
