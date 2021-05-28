@@ -84,7 +84,6 @@ export const SyncSettingsScreen: FC = () => {
           }
           value={authUsername}
           editDescription={t('EDIT_USERNAME')}
-          validation={Yup.string().url()}
         />
         <SettingsTextInputRow
           label={t('PASSWORD')}
@@ -93,7 +92,6 @@ export const SyncSettingsScreen: FC = () => {
           }
           value={authPassword}
           editDescription={t('EDIT_PASSWORD')}
-          validation={Yup.string().url()}
         />
       </SettingsGroup>
       <SettingsGroup title="Operations">
