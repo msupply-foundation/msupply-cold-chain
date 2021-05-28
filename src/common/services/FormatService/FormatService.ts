@@ -37,6 +37,10 @@ export class FormatService {
     return moment(date).format('DD MMMM');
   };
 
+  fileNameDate = (date: number): string => {
+    return moment.unix(date).format('DD-MM-YYYY-HHmmss');
+  };
+
   temperature = (temperature: number): string => {
     return `${temperature}${SPECIAL_CHARACTER.DEGREE_CELSIUS}`;
   };
