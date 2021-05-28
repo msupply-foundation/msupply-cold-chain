@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useOnMount } from '../hooks';
 import {
   ChartAction,
-  CumulativeBreachAction,
+  // CumulativeBreachAction,
   SensorStatusAction,
   SensorStatusSelector,
   ChartSelector,
@@ -16,6 +16,7 @@ import { Chart } from '../presentation';
 import { SensorStatus } from './SensorStatus';
 import { RootState } from '../../common/store/store';
 import { useWindowDimensions } from 'react-native';
+import { CHART } from '~constants';
 
 interface SensorChartRowProps {
   id: string;
@@ -49,8 +50,8 @@ export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, onPress
         <Chart
           isLoading={isLoadingChartData}
           data={data}
-          width={width * 0.6}
-          height={height * 0.15}
+          width={width * CHART.WIDTH_FACTOR}
+          height={height * CHART.HEIGHT_FACTOR}
         />
       }
       SensorStatus={

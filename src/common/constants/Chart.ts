@@ -6,4 +6,6 @@ export enum CHART {
   LINE_GRADIENT_ID = 'url(#grad)',
   X_DOMAIN_PADDING = 2,
   Y_DOMAIN_PADDING = 20,
+  HEIGHT_FACTOR = 0.15,
+  WIDTH_FACTOR = 0.6,
 }
