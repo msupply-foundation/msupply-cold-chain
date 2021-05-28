@@ -15,15 +15,17 @@
     "test": "jest",
     "storybook": "(adb reverse tcp:7007 tcp:7007 || true) && start-storybook",
     "clean": "react-native-clean-project",
-    "clean:dev": "npm run clean && npm run start",
-    "start": "APP_ENV=development npx react-native run-android",
+    "clean:quick": "react-native-clean-project --keep-node_modules --clean-android-project --keep-brew --keep-pods",
+    "clean:deep": "react-native-clean-project --clean-android-project --remove-android-build",
+    "clean:dev": "npm run clean:quick && npm run start",
+    "start": "APP_ENV=development npx react-native start & npx react-native run-android",
     "start:nologging": "APP_ENV=development.nologging react-native start",
-    "clean:emulator": "npm run clean && npm run start:emulator",
-    "start:emulator": "APP_ENV=emulator npx react-native run-android",
+    "clean:emulator": "npm run clean:quick && npm run start:emulator",
+    "start:emulator": "APP_ENV=emulator npx react-native start & npx react-native run-android",
     "start:emulator:nologging": "APP_ENV=emulator.nologging react-native start",
     "update-splash": "configure-splash-screen --status-bar-hidden -p \"android\" --image-resize-mode \"cover\" --background-color \"#282F46\" --image-path \"./assets/splash.png\"",
     "build": "cd ./android && ./gradlew assembleRelease",
-    "clean:build": "npm run clean && npm run build --reset-cache"
+    "clean:build": "npm run clean:deep && npm run build"
   },
   "dependencies": {
     "@bugsnag/react-native": "^7.9.4",
