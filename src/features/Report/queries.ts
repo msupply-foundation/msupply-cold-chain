@@ -18,6 +18,7 @@ from temperaturebreach tb
 join temperaturelog tl on tl.temperatureBreachId = tb.id
 left join temperaturebreachconfiguration tbc on temperatureBreachConfigurationId = tb.temperatureBreachConfigurationId
 where tb.sensorId = ?
+AND tl.timestamp >= ? AND tl.timestamp <= ?
 group by tb.id
 `;
 
@@ -29,52 +30,61 @@ where s.id = ?
 `;
 
 export const LOGS_REPORT = `
-with cumulativeBreachFields as (
-    select *, (select case when sum(logInterval) * 1000 >= (select duration from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE')  then 1 else 0 end as hasHotCumulative from temperaturelog where temperature >= hotCumulativeMinThreshold and temperature <= hotCumulativeMaxThreshold and sensorId = ?) as hasHotCumulative,
-  (select case when sum(logInterval) *1000 >= (select duration from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') then 1 else 0 end as hasColdCumulative from temperaturelog where temperature >= coldCumulativeMinThreshold and temperature <= coldCumulativeMaxThreshold and sensorId = ?) as hasColdCumulative
-  from ( 
-       select (select maximumTemperature from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeMaxThreshold,
-      (select minimumTemperature from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeMinThreshold,
-      (select duration from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeDuration,
-      (select maximumTemperature from temperaturebreachconfiguration where id = 'COLD_CUMULATIVE') as coldCumulativeMaxThreshold,
-      (select minimumTemperature from temperaturebreachconfiguration where id = 'COLD_CUMULATIVE') as coldCumulativeMinThreshold,
-      (select duration from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as coldCumulativeDuration
+WITH FilteredLogs AS (SELECT * FROM TemperatureLog WHERE timestamp >= ? AND timestamp <= ? AND sensorId = ?),
+cumulativeBreachFields AS (
+SELECT *,
+(SELECT CASE WHEN sum(logInterval) >= hotCumulativeDuration THEN 1 ELSE 0 END AS hasHotCumulative FROM FilteredLogs WHERE temperature >= hotCumulativeMinThreshold AND temperature <= hotCumulativeMaxThreshold) as hasHotCumulative,
+(SELECT CASE WHEN sum(logInterval) >= coldCumulativeDuration THEN 1 ELSE 0 END AS hasColdCumulative FROM FilteredLogs WHERE temperature >= coldCumulativeMinThreshold AND temperature <= coldCumulativeMaxThreshold) as hasColdCumulative
+FROM ( 
+SELECT 
+    hot.duration               AS     hotCumulativeDuration,
+    cold.duration              AS     coldCumulativeDuration,
+    hot.minimumTemperature     AS     hotCumulativeMinThreshold,
+    hot.maximumTemperature     AS     hotCumulativeMaxThreshold,
+    cold.minimumTemperature    AS     coldCumulativeMinThreshold,
+    cold.maximumTemperature    AS     coldCumulativeMaxThreshold
+FROM 
+(SELECT * FROM TemperatureBreachConfiguration WHERE id = 'HOT_CUMULATIVE') hot 
+LEFT JOIN (SELECT * FROM TemperatureBreachConfiguration WHERE id ='COLD_CUMULATIVE') cold
   )
-  )
-  
-  select case 
-  when (select hasHotCumulative from cumulativeBreachFields) = 1 and temperature >= (select hotCumulativeMinThreshold from cumulativeBreachFields) and temperature <= (select hotCumulativeMaxThreshold from cumulativeBreachFields) then "Hot" 
-  when (select hasColdCumulative from cumulativeBreachFields) = 1 and temperature >= (select coldCumulativeMinThreshold from cumulativeBreachFields) and temperature <= (select coldCumulativeMaxThreshold from cumulativeBreachFields) then "Cold"
-  else "x" end as "Is cumulative breach",
+)
+  SELECT CASE 
+  WHEN (SELECT hasHotCumulative from cumulativeBreachFields) = 1 AND temperature >= (SELECT hotCumulativeMinThreshold from cumulativeBreachFields) AND temperature <= (SELECT hotCumulativeMaxThreshold from cumulativeBreachFields) THEN "Hot" 
+  WHEN (SELECT hasColdCumulative from cumulativeBreachFields) = 1 AND temperature >= (SELECT coldCumulativeMinThreshold from cumulativeBreachFields) AND temperature <= (SELECT coldCumulativeMaxThreshold from cumulativeBreachFields) THEN "Cold"
+  ELSE "" END AS "Is cumulative breach",
   datetime(timestamp,"unixepoch","localtime") Timestamp,
   temperature Temperature,
-  tl.logInterval / 60 "Logging Interval (Minutes)",
-  case when tbc.id = "HOT_BREACH" then "Hot" when tbc.id = "COLD_BREACH" then "Cold" else "" end as "Is continuous breach"
-  from temperaturelog tl
-  left join temperatureBreach tb on tb.id = tl.temperatureBreachId
-  left join temperaturebreachconfiguration tbc on tbc.id = tb.temperatureBreachConfigurationId
-  
-where tl.sensorId = ?
+  FilteredLogs.logInterval / 60 "Logging Interval (Minutes)",
+  CASE WHEN tbc.id = "HOT_BREACH" THEN "Hot" when tbc.id = "COLD_BREACH" THEN "Cold" ELSE "" END AS "Is continuous breach"
+  FROM FilteredLogs
+  LEFT JOIN temperatureBreach tb ON tb.id = FilteredLogs.temperatureBreachId
+  LEFT JOIN temperaturebreachconfiguration tbc ON tbc.id = tb.temperatureBreachConfigurationId
 `;
 
 export const STATS = `
-with cumulativeBreachFields as (
-  select *, (select case when sum(logInterval) >= hotCumulativeDuration then 1 else 0 end as hasHotCumulative from temperaturelog where temperature >= hotCumulativeMinThreshold and temperature <= hotCumulativeMaxThreshold and sensorId = ?) as hasHotCumulative,
-  (select case when sum(logInterval) >= coldCumulativeDuration then 1 else 0 end as hasColdCumulative from temperaturelog where temperature >= coldCumulativeMinThreshold and temperature <= coldCumulativeMaxThreshold and sensorId = ?) as hasColdCumulative
-  from ( 
-       select (select maximumTemperature from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeMaxThreshold,
-      (select minimumTemperature from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeMinThreshold,
-      (select duration from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as hotCumulativeDuration,
-      (select maximumTemperature from temperaturebreachconfiguration where id = 'COLD_CUMULATIVE') as coldCumulativeMaxThreshold,
-      (select minimumTemperature from temperaturebreachconfiguration where id = 'COLD_CUMULATIVE') as coldCumulativeMinThreshold,
-      (select duration from temperaturebreachconfiguration where id = 'HOT_CUMULATIVE') as coldCumulativeDuration
+WITH FilteredLogs AS (SELECT * FROM TemperatureLog WHERE timestamp >= ? AND timestamp <= ? AND sensorId = ?),
+cumulativeBreachFields AS (
+SELECT 
+(SELECT CASE WHEN sum(logInterval) >= hotCumulativeDuration THEN 1 ELSE 0 END AS hasHotCumulative FROM FilteredLogs WHERE temperature >= hotCumulativeMinThreshold AND temperature <= hotCumulativeMaxThreshold) as hasHotCumulative,
+(SELECT CASE WHEN sum(logInterval) >= coldCumulativeDuration THEN 1 ELSE 0 END AS hasColdCumulative FROM FilteredLogs WHERE temperature >= coldCumulativeMinThreshold AND temperature <= coldCumulativeMaxThreshold) as hasColdCumulative
+FROM ( 
+SELECT 
+    hot.duration               AS     hotCumulativeDuration,
+    cold.duration              AS     coldCumulativeDuration,
+    hot.minimumTemperature     AS     hotCumulativeMinThreshold,
+    hot.maximumTemperature     AS     hotCumulativeMaxThreshold,
+    cold.minimumTemperature    AS     coldCumulativeMinThreshold,
+    cold.maximumTemperature    AS     coldCumulativeMaxThreshold
+FROM 
+(SELECT * FROM TemperatureBreachConfiguration WHERE id = 'HOT_CUMULATIVE') hot 
+LEFT JOIN (SELECT * FROM TemperatureBreachConfiguration WHERE id ='COLD_CUMULATIVE') cold
   )
-  )
-
-select max(temperature) "Max Temperature", min(temperature) "Min Temperature",
-cbf.hasHotCumulative + cbf.hasColdCumulative as "Number of cumulative breaches",
-(select count(*) from temperaturebreach where sensorid = ?) as "Number of continuous breaches"
-from temperaturelog
-left join cumulativeBreachFields cbf
-where sensorid = ?
-group by sensorid`;
+)
+SELECT
+MAX(temperature) "Max Temperature",
+MIN(temperature) "Min Temperature",
+(SELECT hasHotCumulative from cumulativeBreachFields) + (SELECT hasColdCumulative FROM cumulativeBreachFields) AS "Number of cumulative breaches",
+(SELECT count(*) FROM TemperatureBreach WHERE sensorid = ?) AS "Number of continuous breaches"
+FROM FilteredLogs
+LEFT JOIN cumulativeBreachFields 
+`;
