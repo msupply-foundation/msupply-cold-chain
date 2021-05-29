@@ -68,6 +68,12 @@ export const Chart: FC<ChartProps> = ({ data = [], isLoading, width, height }) =
     </Row>
   );
 
+  // currently a small bug with the x-axis placement when values are both +ve and -ve on the chart
+  const dataValues = data.map(d => d.temperature);
+  const minValue = Math.min(...dataValues);
+  const maxValue = Math.max(...dataValues);
+  const offsetY = minValue < 0 && maxValue > 0 ? maxValue - minValue : 0;
+  
   return (
     <View
       style={{
@@ -86,6 +92,7 @@ export const Chart: FC<ChartProps> = ({ data = [], isLoading, width, height }) =
             {/* X AXIS */}
             <VictoryAxis
               orientation="bottom"
+              offsetY={offsetY}
               style={style.xAxis}
               tickFormat={tickFormatter}
               tickCount={5}

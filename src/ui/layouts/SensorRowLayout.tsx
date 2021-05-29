@@ -1,18 +1,10 @@
 import React, { FC, ReactNode } from 'react';
 import { TouchableOpacity } from 'react-native';
 
-import { STYLE } from '../../common/constants';
-
 import { Column } from './Column';
 import { Row } from './Row';
 import { HalfCircleButton } from '../components/buttons';
 import { Icon } from '../presentation/icons';
-
-const styles = {
-  row: {
-    height: 175,
-  },
-};
 
 interface SensorRowLayoutProps {
   Chart: ReactNode;
@@ -27,9 +19,10 @@ export const SensorRowLayout: FC<SensorRowLayoutProps> = ({
   onPress,
   direction,
 }) => {
+
   return (
     <TouchableOpacity onPress={onPress}>
-      <Row style={styles.row}>
+      <Row >
         <Column flex={3} justifyContent="center">
           {Chart}
         </Column>
