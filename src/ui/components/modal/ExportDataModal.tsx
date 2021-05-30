@@ -81,7 +81,7 @@ export const ExportDataModal: FC<ExportDataModalProps> = ({
                   onChangeText={e => {
                     handleChange('username')(e);
                   }}
-                  inputContainerStyle={{ width: width * 0.5 }}
+                  inputContainerStyle={{ width: width * 0.8 }}
                   numberOfLines={1}
                   onSubmitEditing={() => commentRef?.current?.focus()}
                   errorMessage={errors.username}
@@ -94,7 +94,7 @@ export const ExportDataModal: FC<ExportDataModalProps> = ({
                   onChangeText={e => {
                     handleChange('comment')(e);
                   }}
-                  inputContainerStyle={{ width: width * 0.5 }}
+                  inputContainerStyle={{ width: width * 0.8 }}
                   numberOfLines={1}
                   onSubmitEditing={() => usernameRef?.current?.focus()}
                 />

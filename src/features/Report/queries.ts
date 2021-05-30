@@ -59,6 +59,7 @@ LEFT JOIN (SELECT * FROM TemperatureBreachConfiguration WHERE id ='COLD_CUMULATI
   FROM FilteredLogs
   LEFT JOIN temperatureBreach tb ON tb.id = FilteredLogs.temperatureBreachId
   LEFT JOIN temperaturebreachconfiguration tbc ON tbc.id = tb.temperatureBreachConfigurationId
+  LIMIT 50000
 `;
 
 export const STATS = `

@@ -61,13 +61,13 @@ export class ReportManager {
     from: number,
     to: number,
     id: string
-  ): Promise<[SensorStatsReportKey[], SensorStatsReportShape]> => {
+  ): Promise<[SensorStatsReportKey[], SensorStatsReportShape[]]> => {
     const fields = Object.values(SensorStatsReportKey);
     const data = await this.databaseService.query(STATS, [from, to, id, id]);
     return [fields, data];
   };
 
-  getSensorReport = async (id: string): Promise<[SensorReportKey[], SensorReportShape]> => {
+  getSensorReport = async (id: string): Promise<[SensorReportKey[], SensorReportShape[]]> => {
     const fields = Object.values(SensorReportKey);
     const data = await this.databaseService.query(REPORT, [id]);
     return [fields, data];
@@ -77,7 +77,7 @@ export class ReportManager {
     from: number,
     to: number,
     id: string
-  ): Promise<[TemperatureLogsReportKey[], TemperatureLogsReportShape]> => {
+  ): Promise<[TemperatureLogsReportKey[], TemperatureLogsReportShape[]]> => {
     const fields = Object.values(TemperatureLogsReportKey);
     const data = await this.databaseService.query(LOGS_REPORT, [from, to, id]);
 
@@ -88,14 +88,16 @@ export class ReportManager {
     from: number,
     to: number,
     id: string
-  ): Promise<[BreachReportKey[], BreachReportShape]> => {
+  ): Promise<[BreachReportKey[], BreachReportShape[]]> => {
     const fields = Object.values(BreachReportKey);
     const data = await this.databaseService.query(BREACH_REPORT, [id, from, to]);
 
     return [fields, data];
   };
 
-  getBreachConfigReport = async (): Promise<[BreachConfigReportKey[], BreachConfigReportShape]> => {
+  getBreachConfigReport = async (): Promise<
+    [BreachConfigReportKey[], BreachConfigReportShape[]]
+  > => {
     const fields = Object.values(BreachConfigReportKey);
     const data = await this.databaseService.query(BREACH_CONFIG_REPORT);
 
@@ -161,8 +163,14 @@ export class ReportManager {
 
     try {
       const [fields, data] = await this.getLogsReport(from, to, sensorId);
-      const asCsv = await parseAsync(data, { fields });
-      csv += `Logs\n${asCsv}`;
+      const chunkSize = 100;
+      const numberOfChunks = Math.ceil(data.length / chunkSize);
+      const chunkedData = _.chunk(data, numberOfChunks);
+      const parsingPromises = chunkedData.map((chunk: TemperatureLogsReportShape[]) =>
+        parseAsync(chunk, { fields })
+      );
+      const resolved = await Promise.all(parsingPromises);
+      csv += `Logs\n${resolved.join('\n')}`;
     } catch (e) {}
 
     return csv;
