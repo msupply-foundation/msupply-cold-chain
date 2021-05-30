@@ -6,7 +6,7 @@ const baseStyle = { fontSize: FONT.SIZE.S, fontFamily: FONT.FAMILY.REGULAR };
 
 interface SmallTextProps {
   children: string;
-  color?: string;
+  color?: COLOUR;
   style?: TextStyle;
 }
 

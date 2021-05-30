@@ -110,3 +110,13 @@ describe('FormatService: getTickFormatter', () => {
     expect(tickFormatter(60 * 24 * 30)).toBe('(2/1) 12am');
   });
 });
+
+describe('FormatService:dateRange', () => {
+  it('Formats a date correctly, given two unix timestamps', () => {
+    const formatter = new FormatService();
+    const from = 100;
+    const to = 1000;
+
+    expect(formatter.dateRange(from, to)).toEqual('Jan 1st - Jan 1st');
+  });
+});
