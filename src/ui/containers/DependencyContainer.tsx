@@ -73,7 +73,13 @@ export const DependencyContainer: FC = ({ children }) => {
     const downloadManager = new DownloadManager(dbService, utilService);
     const sensorsManager = new SensorManager(dbService, utilService);
     const temperatureLogManager = new TemperatureLogManager(dbService, utilService);
-    const reportManager = new ReportManager(dbService, exportService, permissionService);
+    const reportManager = new ReportManager(
+      dbService,
+      exportService,
+      permissionService,
+      utilService,
+      formatService
+    );
     const sensorStatusManager = new SensorStatusManager(dbService);
     const syncQueueManager = new SyncQueueManager(dbService);
     const syncOutManager = new SyncOutManager();
