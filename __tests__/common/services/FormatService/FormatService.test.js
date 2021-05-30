@@ -120,3 +120,12 @@ describe('FormatService:dateRange', () => {
     expect(formatter.dateRange(from, to)).toEqual('Jan 1st - Jan 1st');
   });
 });
+
+describe('FormatService:fileNameDate', () => {
+  it('Formats a date correctly, given two unix timestamps', () => {
+    const formatter = new FormatService();
+    const from = 0;
+
+    expect(formatter.fileNameDate(from)).toEqual('01-01-1970-120000');
+  });
+});
