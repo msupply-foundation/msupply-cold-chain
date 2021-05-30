@@ -1,34 +1,38 @@
+import { Sensor } from '~services/Database';
 import { SensorManager } from '~features/Entities';
 import { ReportManager } from './ReportManager';
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ToastAndroid } from 'react-native';
-import { call, getContext, put, takeEvery } from 'redux-saga/effects';
+import { call, put, takeEvery } from 'redux-saga/effects';
 import { getDependency } from '~features/utils/saga';
-import { REDUCER, DEPENDENCY } from '~constants';
+import { REDUCER } from '~constants';
+import { PreparedAction } from '~common/types/common';
 
 interface ReportSliceState {
   creating: boolean;
 }
 
-interface TryCreatePayload {
+interface ReportCreationPayload {
   sensorId: string;
   username: string;
   comment: string;
-}
-
-interface TryCreateAndEmailPayload {
-  sensorId: string;
-  username: string;
-  comment: string;
+  from: number;
+  to: number;
 }
 
 const initialState: ReportSliceState = { creating: false };
 
 const reducers = {
   tryCreate: {
-    prepare: (sensorId: string, username: string, comment: string) => ({
-      payload: { sensorId, username, comment },
+    prepare: (
+      sensorId: string,
+      username: string,
+      comment: string,
+      from: number,
+      to: number
+    ): PreparedAction<ReportCreationPayload> => ({
+      payload: { sensorId, username, comment, from, to },
     }),
     reducer: (draftState: ReportSliceState) => {
       draftState.creating = true;
@@ -41,8 +45,14 @@ const reducers = {
     draftState.creating = false;
   },
   tryCreateAndEmail: {
-    prepare: (sensorId: string, username: string, comment: string) => ({
-      payload: { sensorId, username, comment },
+    prepare: (
+      sensorId: string,
+      username: string,
+      comment: string,
+      from: number,
+      to: number
+    ): PreparedAction<ReportCreationPayload> => ({
+      payload: { sensorId, username, comment, from, to },
     }),
     reducer: (draftState: ReportSliceState) => {
       draftState.creating = true;
@@ -63,29 +73,21 @@ const { actions: ReportAction, reducer: ReportReducer } = createSlice({
 });
 
 function* tryCreate({
-  payload: { sensorId, username, comment },
-}: PayloadAction<TryCreatePayload>): SagaIterator {
+  payload: { sensorId, username, comment, from, to },
+}: PayloadAction<ReportCreationPayload>): SagaIterator {
   const reportManager: ReportManager = yield call(getDependency, 'reportManager');
   const sensorManager: SensorManager = yield call(getDependency, 'sensorManager');
 
   try {
     const sensor = yield call(sensorManager.getSensorById, sensorId);
-    const sensorStats = yield call(reportManager.getStats, sensorId);
-    const sensorReport = yield call(reportManager.getSensorReport, sensorId);
-    const logsReport = yield call(reportManager.getLogsReport, sensorId);
-    const breachReport = yield call(reportManager.getBreachReport, sensorId);
-    const breachConfigReport = yield call(reportManager.breachConfigReport);
 
     const writtenPath = yield call(
-      reportManager.writeLogFile,
+      reportManager.createAndWriteReport,
       sensor,
-      sensorReport,
-      sensorStats,
-      logsReport,
-      breachReport,
-      breachConfigReport,
       username,
-      comment
+      comment,
+      from,
+      to
     );
     yield put(ReportAction.createSuccessful());
     ToastAndroid.show(`Report written to ${writtenPath}`, ToastAndroid.SHORT);
@@ -96,30 +98,14 @@ function* tryCreate({
 }
 
 function* tryCreateAndEmail({
-  payload: { sensorId, username, comment },
-}: PayloadAction<TryCreateAndEmailPayload>): SagaIterator {
+  payload: { sensorId, username, comment, from, to },
+}: PayloadAction<ReportCreationPayload>): SagaIterator {
   const reportManager: ReportManager = yield call(getDependency, 'reportManager');
   const sensorManager: SensorManager = yield call(getDependency, 'sensorManager');
 
   try {
-    const sensor = yield call(sensorManager.getSensorById, sensorId);
-    const sensorStats = yield call(reportManager.getStats, sensorId);
-    const sensorReport = yield call(reportManager.getSensorReport, sensorId);
-    const logsReport = yield call(reportManager.getLogsReport, sensorId);
-    const breachReport = yield call(reportManager.getBreachReport, sensorId);
-    const breachConfigReport = yield call(reportManager.breachConfigReport);
-
-    yield call(
-      reportManager.emailLogFile,
-      sensor,
-      sensorReport,
-      sensorStats,
-      logsReport,
-      breachReport,
-      breachConfigReport,
-      username,
-      comment
-    );
+    const sensor: Sensor = yield call(sensorManager.getSensorById, sensorId);
+    yield call(reportManager.emailReport, sensor, username, comment, from, to);
     yield put(ReportAction.createAndEmailSuccessful());
   } catch (error) {
     yield put(ReportAction.createAndEmailFailed());
