@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Animated, TouchableOpacity, ViewStyle } from 'react-native';
+import { Animated, TouchableOpacity } from 'react-native';
 import { MILLISECONDS, COLOUR } from '../../common/constants';
 import { SensorStatusSelector, AcknowledgeBreachAction } from '../../features';
 import { Row, Centered, LargeRectangle } from '../layouts';
@@ -81,19 +81,19 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
             <LargeText color={COLOUR.WHITE}>{temperature}</LargeText>
           </Row>
           <Row style={{ display: 'flex', flex: 2 }} justifyContent="center" alignItems="center">
-            {hasHotBreach && (
+            {!!hasHotBreach && (
               <Animated.View style={{ opacity: fadeAnim1 }}>
                 <Icon.HotBreach />
               </Animated.View>
             )}
 
-            {hasColdBreach && (
+            {!!hasColdBreach && (
               <Animated.View style={{ opacity: fadeAnim2 }}>
                 <Icon.ColdBreach />
               </Animated.View>
             )}
 
-            {isLowBattery && (
+            {!!isLowBattery && (
               <Animated.View style={{ opacity: fadeAnim3 }}>
                 <Icon.LowBattery />
               </Animated.View>
