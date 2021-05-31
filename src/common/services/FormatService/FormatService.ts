@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { UnixTime } from '~common/types/common';
 import { SPECIAL_CHARACTER, MILLISECONDS, FORMAT } from '../../constants';
 import { t } from '../../translations';
 
@@ -37,8 +38,19 @@ export class FormatService {
     return moment(date).format('DD MMMM');
   };
 
+  fileDate = (date: number): string => {
+    return moment.unix(date).format('DD-MM-YYYY-HHmmss');
+  };
+
   temperature = (temperature: number): string => {
     return `${temperature}${SPECIAL_CHARACTER.DEGREE_CELSIUS}`;
+  };
+
+  dateRange = (from: UnixTime, to: UnixTime): string => {
+    const fromDate = moment.unix(from);
+    const toDate = moment.unix(to);
+
+    return `${fromDate.format('MMM Do')} - ${toDate.format('MMM Do')}`;
   };
 
   listCumulativeBreach = ({

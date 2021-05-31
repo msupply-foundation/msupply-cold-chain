@@ -1,16 +1,17 @@
 import React, { useRef, useCallback, FC } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Input } from 'react-native-elements';
 import { useWindowDimensions, TextInput } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-
-import { t } from '../../../common/translations';
-import { Column } from '../../layouts';
-
+import { t } from '~translations';
+import { Column } from '~layouts';
+import { ReportAction } from '~features/Report';
+import { SmallText } from '~presentation/typography';
 import { SettingsEditModal } from '../settings/SettingsEditModal';
-
-import { ReportAction } from '../../../features/Report';
+import { DetailSelector } from '~features';
+import { useFormatter } from '~hooks';
+import { COLOUR, STYLE } from '~constants';
 
 interface ExportDataModalProps {
   id: string;
@@ -27,20 +28,22 @@ export const ExportDataModal: FC<ExportDataModalProps> = ({
   onClose,
   variant = 'export',
 }) => {
+  const formatter = useFormatter();
   const { width } = useWindowDimensions();
   const dispatch = useDispatch();
+  const { from, to } = useSelector(DetailSelector.fromTo);
 
   const onConfirmModal = useCallback(
     ({ username, comment }) => {
       if (variant === 'export') {
-        dispatch(ReportAction.tryCreate(id, username, comment));
+        dispatch(ReportAction.tryCreate(id, username, comment, from, to));
       }
       if (variant === 'email') {
-        dispatch(ReportAction.tryCreateAndEmail(id, username, comment));
+        dispatch(ReportAction.tryCreateAndEmail(id, username, comment, from, to));
       }
       onConfirm();
     },
-    [dispatch, id, onConfirm, variant]
+    [dispatch, id, onConfirm, variant, from, to]
   );
 
   const usernameRef = useRef<TextInput | null>(null);
@@ -65,7 +68,7 @@ export const ExportDataModal: FC<ExportDataModalProps> = ({
           <SettingsEditModal
             onClose={onClose}
             isOpen={isOpen}
-            title={variant === 'export' ? 'Export data' : 'Email data'}
+            title={`${t('CREATING_REPORT_TITLE')}:\n ${formatter.dateRange(from, to)}`}
             onConfirm={wrappedOnConfirm}
             isDisabled={!isValid}
             Content={
@@ -73,12 +76,12 @@ export const ExportDataModal: FC<ExportDataModalProps> = ({
                 <Input
                   ref={usernameRef}
                   value={values.username}
-                  label="Username"
-                  placeholder="Enter your name"
+                  label={t('USERNAME')}
+                  placeholder={t('ENTER_YOUR_USERNAME')}
                   onChangeText={e => {
                     handleChange('username')(e);
                   }}
-                  inputContainerStyle={{ width: width * 0.5 }}
+                  inputContainerStyle={{ width: STYLE.WIDTH.DIVIDER_NEARLY_FULL }}
                   numberOfLines={1}
                   onSubmitEditing={() => commentRef?.current?.focus()}
                   errorMessage={errors.username}
@@ -86,15 +89,16 @@ export const ExportDataModal: FC<ExportDataModalProps> = ({
                 <Input
                   ref={commentRef}
                   value={comment}
-                  label="Comment"
-                  placeholder="Enter a comment"
+                  label={t('COMMENT')}
+                  placeholder={t('ENTER_A_COMMENT')}
                   onChangeText={e => {
                     handleChange('comment')(e);
                   }}
-                  inputContainerStyle={{ width: width * 0.5 }}
+                  inputContainerStyle={{ width: STYLE.WIDTH.DIVIDER_NEARLY_FULL }}
                   numberOfLines={1}
                   onSubmitEditing={() => usernameRef?.current?.focus()}
                 />
+                <SmallText color={COLOUR.SECONDARY}>{t('MAX_RECORDS')}</SmallText>
               </Column>
             }
           />

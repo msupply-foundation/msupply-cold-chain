@@ -110,9 +110,12 @@ const selectFrom = ({ sensorDetail: { detail } }: RootState): number => {
   return from;
 };
 
-const fromTo = createSelector([selectFrom, selectTo], (from, to) => {
-  return { from, to };
-});
+const fromTo = createSelector<RootState, number, number, { from: number; to: number }>(
+  [selectFrom, selectTo],
+  (from, to) => {
+    return { from, to };
+  }
+);
 // TODO: FIX Types
 const fromToRange = createSelector([fromTo], ({ from, to }) => {
   const options = { allDay: true };
