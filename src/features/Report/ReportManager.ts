@@ -1,6 +1,6 @@
 import { FormatService } from './../../common/services/FormatService/FormatService';
 import { UtilService } from '~services/UtilService';
-import { REPORT, LOGS_REPORT, BREACH_REPORT, BREACH_CONFIG_REPORT } from './queries';
+import { REPORT, LOGS_REPORT, BREACH_REPORT, BREACH_CONFIG_REPORT, STATS } from './queries';
 import {
   SensorStatsReportShape,
   SensorReportShape,
@@ -21,7 +21,6 @@ import Mailer from 'react-native-mail';
 import { parseAsync } from 'json2csv';
 import { DatabaseService, ExportService } from '~common/services';
 import { Sensor } from '~common/services/Database';
-import { STATS } from '~features/Report/queries';
 
 const specialChars = /[\/\?<>\\:\*\|":]/g;
 const apparentlyTheseOnesAlso = /[\x00-\x1f\x80-\x9f]/g;

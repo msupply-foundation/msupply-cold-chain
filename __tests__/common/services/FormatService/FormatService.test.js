@@ -121,11 +121,11 @@ describe('FormatService:dateRange', () => {
   });
 });
 
-describe('FormatService:fileNameDate', () => {
+describe('FormatService:fileDate', () => {
   it('Formats a date correctly, given two unix timestamps', () => {
     const formatter = new FormatService();
     const from = 0;
 
-    expect(formatter.fileNameDate(from)).toEqual('01-01-1970-120000');
+    expect(formatter.fileDate(from)).toEqual('01-01-1970-120000');
   });
 });
