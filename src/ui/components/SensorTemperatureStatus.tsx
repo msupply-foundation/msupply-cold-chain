@@ -8,10 +8,6 @@ import { Header, LargeText } from '../presentation/typography';
 import { Icon } from '../presentation/icons';
 import { RootState } from '../../common/store/store';
 
-const styles: { icon: ViewStyle } = {
-  icon: { position: 'absolute', left: 40 },
-};
-
 const getAnimations = (animationValues: Animated.Value[]) => {
   return Animated.loop(
     Animated.sequence(
@@ -80,23 +76,28 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
   ) : (
     <TouchableOpacity onLongPress={startAcknowledging}>
       <LargeRectangle color={hasColdBreach ? COLOUR.PRIMARY : COLOUR.DANGER}>
-        <Row flex={1}>
-          <Row justifyContent="flex-end" flex={1} style={{ left: 10 }}>
+        <Row style={{ display: 'flex', alignContent: 'flex-end' }}>
+          <Row justifyContent="flex-end" flex={3}>
             <LargeText color={COLOUR.WHITE}>{temperature}</LargeText>
           </Row>
+          <Row style={{ display: 'flex', flex: 2 }} justifyContent="center" alignItems="center">
+            {hasHotBreach && (
+              <Animated.View style={{ opacity: fadeAnim1 }}>
+                <Icon.HotBreach />
+              </Animated.View>
+            )}
 
-          <Row flex={1}>
-            <Animated.View style={{ ...styles.icon, opacity: fadeAnim1 }}>
-              <Icon.HotBreach />
-            </Animated.View>
+            {hasColdBreach && (
+              <Animated.View style={{ opacity: fadeAnim2 }}>
+                <Icon.ColdBreach />
+              </Animated.View>
+            )}
 
-            <Animated.View style={{ ...styles.icon, opacity: fadeAnim2 }}>
-              <Icon.ColdBreach />
-            </Animated.View>
-
-            <Animated.View style={{ ...styles.icon, opacity: fadeAnim3 }}>
-              <Icon.LowBattery />
-            </Animated.View>
+            {isLowBattery && (
+              <Animated.View style={{ opacity: fadeAnim3 }}>
+                <Icon.LowBattery />
+              </Animated.View>
+            )}
           </Row>
         </Row>
       </LargeRectangle>
