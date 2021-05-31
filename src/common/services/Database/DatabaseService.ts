@@ -127,7 +127,7 @@ export class DatabaseService {
     await this.rawQuery('PRAGMA vacuum');
     await this.rawQuery('PRAGMA optimize');
 
-    await installTriggers(this);
+    await this.installTriggers();
   };
 
   getQueryBuilder = () => {

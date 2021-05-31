@@ -12,7 +12,10 @@ const createMockDB = ({ findReturn = [] } = {}) => {
     remove: mockRemove,
     findOne: mockFindOne,
   }));
-  const mockGetConnection = jest.fn(async () => ({ manager: { query: mockQuery } }));
+  const mockGetConnection = jest.fn(async () => ({
+    manager: { query: mockQuery },
+    createQueryRunner: () => ({ query: () => {} }),
+  }));
 
   return {
     database: { getRepository: mockGetRepository, getConnection: mockGetConnection },
@@ -27,18 +30,19 @@ const createMockDB = ({ findReturn = [] } = {}) => {
 
 describe('DatabaseService: init', () => {
   it('Calls install on each trigger passed in the database configuration when constructed.', async () => {
-    const db = createMockDB();
+    const { database } = createMockDB();
     const mockInstall = jest.fn();
     const mockInstall2 = jest.fn();
     const config = {
       triggers: [{ install: mockInstall }, { install: mockInstall2 }],
     };
 
-    const dbService = new DatabaseService(db, config);
-    dbService.init();
+    const dbService = new DatabaseService(database, config);
 
-    await expect(mockInstall).toBeCalledTimes(1);
-    await expect(mockInstall).toBeCalledTimes(1);
+    await dbService.init();
+
+    expect(mockInstall).toBeCalledTimes(1);
+    expect(mockInstall2).toBeCalledTimes(1);
   });
 
   // it('returns the records inserted', async () => {
