@@ -183,7 +183,7 @@ export class ReportManager {
     const { name } = sensor;
 
     const directory = this.getNewReportDirectory();
-    const now = this.formatter.fileNameDate(this.utils.now());
+    const now = this.formatter.fileDate(this.utils.now());
     const file = `${sanitize(name)}-${now}`;
 
     return `${directory}/${file}.csv`;

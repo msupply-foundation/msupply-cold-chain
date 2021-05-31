@@ -11,7 +11,7 @@ import { SmallText } from '~presentation/typography';
 import { SettingsEditModal } from '../settings/SettingsEditModal';
 import { DetailSelector } from '~features';
 import { useFormatter } from '~hooks';
-import { COLOUR } from '~constants';
+import { COLOUR, STYLE } from '~constants';
 
 interface ExportDataModalProps {
   id: string;
@@ -81,7 +81,7 @@ export const ExportDataModal: FC<ExportDataModalProps> = ({
                   onChangeText={e => {
                     handleChange('username')(e);
                   }}
-                  inputContainerStyle={{ width: width * 0.8 }}
+                  inputContainerStyle={{ width: STYLE.WIDTH.DIVIDER_NEARLY_FULL }}
                   numberOfLines={1}
                   onSubmitEditing={() => commentRef?.current?.focus()}
                   errorMessage={errors.username}
@@ -94,7 +94,7 @@ export const ExportDataModal: FC<ExportDataModalProps> = ({
                   onChangeText={e => {
                     handleChange('comment')(e);
                   }}
-                  inputContainerStyle={{ width: width * 0.8 }}
+                  inputContainerStyle={{ width: STYLE.WIDTH.DIVIDER_NEARLY_FULL }}
                   numberOfLines={1}
                   onSubmitEditing={() => usernameRef?.current?.focus()}
                 />
