@@ -5,8 +5,7 @@ import { In } from 'typeorm/browser';
 import { ENTITIES } from '../../common/constants';
 import { DatabaseService } from '../../common/services';
 import { SyncLog } from '../../common/services/Database/entities';
-
-export type Syncable = Sensor | TemperatureLog | TemperatureBreach;
+import { Syncable } from '~features/Sync/types';
 
 const SYNC_QUEUE_PEEK_NEXT = `
     SELECT * FROM synclog

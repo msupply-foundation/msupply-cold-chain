@@ -5,6 +5,7 @@ import { Sensor, TemperatureBreach } from '~common/services/Database/entities';
 
 import {
   SensorSyncOut,
+  Syncable,
   SyncOut,
   SyncResponse,
   TemperatureBreachSyncOut,
@@ -100,6 +101,9 @@ class SyncOutManager {
     });
   };
 
+  put = async (url: string, data: string): Promise<AxiosResponse<SyncResponse>> =>
+    this.axios.put<SyncResponse>(url, data, { withCredentials: true });
+
   public login = async (
     loginUrl: string,
     username: string,
@@ -113,9 +117,7 @@ class SyncOutManager {
     sensorUrl: string,
     logs: Sensor[]
   ): Promise<AxiosResponse<SyncResponse>> =>
-    this.axios.put(sensorUrl, this.getSyncBody(this.mapSensors(logs)), {
-      withCredentials: true,
-    });
+    this.put(sensorUrl, this.getSyncBody(this.mapSensors(logs)));
 
   public syncTemperatureLogs = async (
     temperatureLogUrl: string,
@@ -127,13 +129,7 @@ class SyncOutManager {
 
     const results: AxiosResponse<SyncResponse>[] = await Promise.all(
       chunked.map(chunk =>
-        this.axios.put<SyncResponse>(
-          temperatureLogUrl,
-          this.getSyncBody(this.mapTemperatureLogs(chunk)),
-          {
-            withCredentials: true,
-          }
-        )
+        this.put(temperatureLogUrl, this.getSyncBody(this.mapTemperatureLogs(chunk)))
       )
     );
 
@@ -144,9 +140,7 @@ class SyncOutManager {
     temperatureBreachUrl: string,
     logs: TemperatureBreach[]
   ): Promise<AxiosResponse<SyncResponse>> =>
-    this.axios.put(temperatureBreachUrl, this.getSyncBody(this.mapBreaches(logs)), {
-      withCredentials: true,
-    });
+    this.put(temperatureBreachUrl, this.getSyncBody(this.mapBreaches(logs)));
 }
 
 export { SyncOutManager };

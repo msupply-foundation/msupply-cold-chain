@@ -12,6 +12,8 @@ export type SyncOut = TemperatureLogSyncOut | SensorSyncOut | TemperatureBreachS
 
 export type SyncableDataTypes = 'TemperatureLog' | 'TemperatureBreach' | 'Sensor';
 
+export type Syncable = Sensor | TemperatureLog | TemperatureBreach;
+
 export type TemperatureLogSyncOut = Pick<
   TemperatureLog,
   'id' | 'logInterval' | 'sensorId' | 'temperatureBreachId' | 'timestamp' | 'temperature'
