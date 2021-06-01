@@ -5,8 +5,7 @@ import { In } from 'typeorm/browser';
 import { ENTITIES } from '../../common/constants';
 import { DatabaseService } from '../../common/services';
 import { SyncLog } from '../../common/services/Database/entities';
-
-export type Syncable = Sensor | TemperatureLog | TemperatureBreach;
+import { Syncable } from '~features/Sync/types';
 
 const SYNC_QUEUE_PEEK_NEXT = `
     SELECT * FROM synclog
@@ -49,14 +48,14 @@ class SyncQueueManager {
 
   nextTemperatureLogs = async (count = 999): Promise<TemperatureLog[]> => {
     const syncOuts = await this.nextSyncLogs(ENTITIES.TEMPERATURE_LOG, count);
-    return await this.databaseService.queryWith(ENTITIES.TEMPERATURE_LOG, {
+    return this.databaseService.queryWith(ENTITIES.TEMPERATURE_LOG, {
       where: { id: In(syncOuts.map(({ id }) => id)) },
     });
   };
 
   nextTemperatureBreaches = async (count = 999): Promise<TemperatureBreach[]> => {
     const syncOuts = await this.nextSyncLogs(ENTITIES.TEMPERATURE_BREACH, count);
-    return await this.databaseService.queryWith(ENTITIES.TEMPERATURE_BREACH, {
+    return this.databaseService.queryWith(ENTITIES.TEMPERATURE_BREACH, {
       where: { id: In(syncOuts.map(({ id }) => id)) },
     });
   };
