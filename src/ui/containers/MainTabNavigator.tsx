@@ -56,7 +56,7 @@ const tabBarOptions: BottomTabBarOptions = {
 };
 
 export const MainTabNavigator: FC = ({ children }) => (
-  <Tab.Navigator screenOptions={screenOptions} tabBarOptions={tabBarOptions}>
+  <Tab.Navigator screenOptions={screenOptions} tabBarOptions={tabBarOptions} backBehavior="history">
     {children}
   </Tab.Navigator>
 );
