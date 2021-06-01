@@ -1,12 +1,16 @@
 import React, { FC, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Animated, TouchableOpacity } from 'react-native';
-import { MILLISECONDS, COLOUR } from '../../common/constants';
+import { Animated, TouchableOpacity, ViewStyle } from 'react-native';
+import { MILLISECONDS, COLOUR, STYLE } from '../../common/constants';
 import { SensorStatusSelector, AcknowledgeBreachAction } from '../../features';
 import { Row, Centered, LargeRectangle } from '../layouts';
 import { Header, LargeText } from '../presentation/typography';
-import { Icon } from '../presentation/icons';
+import { Icon, ICON_SIZE } from '../presentation/icons';
 import { RootState } from '../../common/store/store';
+
+const styles: { icon: ViewStyle } = {
+  icon: { position: 'absolute', left: 20, top: 0 },
+};
 
 const getAnimations = (animationValues: Animated.Value[]) => {
   return Animated.loop(
@@ -76,25 +80,25 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
   ) : (
     <TouchableOpacity onLongPress={startAcknowledging}>
       <LargeRectangle color={hasColdBreach ? COLOUR.PRIMARY : COLOUR.DANGER}>
-        <Row style={{ display: 'flex', alignContent: 'flex-end' }}>
+        <Row>
           <Row justifyContent="flex-end" flex={3}>
             <LargeText color={COLOUR.WHITE}>{temperature}</LargeText>
           </Row>
-          <Row style={{ display: 'flex', flex: 2 }} justifyContent="center" alignItems="center">
+          <Row style={{ flex: 2 }}>
             {!!hasHotBreach && (
-              <Animated.View style={{ opacity: fadeAnim1 }}>
+              <Animated.View style={{ ...styles.icon, opacity: fadeAnim1 }}>
                 <Icon.HotBreach />
               </Animated.View>
             )}
 
             {!!hasColdBreach && (
-              <Animated.View style={{ opacity: fadeAnim2 }}>
+              <Animated.View style={{ ...styles.icon, left: 10, opacity: fadeAnim2 }}>
                 <Icon.ColdBreach />
               </Animated.View>
             )}
 
             {!!isLowBattery && (
-              <Animated.View style={{ opacity: fadeAnim3 }}>
+              <Animated.View style={{ ...styles.icon, top: (STYLE.HEIGHT.LARGE_RECTANGLE - ICON_SIZE.MS) / 2, opacity: fadeAnim3 }}>
                 <Icon.LowBattery />
               </Animated.View>
             )}
