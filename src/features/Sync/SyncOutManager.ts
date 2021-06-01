@@ -1,4 +1,5 @@
 import Axios, { AxiosResponse } from 'axios';
+import _ from 'lodash';
 import { TemperatureLog } from '~services/Database/entities';
 import { Sensor, TemperatureBreach } from '~common/services/Database/entities';
 
@@ -119,10 +120,25 @@ class SyncOutManager {
   public syncTemperatureLogs = async (
     temperatureLogUrl: string,
     logs: TemperatureLog[]
-  ): Promise<AxiosResponse<SyncResponse>> =>
-    this.axios.put(temperatureLogUrl, this.getSyncBody(this.mapTemperatureLogs(logs)), {
-      withCredentials: true,
-    });
+  ): Promise<AxiosResponse<SyncResponse>[]> => {
+    const numberOfChunks = Math.ceil(logs.length / 100);
+    const chunkSize = logs.length / numberOfChunks;
+    const chunked = _.chunk(logs, chunkSize);
+
+    const results: AxiosResponse<SyncResponse>[] = await Promise.all(
+      chunked.map(chunk =>
+        this.axios.put<SyncResponse>(
+          temperatureLogUrl,
+          this.getSyncBody(this.mapTemperatureLogs(chunk)),
+          {
+            withCredentials: true,
+          }
+        )
+      )
+    );
+
+    return results;
+  };
 
   public syncTemperatureBreaches = async (
     temperatureBreachUrl: string,
