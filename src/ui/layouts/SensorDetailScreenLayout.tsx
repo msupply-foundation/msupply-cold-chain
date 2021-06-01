@@ -1,7 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import { View } from 'react-native';
 import { LoadAfterInteractions } from '../components';
-import { Centered } from './Centered';
 import { Gradient } from './Gradient';
 import { Row } from './Row';
 
