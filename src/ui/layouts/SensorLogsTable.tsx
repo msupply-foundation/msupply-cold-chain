@@ -9,6 +9,7 @@ import { Row } from './Row';
 import { Centered } from './Centered';
 import { LogTableAction, LogTableSelector } from '../../features';
 import { Icon, ICON_SIZE } from '../presentation/icons';
+import { debounce } from 'lodash';
 
 const COLUMNS: Column[] = [
   { header: 'Timestamp', flex: 1, key: 'timestamp', textAlign: 'left', sortable: true },
@@ -136,12 +137,13 @@ const Header = ({ columns }: HeaderProps) => {
     >
       {columns.map(column => {
         const { key, sortable, header, flex, textAlign } = column;
+        const sortData = debounce(() => dispatch(LogTableAction.trySortData(key)), 500);
 
         return (
           <MaybeTouchableContainer
             isDisabled={!sortable}
             style={{ flex }}
-            onPress={() => dispatch(LogTableAction.trySortData(key))}
+            onPress={sortData}
           >
             <Row
               flex={flex}
