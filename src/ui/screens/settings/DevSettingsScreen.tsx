@@ -35,13 +35,6 @@ export const DevSettingsScreen: FC = () => {
           );
         })}
       </SettingsGroup>
-      <SettingsGroup title="Sync records">
-        <SettingsButtonRow
-          label="Sync all records"
-          subtext="Syncs all records currently stored in sync queue"
-          onPress={() => dispatch(SyncAction.enablePassiveSync())}
-        />
-      </SettingsGroup>
     </SettingsList>
   );
 };
