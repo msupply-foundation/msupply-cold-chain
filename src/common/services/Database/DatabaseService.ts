@@ -123,7 +123,11 @@ export class DatabaseService {
     await this.rawQuery('PRAGMA synchronous=OFF');
     await this.rawQuery('PRAGMA temp_store=memory');
     await this.rawQuery('PRAGMA mmap_size=30000000000');
-    await this.rawQuery('PRAGMA locking_mode=exclusive');
+
+    if (__DEV__) {
+      await this.rawQuery('PRAGMA locking_mode=exclusive');
+    }
+
     await this.rawQuery('PRAGMA vacuum');
     await this.rawQuery('PRAGMA optimize');
 
