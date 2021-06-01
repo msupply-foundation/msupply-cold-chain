@@ -49,14 +49,14 @@ class SyncQueueManager {
 
   nextTemperatureLogs = async (count = 999): Promise<TemperatureLog[]> => {
     const syncOuts = await this.nextSyncLogs(ENTITIES.TEMPERATURE_LOG, count);
-    return await this.databaseService.queryWith(ENTITIES.TEMPERATURE_LOG, {
+    return this.databaseService.queryWith(ENTITIES.TEMPERATURE_LOG, {
       where: { id: In(syncOuts.map(({ id }) => id)) },
     });
   };
 
   nextTemperatureBreaches = async (count = 999): Promise<TemperatureBreach[]> => {
     const syncOuts = await this.nextSyncLogs(ENTITIES.TEMPERATURE_BREACH, count);
-    return await this.databaseService.queryWith(ENTITIES.TEMPERATURE_BREACH, {
+    return this.databaseService.queryWith(ENTITIES.TEMPERATURE_BREACH, {
       where: { id: In(syncOuts.map(({ id }) => id)) },
     });
   };

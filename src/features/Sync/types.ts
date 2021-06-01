@@ -67,8 +67,8 @@ export interface SyncTemperatureLogsActionPayload {
   temperatureLogUrl: string;
 }
 
-export interface SyncTemperatureLogsSuccessActionPayload {
-  syncLogs: TemperatureLog[];
+export interface SyncSuccessPayload {
+  numberSent: number;
 }
 
 export interface SyncTemperatureBreachesActionPayload {
