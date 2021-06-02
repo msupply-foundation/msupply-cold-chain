@@ -36,6 +36,7 @@ import {
   SyncOutManager,
   DevManager,
 } from '~features';
+import { BleManager } from '~common/services/Bluetooth';
 
 export const DependencyContainer: FC = ({ children }) => {
   const [ready, setReady] = useState(false);
@@ -45,8 +46,8 @@ export const DependencyContainer: FC = ({ children }) => {
     const db = new Database();
     const dbService = new DatabaseService(db);
     const permissionService = new PermissionService();
-    const btService = new BleService(utilService);
-    const devBtService = new BleService(utilService, new DevBleManager());
+    const btService = new BleService(new BleManager(), utilService);
+    const devBtService = new BleService(new DevBleManager(), utilService);
     const formatService = new FormatService();
     const exportService = new ExportService();
     const devLogger = new DevLoggerService();

@@ -13,7 +13,7 @@ export class UtilService {
 
   // Transforms a version string in the same format we use in package.json - 0.0.3, 0.0.3-rc1 etc
   // into an integer code which can more easily be used to do range comparisons.
-  getVersionCode = (versionString: string) => {
+  getVersionCode = (versionString: string): number => {
     // logic is the same as ./android/app/build.gradle.
 
     if (!versionString.match(/^[0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}(-rc[0-9]{1,2})?$/)) {

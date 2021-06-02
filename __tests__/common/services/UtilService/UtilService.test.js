@@ -20,3 +20,16 @@ describe('getVersionCode', () => {
     expect(utils.getVersionCode('0.0.4-rc98')).toEqual(498);
   });
 });
+
+describe('UtilService:normaliseNumber', () => {
+  it('normalises a battery level correctly', () => {
+    const utils = new UtilService();
+
+    expect(utils.normaliseNumber(75, [75, 100])).toBe(0);
+    expect(utils.normaliseNumber(80, [75, 100])).toBe(20);
+    expect(utils.normaliseNumber(85, [75, 100])).toBe(40);
+    expect(utils.normaliseNumber(90, [75, 100])).toBe(60);
+    expect(utils.normaliseNumber(95, [75, 100])).toBe(80);
+    expect(utils.normaliseNumber(100, [75, 100])).toBe(100);
+  });
+});

@@ -14,13 +14,13 @@ import {
   ScanCallback,
   SensorLog,
 } from './types';
-import { BluetoothManager, BleManager } from './BleManager';
+import { BluetoothManager } from './BleManager';
 
 export class BleService {
   manager: BluetoothManager;
   utils: UtilService;
 
-  constructor(utils: UtilService, manager = new BleManager()) {
+  constructor(manager: BluetoothManager, utils: UtilService) {
     this.manager = manager;
     this.utils = utils;
   }
