@@ -2,13 +2,14 @@ import React, { FC, useEffect } from 'react';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useDispatch } from 'react-redux';
 
-import { SettingsList } from '../../layouts';
-import { COLOUR, SETTINGS_STACK } from '../../../common/constants';
-import { t } from '../../../common/translations';
-import { Icon } from '../../presentation/icons';
-import { SettingsGroup, SettingsItem } from '../../components/settings';
-import { SettingAction } from '../../../features/Entities';
+import { SettingsList } from '~layouts';
+import { COLOUR, SETTINGS_STACK } from '~constants';
+import { t } from '~translations';
+import { Icon } from '~presentation/icons';
+import { SettingsGroup, SettingsItem } from '~components/settings';
+import { SettingAction } from '~features/Entities';
 import { SettingsStackParameters } from '../../containers/SettingsStackNavigator';
+import { useUtils } from '~hooks';
 
 const ChevronIcon = <Icon.Chevron direction="right" color={COLOUR.GREY_ONE} />;
 
@@ -17,6 +18,7 @@ interface MainSettingsScreenProps {
 }
 
 export const MainSettingsScreen: FC<MainSettingsScreenProps> = ({ navigation }) => {
+  const utils = useUtils();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -40,8 +42,8 @@ export const MainSettingsScreen: FC<MainSettingsScreenProps> = ({ navigation }) 
         />
 
         <SettingsItem
-          label="Sync settings"
-          subtext="Sync configuration"
+          label={t('SYNC_SETTINGS')}
+          subtext={t('SYNC_CONFIGURATION')}
           onPress={() => navigation.navigate(SETTINGS_STACK.SYNC)}
           RightComponent={ChevronIcon}
         />
@@ -54,6 +56,10 @@ export const MainSettingsScreen: FC<MainSettingsScreenProps> = ({ navigation }) 
             RightComponent={ChevronIcon}
           />
         )}
+      </SettingsGroup>
+
+      <SettingsGroup title={t('ABOUT_THIS_APP')}>
+        <SettingsItem label={t('APP_VERSION')} subtext={utils.appVersion()} />
       </SettingsGroup>
     </SettingsList>
   );

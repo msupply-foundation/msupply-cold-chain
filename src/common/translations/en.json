@@ -120,5 +120,10 @@
   "ENTER_YOUR_USERNAME": "Enter your username",
   "ENTER_A_COMMENT": "Enter a comment",
   "COMMENT": "Comment",
-  "MAX_RECORDS": "A maximum of 50,000 temperature recordings will be used in the report"
+  "MAX_RECORDS": "A maximum of 50,000 temperature recordings will be used in the report",
+  "ABOUT_THIS_APP": "About this app",
+  "APP_VERSION": "App version",
+  "SYNC_SETTINGS": "Sync settings",
+  "SYNC_CONFIGURATION": "Sync configuration",
+
 }

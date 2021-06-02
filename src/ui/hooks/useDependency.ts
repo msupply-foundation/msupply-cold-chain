@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { Dependency, DependencyKey } from '~services/DependencyLocator/DependencyLocator';
-import { DependencyLocatorContext, FormatService, MigrationService } from '~services';
+import { DependencyLocatorContext, FormatService, MigrationService, UtilService } from '~services';
 import { DEPENDENCY } from '~constants';
 
 export const useDependency = (service: DependencyKey): Dependency | undefined => {
@@ -11,11 +11,16 @@ export const useDependency = (service: DependencyKey): Dependency | undefined =>
 };
 
 export const useMigrationService = (): MigrationService => {
-  const migrationService = useDependency(DEPENDENCY.MIGRATION);
+  const migrationService = useDependency('migrationService');
   return migrationService as MigrationService;
 };
 
 export const useFormatter = (): FormatService => {
-  const formatter = useDependency(DEPENDENCY.FORMAT_SERVICE);
+  const formatter = useDependency('formatService');
   return formatter as FormatService;
+};
+
+export const useUtils = (): UtilService => {
+  const utils = useDependency('utilService');
+  return utils as UtilService;
 };
