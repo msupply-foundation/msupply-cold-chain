@@ -1,6 +1,7 @@
+import { MILLISECONDS } from '~constants';
 import moment from 'moment';
 import generateUUID from 'react-native-uuid';
-import packageJson from '../../../../package.json';
+import packageJson from '~/../../package.json';
 
 export class UtilService {
   uuid = (): string => generateUUID.v1() as string;
@@ -23,5 +24,9 @@ export class UtilService {
     const [major, minor, patch] = majorMinorPatch.split('.').map((part: string) => Number(part));
 
     return major * 10000000 + minor * 100000 + patch * 100 + realProvisional;
+  };
+
+  millisecondsToMinutes = (milliseconds: number): number => {
+    return milliseconds / MILLISECONDS.ONE_MINUTE;
   };
 }

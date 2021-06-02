@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 import { Dependency, DependencyKey } from '~services/DependencyLocator/DependencyLocator';
 import { DependencyLocatorContext, FormatService, MigrationService, UtilService } from '~services';
-import { DEPENDENCY } from '~constants';
 
 export const useDependency = (service: DependencyKey): Dependency | undefined => {
   const depsLocator = useContext(DependencyLocatorContext);
