@@ -41,13 +41,13 @@ export const DependencyContainer: FC = ({ children }) => {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    const utilService = new UtilService();
     const db = new Database();
     const dbService = new DatabaseService(db);
     const permissionService = new PermissionService();
-    const btService = new BleService();
-    const devBtService = new BleService(new DevBleManager());
+    const btService = new BleService(utilService);
+    const devBtService = new BleService(utilService, new DevBleManager());
     const formatService = new FormatService();
-    const utilService = new UtilService();
     const exportService = new ExportService();
     const devLogger = new DevLoggerService();
     const bugsnagLogger = new BugsnagLoggerService();
