@@ -1,6 +1,7 @@
+import { MILLISECONDS } from '~constants';
 import moment from 'moment';
 import generateUUID from 'react-native-uuid';
-import packageJson from '../../../../package.json';
+import packageJson from '~/../../package.json';
 
 type NumberRange = [number, number];
 
@@ -45,4 +46,8 @@ export class UtilService {
   stringFromBase64 = (base64: string): string => this.bufferFromBase64(base64).toString('utf-8');
 
   base64FromString = (string: string): string => Buffer.from(string, 'utf-8').toString('base64');
+
+  millisecondsToMinutes = (milliseconds: number): number => {
+    return milliseconds / MILLISECONDS.ONE_MINUTE;
+  };
 }
