@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { BleService } from '~common/services';
+import { BleService, UtilService } from '~common/services';
 import { BLUETOOTH, BLUE_MAESTRO } from '~constants';
 
 const createMockDevice = () => {
@@ -63,10 +63,12 @@ const createMockBleManager = ({
   };
 };
 
+const utils = new UtilService();
+
 describe('BleService: connectToDevice', () => {
   it('Calls to connect to a device with the mac address passed', async () => {
     const { manager, mockConnectToDevice } = createMockBleManager();
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
 
     const macAddress = 'Josh';
 
@@ -80,7 +82,7 @@ describe('BleService: connectToDevice', () => {
 describe('BleService: writeCharacteristic', () => {
   it('Calls to connect to a device with the mac address passed', async () => {
     const { manager, mockConnectToDevice } = createMockBleManager();
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
 
     const macAddress = 'Josh';
 
@@ -99,7 +101,7 @@ describe('BleService: connectAndDiscoverServices', () => {
       mockDiscoverAllServicesAndCharacteristicsForDevice,
       mockCancelDeviceConnection,
     } = createMockBleManager();
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
 
     const macAddress = 'Josh';
 
@@ -117,7 +119,7 @@ describe('BleService: connectAndDiscoverServices', () => {
     const { manager, mockCancelDeviceConnection } = createMockBleManager({
       isDeviceConnected: true,
     });
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
 
     const macAddress = 'Josh';
 
@@ -132,7 +134,7 @@ describe('BleService: stopScan', () => {
   it('Correctly stops the scan through the provided manager', () => {
     const { manager, mockStopDeviceScan } = createMockBleManager();
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
 
     btService.stopScan();
 
@@ -145,7 +147,7 @@ describe('BleService: scanForSensors', () => {
   it('Correctly starts a scan for sensors through the passed manager', () => {
     const { manager, mockStartDeviceScan } = createMockBleManager();
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
 
     const callback = () => {};
     btService.scanForSensors(callback);
@@ -155,7 +157,7 @@ describe('BleService: scanForSensors', () => {
 
   it('Correctly calls the callback passed', () => {
     const { manager } = createMockBleManager();
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
 
     const callback = jest.fn();
     btService.scanForSensors(callback);
@@ -167,7 +169,7 @@ describe('BleService: scanForSensors', () => {
   });
   it('Correctly filters any device scanned', () => {
     const { manager } = createMockBleManager();
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
 
     let foundDevice = null;
     const bufferFromBase64 = base64 => Buffer.from(base64, 'base64');
@@ -191,7 +193,7 @@ describe('BleService: writeCharacteristics', () => {
   it('Writes a characteristic to the passed mac', async () => {
     const { manager, mockWriteCharacteristicWithoutResponseForDevice } = createMockBleManager();
 
-    const bleService = new BleService(manager);
+    const bleService = new BleService(manager, utils);
 
     await bleService.writeCharacteristic('josh', 'command');
 
@@ -209,7 +211,7 @@ describe('BleService: monitorCharacteristic', () => {
   it('Calls monitor characteristic for device within the promise returned', async () => {
     const { manager, mockMonitorCharacteristicForDevice } = createMockBleManager();
 
-    const bleService = new BleService(manager);
+    const bleService = new BleService(manager, utils);
 
     const callback = (_, resolve) => resolve();
     await bleService.monitorCharacteristic('josh', callback);
@@ -219,7 +221,7 @@ describe('BleService: monitorCharacteristic', () => {
   it('Resolves with whatever value the callback passed resolves with', async () => {
     const { manager } = createMockBleManager();
 
-    const bleService = new BleService(manager);
+    const bleService = new BleService(manager, utils);
 
     const callback = (_, resolve) => resolve('value');
 
@@ -230,7 +232,7 @@ describe('BleService: monitorCharacteristic', () => {
 describe('BleService: writeAndMonitor', () => {
   it('Calls the callback passed', async () => {
     const { manager } = createMockBleManager();
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
 
     const callback = jest.fn();
     await btService.writeAndMonitor('josh', 'blink', callback);
@@ -239,7 +241,7 @@ describe('BleService: writeAndMonitor', () => {
   });
   it('Rejects with the error message when parsing fails.', async () => {
     const { manager } = createMockBleManager();
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
 
     const callback = () => {
       throw new Error('Error');
@@ -251,7 +253,7 @@ describe('BleService: writeAndMonitor', () => {
   });
   it('Resolves to the value the passed callback resolves', async () => {
     const { manager } = createMockBleManager();
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
 
     const dataReturned = [];
     const callback = () => dataReturned;
@@ -268,7 +270,7 @@ describe('BleService: writeWithSingleResponse', () => {
         callback(null, { value: 'T2sA' });
       },
     });
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
 
     const resultShouldBe = [];
     const parser = () => resultShouldBe;
@@ -284,7 +286,7 @@ describe('BleService: writeWithSingleResponse', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
 
     const parser = () => {
       throw new Error('Error');
@@ -301,7 +303,7 @@ describe('BleService: writeWithSingleResponse', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
 
     const parser = () => {
       throw new Error('Error');
@@ -322,7 +324,7 @@ describe('BleService: writeWithSingleResponse', () => {
         callback(null, { value: 'T2sA' });
       },
     });
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
 
     const macAddress = 'Josh';
 
@@ -343,7 +345,7 @@ describe('BleService: blink', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     const result = await btService.blink('josh');
     expect(result).toEqual(true);
   });
@@ -357,7 +359,7 @@ describe('BleService: updateLogInterval', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     const result = await btService.updateLogInterval('josh', 60);
     expect(result).toEqual(true);
   });
@@ -371,7 +373,7 @@ describe('BleService: toggleButton', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     const result = await btService.toggleButton('josh');
     expect(result).toEqual(true);
   });
@@ -388,7 +390,7 @@ describe('BleService: downloadLogs', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     const result = await btService.downloadLogs('josh');
     expect(result).toEqual([
       { temperature: 27.9 },
@@ -439,7 +441,7 @@ describe('BleService: getInfo', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     const result = await btService.getInfo('josh');
     expect(result).toEqual({ batteryLevel: 100, isDisabled: true });
   });
@@ -462,7 +464,7 @@ describe('BleService: getInfoWithRetries', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     await btService.getInfoWithRetries('josh', 10);
 
     expect(mockConnectToDevice).toBeCalledTimes(4);
@@ -477,7 +479,7 @@ describe('BleService: getInfoWithRetries', () => {
     });
 
     expect.assertions(1);
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     try {
       await btService.getInfoWithRetries('josh', 10);
     } catch (e) {
@@ -510,7 +512,7 @@ describe('BleService: getInfoWithRetries', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     const result = await btService.getInfoWithRetries('josh', 10);
     expect(result).toEqual({ batteryLevel: 100, isDisabled: true });
   });
@@ -536,7 +538,7 @@ describe('BleService: updateLogIntervalWithRetries', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     await btService.updateLogIntervalWithRetries('josh', 60, 10);
 
     expect(mockConnectToDevice).toBeCalledTimes(4);
@@ -554,7 +556,7 @@ describe('BleService: updateLogIntervalWithRetries', () => {
     });
 
     expect.assertions(1);
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     try {
       await btService.updateLogIntervalWithRetries('josh', 10, 10);
     } catch (e) {
@@ -568,7 +570,7 @@ describe('BleService: updateLogIntervalWithRetries', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     const result = await btService.updateLogIntervalWithRetries('josh', 60, 10);
 
     expect(result).toEqual(true);
@@ -595,7 +597,7 @@ describe('BleService: blinkWithRetries', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     await btService.blinkWithRetries('josh', 10);
 
     expect(mockConnectToDevice).toBeCalledTimes(4);
@@ -613,7 +615,7 @@ describe('BleService: blinkWithRetries', () => {
     });
 
     expect.assertions(1);
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     try {
       await btService.blinkWithRetries('josh', 10);
     } catch (e) {
@@ -627,7 +629,7 @@ describe('BleService: blinkWithRetries', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     const result = await btService.blinkWithRetries('josh', 10);
     expect(result).toEqual(true);
   });
@@ -653,7 +655,7 @@ describe('BleService: toggleButtonWithRetries', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     await btService.toggleButtonWithRetries('josh', 10);
 
     expect(mockConnectToDevice).toBeCalledTimes(4);
@@ -671,7 +673,7 @@ describe('BleService: toggleButtonWithRetries', () => {
     });
 
     expect.assertions(1);
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     try {
       await btService.toggleButtonWithRetries('josh', 10);
     } catch (e) {
@@ -685,7 +687,7 @@ describe('BleService: toggleButtonWithRetries', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     const result = await btService.toggleButtonWithRetries('josh', 10);
     expect(result).toEqual(true);
   });
@@ -711,7 +713,7 @@ describe('BleService: downloadLogsWithRetries', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     await btService.toggleButtonWithRetries('josh', 10);
 
     expect(mockConnectToDevice).toBeCalledTimes(4);
@@ -729,7 +731,7 @@ describe('BleService: downloadLogsWithRetries', () => {
     });
 
     expect.assertions(1);
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     try {
       await btService.downloadLogsWithRetries('josh', 10);
     } catch (e) {
@@ -746,7 +748,7 @@ describe('BleService: downloadLogsWithRetries', () => {
       },
     });
 
-    const btService = new BleService(manager);
+    const btService = new BleService(manager, utils);
     const result = await btService.downloadLogsWithRetries('josh', 10);
     expect(result).toEqual([
       { temperature: 27.9 },
