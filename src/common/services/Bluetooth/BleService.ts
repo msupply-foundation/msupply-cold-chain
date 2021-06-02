@@ -15,6 +15,21 @@ export interface BluetoothDevice {
   id: string;
 }
 
+const normaliseBatteryLevel = (batteryLevel: number): number => {
+  const oldMax = 100;
+  const oldMin = 75;
+
+  const newMax = 100;
+  const newMin = 0;
+
+  const oldRange = oldMax - oldMin;
+  const newRange = newMax - newMin;
+
+  const newVal = ((batteryLevel - oldMin) * newRange) / oldRange + newMin;
+
+  return newVal;
+};
+
 const bufferFromBase64 = (base64: string): Buffer => Buffer.from(base64, 'base64');
 const stringFromBase64 = (base64: string): string => bufferFromBase64(base64).toString('utf-8');
 const base64FromString = (string: string): string =>
@@ -262,7 +277,7 @@ export class BleService {
 
         const batteryLevel = Number(batteryLevelStringOrNull[0].match(/[0-9]{1,3}/));
 
-        return Number.isNaN(batteryLevel) ? null : batteryLevel;
+        return Number.isNaN(batteryLevel) ? null : normaliseBatteryLevel(batteryLevel);
       };
 
       const parsedIsDisabled = (info: string): boolean => !!info.match(/Btn on\/off: 1/);
