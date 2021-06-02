@@ -1,9 +1,18 @@
+import { UtilService } from '~services/UtilService';
 import moment from 'moment';
+
 import { UnixTime } from '~common/types/common';
-import { SPECIAL_CHARACTER, MILLISECONDS, FORMAT } from '../../constants';
-import { t } from '../../translations';
+import { BreachConfigurationState } from '~features/Entities/BreachConfiguration/BreachConfigurationSlice';
+import { SPECIAL_CHARACTER, MILLISECONDS, FORMAT } from '~constants';
+import { t } from '~translations';
 
 export class FormatService {
+  utils: UtilService;
+
+  constructor(utilService: UtilService) {
+    this.utils = utilService;
+  }
+
   getTickFormatter = (): ((tick: number) => string) => {
     let currentDay: null | number = null;
     return (tick: number) => {
@@ -73,5 +82,22 @@ export class FormatService {
 
   lastDownloadTime = (timestamp: number, now = moment().unix()): string => {
     return `${moment.duration(now - timestamp, 'seconds').humanize()} ${t('AGO')}`;
+  };
+
+  toCelsius = (toFormat: string | number): string => {
+    const asString = String(toFormat);
+    return `${asString}${SPECIAL_CHARACTER.DEGREE_CELSIUS}`;
+  };
+
+  breachConfigRow = (config: BreachConfigurationState): string => {
+    const { id, duration, maximumTemperature, minimumTemperature } = config;
+
+    const isHot = id.includes('HOT');
+    const direction = isHot ? t('AND_ABOVE') : t('AND_BELOW');
+    const temperature = isHot ? minimumTemperature : maximumTemperature;
+
+    return `${t('DURATION')}: ${this.utils.millisecondsToMinutes(duration)} ${t('MINUTES')}, ${t(
+      'TEMPERATURE'
+    )}: ${this.toCelsius(temperature)} ${direction}`;
   };
 }
