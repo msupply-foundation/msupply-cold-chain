@@ -7,6 +7,7 @@ import { RootState } from '../../../common/store/store';
 import { REDUCER } from '../../../common/constants';
 import { ProgramAction } from '~features/Bluetooth/Program/ProgramSlice';
 import { getDependency } from '~features/utils/saga';
+import { ById } from '~common/types/common';
 
 export interface SensorState {
   id: string;
@@ -18,7 +19,6 @@ export interface SensorState {
   programmedDate: number;
 }
 
-export type ById<InterfaceSortedById> = Record<string, InterfaceSortedById>;
 export interface SensorSliceState {
   byId: ById<SensorState>;
   ids: string[];
