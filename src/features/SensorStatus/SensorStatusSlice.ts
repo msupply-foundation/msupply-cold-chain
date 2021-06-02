@@ -8,16 +8,10 @@ import { SensorAction } from '../Entities';
 import { FormatService } from '../../common/services';
 
 export interface SensorStatus {
-  name: string;
-  macAddress: string;
-  logInterval: number;
-  batteryLevel: number;
-  logDelay: number;
   mostRecentLogTimestamp: number;
   firstTimestamp: number;
   numberOfLogs: number;
   currentTemperature: number;
-  minChartTimestamp: number;
   isInHotBreach: boolean;
   isInColdBreach: boolean;
   hasHotBreach: boolean;
