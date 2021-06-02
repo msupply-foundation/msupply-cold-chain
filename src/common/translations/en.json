@@ -61,8 +61,8 @@
   "EDIT_TEMPERATURE_CONFIGURATION_DETAILS": "Edit temperature breach configuration details",
   "EDIT_CUMULATIVE_TEMPERATURE_CONFIGURATION_DETAILS": "Edit cumulative temperature breach configuration details",
   "EDIT_TEMPERATURE_BREACH_DURATION": "Edit temperature breach duration",
-  "AND_ABOVE": "And above",
-  "AND_BELOW": "And below",
+  "AND_ABOVE": "and above",
+  "AND_BELOW": "and below",
   "CELSIUS": "Celsius",
   "UPDATING": "Updating..",
   "UPDATED": "Updated!",
@@ -125,5 +125,9 @@
   "APP_VERSION": "App version",
   "SYNC_SETTINGS": "Sync settings",
   "SYNC_CONFIGURATION": "Sync configuration",
+  
+
+
+
 
 }

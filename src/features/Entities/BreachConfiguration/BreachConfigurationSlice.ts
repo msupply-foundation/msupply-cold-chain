@@ -1,15 +1,18 @@
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice } from '@reduxjs/toolkit';
-import { takeEvery, getContext, call, put } from 'redux-saga/effects';
+import { takeEvery, call, put } from 'redux-saga/effects';
+import { TemperatureBreachConfiguration } from '~common/services/Database';
 
-import { DEPENDENCY, REDUCER } from '../../../common/constants';
-import { RootState } from '../../../common/store/store';
+import { REDUCER } from '~constants';
+import { BreachConfigurationManager } from '~features/Entities/BreachConfiguration/BreachConfigurationManager';
+import { getDependency } from '~features/utils/saga';
+import { RootState } from '~store';
 
 interface ById<T> {
   [id: string]: T;
 }
 
-interface BreachConfigurationState {
+export interface BreachConfigurationState {
   id: string;
   minimumTemperature: number;
   maximumTemperature: number;
@@ -109,8 +112,10 @@ const BreachConfigurationSelector = {
 };
 
 function* update({ payload: { id, key, value } }: BreachConfigurationUpdateAction): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const configManager = yield call(DependencyLocator.get, DEPENDENCY.BREACH_CONFIGURATION_MANAGER);
+  const configManager: BreachConfigurationManager = yield call(
+    getDependency,
+    'breachConfigurationManager'
+  );
   try {
     yield call(configManager.updateField, id, key, value);
     yield put(BreachConfigurationAction.updateSuccess(id, key, value));
@@ -120,10 +125,12 @@ function* update({ payload: { id, key, value } }: BreachConfigurationUpdateActio
 }
 
 function* fetchAll(): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const configManager = yield call(DependencyLocator.get, DEPENDENCY.BREACH_CONFIGURATION_MANAGER);
+  const configManager: BreachConfigurationManager = yield call(
+    getDependency,
+    'breachConfigurationManager'
+  );
   try {
-    const result = yield call(configManager.getAll);
+    const result: TemperatureBreachConfiguration[] = yield call(configManager.getAll);
     yield put(BreachConfigurationAction.fetchAllSuccess(result));
   } catch (error) {
     yield put(BreachConfigurationAction.fetchAllFail());

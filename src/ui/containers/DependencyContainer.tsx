@@ -46,8 +46,8 @@ export const DependencyContainer: FC = ({ children }) => {
     const permissionService = new PermissionService();
     const btService = new BleService();
     const devBtService = new BleService(new DevBleManager());
-    const formatService = new FormatService();
     const utilService = new UtilService();
+    const formatService = new FormatService(utilService);
     const exportService = new ExportService();
     const devLogger = new DevLoggerService();
     const bugsnagLogger = new BugsnagLoggerService();

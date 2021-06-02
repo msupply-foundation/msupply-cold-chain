@@ -1,4 +1,4 @@
-export { store } from './store';
+export { store, RootState } from './store';
 export { SagaMiddleware, RootSaga } from './RootSaga';
 export { RootReducer } from './RootReducer';
 export { middleware } from './middleware';
