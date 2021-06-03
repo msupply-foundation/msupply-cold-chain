@@ -19,7 +19,6 @@ Object {
   "LOCATOR": "DependencyLocator",
   "LOGGER_SERVICE": "loggerService",
   "LOG_TABLE_MANAGER": "logTableManager",
-  "MIGRATION": "migrationService",
   "PERMISSION_SERVICE": "permissionService",
   "REPORT_MANAGER": "reportManager",
   "SENSOR_MANAGER": "sensorManager",
