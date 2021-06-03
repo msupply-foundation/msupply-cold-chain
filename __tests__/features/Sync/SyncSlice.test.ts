@@ -96,7 +96,9 @@ describe('SyncSlice:Saga:syncSensors', () => {
   it('Puts the correct action on success', () => {
     const depsLocator = DependencyLocator;
     depsLocator.register('syncQueueManager', {
-      nextSensors: () => [],
+      nextSensors: () => [{}],
+      lengthSensors: () => 1,
+      dropLogs: () => {},
     });
     depsLocator.register('syncOutManager', {
       syncSensors: () => true,
@@ -104,7 +106,7 @@ describe('SyncSlice:Saga:syncSensors', () => {
 
     return expectSaga(SyncSlice.SyncSaga.syncSensors, SyncSlice.SyncAction.syncSensors('sensorUrl'))
       .provide([[getContext('dependencyLocator'), depsLocator]])
-      .put(SyncSlice.SyncAction.syncSensorsSuccess([]))
+      .put(SyncSlice.SyncAction.syncSensorsSuccess(1))
       .run();
   });
 
@@ -114,6 +116,8 @@ describe('SyncSlice:Saga:syncSensors', () => {
       nextSensors: () => {
         throw new Error('JOSH');
       },
+      lengthSensors: () => 1,
+      dropLogs: () => {},
     });
     depsLocator.register('syncOutManager', {
       syncSensors: () => true,
@@ -129,6 +133,8 @@ describe('SyncSlice:Saga:syncSensors', () => {
     const depsLocator = DependencyLocator;
     depsLocator.register('syncQueueManager', {
       nextSensors: () => [],
+      lengthSensors: () => 1,
+      dropLogs: () => {},
     });
     depsLocator.register('syncOutManager', {
       syncSensors: () => {
@@ -152,6 +158,7 @@ describe('SyncSlice:Saga:syncSensors', () => {
     depsLocator.register('syncQueueManager', {
       nextSensors: nextSensorsMock,
       dropLogs: dropLogsMock,
+      lengthSensors: () => 1,
     });
     depsLocator.register('syncOutManager', {
       syncSensors: syncSensorsMock,
@@ -175,7 +182,9 @@ describe('SyncSlice:Saga:syncTemperatureLogs', () => {
   it('Puts the correct action on success', () => {
     const depsLocator = DependencyLocator;
     depsLocator.register('syncQueueManager', {
-      nextTemperatureLogs: () => [],
+      nextTemperatureLogs: () => [{}],
+      lengthTemperatureLogs: () => 1,
+      dropLogs: () => {},
     });
     depsLocator.register('syncOutManager', {
       syncTemperatureLogs: () => true,
@@ -186,14 +195,15 @@ describe('SyncSlice:Saga:syncTemperatureLogs', () => {
       SyncSlice.SyncAction.syncTemperatureLogs('temperatureLogUrl')
     )
       .provide([[getContext('dependencyLocator'), depsLocator]])
-      .put(SyncSlice.SyncAction.syncTemperatureLogsSuccess([]))
+      .put(SyncSlice.SyncAction.syncTemperatureLogsSuccess(1))
       .run();
   });
 
   it('Puts the correct action when the sync out manager throws an error.', () => {
     const depsLocator = DependencyLocator;
     depsLocator.register('syncQueueManager', {
-      nextTemperatureLogs: () => [],
+      nextTemperatureLogs: () => [{}],
+      lengthTemperatureLogs: () => 1,
     });
     depsLocator.register('syncOutManager', {
       syncTemperatureLogs: () => {
@@ -220,6 +230,7 @@ describe('SyncSlice:Saga:syncTemperatureLogs', () => {
     depsLocator.register('syncQueueManager', {
       nextTemperatureLogs: nextTemperatureLogsMock,
       dropLogs: dropLogsMock,
+      lengthTemperatureLogs: () => 1,
     });
     depsLocator.register('syncOutManager', {
       syncTemperatureLogs: syncTemperatureLogsMock,
@@ -243,7 +254,9 @@ describe('SyncSlice:Saga:syncTemperatureBreaches', () => {
   it('Puts the correct action on success', () => {
     const depsLocator = DependencyLocator;
     depsLocator.register('syncQueueManager', {
-      nextTemperatureBreaches: () => [],
+      nextTemperatureBreaches: () => [{}],
+      lengthTemperatureBreaches: () => 1,
+      dropLogs: () => {},
     });
     depsLocator.register('syncOutManager', {
       syncTemperatureBreaches: () => true,
@@ -254,7 +267,7 @@ describe('SyncSlice:Saga:syncTemperatureBreaches', () => {
       SyncSlice.SyncAction.syncTemperatureBreaches('temperatureLogUrl')
     )
       .provide([[getContext('dependencyLocator'), depsLocator]])
-      .put(SyncSlice.SyncAction.syncTemperatureBreachesSuccess([]))
+      .put(SyncSlice.SyncAction.syncTemperatureBreachesSuccess(1))
       .run();
   });
 
@@ -262,6 +275,7 @@ describe('SyncSlice:Saga:syncTemperatureBreaches', () => {
     const depsLocator = DependencyLocator;
     depsLocator.register('syncQueueManager', {
       nextTemperatureBreaches: () => [],
+      lengthTemperatureBreaches: () => 1,
     });
     depsLocator.register('syncOutManager', {
       syncTemperatureBreaches: () => {
@@ -288,6 +302,7 @@ describe('SyncSlice:Saga:syncTemperatureBreaches', () => {
     depsLocator.register('syncQueueManager', {
       nextTemperatureLogs: nextTemperatureBreachesMock,
       dropLogs: dropLogsMock,
+      lengthTemperatureLogs: () => 1,
     });
     depsLocator.register('syncOutManager', {
       syncTemperatureLogs: syncTemperatureBreachesMock,
@@ -309,7 +324,7 @@ describe('SyncSlice:Saga:syncTemperatureBreaches', () => {
 
 describe('SyncSlice:Saga:syncAll', () => {
   it('When syncAll action is dispatched, then the sync logs for each data type are fetched, sent and a success action is dispatched for each.', () => {
-    const syncLogs: any[] = [];
+    const syncLogs: any[] = [{}];
     const dropLogsMock = jest.fn();
     const syncTemperatureBreachesMock = jest.fn();
     const nextTemperatureBreachesMock = jest.fn(() => syncLogs);
@@ -324,6 +339,9 @@ describe('SyncSlice:Saga:syncAll', () => {
       nextSensors: nextSensorMock,
       nextTemperatureBreaches: nextTemperatureBreachesMock,
       dropLogs: dropLogsMock,
+      lengthSensors: () => 1,
+      lengthTemperatureBreaches: () => 1,
+      lengthTemperatureLogs: () => 1,
     });
     depsLocator.register('syncOutManager', {
       login: jest.fn(),
@@ -347,9 +365,9 @@ describe('SyncSlice:Saga:syncAll', () => {
       .call(nextSensorMock)
 
       .put(SyncSlice.SyncAction.authenticateSuccess())
-      .put(SyncSlice.SyncAction.syncSensorsSuccess(syncLogs))
-      .put(SyncSlice.SyncAction.syncTemperatureLogsSuccess(syncLogs))
-      .put(SyncSlice.SyncAction.syncTemperatureBreachesSuccess(syncLogs))
+      .put(SyncSlice.SyncAction.syncSensorsSuccess(1))
+      .put(SyncSlice.SyncAction.syncTemperatureLogsSuccess(1))
+      .put(SyncSlice.SyncAction.syncTemperatureBreachesSuccess(1))
 
       .dispatch(
         SyncSlice.SyncAction.syncAll({
@@ -367,7 +385,7 @@ describe('SyncSlice:Saga:syncAll', () => {
 
 describe('SyncSlice:SyncSaga:enablePassiveSync', () => {
   it('When dispatching the action to start the scheduler, the sync scheduler saga is spun up', () => {
-    const syncLogs: any[] = [];
+    const syncLogs: any[] = [{}];
     const dropLogsMock = jest.fn();
     const syncTemperatureBreachesMock = jest.fn();
     const nextTemperatureBreachesMock = jest.fn(() => syncLogs);
@@ -394,6 +412,9 @@ describe('SyncSlice:SyncSaga:enablePassiveSync', () => {
       nextSensors: nextSensorMock,
       nextTemperatureBreaches: nextTemperatureBreachesMock,
       dropLogs: dropLogsMock,
+      lengthSensors: () => 1,
+      lengthTemperatureBreaches: () => 1,
+      lengthTemperatureLogs: () => 1,
     });
     depsLocator.register('syncOutManager', {
       login: jest.fn(),
@@ -417,9 +438,9 @@ describe('SyncSlice:SyncSaga:enablePassiveSync', () => {
       .call(nextSensorMock)
 
       .put(SyncSlice.SyncAction.authenticateSuccess())
-      .put(SyncSlice.SyncAction.syncSensorsSuccess(syncLogs))
-      .put(SyncSlice.SyncAction.syncTemperatureLogsSuccess(syncLogs))
-      .put(SyncSlice.SyncAction.syncTemperatureBreachesSuccess(syncLogs))
+      .put(SyncSlice.SyncAction.syncSensorsSuccess(1))
+      .put(SyncSlice.SyncAction.syncTemperatureLogsSuccess(1))
+      .put(SyncSlice.SyncAction.syncTemperatureBreachesSuccess(1))
       .call(SyncSlice.SyncSaga.startSyncScheduler)
       .silentRun(10);
   });

@@ -186,7 +186,8 @@ describe('SyncOutManager: syncTemperatureLogs', () => {
 
     const logSyncOut = getTemperatureLogSyncOut();
     const log: TemperatureLog = { ...logSyncOut, sensor: getSensor() };
-    const result = await som.syncTemperatureLogs(temperatureLogUrl, [log]);
+    const [result] = await som.syncTemperatureLogs(temperatureLogUrl, [log]);
+
     const { data } = result;
 
     return expect(data).toEqual({ valid: [log.id] });
