@@ -1,7 +1,7 @@
 import { UtilService } from '~services/UtilService';
 import moment from 'moment';
 
-import { UnixTime } from '~common/types/common';
+import { UnixTimestamp } from '~common/types/common';
 import { BreachConfigurationState } from '~features/Entities/BreachConfiguration/BreachConfigurationSlice';
 import { SPECIAL_CHARACTER, MILLISECONDS, FORMAT } from '~constants';
 import { t } from '~translations';
@@ -55,7 +55,7 @@ export class FormatService {
     return `${temperature}${SPECIAL_CHARACTER.DEGREE_CELSIUS}`;
   };
 
-  dateRange = (from: UnixTime, to: UnixTime): string => {
+  dateRange = (from: UnixTimestamp, to: UnixTimestamp): string => {
     const fromDate = moment.unix(from);
     const toDate = moment.unix(to);
 

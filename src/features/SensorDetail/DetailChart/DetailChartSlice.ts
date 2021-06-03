@@ -5,6 +5,8 @@ import { RootState } from '../../../common/store/store';
 import { ChartDataPoint } from '../../Chart/ChartManager';
 import { DEPENDENCY, REDUCER } from '../../../common/constants';
 import { FetchSuccessPayload, DetailAction, DetailSelector } from '../Detail/DetailSlice';
+import { getDependency } from '~features/utils/saga';
+import { ChartSelector } from '~features/Chart';
 
 interface DetailChartSliceState {
   data: ChartDataPoint[];
@@ -58,6 +60,10 @@ const extraReducers = (builder: ActionReducerMapBuilder<DetailChartSliceState>) 
     draftState.numberOfDataPoints = 30;
     draftState.isLoading = false;
   });
+
+  builder.addCase(DetailAction.updateDateRange, (draftState: DetailChartSliceState) => {
+    draftState.isLoading = true;
+  });
 };
 
 const { actions: DetailChartAction, reducer: DetailChartReducer } = createSlice({
@@ -80,13 +86,16 @@ const DetailChartSelector = {
     const { isLoading } = detailChart;
     return isLoading;
   },
+  sensorId: ({ sensorDetail: { detail } }: RootState): string => {
+    const { sensorId } = detail;
+    return sensorId;
+  },
 };
 
-function* fetch({ payload: { from, to, sensorId } }: PayloadAction<FetchPayload>): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const chartManager = yield call(DependencyLocator.get, DEPENDENCY.CHART_MANAGER);
-
+function* tryFetch({ payload: { from, to } }: PayloadAction<FetchPayload>): SagaIterator {
+  const chartManager = yield call(getDependency, 'chartManager');
   const dataPoints = yield select(DetailChartSelector.numberOfDataPoints);
+  const sensorId = yield select(DetailChartSelector.sensorId);
 
   try {
     const result = yield call(chartManager.getLogs, from, to, sensorId, dataPoints);
@@ -96,16 +105,19 @@ function* fetch({ payload: { from, to, sensorId } }: PayloadAction<FetchPayload>
   }
 }
 
-function* tryFetch({
-  payload: { sensorId, from, to },
-}: PayloadAction<FetchPayload | FetchSuccessPayload>): SagaIterator {
-  const id = yield select(DetailSelector.sensorId);
-  yield put(DetailChartAction.fetch(sensorId ?? id, from, to));
+function* hydrate({
+  payload: { sensorId },
+}: PayloadAction<{ sensorId: string; minFrom: number; maxTo: number }>): SagaIterator {
+  try {
+    const data = yield select(ChartSelector.listData, { id: sensorId });
+    yield put(DetailChartAction.fetchSuccess(data));
+  } catch (error) {
+    yield put(DetailChartAction.fetchFail());
+  }
 }
 
 function* root(): SagaIterator {
-  yield takeEvery(DetailChartAction.fetch, fetch);
-  yield takeEvery(DetailAction.fetchSuccess, tryFetch);
+  yield takeEvery(DetailAction.fetch, hydrate);
   yield takeEvery(DetailAction.updateDateRange, tryFetch);
 }
 

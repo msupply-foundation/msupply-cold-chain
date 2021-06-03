@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useOnMount, useHideTabBar, useRouteProps } from '../../hooks';
-import { SensorSelector, DetailAction } from '../../../features';
+import { SensorSelector, DetailAction, SensorStatusSelector } from '../../../features';
 
 import {
   SensorDetailChart,
@@ -17,13 +17,17 @@ import { RootState } from '../../../common/store/store';
 
 export const SensorDetailScreen: FC = () => {
   const { id } = useRouteProps<SensorStackNavigatorParameters, SENSOR_STACK.SENSOR_DETAIL>();
+  const possibleFrom = useSelector((state: RootState) =>
+    SensorStatusSelector.possibleFrom(state, id)
+  );
+  const possibleTo = useSelector((state: RootState) => SensorStatusSelector.possibleTo(state, id));
   const name = useSelector((state: RootState) => SensorSelector.getName(state, { id }));
   const dispatch = useDispatch();
 
-  const fetch = () => dispatch(DetailAction.fetch(id));
+  const fetch = () => dispatch(DetailAction.fetch(id, possibleFrom, possibleTo));
   const flush = () => dispatch(DetailAction.flush());
 
-  useOnMount([flush, fetch]);
+  useOnMount([fetch]);
   useHideTabBar();
 
   return (

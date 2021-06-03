@@ -2,13 +2,25 @@ import { MILLISECONDS } from '~constants';
 import moment from 'moment';
 import generateUUID from 'react-native-uuid';
 import packageJson from '~/../../package.json';
+import { UnixTimestamp } from '~common/types/common';
 
 type NumberRange = [number, number];
 
 export class UtilService {
   uuid = (): string => generateUUID.v1() as string;
 
-  now = (): number => moment().unix();
+  now = (): UnixTimestamp => moment().unix();
+
+  threeDaysAgo = (): UnixTimestamp => {
+    const threeDaysAgo = moment().subtract(3, 'days');
+    return threeDaysAgo.unix();
+  };
+
+  threeDaysBefore = (someDate: number): UnixTimestamp => {
+    const someMoment = moment.unix(someDate);
+    const threeDaysBefore = someMoment.subtract(3, 'days');
+    return threeDaysBefore.unix();
+  };
 
   appVersion = (): string => packageJson.version;
 
