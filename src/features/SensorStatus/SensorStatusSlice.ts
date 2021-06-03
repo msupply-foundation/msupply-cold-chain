@@ -1,13 +1,18 @@
+import { SensorStatus } from './../../ui/components/SensorStatus';
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { call, getContext, put, takeEvery } from 'redux-saga/effects';
+import { all, call, getContext, put, takeEvery } from 'redux-saga/effects';
 import { RootState } from '../../common/store/store';
 import { DEPENDENCY, REDUCER } from '../../common/constants';
 import { AcknowledgeBreachAction, ConsecutiveBreachAction } from '../Breach';
 import { SensorAction } from '../Entities';
 import { FormatService } from '../../common/services';
+import { getDependency } from '~features/utils/saga';
+import { ById } from '~common/types/common';
+import { HydrateAction } from '~features/Hydrate';
 
 export interface SensorStatus {
+  id: string;
   mostRecentLogTimestamp: number;
   firstTimestamp: number;
   numberOfLogs: number;
@@ -70,6 +75,17 @@ const SensorStatusSelector = {
   lastDownloadTime,
   isLoading,
   getStatus,
+  possibleTo: ({ sensorStatus }: RootState, id: string): number => {
+    const status = sensorStatus.byId[id];
+    const { mostRecentLogTimestamp } = status;
+    return mostRecentLogTimestamp;
+  },
+
+  possibleFrom: ({ sensorStatus }: RootState, id: string): number => {
+    const status = sensorStatus.byId[id];
+    const { firstTimestamp } = status;
+    return firstTimestamp;
+  },
   hasHotBreach: ({ sensorStatus }: RootState, { id }: { id: string }): boolean => {
     const { byId } = sensorStatus;
     const { [id]: status } = byId;
@@ -168,6 +184,19 @@ function* getSensorStatus({ payload: { sensorId } }: PayloadAction<FetchPayload>
   }
 }
 
+function* getAllStatuses(): SagaIterator {
+  const sensorStatusManager = yield call(getDependency, 'sensorStatusManager');
+
+  try {
+    const statuses: ById<SensorStatus> = yield call(sensorStatusManager.getAllStatuses);
+
+    const actions = Object.keys(statuses).map(id =>
+      put(SensorStatusAction.fetchSuccess(id, statuses[id]))
+    );
+    yield all(actions);
+  } catch (e) {}
+}
+
 function* refreshSensorStatus({
   payload: { sensorId },
 }: PayloadAction<{ sensorId: string }>): SagaIterator {
@@ -180,6 +209,7 @@ function* root(): SagaIterator {
   yield takeEvery(SensorAction.update, refreshSensorStatus);
   yield takeEvery(SensorAction.createSuccess, refreshSensorStatus);
   yield takeEvery(AcknowledgeBreachAction.acknowledgeSuccess, refreshSensorStatus);
+  yield takeEvery(HydrateAction.hydrate, getAllStatuses);
 }
 
 const SensorStatusSaga = { root };

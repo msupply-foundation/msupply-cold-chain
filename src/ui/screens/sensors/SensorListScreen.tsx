@@ -15,9 +15,10 @@ import {
 } from '~features';
 
 import { SensorChartRow } from '~components';
-import { AcknowledgeBreachModal } from '../../components/modal/AcknowledgeBreachModal';
+import { AcknowledgeBreachModal } from '~components/modal/AcknowledgeBreachModal';
 import { Gradient } from '~layouts';
-import { RootState } from '~store/store';
+import { RootState } from '~store';
+import { HydrateAction } from '~features/Hydrate';
 
 export const SensorListScreen: FC = () => {
   const navigation = useNavigation();
@@ -29,6 +30,7 @@ export const SensorListScreen: FC = () => {
 
   const dispatch = useDispatch();
   const getSensors = () => dispatch(SensorAction.fetchAll());
+  const hydrate = () => dispatch(HydrateAction.hydrate());
 
   const startPassiveDownloading = () => {
     setTimeout(() => {
@@ -48,7 +50,7 @@ export const SensorListScreen: FC = () => {
     }, 50000);
   };
 
-  useOnMount([startPassiveDownloading, startBatteryObserving, startIntegrating]);
+  useOnMount([hydrate, startPassiveDownloading, startBatteryObserving, startIntegrating]);
   useCallbackOnGainingFocus(getSensors);
 
   const renderItem = useCallback(
