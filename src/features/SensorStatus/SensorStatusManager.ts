@@ -1,59 +1,79 @@
 import { SensorStatus } from './SensorStatusSlice';
 import { DatabaseService } from '../../common/services';
 
-const SENSOR_STATUS = `
-with breach as (
-  select (select count(*) > 0
-  from temperaturebreach tb
-  where tb.acknowledged = 0 and sensorid = ?
-  and temperaturebreachconfigurationid = "HOT_BREACH") hasHotBreach,
-  (select count(*) > 0
-  from temperaturebreach tb
-  where tb.acknowledged = 0 and sensorid = ?
-  and temperaturebreachconfigurationid = "COLD_BREACH") hasColdBreach
-  )
-  
-  SELECT s.id id, (select hasHotBreach from breach) hasHotBreach, (select hasColdBreach from breach) hasColdBreach,
-  s.macAddress macAddress,
-  s.logInterval logInterval,
-  s.name        name,
-  s.logDelay    logDelay,
-  mostRecentLogTimestamp,
-  s.batteryLevel < 25 isLowBattery,
-  firstTimestamp,
-  coalesce(numberOfLogs,0) > 0 hasLogs,
-  coalesce(numberOfLogs,0) numberOfLogs,
-  currentTemperature,
-  CASE when mostRecentLogTimestamp - firstTimestamp > (3 * 24 * 60 * 60) then mostRecentLogTimestamp - 24 * 3 * 60 * 60 else firstTimestamp end as minChartTimestamp,
-  CASE
-  WHEN endTimestamp IS NULL AND temperatureBreachConfigurationId = 'HOT_BREACH' THEN 1 ELSE 0 END AS isInHotBreach,
-  CASE WHEN endTimestamp IS NULL AND temperatureBreachConfigurationId = 'COLD_BREACH' THEN 1 ELSE 0 END AS isInColdBreach
-  FROM      sensor s OUTER
-  LEFT JOIN (SELECT coalesce(min(timestamp), 0) firstTimestamp from temperaturelog where sensorid = ?)
-  left JOIN
-  (
-    SELECT  max(timestamp) mostRecentLogTimestamp,
-            temperature    currentTemperature,
-            count(*) numberOfLogs,
-            tl.sensorid,
-            *
-    FROM temperaturelog tl 
-    LEFT OUTER JOIN
-      (
-        SELECT   max(startTimestamp) startTimestamp,
-        temperatureBreachConfigurationId,
-        endTimestamp,
-        sensorid
-        FROM temperaturebreach tb
-        GROUP BY sensorid
-  
-      ) tb
-    ON tl.sensorid = tb.sensorid
-    GROUP BY tl.sensorid
-    order by timestamp
-  ) logs
-  ON logs.sensorid = s.id 
-  where s.id = ?
+enum SensorStatusQueryKey {
+  CurrentTemperature = 'currentTemperature',
+  MostRecentLogTimestamp = 'mostRecentLogTimestamp',
+  NumberOfLogs = 'numberOfLogs',
+  FirstTimestamp = 'firstTimestamp',
+  NumberOfHotBreaches = 'numberOfHotBreaches',
+  NumberOfColdBreaches = 'numberOfColdBreaches',
+  batteryLevel = 'batteryLevel',
+}
+
+type SensorStatusQueryResult = {
+  [SensorStatusQueryKey.CurrentTemperature]: number;
+  [SensorStatusQueryKey.FirstTimestamp]: number;
+  [SensorStatusQueryKey.MostRecentLogTimestamp]: number;
+  [SensorStatusQueryKey.NumberOfColdBreaches]: number;
+  [SensorStatusQueryKey.NumberOfHotBreaches]: number;
+  [SensorStatusQueryKey.NumberOfLogs]: number;
+  [SensorStatusQueryKey.batteryLevel]: number;
+};
+
+const buildSensorStatusQuery = (whereClause = 'id = ?') => `
+WITH
+FilteredSensorIDs as (
+    SELECT id as sensorId FROM Sensor WHERE ${whereClause}
+),
+UnacknowledgedBreaches as (
+    SELECT * 
+    FROM TemperatureBreach 
+    WHERE acknowledged=0
+),
+TemperatureLogStats as (
+    SELECT sensorId, MIN(timestamp) ${SensorStatusQueryKey.FirstTimestamp}, MAX(timestamp) ${SensorStatusQueryKey.MostRecentLogTimestamp}, COUNT(*) ${SensorStatusQueryKey.NumberOfLogs}
+    FROM Sensor
+    JOIN TemperatureLog
+    ON TemperatureLog.sensorId = Sensor.id 
+    WHERE Sensor.id IN FilteredSensorIDS
+    GROUP BY sensorId
+),
+BreachStats as (
+    SELECT id sensorId, COALESCE(${SensorStatusQueryKey.NumberOfHotBreaches},0) ${SensorStatusQueryKey.NumberOfHotBreaches}, COALESCE(${SensorStatusQueryKey.NumberOfColdBreaches},0) ${SensorStatusQueryKey.NumberOfColdBreaches}
+    FROM Sensor
+    LEFT JOIN (SELECT sensorId, COUNT(*) ${SensorStatusQueryKey.NumberOfHotBreaches} FROM UnacknowledgedBreaches WHERE temperatureBreachConfigurationId='HOT_BREACH' GROUP BY sensorId) ${SensorStatusQueryKey.NumberOfHotBreaches}
+    ON ${SensorStatusQueryKey.NumberOfHotBreaches}.sensorId = Sensor.id
+    LEFT JOIN (SELECT sensorId, COUNT(*) ${SensorStatusQueryKey.NumberOfColdBreaches} FROM UnacknowledgedBreaches WHERE temperatureBreachConfigurationId='COLD_BREACH' GROUP BY sensorId) ${SensorStatusQueryKey.NumberOfColdBreaches}
+    ON ${SensorStatusQueryKey.NumberOfColdBreaches}.sensorId = Sensor.id
+    WHERE Sensor.id IN FilteredSensorIDs
+),
+CurrentStats as (
+    SELECT Sensor.id sensorId, temperature ${SensorStatusQueryKey.CurrentTemperature}
+    FROM Sensor
+    LEFT JOIN TemperatureLog
+    ON Sensor.id = TemperatureLog.sensorId
+    WHERE Sensor.id IN FilteredSensorIDs
+    GROUP BY Sensor.id
+    HAVING timestamp = MAX(timestamp)
+)
+
+SELECT 
+${SensorStatusQueryKey.CurrentTemperature},
+${SensorStatusQueryKey.MostRecentLogTimestamp},
+${SensorStatusQueryKey.NumberOfLogs}, 
+${SensorStatusQueryKey.FirstTimestamp}, 
+${SensorStatusQueryKey.NumberOfColdBreaches}, 
+${SensorStatusQueryKey.NumberOfHotBreaches}, 
+${SensorStatusQueryKey.batteryLevel}
+FROM Sensor
+LEFT JOIN TemperatureLogStats
+ON TemperatureLogStats.sensorId = Sensor.id
+LEFT JOIN BreachStats
+ON BreachStats.sensorId = Sensor.id
+LEFT JOIN CurrentStats
+ON CurrentStats.sensorId = Sensor.id
+WHERE Sensor.id IN FilteredSensorIDs
 `;
 
 export class SensorStatusManager {
@@ -63,14 +83,27 @@ export class SensorStatusManager {
     this.databaseService = databaseService;
   }
 
-  getSensorStatus = async (sensorId: string): Promise<SensorStatus> => {
-    const result = await this.databaseService.query(SENSOR_STATUS, [
-      sensorId,
-      sensorId,
-      sensorId,
-      sensorId,
-    ]);
+  mapStatusQueryResult = (result: SensorStatusQueryResult): SensorStatus => {
+    return {
+      mostRecentLogTimestamp: result.mostRecentLogTimestamp,
+      isInColdBreach: result.numberOfColdBreaches > 0,
+      isInHotBreach: result.numberOfHotBreaches > 0,
+      hasHotBreach: result.numberOfHotBreaches > 0,
+      hasColdBreach: result.numberOfColdBreaches > 0,
+      isLowBattery: result.batteryLevel < 80,
+      firstTimestamp: result.firstTimestamp,
+      numberOfLogs: result.numberOfLogs,
+      currentTemperature: result.currentTemperature,
+      hasLogs: result.numberOfLogs > 0,
+    };
+  };
 
-    return result[0] as SensorStatus;
+  getSensorStatus = async (sensorId: string): Promise<SensorStatus> => {
+    const query = buildSensorStatusQuery();
+    const [result] = (await this.databaseService.query(query, [
+      sensorId,
+    ])) as SensorStatusQueryResult[];
+
+    return this.mapStatusQueryResult(result);
   };
 }

@@ -116,21 +116,7 @@ const isLoading = ({ chart: { listLoadingById } }: RootState, { id }: { id: stri
   return listLoadingById[id] ?? true;
 };
 
-const detailTimestamps = (
-  { sensorStatus }: RootState,
-  { id }: { id: string }
-): { from: number; to: number } => {
-  // TODO: Fix types
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { byId } = sensorStatus as Record<string, any>;
-  const { [id]: status } = byId;
-  const { minChartTimestamp, mostRecentLogTimestamp } = status ?? {};
-
-  return { from: minChartTimestamp, to: mostRecentLogTimestamp };
-};
-
 const ChartSelector = {
-  detailTimestamps,
   listData,
   detailData,
   isLoading,
