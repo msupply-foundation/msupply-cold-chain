@@ -1,10 +1,12 @@
+import { UtilService } from '~services/UtilService';
 import { SagaIterator } from '@redux-saga/types';
 import { NativeModules } from 'react-native';
 import { take, delay, getContext, call, all, put, takeLeading, race } from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
 import { SensorState } from '../../Entities/Sensor/SensorSlice';
 import { DEPENDENCY, REDUCER, MILLISECONDS } from '~constants';
-import { SensorAction } from '~features/Entities';
+import { SensorAction, SensorManager } from '~features/Entities';
+import { getDependency } from '~features/utils/saga';
 
 interface BatteryObserverState {
   isWatching: boolean;
@@ -34,8 +36,8 @@ const { actions: BatteryObserverAction, reducer: BatteryObserverReducer } = crea
 const BatteryObserverSelector = {};
 
 function* updateBatteryLevels(): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
+  const utils: UtilService = yield call(getDependency, 'utilService');
+  const sensorManager: SensorManager = yield call(getDependency, 'sensorManager');
 
   try {
     const { data, success } = yield call(NativeModules.SussolBleManager.getDevices, 307, '');
@@ -45,7 +47,7 @@ function* updateBatteryLevels(): SagaIterator {
         const { batteryLevel } =
           (data as SensorState[]).find(adv => adv.macAddress === sensor.macAddress) ?? {};
         if (batteryLevel) {
-          return { ...sensor, batteryLevel };
+          return { ...sensor, batteryLevel: utils.normaliseNumber(batteryLevel, [75, 100]) };
         }
         return { ...sensor };
       });
