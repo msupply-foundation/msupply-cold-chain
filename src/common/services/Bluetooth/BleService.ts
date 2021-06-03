@@ -1,95 +1,33 @@
-import {
-  Subscription,
-  Characteristic,
-  BleError,
-  BleManager,
-  Device,
-  ScanOptions,
-  ScanMode,
-} from 'react-native-ble-plx';
+import { UtilService } from '~services/UtilService';
+
 import { Buffer } from 'buffer';
 import { BLUE_MAESTRO, BLUETOOTH } from '~constants';
 import { MacAddress } from '~common/types/common';
-
-export interface BluetoothDevice {
-  id: string;
-}
-
-const bufferFromBase64 = (base64: string): Buffer => Buffer.from(base64, 'base64');
-const stringFromBase64 = (base64: string): string => bufferFromBase64(base64).toString('utf-8');
-const base64FromString = (string: string): string =>
-  Buffer.from(string, 'utf-8').toString('base64');
-
-export interface BluetoothManager {
-  connectToDevice(macAddress: MacAddress): Promise<BluetoothDevice>;
-  isDeviceConnected(macAddress: MacAddress): Promise<boolean>;
-  cancelDeviceConnection(macAddress: MacAddress): Promise<BluetoothDevice>;
-  discoverAllServicesAndCharacteristicsForDevice(macAddress: MacAddress): Promise<BluetoothDevice>;
-  stopDeviceScan(): void;
-  startDeviceScan(
-    UUIDs: string[] | null,
-    options: ScanOptions | null,
-    listener: (error: BleError | null, scannedDevice: Device | null) => void
-  ): void;
-  writeCharacteristicWithoutResponseForDevice(
-    deviceIdentifier: string,
-    serviceUUID: string,
-    characteristicUUID: string,
-    base64Value: string,
-    transactionId?: string
-  ): Promise<Characteristic>;
-  monitorCharacteristicForDevice(
-    deviceIdentifier: string,
-    serviceUUID: string,
-    characteristicUUID: string,
-    listener: (error: BleError | null, characteristic: Characteristic | null) => void,
-    transactionId?: string
-  ): Subscription;
-}
-
-export interface InfoLog {
-  batteryLevel: null | number;
-  isDisabled: boolean;
-}
-
-export interface SensorLog {
-  temperature: number;
-}
-
-interface ScanCallback {
-  (error: BleError | null, device: Device | null): void;
-}
-
-interface Resolver<ResolverResult> {
-  (result: ResolverResult): void;
-}
-
-interface ErrorRejector {
-  (error: Error): void;
-}
-
-interface MonitorCharacteristicCallback<ResolverResult> {
-  (
-    result: Characteristic | null,
-    resolver: Resolver<ResolverResult>,
-    rejector: ErrorRejector
-  ): void;
-}
-
-interface MonitorCharacteristicParser<ParserInput, ParserResult> {
-  (result: ParserInput): ParserResult;
-}
+import {
+  Characteristic,
+  ScanOptions,
+  ScanMode,
+  BluetoothDevice,
+  InfoLog,
+  MonitorCharacteristicCallback,
+  MonitorCharacteristicParser,
+  ScanCallback,
+  SensorLog,
+} from './types';
+import { BluetoothManager } from './BleManager';
 
 export class BleService {
   manager: BluetoothManager;
+  utils: UtilService;
 
-  constructor(manager = new BleManager() as BluetoothManager) {
+  constructor(manager: BluetoothManager, utils: UtilService) {
     this.manager = manager;
+    this.utils = utils;
   }
 
-  async connectToDevice(macAddress: MacAddress): Promise<BluetoothDevice> {
+  connectToDevice = async (macAddress: MacAddress): Promise<BluetoothDevice> => {
     return this.manager.connectToDevice(macAddress);
-  }
+  };
 
   connectAndDiscoverServices = async (macAddress: MacAddress): Promise<BluetoothDevice> => {
     if (await this.manager.isDeviceConnected(macAddress)) {
@@ -119,7 +57,7 @@ export class BleService {
       macAddress,
       BLUETOOTH.UART_SERVICE_UUID,
       BLUETOOTH.READ_CHARACTERISTIC_UUID,
-      base64FromString(command)
+      this.utils.base64FromString(command)
     );
   };
 
@@ -198,7 +136,7 @@ export class BleService {
     const monitorCallback: MonitorCharacteristicParser<string[], SensorLog[]> = (
       data: string[]
     ) => {
-      const buffer = Buffer.concat(data.slice(1).map(datum => bufferFromBase64(datum)));
+      const buffer = Buffer.concat(data.slice(1).map(datum => this.utils.bufferFromBase64(datum)));
 
       const ind = buffer.findIndex(
         (_, i) =>
@@ -226,12 +164,12 @@ export class BleService {
 
   updateLogInterval = async (macAddress: MacAddress, logInterval: number): Promise<boolean> => {
     await this.connectAndDiscoverServices(macAddress);
-    const result = (await this.writeWithSingleResponse(
+    const result = await this.writeWithSingleResponse(
       macAddress,
       `${BLUE_MAESTRO.COMMANDS.UPDATE_LOG_INTERVAL}${logInterval}`,
-      data => !!stringFromBase64(data).match(/interval/i)
-    )) as boolean;
-    return result;
+      data => !!this.utils.stringFromBase64(data).match(/interval/i)
+    );
+    return !!result;
   };
 
   blink = async (macAddress: MacAddress): Promise<boolean> => {
@@ -241,7 +179,7 @@ export class BleService {
       macAddress,
       BLUE_MAESTRO.COMMANDS.BLINK,
       data => {
-        return !!stringFromBase64(data).match(/ok/i);
+        return !!this.utils.stringFromBase64(data).match(/ok/i);
       }
     )) as boolean;
 
@@ -252,7 +190,7 @@ export class BleService {
     await this.connectAndDiscoverServices(macAddress);
 
     const monitorResultCallback: MonitorCharacteristicParser<string[], InfoLog> = data => {
-      const parsedBase64 = data.map(stringFromBase64);
+      const parsedBase64 = data.map(this.utils.stringFromBase64);
       const defaultInfoLog: InfoLog = { batteryLevel: null, isDisabled: true };
 
       const parsedBatteryLevel = (info: string): number | null => {
@@ -262,7 +200,9 @@ export class BleService {
 
         const batteryLevel = Number(batteryLevelStringOrNull[0].match(/[0-9]{1,3}/));
 
-        return Number.isNaN(batteryLevel) ? null : batteryLevel;
+        return Number.isNaN(batteryLevel)
+          ? null
+          : this.utils.normaliseNumber(batteryLevel, [75, 100]);
       };
 
       const parsedIsDisabled = (info: string): boolean => !!info.match(/Btn on\/off: 1/);
@@ -293,7 +233,7 @@ export class BleService {
       macAddress,
       BLUE_MAESTRO.COMMANDS.DISABLE_BUTTON,
       data => {
-        return !!stringFromBase64(data).match(/ok/i);
+        return !!this.utils.stringFromBase64(data).match(/ok/i);
       }
     )) as boolean;
     return result;

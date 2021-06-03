@@ -5,7 +5,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import * as Yup from 'yup';
 
 import { t } from '~common/translations';
-import { useRouteProps } from '~hooks';
+import { useFormatter, useRouteProps } from '~hooks';
 import { SettingsList } from '~layouts';
 import { RootState } from '~store/store';
 import { SettingsStackParameters } from '../../containers/SettingsStackNavigator';
@@ -14,11 +14,10 @@ import {
   SettingsTextInputRow,
   SettingsGroup,
   SettingsNumberInputRow,
-  SettingsButtonRow,
   SettingsItem,
   SettingsConfirmRow,
 } from '~components/settings';
-import { ProgramAction, DownloadAction, BlinkAction, BlinkSelector, SensorAction } from '~features';
+import { ProgramAction, BlinkAction, BlinkSelector, SensorAction } from '~features';
 import { SETTINGS_STACK } from '~constants';
 import { SensorState } from '~features/Entities/Sensor/SensorSlice';
 
@@ -38,6 +37,7 @@ type SensorDetailSettingsScreenProps = {
 };
 
 export const SensorDetailSettingsScreen: FC<SensorDetailSettingsScreenProps> = () => {
+  const formatter = useFormatter();
   const { id } = useRouteProps<SettingsStackParameters, SETTINGS_STACK.SENSOR_DETAIL>();
   const sensor: SensorState | undefined = useSelector(
     (state: RootState) => state.entities.sensor.byId[id]
@@ -51,27 +51,26 @@ export const SensorDetailSettingsScreen: FC<SensorDetailSettingsScreenProps> = (
   return (
     <SettingsList>
       <SettingsLoadingIndicatorRow
-        label="Blink"
+        label={t('BLINK')}
         onPress={() => dispatch(BlinkAction.tryBlinkSensor(macAddress))}
         isLoading={isBlinking}
       />
-      <SettingsButtonRow
-        subtext=""
-        label="Download"
-        onPress={() => dispatch(DownloadAction.tryManualDownloadForSensor(id))}
-      />
       <SettingsConfirmRow
         subtext=""
-        label="Remove"
+        label={t('REMOVE')}
         onPress={() => {
           navigation.goBack();
           dispatch(SensorAction.tryRemove(id));
         }}
         confirmText={t('REMOVE_SENSOR_CONFIRMATION')}
       />
-      <SettingsGroup title="SENSOR DETAILS">
-        <SettingsItem label={macAddress} subtext="This sensors mac address" isDisabled />
-        <SettingsItem label={`${batteryLevel}%`} subtext="This sensors battery level" isDisabled />
+      <SettingsGroup title={t('SENSOR_DETAILS')}>
+        <SettingsItem label={macAddress} subtext={t('SENSORS_MAC_ADDRESS')} isDisabled />
+        <SettingsItem
+          label={formatter.sensorBatteryLevel(batteryLevel)}
+          subtext={t('SENSORS_BATTERY_LEVEL')}
+          isDisabled
+        />
       </SettingsGroup>
       <SettingsGroup title={t('EDIT_SENSOR_DETAILS')}>
         <SettingsTextInputRow

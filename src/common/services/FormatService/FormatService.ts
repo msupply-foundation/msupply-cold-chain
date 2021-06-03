@@ -36,7 +36,7 @@ export class FormatService {
   };
 
   sensorBatteryLevel = (level: number): string => {
-    return `${level}%`;
+    return level == null ? t('NOT_AVAILABLE') : `${level}%`;
   };
 
   headerTime = (date: Date): string => {

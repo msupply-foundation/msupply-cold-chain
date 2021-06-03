@@ -18,10 +18,10 @@ export const Battery: FC<BatteryProps> = ({
 }) => {
   const getIconProps = (level: number, charging: boolean): [ICON_NAME, COLOUR] => {
     if (charging) return [ICON_NAME.BATTERY_CHARGING, COLOUR.PRIMARY];
-    if (level < 5) return [ICON_NAME.BATTERY_EMPTY, COLOUR.DANGER];
-    if (level < 25) return [ICON_NAME.BATTERY_ONE, COLOUR.DANGER];
-    if (level < 50) return [ICON_NAME.BATTERY_TWO, COLOUR.PRIMARY];
-    if (level < 75) return [ICON_NAME.BATTERY_THREE, COLOUR.PRIMARY];
+    if (level < 15) return [ICON_NAME.BATTERY_EMPTY, COLOUR.DANGER];
+    if (level < 40) return [ICON_NAME.BATTERY_ONE, COLOUR.DANGER];
+    if (level < 65) return [ICON_NAME.BATTERY_TWO, COLOUR.PRIMARY];
+    if (level < 90) return [ICON_NAME.BATTERY_THREE, COLOUR.PRIMARY];
     return [ICON_NAME.BATTERY_FOUR, COLOUR.PRIMARY];
   };
 

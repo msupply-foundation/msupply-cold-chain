@@ -293,7 +293,7 @@ function* syncAll({
 
 function* startSyncScheduler(): SagaIterator {
   while (true) {
-    const settingManager: SettingManager = yield call(getDependency, DEPENDENCY.SETTING_MANAGER);
+    const settingManager: SettingManager = yield call(getDependency, 'settingManager');
     const syncSettings: SyncSettingMap = yield call(settingManager.getSyncSettings);
 
     yield put(SyncAction.syncAll(syncSettings));

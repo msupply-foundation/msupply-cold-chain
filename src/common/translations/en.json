@@ -125,9 +125,8 @@
   "APP_VERSION": "App version",
   "SYNC_SETTINGS": "Sync settings",
   "SYNC_CONFIGURATION": "Sync configuration",
-  
-
-
-
-
+  "SENSORS_MAC_ADDRESS": "This sensors mac address",
+  "SENSOR_DETAILS": "SENSOR DETAILS",
+  "SENSORS_BATTERY_LEVEL": "This sensors battery level",
+  "REMOVE": "Remove"
 }

@@ -70,10 +70,15 @@ describe('FormatService: headerTime', () => {
 });
 
 describe('FormatService: sensorBatteryLevel', () => {
-  it('Formats correctly', () => {
+  it('Formats correctly when given a number', () => {
     const formatter = new FormatService();
 
     expect(formatter.sensorBatteryLevel(10)).toBe('10%');
+  });
+  it('Formats correctly when passed null', () => {
+    const formatter = new FormatService();
+
+    expect(formatter.sensorBatteryLevel(null)).toBe('N/A');
   });
 });
 

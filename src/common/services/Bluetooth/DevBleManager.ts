@@ -1,5 +1,6 @@
+import { BluetoothDevice } from './types';
+import { BluetoothManager } from '~common/services/Bluetooth/BleManager';
 import { Device, BleError, ScanOptions, Characteristic, Subscription } from 'react-native-ble-plx';
-import { BluetoothManager, BluetoothDevice } from './BleService';
 
 interface MonitorCallback {
   (error: BleError | null, characteristic: Characteristic | null): void;
