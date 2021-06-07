@@ -54,7 +54,7 @@ export class ChartManager {
     from: number,
     to: number,
     sensorId: string,
-    maxPoints: number
+    maxPoints = 30
   ): Promise<ChartDataPoint[]> => {
     return this.databaseService.query(GET_CHART_DATA, [sensorId, from, to, maxPoints]);
   };
