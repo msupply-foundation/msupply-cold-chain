@@ -25,11 +25,12 @@ describe('UtilService:normaliseNumber', () => {
   it('normalises a battery level correctly', () => {
     const utils = new UtilService();
 
-    expect(utils.normaliseNumber(75, [75, 100])).toBe(0);
-    expect(utils.normaliseNumber(80, [75, 100])).toBe(20);
-    expect(utils.normaliseNumber(85, [75, 100])).toBe(40);
-    expect(utils.normaliseNumber(90, [75, 100])).toBe(60);
-    expect(utils.normaliseNumber(95, [75, 100])).toBe(80);
-    expect(utils.normaliseNumber(100, [75, 100])).toBe(100);
+    expect(utils.normaliseNumber(70, [70, 100])).toBe(0);
+    expect(utils.normaliseNumber(75, [70, 100])).toBe(16);
+    expect(utils.normaliseNumber(80, [70, 100])).toBe(33);
+    expect(utils.normaliseNumber(85, [70, 100])).toBe(50);
+    expect(utils.normaliseNumber(90, [70, 100])).toBe(66);
+    expect(utils.normaliseNumber(95, [70, 100])).toBe(83);
+    expect(utils.normaliseNumber(100, [70, 100])).toBe(100);
   });
 });

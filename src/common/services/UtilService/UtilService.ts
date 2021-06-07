@@ -38,7 +38,7 @@ export class UtilService {
 
     const newVal = ((currentVal - oldMin) * (newMax - newMin)) / (oldMax - oldMin) + newMin;
 
-    return newVal;
+    return Math.floor(newVal);
   };
 
   bufferFromBase64 = (base64: string): Buffer => Buffer.from(base64, 'base64');
