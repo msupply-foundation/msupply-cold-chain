@@ -3,11 +3,11 @@ import { SagaIterator } from '@redux-saga/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { RootState } from '../../../common/store/store';
-import { REDUCER } from '../../../common/constants';
+import { RootState } from '~store';
+import { REDUCER } from '~constants';
 import { ProgramAction } from '~features/Bluetooth/Program/ProgramSlice';
 import { getDependency } from '~features/utils/saga';
-import { ById } from '~common/types/common';
+import { ById, PrepareActionReturn } from '~common/types/common';
 
 export interface SensorState {
   id: string;
@@ -66,11 +66,6 @@ export interface CreateAction {
   type: string;
   payload: CreatePayload;
 }
-
-export interface PrepareActionReturn<SomePayload> {
-  payload: SomePayload;
-}
-
 export interface RemovePayload {
   id: string;
 }

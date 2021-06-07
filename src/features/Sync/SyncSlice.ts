@@ -14,7 +14,6 @@ import { SyncQueueManager } from '~features/Sync/SyncQueueManager';
 import { SyncOutManager } from '~features/Sync/SyncOutManager';
 
 import {
-  PrepareActionReturn,
   SyncSliceStateShape,
   CountSyncQueuePayload,
   AuthenticateActionPayload,
@@ -26,6 +25,7 @@ import {
   FailurePayload,
   SyncSuccessPayload,
 } from './types';
+import { PrepareActionReturn } from '~common/types/common';
 
 const initialState: SyncSliceStateShape = {
   isSyncing: false,

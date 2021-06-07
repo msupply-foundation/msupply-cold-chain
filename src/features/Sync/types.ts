@@ -108,6 +108,3 @@ export interface SyncingErrorActionPayload {
 export interface CountSyncQueuePayload {
   count: number;
 }
-export interface PrepareActionReturn<SomePayload> {
-  payload: SomePayload;
-}
