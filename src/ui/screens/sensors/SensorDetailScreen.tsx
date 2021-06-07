@@ -24,7 +24,7 @@ export const SensorDetailScreen: FC = () => {
   const name = useSelector((state: RootState) => SensorSelector.getName(state, { id }));
   const dispatch = useDispatch();
 
-  const fetch = () => dispatch(DetailAction.fetch(id, possibleFrom, possibleTo));
+  const fetch = () => dispatch(DetailAction.init(id, possibleFrom, possibleTo));
   const flush = () => dispatch(DetailAction.flush());
 
   useOnMount([fetch]);

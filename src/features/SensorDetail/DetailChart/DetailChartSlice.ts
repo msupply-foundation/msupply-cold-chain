@@ -1,40 +1,34 @@
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice, PayloadAction, ActionReducerMapBuilder } from '@reduxjs/toolkit';
-import { call, getContext, put, select, takeEvery } from 'redux-saga/effects';
-import { RootState } from '../../../common/store/store';
-import { ChartDataPoint } from '../../Chart/ChartManager';
-import { DEPENDENCY, REDUCER } from '../../../common/constants';
-import { FetchSuccessPayload, DetailAction, DetailSelector } from '../Detail/DetailSlice';
+import { call, put, select, takeLatest } from 'redux-saga/effects';
+import { RootState } from '~store';
+import { REDUCER } from '~constants';
+import {
+  DetailAction,
+  UpdateDateRangePayload,
+  FetchDetailPayload,
+} from '~features/SensorDetail/Detail/DetailSlice';
+import { ChartDataPoint } from '~features/Chart/ChartManager';
 import { getDependency } from '~features/utils/saga';
 import { ChartSelector } from '~features/Chart';
 
 interface DetailChartSliceState {
   data: ChartDataPoint[];
-  numberOfDataPoints: number;
   isLoading: boolean;
 }
 
 const initialState: DetailChartSliceState = {
   data: [],
-  numberOfDataPoints: 30,
   isLoading: false,
 };
-
-interface FetchPayload {
-  sensorId: string;
-  from: number;
-  to: number;
-  dataPoints: number;
-}
-
 interface FetchDataSuccessPayload {
   data: ChartDataPoint[];
 }
 
 const reducers = {
   fetch: {
-    prepare: (sensorId: string, from: number, to: number, dataPoints = 30) => ({
-      payload: { from, to, sensorId, dataPoints },
+    prepare: (sensorId: string, from: number, to: number) => ({
+      payload: { from, to, sensorId },
     }),
     reducer: (draftState: DetailChartSliceState) => {
       draftState.data = [];
@@ -57,7 +51,6 @@ const reducers = {
 const extraReducers = (builder: ActionReducerMapBuilder<DetailChartSliceState>) => {
   builder.addCase(DetailAction.flush, (draftState: DetailChartSliceState) => {
     draftState.data = [];
-    draftState.numberOfDataPoints = 30;
     draftState.isLoading = false;
   });
 
@@ -74,10 +67,6 @@ const { actions: DetailChartAction, reducer: DetailChartReducer } = createSlice(
 });
 
 const DetailChartSelector = {
-  numberOfDataPoints: ({ sensorDetail: { detailChart } }: RootState): number => {
-    const { numberOfDataPoints } = detailChart;
-    return numberOfDataPoints;
-  },
   data: ({ sensorDetail: { detailChart } }: RootState): ChartDataPoint[] => {
     const { data } = detailChart;
     return data;
@@ -86,28 +75,22 @@ const DetailChartSelector = {
     const { isLoading } = detailChart;
     return isLoading;
   },
-  sensorId: ({ sensorDetail: { detail } }: RootState): string => {
-    const { sensorId } = detail;
-    return sensorId;
-  },
 };
 
-function* tryFetch({ payload: { from, to } }: PayloadAction<FetchPayload>): SagaIterator {
+function* tryFetchUpdate({
+  payload: { sensorId, from, to },
+}: PayloadAction<UpdateDateRangePayload>): SagaIterator {
   const chartManager = yield call(getDependency, 'chartManager');
-  const dataPoints = yield select(DetailChartSelector.numberOfDataPoints);
-  const sensorId = yield select(DetailChartSelector.sensorId);
 
   try {
-    const result = yield call(chartManager.getLogs, from, to, sensorId, dataPoints);
+    const result = yield call(chartManager.getLogs, from, to, sensorId);
     yield put(DetailChartAction.fetchSuccess(result));
   } catch (error) {
     yield put(DetailChartAction.fetchFail());
   }
 }
 
-function* hydrate({
-  payload: { sensorId },
-}: PayloadAction<{ sensorId: string; minFrom: number; maxTo: number }>): SagaIterator {
+function* tryFetch({ payload: { sensorId } }: PayloadAction<FetchDetailPayload>): SagaIterator {
   try {
     const data = yield select(ChartSelector.listData, { id: sensorId });
     yield put(DetailChartAction.fetchSuccess(data));
@@ -117,8 +100,8 @@ function* hydrate({
 }
 
 function* root(): SagaIterator {
-  yield takeEvery(DetailAction.fetch, hydrate);
-  yield takeEvery(DetailAction.updateDateRange, tryFetch);
+  yield takeLatest(DetailAction.init, tryFetch);
+  yield takeLatest(DetailAction.updateDateRange, tryFetchUpdate);
 }
 
 const DetailChartSaga = { root };

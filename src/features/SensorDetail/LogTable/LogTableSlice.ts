@@ -239,7 +239,7 @@ function* trySortData(): SagaIterator {
 }
 
 function* root(): SagaIterator {
-  yield takeEvery(DetailAction.fetchSuccess, tryFetch);
+  yield takeEvery(DetailAction.initSuccess, tryFetch);
   yield takeEvery(DetailAction.updateDateRange, tryFetch);
   yield takeEvery(LogTableAction.fetch, fetch);
   yield takeEvery(LogTableAction.fetchMore, fetchMore);

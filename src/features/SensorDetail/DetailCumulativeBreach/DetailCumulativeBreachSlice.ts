@@ -122,7 +122,7 @@ function* tryFetch({ payload: { sensorId, from, to } }: PayloadAction<FetchPaylo
 }
 
 function* root(): SagaIterator {
-  yield takeEvery(DetailAction.fetchSuccess, tryFetch);
+  yield takeEvery(DetailAction.initSuccess, tryFetch);
   yield takeEvery(DetailAction.updateDateRange, tryFetch);
   yield takeEvery(DetailCumulativeAction.fetch, fetch);
 }
