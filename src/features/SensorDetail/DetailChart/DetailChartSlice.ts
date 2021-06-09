@@ -3,14 +3,11 @@ import { createSlice, PayloadAction, ActionReducerMapBuilder } from '@reduxjs/to
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 import { RootState } from '~store';
 import { REDUCER } from '~constants';
-import {
-  DetailAction,
-  UpdateDateRangePayload,
-  FetchDetailPayload,
-} from '~features/SensorDetail/Detail/DetailSlice';
+import { DetailAction, UpdateDateRangePayload } from '~features/SensorDetail';
 import { ChartDataPoint } from '~features/Chart/ChartManager';
 import { getDependency } from '~features/utils/saga';
 import { ChartSelector } from '~features/Chart';
+import { DetailSelector } from '~features/SensorDetail/Detail/DetailSlice';
 
 interface DetailChartSliceState {
   data: ChartDataPoint[];
@@ -90,9 +87,10 @@ function* tryFetchUpdate({
   }
 }
 
-function* tryFetch({ payload: { sensorId } }: PayloadAction<FetchDetailPayload>): SagaIterator {
+function* tryFetch(): SagaIterator {
   try {
-    const data = yield select(ChartSelector.listData, { id: sensorId });
+    const id = yield select(DetailSelector.sensorId);
+    const data = yield select(ChartSelector.listData, { id });
     yield put(DetailChartAction.fetchSuccess(data));
   } catch (error) {
     yield put(DetailChartAction.fetchFail());

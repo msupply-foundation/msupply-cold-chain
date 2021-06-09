@@ -5,4 +5,4 @@ export {
   CumulativeBreachSelector,
 } from './CumulativeBreachSlice';
 
-export { CumulativeBreachManager } from './CumulativeBreachManager';
+export { CumulativeBreachLookup, CumulativeBreachManager } from './CumulativeBreachManager';

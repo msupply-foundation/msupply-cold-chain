@@ -62,6 +62,7 @@ const getNewSortDirection = (
 };
 
 const reducers = {
+  init: () => {},
   trySortData: {
     prepare: (sortKey: SortKey) => ({ payload: { sortKey } }),
     reducer: (
@@ -204,10 +205,10 @@ function* fetch({ payload: { from, to, id } }: PayloadAction<FetchPayload>): Sag
   }
 }
 
-function* tryFetch({
-  payload: { from, to, sensorId },
-}: PayloadAction<{ from: number; to: number; sensorId: string }>): SagaIterator {
-  yield put(LogTableAction.fetch(sensorId, from, to));
+function* tryFetch(): SagaIterator {
+  const id = yield select(DetailSelector.sensorId);
+  const { from, to } = yield select(DetailSelector.fromTo);
+  yield put(LogTableAction.fetch(id, from, to));
 }
 
 function* trySortData(): SagaIterator {
@@ -239,7 +240,7 @@ function* trySortData(): SagaIterator {
 }
 
 function* root(): SagaIterator {
-  yield takeEvery(DetailAction.initSuccess, tryFetch);
+  yield takeEvery(LogTableAction.init, tryFetch);
   yield takeEvery(DetailAction.updateDateRange, tryFetch);
   yield takeEvery(LogTableAction.fetch, fetch);
   yield takeEvery(LogTableAction.fetchMore, fetchMore);

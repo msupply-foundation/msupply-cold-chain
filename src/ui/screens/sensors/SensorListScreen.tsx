@@ -4,7 +4,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { NAVIGATION } from '~constants';
-import { useCallbackOnGainingFocus, useOnMount } from '~hooks';
+import { useOnMount } from '~hooks';
 import {
   AcknowledgeBreachSelector,
   SensorSelector,
@@ -50,8 +50,13 @@ export const SensorListScreen: FC = () => {
     }, 50000);
   };
 
-  useOnMount([hydrate, startPassiveDownloading, startBatteryObserving, startIntegrating]);
-  useCallbackOnGainingFocus(getSensors);
+  useOnMount([
+    hydrate,
+    startPassiveDownloading,
+    startBatteryObserving,
+    startIntegrating,
+    getSensors,
+  ]);
 
   const renderItem = useCallback(
     ({ item }: { item: string }) => {

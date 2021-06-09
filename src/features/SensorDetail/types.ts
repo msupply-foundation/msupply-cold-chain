@@ -1,3 +1,8 @@
+import {
+  CumulativeBreach,
+  CumulativeBreachLookup,
+} from '~features/Breach/CumulativeBreach/CumulativeBreachManager';
+
 export interface DetailSliceState {
   sensorId: string;
   from: number;
@@ -15,6 +20,12 @@ export interface UpdateDateRangePayload {
   to: number;
 }
 
+export interface UpdateDataPayload {
+  sensorId: string;
+  from: number;
+  to: number;
+}
+
 export interface DetailInitPayload {
   sensorId: string;
   minFrom: number;
@@ -27,4 +38,15 @@ export interface DetailInitSuccessPayload {
   to: number;
   possibleFrom: number;
   possibleTo: number;
+}
+
+export interface DetailCumulativeBreachSliceState {
+  hot: CumulativeBreach | null;
+  cold: CumulativeBreach | null;
+  isLoading: boolean;
+}
+
+export interface FetchCumulativesSuccess {
+  cumulatives: CumulativeBreachLookup;
+  sensorId: string;
 }

@@ -10,6 +10,7 @@ import { Centered } from './Centered';
 import { LogTableAction, LogTableSelector } from '../../features';
 import { Icon, ICON_SIZE } from '../presentation/icons';
 import { debounce } from 'lodash';
+import { useOnMount } from '~hooks';
 
 const COLUMNS: Column[] = [
   { header: 'Timestamp', flex: 1, key: 'timestamp', textAlign: 'left', sortable: true },
@@ -140,11 +141,7 @@ const Header = ({ columns }: HeaderProps) => {
         const sortData = debounce(() => dispatch(LogTableAction.trySortData(key)), 500);
 
         return (
-          <MaybeTouchableContainer
-            isDisabled={!sortable}
-            style={{ flex }}
-            onPress={sortData}
-          >
+          <MaybeTouchableContainer isDisabled={!sortable} style={{ flex }} onPress={sortData}>
             <Row
               flex={flex}
               justifyContent="center"
@@ -171,6 +168,9 @@ export const SensorLogsTable: FC<SensorLogsTableProps> = React.memo(({ id }) => 
   const data = useSelector(LogTableSelector.data);
   const isLoading = useSelector(LogTableSelector.isLoading);
   const dispatch = useDispatch();
+
+  const init = () => dispatch(LogTableAction.init());
+  useOnMount([init]);
 
   const renderItem = useCallback(
     ({ item, index }) => {

@@ -1,20 +1,18 @@
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice, PayloadAction, ActionReducerMapBuilder } from '@reduxjs/toolkit';
-import { call, getContext, put, select, takeEvery } from 'redux-saga/effects';
-import { RootState } from '../../../common/store/store';
-import { DEPENDENCY, REDUCER } from '../../../common/constants';
-import { DetailAction, DetailSelector } from '../Detail/DetailSlice';
+import { call, put, select, takeLatest } from 'redux-saga/effects';
+import { PrepareActionReturn } from '~common/types/common';
+import { RootState } from '~store';
+import { REDUCER } from '~constants';
 import {
-  CumulativeBreach,
-  CumulativeBreachLookup,
-} from '../../Breach/CumulativeBreach/CumulativeBreachManager';
-import { FormatService } from '../../../common/services';
-
-interface DetailCumulativeBreachSliceState {
-  hot: CumulativeBreach | null;
-  cold: CumulativeBreach | null;
-  isLoading: boolean;
-}
+  DetailCumulativeBreachSliceState,
+  DetailAction,
+  DetailSelector,
+} from '~features/SensorDetail';
+import { CumulativeBreachLookup, CumulativeBreachManager } from '~features/Breach';
+import { FormatService } from '~common/services';
+import { getDependency } from '~features/utils/saga';
+import { FetchCumulativesSuccess, UpdateDataPayload } from '~features/SensorDetail';
 
 const initialState = {
   hot: null,
@@ -22,31 +20,30 @@ const initialState = {
   isLoading: false,
 };
 
-interface FetchPayload {
-  sensorId: string;
-  from: number;
-  to: number;
-}
-
-interface FetchSuccessPayload {
-  cumulatives: CumulativeBreachLookup;
-  sensorId: string;
-}
-
 const reducers = {
+  init: () => {},
   fetch: {
-    prepare: (sensorId: string, from: number, to: number) => ({ payload: { sensorId, from, to } }),
+    prepare: (
+      sensorId: string,
+      from: number,
+      to: number
+    ): PrepareActionReturn<UpdateDataPayload> => ({ payload: { sensorId, from, to } }),
     reducer: (draftState: DetailCumulativeBreachSliceState) => {
       draftState.isLoading = true;
+      draftState.hot = null;
+      draftState.cold = null;
     },
   },
   fetchSuccess: {
-    prepare: (sensorId: string, cumulatives: CumulativeBreachLookup) => ({
+    prepare: (
+      sensorId: string,
+      cumulatives: CumulativeBreachLookup
+    ): PrepareActionReturn<FetchCumulativesSuccess> => ({
       payload: { cumulatives, sensorId },
     }),
     reducer: (
       draftState: DetailCumulativeBreachSliceState,
-      { payload: { cumulatives } }: PayloadAction<FetchSuccessPayload>
+      { payload: { cumulatives } }: PayloadAction<FetchCumulativesSuccess>
     ) => {
       const { hot, cold } = cumulatives;
       draftState.hot = hot;
@@ -99,9 +96,13 @@ const DetailCumulativeSelector = {
   isLoading,
 };
 
-function* fetch({ payload: { from, to, sensorId } }: PayloadAction<FetchPayload>): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const breachManager = yield call(DependencyLocator.get, DEPENDENCY.CUMULATIVE_BREACH_MANAGER);
+function* fetch({
+  payload: { from, to, sensorId },
+}: PayloadAction<UpdateDataPayload>): SagaIterator {
+  const breachManager: CumulativeBreachManager = yield call(
+    getDependency,
+    'cumulativeBreachManager'
+  );
 
   try {
     const cumulative: CumulativeBreachLookup = yield call(
@@ -116,18 +117,19 @@ function* fetch({ payload: { from, to, sensorId } }: PayloadAction<FetchPayload>
   }
 }
 
-function* tryFetch({ payload: { sensorId, from, to } }: PayloadAction<FetchPayload>): SagaIterator {
+function* tryFetch(): SagaIterator {
   const id = yield select(DetailSelector.sensorId);
-  yield put(DetailCumulativeAction.fetch(sensorId ?? id, from, to));
+  const { from, to } = yield select(DetailSelector.fromTo);
+  yield put(DetailCumulativeAction.fetch(id, from, to));
 }
 
 function* root(): SagaIterator {
-  yield takeEvery(DetailAction.initSuccess, tryFetch);
-  yield takeEvery(DetailAction.updateDateRange, tryFetch);
-  yield takeEvery(DetailCumulativeAction.fetch, fetch);
+  yield takeLatest(DetailCumulativeAction.init, tryFetch);
+  yield takeLatest(DetailAction.updateDateRange, tryFetch);
+  yield takeLatest(DetailCumulativeAction.fetch, fetch);
 }
 
-const DetailCumulativeSaga = { root };
+const DetailCumulativeSaga = { root, tryFetch, fetch };
 
 export {
   DetailCumulativeAction,
