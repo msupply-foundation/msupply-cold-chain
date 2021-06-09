@@ -11,3 +11,7 @@ export type ById<SomeTypeSortedById> = Record<string, SomeTypeSortedById>;
 export interface PrepareActionReturn<SomePayload> {
   payload: SomePayload;
 }
+
+export interface FailurePayload {
+  errorMessage: string;
+}

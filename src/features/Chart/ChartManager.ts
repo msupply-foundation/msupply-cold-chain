@@ -1,5 +1,6 @@
 import { DatabaseService } from '~common/services';
 import { ById } from '~common/types/common';
+import { ChartDataPoint, ChartTimestamp } from '~features/Chart/types';
 
 enum ChartDataQueryKey {
   timestamp = 'timestamp',
@@ -119,16 +120,6 @@ ON tl.sensorid = s.id
 WHERE s.id = ?
 GROUP  BY s.id  
 `;
-
-export interface ChartDataPoint {
-  temperature: number;
-  timestamp: number;
-}
-
-export interface ChartTimestamp {
-  from?: number;
-  to?: number;
-}
 
 export class ChartManager {
   databaseService: DatabaseService;

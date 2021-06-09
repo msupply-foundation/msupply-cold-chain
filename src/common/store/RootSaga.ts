@@ -17,7 +17,7 @@ import { HydrateSaga } from '~features/Hydrate';
 
 export function* RootSaga(): SagaIterator {
   yield fork(EntitiesSaga.root);
-  yield fork(ChartSaga.watchChartActions);
+  yield fork(ChartSaga.root);
   yield fork(BreachSaga.root);
   yield fork(SensorDetailSaga.root);
   yield fork(BluetoothSaga.root);

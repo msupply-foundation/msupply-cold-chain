@@ -275,7 +275,7 @@ function* remove({ payload: { id } }: PayloadAction<RemovePayload>): SagaIterato
     yield call(sensorManager.remove, id);
     yield put(SensorAction.removeSuccess(id));
   } catch (error) {
-    yield put(SensorAction.removeFailure(error.message));
+    yield put(SensorAction.removeFailure((error as Error).message));
   }
 }
 
