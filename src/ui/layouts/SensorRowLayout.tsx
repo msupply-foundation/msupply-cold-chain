@@ -19,10 +19,9 @@ export const SensorRowLayout: FC<SensorRowLayoutProps> = ({
   onPress,
   direction,
 }) => {
-
   return (
-    <TouchableOpacity onPress={onPress}>
-      <Row >
+    <TouchableOpacity {...(onPress ? { onPress } : {})}>
+      <Row>
         <Column flex={3} justifyContent="center">
           {Chart}
         </Column>

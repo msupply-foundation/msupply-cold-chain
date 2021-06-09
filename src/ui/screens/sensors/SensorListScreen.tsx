@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useLayoutEffect } from 'react';
 import { useNavigation } from '@react-navigation/core';
 import { FlatList } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
@@ -50,13 +50,11 @@ export const SensorListScreen: FC = () => {
     }, 50000);
   };
 
-  useOnMount([
-    hydrate,
-    startPassiveDownloading,
-    startBatteryObserving,
-    startIntegrating,
-    getSensors,
-  ]);
+  useLayoutEffect(() => {
+    getSensors();
+  }, []);
+
+  useOnMount([hydrate, startPassiveDownloading, startBatteryObserving, startIntegrating]);
 
   const renderItem = useCallback(
     ({ item }: { item: string }) => {
