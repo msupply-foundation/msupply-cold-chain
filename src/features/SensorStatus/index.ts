@@ -5,3 +5,4 @@ export {
   SensorStatusSaga,
   SensorStatusSelector,
 } from './SensorStatusSlice';
+export * from './types';

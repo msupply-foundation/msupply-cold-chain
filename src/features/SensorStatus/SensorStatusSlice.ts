@@ -1,34 +1,21 @@
-import { SensorStatus } from './../../ui/components/SensorStatus';
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { all, call, getContext, put, takeEvery } from 'redux-saga/effects';
-import { RootState } from '../../common/store/store';
-import { DEPENDENCY, REDUCER } from '../../common/constants';
-import { AcknowledgeBreachAction, ConsecutiveBreachAction } from '../Breach';
-import { SensorAction } from '../Entities';
-import { FormatService } from '../../common/services';
+import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
+import { FailurePayload, PrepareActionReturn, ById } from '~common/types/common';
+import { RootState } from '~store';
+import { REDUCER } from '~common/constants';
+import { SensorAction, AcknowledgeBreachAction, ConsecutiveBreachAction } from '~features';
+import { FormatService } from '~common/services';
 import { getDependency } from '~features/utils/saga';
-import { ById } from '~common/types/common';
 import { HydrateAction } from '~features/Hydrate';
-
-export interface SensorStatus {
-  id: string;
-  mostRecentLogTimestamp: number;
-  firstTimestamp: number;
-  numberOfLogs: number;
-  currentTemperature: number;
-  isInHotBreach: boolean;
-  isInColdBreach: boolean;
-  hasHotBreach: boolean;
-  hasColdBreach: boolean;
-  isLowBattery: boolean;
-  hasLogs: boolean;
-}
-
-interface SensorStatusSliceState {
-  fetchingById: Record<string, boolean>;
-  byId: Record<string, SensorStatus>;
-}
+import {
+  FetchFailPayload,
+  FetchPayload,
+  FetchSuccessPayload,
+  SensorStatus,
+  SensorStatusSliceState,
+  SensorStatusManager,
+} from '~features/SensorStatus';
 
 const initialState: SensorStatusSliceState = {
   fetchingById: {},
@@ -66,7 +53,7 @@ const lastDownloadTime = (
 const isLoading = (state: RootState, { id }: { id: string }): boolean => {
   const { [id]: isFetching } = getFetchingById(state);
 
-  return isFetching;
+  return isFetching ?? true;
 };
 
 const SensorStatusSelector = {
@@ -80,7 +67,6 @@ const SensorStatusSelector = {
     const { mostRecentLogTimestamp } = status;
     return mostRecentLogTimestamp;
   },
-
   possibleFrom: ({ sensorStatus }: RootState, id: string): number => {
     const status = sensorStatus.byId[id];
     const { firstTimestamp } = status;
@@ -123,20 +109,27 @@ const SensorStatusSelector = {
   },
 };
 
-interface FetchPayload {
-  sensorId: string;
-}
-
-interface FetchSuccessPayload {
-  sensorId: string;
-  status: SensorStatus;
-}
-
-interface FetchFailPayload {
-  sensorId: string;
-}
-
 const reducers = {
+  fetchAllSuccess: {
+    prepare: (byId: ById<SensorStatus>): PrepareActionReturn<ById<SensorStatus>> => ({
+      payload: byId,
+    }),
+    reducer: (
+      draftState: SensorStatusSliceState,
+      { payload }: PayloadAction<ById<SensorStatus>>
+    ) => {
+      draftState.byId = payload;
+      Object.keys(payload).forEach(sensorId => {
+        draftState.fetchingById[sensorId] = false;
+      });
+    },
+  },
+  fetchAllFailure: {
+    prepare: (errorMessage: string): PrepareActionReturn<FailurePayload> => ({
+      payload: { errorMessage },
+    }),
+    reducer: () => {},
+  },
   fetch: {
     prepare: (sensorId: string) => ({ payload: { sensorId } }),
     reducer: (
@@ -174,10 +167,10 @@ const { actions: SensorStatusAction, reducer: SensorStatusReducer } = createSlic
 });
 
 function* getSensorStatus({ payload: { sensorId } }: PayloadAction<FetchPayload>): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const sensorStatusManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_STATUS_MANAGER);
+  const sensorStatusManager: SensorStatusManager = yield call(getDependency, 'sensorStatusManager');
+
   try {
-    const state = yield call(sensorStatusManager.getSensorStatus, sensorId);
+    const state: SensorStatus = yield call(sensorStatusManager.getSensorStatus, sensorId);
     yield put(SensorStatusAction.fetchSuccess(sensorId, state));
   } catch (error) {
     yield put(SensorStatusAction.fetchFail(sensorId));
@@ -185,33 +178,25 @@ function* getSensorStatus({ payload: { sensorId } }: PayloadAction<FetchPayload>
 }
 
 function* getAllStatuses(): SagaIterator {
-  const sensorStatusManager = yield call(getDependency, 'sensorStatusManager');
+  const sensorStatusManager: SensorStatusManager = yield call(getDependency, 'sensorStatusManager');
 
   try {
     const statuses: ById<SensorStatus> = yield call(sensorStatusManager.getAllStatuses);
-
-    const actions = Object.keys(statuses).map(id =>
-      put(SensorStatusAction.fetchSuccess(id, statuses[id]))
-    );
-    yield all(actions);
-  } catch (e) {}
-}
-
-function* refreshSensorStatus({
-  payload: { sensorId },
-}: PayloadAction<{ sensorId: string }>): SagaIterator {
-  yield put(SensorStatusAction.fetch(sensorId));
+    yield put(SensorStatusAction.fetchAllSuccess(statuses));
+  } catch (error) {
+    yield put(SensorStatusAction.fetchAllFailure((error as Error).message));
+  }
 }
 
 function* root(): SagaIterator {
   yield takeEvery(SensorStatusAction.fetch, getSensorStatus);
-  yield takeEvery(ConsecutiveBreachAction.createSuccess, refreshSensorStatus);
-  yield takeEvery(SensorAction.update, refreshSensorStatus);
-  yield takeEvery(SensorAction.createSuccess, refreshSensorStatus);
-  yield takeEvery(AcknowledgeBreachAction.acknowledgeSuccess, refreshSensorStatus);
-  yield takeEvery(HydrateAction.hydrate, getAllStatuses);
+  yield takeEvery(ConsecutiveBreachAction.createSuccess, getSensorStatus);
+  yield takeEvery(SensorAction.update, getSensorStatus);
+  yield takeEvery(SensorAction.createSuccess, getSensorStatus);
+  yield takeEvery(AcknowledgeBreachAction.acknowledgeSuccess, getSensorStatus);
+  yield takeLatest(HydrateAction.hydrate, getAllStatuses);
 }
 
-const SensorStatusSaga = { root };
+const SensorStatusSaga = { root, getAllStatuses, getSensorStatus };
 
 export { SensorStatusAction, SensorStatusReducer, SensorStatusSaga, SensorStatusSelector };
