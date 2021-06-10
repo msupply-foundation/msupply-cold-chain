@@ -29,7 +29,6 @@ export const SensorListScreen: FC = () => {
   );
 
   const dispatch = useDispatch();
-  const getSensors = () => dispatch(SensorAction.fetchAll());
   const hydrate = () => dispatch(HydrateAction.hydrate());
 
   const startPassiveDownloading = () => {
@@ -51,8 +50,8 @@ export const SensorListScreen: FC = () => {
   };
 
   useLayoutEffect(() => {
-    getSensors();
-  }, []);
+    dispatch(SensorAction.fetchAll());
+  }, [dispatch]);
 
   useOnMount([hydrate, startPassiveDownloading, startBatteryObserving, startIntegrating]);
 

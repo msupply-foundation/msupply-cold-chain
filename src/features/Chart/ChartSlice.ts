@@ -24,7 +24,6 @@ const initialState: ChartSliceState = {
 };
 
 const reducers = {
-  init: () => {},
   initSuccess: {
     prepare: (byId: ListDataById): PrepareActionReturn<ListDataById> => ({
       payload: byId,
