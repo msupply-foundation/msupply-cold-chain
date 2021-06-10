@@ -52,7 +52,6 @@ export const SettingsTextEditModal: FC<SettingsTextEditModalProps> = ({
               <Column alignItems="center" justifyContent="center">
                 {isOpen && (
                   <TextInput
-                    secureTextEntry={true}
                     value={values.input}
                     underlineColorAndroid={COLOUR.GREY_ONE}
                     style={{ width: width * 0.5 }}
