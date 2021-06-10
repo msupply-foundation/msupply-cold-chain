@@ -134,3 +134,18 @@ describe('FormatService:fileDate', () => {
     expect(formatter.fileDate(from)).toEqual('01-01-1970-120000');
   });
 });
+
+describe('FormatService:hide', () => {
+  it('Formats hidden text with the correct number of special chars', () => {
+    const formatter = new FormatService();
+
+    const one = 'abc';
+    expect(formatter.hide(one)).toBe('●●●');
+
+    const two = 'a';
+    expect(formatter.hide(two)).toBe('●');
+
+    const three = 'abcdefg';
+    expect(formatter.hide(three)).toBe('●●●●●●●');
+  });
+});

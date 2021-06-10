@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { COLOUR } from '~constants';
 import { Row } from '~layouts';
-import { useToggle, useCombinedCallback } from '~hooks';
+import { useToggle, useCombinedCallback, useFormatter } from '~hooks';
 import { NormalText } from '~presentation/typography';
 import { Icon } from '~presentation/icons';
 import { SettingsTextEditModal } from './SettingsTextEditModal';
@@ -13,7 +13,7 @@ interface SettingsTextInputRowProps {
   value?: string;
   editDescription: string;
   validation?: any;
-  hideValue?: boolean;
+  secureTextEntry?: boolean;
 }
 
 export const SettingsTextInputRow: FC<SettingsTextInputRowProps> = ({
@@ -23,10 +23,11 @@ export const SettingsTextInputRow: FC<SettingsTextInputRowProps> = ({
   value,
   editDescription,
   validation,
-  hideValue,
+  secureTextEntry,
 }) => {
   const [isModalOpen, toggleModal] = useToggle(false);
   const wrappedOnConfirm = useCombinedCallback(onConfirm, toggleModal);
+  const formatter = useFormatter();
 
   return (
     <>
@@ -38,7 +39,7 @@ export const SettingsTextInputRow: FC<SettingsTextInputRowProps> = ({
         RightComponent={
           <Row justifyContent="space-between" alignItems="center">
             <NormalText marginRight={30} color={COLOUR.GREY_ONE}>
-              {hideValue ? '' : value ?? ''}
+              {secureTextEntry && value ? formatter.hide(value) : value ?? ''}
             </NormalText>
             <Icon.Chevron direction="right" color={COLOUR.GREY_ONE} />
           </Row>
@@ -46,6 +47,7 @@ export const SettingsTextInputRow: FC<SettingsTextInputRowProps> = ({
       />
       {isModalOpen && (
         <SettingsTextEditModal
+          secureTextEntry={secureTextEntry ?? false}
           title={editDescription}
           onConfirm={wrappedOnConfirm}
           onClose={toggleModal}

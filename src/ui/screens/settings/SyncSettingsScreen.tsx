@@ -92,7 +92,7 @@ export const SyncSettingsScreen: FC = () => {
           }
           value={authPassword}
           editDescription={t('EDIT_PASSWORD')}
-          hideValue
+          secureTextEntry
         />
       </SettingsGroup>
       <SettingsGroup title="Operations">

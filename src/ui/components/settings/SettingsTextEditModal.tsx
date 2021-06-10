@@ -1,16 +1,13 @@
 import React, { useState, FC } from 'react';
-import { KeyboardTypeOptions, TextInput, useWindowDimensions } from 'react-native';
+import { KeyboardTypeOptions, TextInput, TextInputProps, useWindowDimensions } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-
-import { COLOUR } from '../../../common/constants';
-
-import { SmallText } from '../../presentation/typography';
-import { Column, FlexPaddingView } from '../../layouts';
-
+import { COLOUR } from '~common/constants';
+import { SmallText } from '~presentation/typography';
+import { Column, FlexPaddingView } from '~layouts';
 import { SettingsEditModal } from './SettingsEditModal';
 
-interface SettingsTextEditModalProps {
+interface SettingsTextEditModalProps extends TextInputProps {
   title: string;
   onConfirm: ({ inputValue }: { inputValue: string }) => void;
   initialValue: string;
@@ -28,9 +25,9 @@ export const SettingsTextEditModal: FC<SettingsTextEditModalProps> = ({
   keyboardType = 'default',
   isOpen,
   onClose,
+  ...textInputProps
 }) => {
   const [inputValue, setInputValue] = useState(initialValue);
-
   const { width } = useWindowDimensions();
 
   return (
@@ -55,6 +52,7 @@ export const SettingsTextEditModal: FC<SettingsTextEditModalProps> = ({
               <Column alignItems="center" justifyContent="center">
                 {isOpen && (
                   <TextInput
+                    secureTextEntry={true}
                     value={values.input}
                     underlineColorAndroid={COLOUR.GREY_ONE}
                     style={{ width: width * 0.5 }}
@@ -65,6 +63,7 @@ export const SettingsTextEditModal: FC<SettingsTextEditModalProps> = ({
                     numberOfLines={1}
                     onSubmitEditing={wrappedOnConfirm}
                     keyboardType={keyboardType}
+                    {...textInputProps}
                   />
                 )}
                 {errors.input ? (

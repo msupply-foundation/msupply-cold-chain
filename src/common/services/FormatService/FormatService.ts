@@ -100,4 +100,8 @@ export class FormatService {
       'TEMPERATURE'
     )}: ${this.toCelsius(temperature)} ${direction}`;
   };
+
+  hide = (someString: string): string => {
+    return SPECIAL_CHARACTER.BLACK_CIRCLE.repeat(someString.length);
+  };
 }
