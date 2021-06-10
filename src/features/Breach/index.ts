@@ -24,3 +24,5 @@ export {
   AcknowledgeBreachReducer,
   AcknowledgeBreachManager,
 } from './AcknowledgeBreach';
+
+export * from './types';

@@ -128,5 +128,9 @@
   "SENSORS_MAC_ADDRESS": "This sensors mac address",
   "SENSOR_DETAILS": "SENSOR DETAILS",
   "SENSORS_BATTERY_LEVEL": "This sensors battery level",
-  "REMOVE": "Remove"
+  "REMOVE": "Remove",
+  "BREACH_ONGOING": "The current breach is ongoing!",
+  "STARTED": "started",
+  "ENDED": "ended",
+  "ACKNOWLEDGE": "ACKNOWLEDGE"
 }

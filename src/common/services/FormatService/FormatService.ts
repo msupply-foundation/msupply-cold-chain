@@ -47,7 +47,7 @@ export class FormatService {
     return moment(date).format('DD MMMM');
   };
 
-  fileDate = (date: number): string => {
+  fullDate = (date: number): string => {
     return moment.unix(date).format('DD-MM-YYYY-HHmmss');
   };
 

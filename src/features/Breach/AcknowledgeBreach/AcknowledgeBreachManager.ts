@@ -1,15 +1,7 @@
+import { TemperatureBreach } from '~services/Database/entities';
 import { IsNull, Not } from 'typeorm/browser';
-import { ENTITIES } from '../../../common/constants';
-import { DatabaseService } from '../../../common/services';
-
-interface TemperatureBreach {
-  id: string;
-  endTimestamp: number;
-  startTimestamp: number;
-  temperatureBreachConfigurationId: string;
-  acknowledged: boolean;
-  sensorId: string;
-}
+import { ENTITIES } from '~common/constants';
+import { DatabaseService } from '~common/services';
 
 export class AcknowledgeBreachManager {
   databaseService: DatabaseService;
