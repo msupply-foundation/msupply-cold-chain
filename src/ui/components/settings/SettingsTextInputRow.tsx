@@ -13,6 +13,7 @@ interface SettingsTextInputRowProps {
   value?: string;
   editDescription: string;
   validation?: any;
+  hideValue?: boolean;
 }
 
 export const SettingsTextInputRow: FC<SettingsTextInputRowProps> = ({
@@ -22,6 +23,7 @@ export const SettingsTextInputRow: FC<SettingsTextInputRowProps> = ({
   value,
   editDescription,
   validation,
+  hideValue,
 }) => {
   const [isModalOpen, toggleModal] = useToggle(false);
   const wrappedOnConfirm = useCombinedCallback(onConfirm, toggleModal);
@@ -36,7 +38,7 @@ export const SettingsTextInputRow: FC<SettingsTextInputRowProps> = ({
         RightComponent={
           <Row justifyContent="space-between" alignItems="center">
             <NormalText marginRight={30} color={COLOUR.GREY_ONE}>
-              {value}
+              {hideValue ? '' : value ?? ''}
             </NormalText>
             <Icon.Chevron direction="right" color={COLOUR.GREY_ONE} />
           </Row>
