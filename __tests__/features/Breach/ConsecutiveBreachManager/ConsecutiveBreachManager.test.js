@@ -274,7 +274,7 @@ describe('ConsecutiveBreachManager: createBreachesFrom', () => {
     const mockQueryWith = jest.fn(async () => []);
     const mockDbService = { queryWith: mockQueryWith };
 
-    const breachManager = new ConsecutiveBreachManager(mockDbService);
+    const breachManager = new ConsecutiveBreachManager(mockDbService, { now: () => 0 });
 
     await expect(breachManager.createBreachesFrom('a')).resolves.toEqual(0);
   });

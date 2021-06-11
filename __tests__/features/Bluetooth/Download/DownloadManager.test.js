@@ -3,7 +3,7 @@ import { UtilService } from '~common/services/UtilService';
 
 describe('DownloadManager: calculateNumberOfLogsToSave', () => {
   it('Calculates correctly when the next possible log time is less than the time now', () => {
-    const downloadManager = new DownloadManager();
+    const downloadManager = new DownloadManager({}, new UtilService());
 
     let nextPossibleLogTime = 0;
     let logInterval = 300;
@@ -23,7 +23,7 @@ describe('DownloadManager: calculateNumberOfLogsToSave', () => {
     ).toBe(2);
   });
   it('Calculates correctly when the next Download time is after the time now', () => {
-    const downloadManager = new DownloadManager();
+    const downloadManager = new DownloadManager({}, new UtilService());
 
     let nextPossibleLogTime = 300;
     let logInterval = 300;
@@ -43,7 +43,7 @@ describe('DownloadManager: calculateNumberOfLogsToSave', () => {
   });
 
   it('Calculates correctly using the log interval for additional logs', () => {
-    const downloadManager = new DownloadManager();
+    const downloadManager = new DownloadManager({}, new UtilService());
 
     let nextPossibleLogTime = 0;
     let logInterval = 300;
