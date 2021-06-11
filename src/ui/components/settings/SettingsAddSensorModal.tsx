@@ -1,11 +1,10 @@
 import React, { useState, useCallback, FC } from 'react';
 import { useSelector } from 'react-redux';
 import { Pressable, ActivityIndicator } from 'react-native';
-import moment from 'moment';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import { useDatePicker } from '~hooks';
-import { FORMAT, COLOUR, STYLE } from '~constants';
+import { useDatePicker, useFormatter, useUtils } from '~hooks';
+import { COLOUR, STYLE } from '~constants';
 import { t } from '~translations';
 import { Column, Row } from '~layouts';
 import { NormalText } from '~presentation/typography';
@@ -14,6 +13,7 @@ import { Button } from '../buttons';
 import { SettingsEditModal } from './SettingsEditModal';
 import { BlinkSelector } from '~features/Bluetooth';
 import { Icon } from '~presentation/icons';
+import { UnixTimestamp } from '~common/types/common';
 
 const styles = {
   column: { maxHeight: STYLE.HEIGHT.SENSOR_ROW },
@@ -28,7 +28,7 @@ interface SettingsAddSensorModalProps {
   macAddress: string;
   onClose(): void;
   isOpen: boolean;
-  onConfirm(date: Date): void;
+  onConfirm(date: UnixTimestamp): void;
   onBlink(): void;
 }
 
@@ -39,32 +39,30 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
   onConfirm,
   onBlink,
 }) => {
-  const [date, setDate] = useState(new Date());
+  const utils = useUtils();
+  const formatter = useFormatter();
+  const [date, setDate] = useState(utils.now());
 
   const validator = useCallback(
     inputDate => {
-      const now = moment();
-      const input = moment(inputDate);
-      if (input.isBefore(now)) {
-        setDate(now.toDate());
+      const now = utils.now();
+      const input = utils.toUnixTimestamp(inputDate);
+      if (now > input) {
+        setDate(now);
       } else {
-        setDate(inputDate);
+        setDate(input);
       }
     },
-    [setDate]
+    [setDate, utils]
   );
-
-  const wrappedOnConfirm = useCallback(() => {
-    onConfirm(moment(date).startOf('minute').toDate());
-  }, [date, onConfirm]);
 
   const [isDatePickerOpen, onChangeDate, toggleDatePicker] = useDatePicker(validator);
   const [isTimePickerOpen, onChangeTime, toggleTimePicker] = useDatePicker(validator);
 
   const { [macAddress]: isBlinking } = useSelector(BlinkSelector.isBlinking);
 
-  const maximumDate = moment().add(30, 'days').toDate();
-  const minimumDate = new Date();
+  const maximumDate = utils.addDays(utils.now(), 30);
+  const minimumDate = utils.now();
 
   return (
     <>
@@ -72,7 +70,7 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
         title={t('CONNECT_WITH_SENSOR')}
         isOpen={isOpen}
         onClose={onClose}
-        onConfirm={wrappedOnConfirm}
+        onConfirm={() => onConfirm(date)}
         Content={
           <Column style={styles.column}>
             <Row flex={1} alignItems="center" justifyContent="center">
@@ -94,18 +92,14 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
 
               <Pressable style={styles.loggingColumns.two} onPress={() => toggleDatePicker()}>
                 <Row justifyContent="space-between">
-                  <NormalText color={COLOUR.GREY_ONE}>
-                    {moment(date).format(FORMAT.DATE.STANDARD_DATE)}
-                  </NormalText>
+                  <NormalText color={COLOUR.GREY_ONE}>{formatter.standardDate(date)}</NormalText>
                   <Icon.Calendar />
                 </Row>
               </Pressable>
 
               <Pressable style={styles.loggingColumns.three} onPress={() => toggleTimePicker()}>
                 <Row justifyContent="space-between">
-                  <NormalText color={COLOUR.GREY_ONE}>
-                    {moment(date).format(FORMAT.DATE.STANDARD_TIME)}
-                  </NormalText>
+                  <NormalText color={COLOUR.GREY_ONE}>{formatter.standardTime(date)}</NormalText>
                   <Icon.Calendar />
                 </Row>
               </Pressable>
@@ -117,8 +111,8 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
         <DateTimePicker
           value={new Date()}
           onChange={onChangeDate}
-          minimumDate={minimumDate}
-          maximumDate={maximumDate}
+          minimumDate={new Date(minimumDate)}
+          maximumDate={new Date(maximumDate)}
           mode="date"
           display="calendar"
         />
@@ -129,8 +123,8 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
           onChange={onChangeTime}
           mode="time"
           display="spinner"
-          minimumDate={minimumDate}
-          maximumDate={maximumDate}
+          minimumDate={new Date(minimumDate)}
+          maximumDate={new Date(maximumDate)}
         />
       )}
     </>

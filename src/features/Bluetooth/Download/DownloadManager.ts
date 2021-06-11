@@ -1,7 +1,7 @@
-import moment, { Moment } from 'moment';
 import { SensorState } from '../../Entities/Sensor/SensorSlice';
 import { ENTITIES } from '../../../common/constants';
 import { DatabaseService, UtilService } from '../../../common/services';
+import { UnixTimestamp } from '~common/types/common';
 
 interface TemperatureLog {
   id: string;
@@ -25,15 +25,15 @@ export class DownloadManager {
   // point. Where the starting point is the timestamp for the next log.
   calculateNumberOfLogsToSave = (
     nextPossibleLogTime = 0,
-    logInterval: number,
-    timeNow = moment().unix()
+    logInterval: UnixTimestamp,
+    timeNow = this.utils.now()
   ): number => {
-    const now = moment.unix(timeNow);
-    const startingMoment = moment.unix(nextPossibleLogTime);
+    const now = this.utils.now(timeNow);
+
     // If the time for the next log is in the future, then don't save any.
-    if (startingMoment.isAfter(now)) return 0;
+    if (nextPossibleLogTime > now) return 0;
     // Calculate the seconds between the starting time and now.
-    const secondsBetween = now.diff(startingMoment, 's', true);
+    const secondsBetween = now - nextPossibleLogTime;
     // For example, if there are 1 log interval between the starting time and now,
     // then the times are for example, 0955 and 1000 - so, we save both the 0955 log
     // and the 1000 log. If there was less than one log interval between, then the
@@ -47,16 +47,17 @@ export class DownloadManager {
     logs: Partial<TemperatureLog>[],
     sensor: SensorState,
     maxNumberToSave: number,
-    mostRecentLogTime: number,
-    timeNow = moment().unix()
+    mostRecentLogTime: UnixTimestamp,
+    timeNow = this.utils.now()
   ): TemperatureLog[] => {
     const { logInterval, id: sensorId } = sensor;
     const sliceIndex = logs.length - maxNumberToSave;
     const logsToSave = logs.slice(sliceIndex);
 
-    let initial: Moment | undefined;
+    let initial = 0;
     if (!mostRecentLogTime) {
-      initial = moment.unix(timeNow).subtract((logsToSave.length - 1) * logInterval, 'seconds');
+      const lookbackSeconds = (logsToSave.length - 1) * logInterval;
+      initial = this.utils.now(timeNow) - lookbackSeconds;
     } else {
       const numberOfLogIntervalsUntilNow =
         Math.floor((timeNow - mostRecentLogTime) / logInterval) + 1;
@@ -65,15 +66,13 @@ export class DownloadManager {
       // potential gaps in logs (e.g. due to battery running out)
       // The number of log intervals until now, could be more then the max number to save, in which case,
       // we create a 'gap' in logs which is our best guess as to when the sensor stopped recording.
-      initial = moment.unix(
-        mostRecentLogTime +
-          (numberOfLogIntervalsUntilNow * logInterval - maxNumberToSave * logInterval)
-      );
+      const lookback = numberOfLogIntervalsUntilNow * logInterval - maxNumberToSave * logInterval;
+      initial = mostRecentLogTime + lookback;
     }
 
     return logsToSave.map(({ temperature = 0 }, i) => {
       const offset = logInterval * i;
-      const timestamp = Number(moment(initial).add(offset, 's').format('X'));
+      const timestamp = initial + offset;
       const id = this.utils.uuid();
 
       return { id, sensorId, timestamp, temperature, logInterval };

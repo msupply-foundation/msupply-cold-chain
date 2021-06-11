@@ -1,6 +1,5 @@
 import { UtilService } from '~services/UtilService';
 import { DatabaseService, Sensor } from '~services/Database';
-import moment from 'moment';
 import { classToPlain } from 'class-transformer';
 import { ENTITIES } from '../../../common/constants';
 
@@ -117,7 +116,7 @@ export class SensorManager {
   getCanDownload = async (id: string): Promise<boolean[]> => {
     const result = await this.databaseService.query(CAN_DOWNLOAD, [id]);
     const { logDelay, nextPossibleLogTime } = result[0];
-    const now = moment().unix();
+    const now = this.utils.now();
 
     const canDownloadLogs = now >= logDelay && nextPossibleLogTime <= now;
 
@@ -139,7 +138,7 @@ export class SensorManager {
       id,
       batteryLevel,
       logDelay,
-      programmedDate: moment().unix(),
+      programmedDate: this.utils.now(),
     });
   };
 

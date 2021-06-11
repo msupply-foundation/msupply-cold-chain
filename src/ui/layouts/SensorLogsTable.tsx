@@ -1,16 +1,14 @@
 import React, { FC, useCallback } from 'react';
 import { FlatList, View, Text, ActivityIndicator, TextStyle } from 'react-native';
-import moment from 'moment';
+import { debounce } from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { MaybeTouchableContainer } from '~layouts';
-import { COLOUR } from '../../common/constants';
-
+import { COLOUR } from '~constants';
 import { Row } from './Row';
 import { Centered } from './Centered';
-import { LogTableAction, LogTableSelector } from '../../features';
-import { Icon, ICON_SIZE } from '../presentation/icons';
-import { debounce } from 'lodash';
-import { useOnMount } from '~hooks';
+import { LogTableAction, LogTableSelector } from '~features';
+import { Icon, ICON_SIZE } from '~presentation/icons';
+import { useFormatter, useOnMount } from '~hooks';
 
 const COLUMNS: Column[] = [
   { header: 'Timestamp', flex: 1, key: 'timestamp', textAlign: 'left', sortable: true },
@@ -80,9 +78,11 @@ interface SensorLogsRowProps {
 
 export const SensorLogsRow: FC<SensorLogsRowProps> = React.memo(
   ({ i, isInHotBreach, isInColdBreach, temperature, timestamp }) => {
+    const formatter = useFormatter();
+
     const even = i % 2 === 0;
 
-    const time = moment(timestamp * 1000).format('DD/MM/YY HH:mm:ss');
+    const time = formatter.fullDate(timestamp * 1000);
 
     const rowData = {
       isInBreach: isInColdBreach || isInHotBreach ? 'yes' : '',

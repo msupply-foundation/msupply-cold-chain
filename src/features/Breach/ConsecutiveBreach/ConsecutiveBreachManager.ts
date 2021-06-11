@@ -1,4 +1,3 @@
-import { SensorLog } from '~services/Bluetooth/BleService';
 import {
   TemperatureBreach,
   TemperatureBreachConfiguration,
@@ -6,8 +5,8 @@ import {
 } from '~services/Database/entities';
 import { UtilService } from '~services/UtilService';
 import { DatabaseService, Sensor } from '~services/Database';
-import moment from 'moment';
 import { Not, IsNull, MoreThan, Equal } from 'typeorm/browser';
+import { SensorLog } from '~services/Bluetooth/types';
 import { ENTITIES } from '~constants';
 
 export class ConsecutiveBreachManager {
@@ -184,7 +183,7 @@ export class ConsecutiveBreachManager {
   };
 
   createBreachesFrom = async (sensorId: string): Promise<number> => {
-    const { timestamp = moment(0).unix() } = (await this.getMostRecentBreachLog(sensorId)) ?? {};
+    const { timestamp = this.utils.now() } = (await this.getMostRecentBreachLog(sensorId)) ?? {};
     return timestamp;
   };
 
