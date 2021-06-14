@@ -3,75 +3,69 @@ import { UtilService } from '~common/services/UtilService';
 
 describe('DownloadManager: calculateNumberOfLogsToSave', () => {
   it('Calculates correctly when the next possible log time is less than the time now', () => {
-    const downloadManager = new DownloadManager({}, new UtilService());
+    const utilService = new UtilService();
+    utilService.now = () => 600;
+
+    const downloadManager = new DownloadManager({}, utilService);
 
     let nextPossibleLogTime = 0;
     let logInterval = 300;
-    let timeNow = 600;
 
     // Can download logs for 0, 300 & 600.
-    expect(
-      downloadManager.calculateNumberOfLogsToSave(nextPossibleLogTime, logInterval, timeNow)
-    ).toBe(3);
+    expect(downloadManager.calculateNumberOfLogsToSave(nextPossibleLogTime, logInterval)).toBe(3);
+
+    utilService.now = () => 599;
 
     nextPossibleLogTime = 0;
     logInterval = 300;
-    timeNow = 599;
 
-    expect(
-      downloadManager.calculateNumberOfLogsToSave(nextPossibleLogTime, logInterval, timeNow)
-    ).toBe(2);
+    expect(downloadManager.calculateNumberOfLogsToSave(nextPossibleLogTime, logInterval)).toBe(2);
   });
   it('Calculates correctly when the next Download time is after the time now', () => {
-    const downloadManager = new DownloadManager({}, new UtilService());
+    const utilService = new UtilService();
+    utilService.now = () => 299;
+
+    const downloadManager = new DownloadManager({}, utilService);
 
     let nextPossibleLogTime = 300;
     let logInterval = 300;
-    let timeNow = 299;
 
-    expect(
-      downloadManager.calculateNumberOfLogsToSave(nextPossibleLogTime, logInterval, timeNow)
-    ).toBe(0);
+    expect(downloadManager.calculateNumberOfLogsToSave(nextPossibleLogTime, logInterval)).toBe(0);
 
     nextPossibleLogTime = 1;
     logInterval = 300;
-    timeNow = 0;
+    utilService.now = () => 0;
 
-    expect(
-      downloadManager.calculateNumberOfLogsToSave(nextPossibleLogTime, logInterval, timeNow)
-    ).toBe(0);
+    expect(downloadManager.calculateNumberOfLogsToSave(nextPossibleLogTime, logInterval)).toBe(0);
   });
 
   it('Calculates correctly using the log interval for additional logs', () => {
-    const downloadManager = new DownloadManager({}, new UtilService());
+    const utilService = new UtilService();
+    utilService.now = () => 301;
+    const downloadManager = new DownloadManager({}, utilService);
 
     let nextPossibleLogTime = 0;
     let logInterval = 300;
-    let timeNow = 301;
 
-    expect(
-      downloadManager.calculateNumberOfLogsToSave(nextPossibleLogTime, logInterval, timeNow)
-    ).toBe(2);
+    expect(downloadManager.calculateNumberOfLogsToSave(nextPossibleLogTime, logInterval)).toBe(2);
 
     nextPossibleLogTime = 0;
     logInterval = 300;
-    timeNow = 599;
+    utilService.now = () => 599;
 
-    expect(
-      downloadManager.calculateNumberOfLogsToSave(nextPossibleLogTime, logInterval, timeNow)
-    ).toBe(2);
+    expect(downloadManager.calculateNumberOfLogsToSave(nextPossibleLogTime, logInterval)).toBe(2);
   });
 });
 
 describe('DownloadManager: createLogs', () => {
   it('Creates the correct logs starting from no existing logs.', () => {
-    const utils = new UtilService();
-    const downloadManager = new DownloadManager({}, utils);
+    const utilService = new UtilService();
+    utilService.now = () => 600;
+    const downloadManager = new DownloadManager({}, utilService);
 
     const sensor = { id: 'a', logInterval: 300 };
     const maxNumberToSave = 3;
     const mostRecentLogTime = null;
-    const timeNow = 600;
 
     const logs = [{ temperature: 10 }, { temperature: 11 }, { temperature: 12 }];
     const shouldBe = [
@@ -80,18 +74,18 @@ describe('DownloadManager: createLogs', () => {
       { id: '1', temperature: 12, timestamp: 600, sensorId: 'a', logInterval: 300 },
     ];
 
-    expect(
-      downloadManager.createLogs(logs, sensor, maxNumberToSave, mostRecentLogTime, timeNow)
-    ).toEqual(shouldBe);
+    expect(downloadManager.createLogs(logs, sensor, maxNumberToSave, mostRecentLogTime)).toEqual(
+      shouldBe
+    );
   });
   it('Creates the correct logs when there are existing logs', () => {
-    const utils = new UtilService();
-    const downloadManager = new DownloadManager({}, utils);
+    const utilService = new UtilService();
+    utilService.now = () => 600;
+    const downloadManager = new DownloadManager({}, utilService);
 
     const sensor = { id: 'a', logInterval: 300 };
     const maxNumberToSave = 2;
     const mostRecentLogTime = 0;
-    const timeNow = 600;
 
     const logs = [{ temperature: 10 }, { temperature: 11 }, { temperature: 12 }];
     const shouldBe = [
@@ -99,9 +93,9 @@ describe('DownloadManager: createLogs', () => {
       { id: '1', temperature: 12, timestamp: 600, sensorId: 'a', logInterval: 300 },
     ];
 
-    expect(
-      downloadManager.createLogs(logs, sensor, maxNumberToSave, mostRecentLogTime, timeNow)
-    ).toEqual(shouldBe);
+    expect(downloadManager.createLogs(logs, sensor, maxNumberToSave, mostRecentLogTime)).toEqual(
+      shouldBe
+    );
   });
 
   it('Calls the db service with the passed logs', async () => {
@@ -118,13 +112,12 @@ describe('DownloadManager: createLogs', () => {
   });
   it('Creates logs with the correct timestamps when there exists other most recent logs.', () => {
     const dbService = {};
-    const utils = { uuid: () => '1' };
+    const utils = { uuid: () => '1', now: () => 600 };
     const downloadManager = new DownloadManager(dbService, utils);
 
     const sensor = { id: 'a', logInterval: 300 };
     const maxNumberToSave = 1;
     const mostRecentLogTime = 1;
-    const timeNow = 600;
 
     // In this case, there already exists a record that's been recorded at 1. So there can only
     // be one record that exists that we have not downloaded and saved - the record at 301 - given
@@ -140,9 +133,9 @@ describe('DownloadManager: createLogs', () => {
       },
     ];
 
-    expect(
-      downloadManager.createLogs(logs, sensor, maxNumberToSave, mostRecentLogTime, timeNow)
-    ).toEqual(shouldBe);
+    expect(downloadManager.createLogs(logs, sensor, maxNumberToSave, mostRecentLogTime)).toEqual(
+      shouldBe
+    );
   });
   it('Correctly calculates the timestamp of a sensor when there is a gap of logs', () => {
     // We are mocking the case where the sensor has been taken away and used elsewhere, for some reason.
@@ -164,6 +157,7 @@ describe('DownloadManager: createLogs', () => {
     const mostRecentLogTime = 1000;
     // The time now though, is 100 log intervals into the future.
     const timeNow = mostRecentLogTime + 100 * 300;
+    utils.now = () => timeNow;
     // Then, when we downloaded the logs, we only got two of them.
     const logs = [{ temperature: 10 }, { temperature: 11 }];
 

@@ -10,7 +10,7 @@ type NumberRange = [number, number];
 export class UtilService {
   uuid = (): string => generateUUID.v1() as string;
 
-  now = (optionalNow = moment().unix()): UnixTimestamp => moment.unix(optionalNow).unix();
+  now = (): UnixTimestamp => moment().unix();
 
   startOfMinute = (date: UnixTimestamp): UnixTimestamp => {
     const asMoment = moment.unix(date);

@@ -71,12 +71,6 @@ describe('UtilService:timeUntilNextMinute', () => {
 });
 
 describe('UtilService:now', () => {
-  it('Returns the time passed as the time now', () => {
-    const utils = new UtilService();
-
-    expect(utils.now(1)).toBe(1);
-  });
-
   it('Returns a number when called with no params', () => {
     const utils = new UtilService();
 

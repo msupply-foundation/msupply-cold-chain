@@ -23,12 +23,8 @@ export class DownloadManager {
 
   // Calculates the number of sensor logs that should be saved from some given starting
   // point. Where the starting point is the timestamp for the next log.
-  calculateNumberOfLogsToSave = (
-    nextPossibleLogTime = 0,
-    logInterval: UnixTimestamp,
-    timeNow = this.utils.now()
-  ): number => {
-    const now = this.utils.now(timeNow);
+  calculateNumberOfLogsToSave = (nextPossibleLogTime = 0, logInterval: UnixTimestamp): number => {
+    const now = this.utils.now();
 
     // If the time for the next log is in the future, then don't save any.
     if (nextPossibleLogTime > now) return 0;
@@ -47,9 +43,9 @@ export class DownloadManager {
     logs: Partial<TemperatureLog>[],
     sensor: SensorState,
     maxNumberToSave: number,
-    mostRecentLogTime: UnixTimestamp,
-    timeNow = this.utils.now()
+    mostRecentLogTime: UnixTimestamp
   ): TemperatureLog[] => {
+    const now = this.utils.now();
     const { logInterval, id: sensorId } = sensor;
     const sliceIndex = logs.length - maxNumberToSave;
     const logsToSave = logs.slice(sliceIndex);
@@ -57,10 +53,9 @@ export class DownloadManager {
     let initial = 0;
     if (!mostRecentLogTime) {
       const lookbackSeconds = (logsToSave.length - 1) * logInterval;
-      initial = this.utils.now(timeNow) - lookbackSeconds;
+      initial = now - lookbackSeconds;
     } else {
-      const numberOfLogIntervalsUntilNow =
-        Math.floor((timeNow - mostRecentLogTime) / logInterval) + 1;
+      const numberOfLogIntervalsUntilNow = Math.floor((now - mostRecentLogTime) / logInterval) + 1;
 
       // This 'lookback' (as opposed to only counting forward) is necessary to account for
       // potential gaps in logs (e.g. due to battery running out)

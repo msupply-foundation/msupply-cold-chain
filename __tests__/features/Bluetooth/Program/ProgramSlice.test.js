@@ -117,7 +117,6 @@ describe('ProgramSaga', () => {
     DependencyLocator.register('settingManager', sensorManager);
     DependencyLocator.register('bleService', btService);
     DependencyLocator.register('utilService', new UtilService());
-    // .provide([[getContext('dependencyLocator'), DependencyLocator]])
 
     return expectSaga(ProgramSaga.tryUpdateLogInterval, {
       payload: { macAddress: 'AA:BB:CC:DD:EE:FF', logInterval: 300 },
