@@ -19,6 +19,7 @@ Object {
   "DEVICE": "device",
   "DOWNLOAD": "download",
   "ENTITIES": "entities",
+  "HYDRATE": "hydrate",
   "LOG_TABLE": "logTable",
   "NEW_SENSOR": "new_sensor",
   "PERMISSION": "permission",
