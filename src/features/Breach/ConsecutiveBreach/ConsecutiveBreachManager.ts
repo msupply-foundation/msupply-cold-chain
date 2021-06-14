@@ -183,8 +183,8 @@ export class ConsecutiveBreachManager {
   };
 
   createBreachesFrom = async (sensorId: string): Promise<number> => {
-    const { timestamp = this.utils.now() } = (await this.getMostRecentBreachLog(sensorId)) ?? {};
-    return timestamp;
+    const { timestamp } = (await this.getMostRecentBreachLog(sensorId)) ?? {};
+    return timestamp ?? this.utils.toUnixTimestamp(new Date(0));
   };
 
   getLogsToCheck = async (sensorId: string): Promise<TemperatureLog[]> => {
