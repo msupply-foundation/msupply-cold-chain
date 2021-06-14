@@ -55,8 +55,8 @@ describe('FormatService: headerDate', () => {
   it('Formats correctly', () => {
     const formatter = new FormatService();
 
-    expect(formatter.headerDate(new Date('1/1/2020').getTime() / 1000)).toBe('01 January');
-    expect(formatter.headerDate(new Date('2/20/2020').getTime() / 1000)).toBe('20 February');
+    expect(formatter.headerDate(new Date('2020-01-01').getTime() / 1000)).toBe('01 January');
+    expect(formatter.headerDate(new Date('2020-02-20').getTime() / 1000)).toBe('20 February');
   });
 });
 
