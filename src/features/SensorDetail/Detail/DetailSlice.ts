@@ -1,18 +1,18 @@
+import { UtilService } from '~services/UtilService';
 import { SagaIterator } from '@redux-saga/types';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import moment from 'moment';
-import { call, getContext, put, takeEvery } from 'redux-saga/effects';
-import { RootState } from '../../../common/store/store';
-import { MILLISECONDS, DEPENDENCY, REDUCER } from '../../../common/constants';
-
-interface DetailSliceState {
-  sensorId: string;
-  from: number;
-  to: number;
-  possibleFrom: number;
-  possibleTo: number;
-  isLoading: boolean;
-}
+import { call, put, takeLatest } from 'redux-saga/effects';
+import { RootState } from '~store';
+import { MILLISECONDS, REDUCER } from '~common/constants';
+import { PrepareActionReturn } from '~common/types/common';
+import { getDependency } from '~features/utils/saga';
+import {
+  DetailSliceState,
+  DetailInitPayload,
+  DetailInitSuccessPayload,
+  UpdateDateRangePayload,
+} from '~features/SensorDetail/types';
 
 const initialState: DetailSliceState = {
   sensorId: '',
@@ -21,28 +21,19 @@ const initialState: DetailSliceState = {
   isLoading: false,
   possibleFrom: 0,
   possibleTo: 0,
+  minFrom: 0,
+  maxTo: 0,
 };
-
-interface UpdateDateRangePayload {
-  from: number;
-  to: number;
-}
-
-interface FetchPayload {
-  sensorId: string;
-}
-
-export interface FetchSuccessPayload {
-  sensorId: string;
-  from: number;
-  to: number;
-  possibleFrom: number;
-  possibleTo: number;
-}
 
 const reducers = {
   updateDateRange: {
-    prepare: (from: number, to: number) => ({ payload: { from, to } }),
+    prepare: (
+      sensorId: string,
+      from: number,
+      to: number
+    ): PrepareActionReturn<UpdateDateRangePayload> => ({
+      payload: { sensorId, from, to },
+    }),
     reducer: (
       draftState: DetailSliceState,
       { payload: { from, to } }: PayloadAction<UpdateDateRangePayload>
@@ -57,31 +48,41 @@ const reducers = {
     draftState.to = initialState.to;
     draftState.isLoading = initialState.isLoading;
   },
-  fetch: {
-    prepare: (sensorId: string) => ({ payload: { sensorId } }),
+  init: {
+    prepare: (
+      sensorId: string,
+      minFrom: number,
+      maxTo: number
+    ): PrepareActionReturn<DetailInitPayload> => ({
+      payload: { sensorId, minFrom, maxTo },
+    }),
     reducer: (
       draftState: DetailSliceState,
-      { payload: { sensorId } }: PayloadAction<FetchPayload>
+      { payload: { sensorId, minFrom, maxTo } }: PayloadAction<DetailInitPayload>
     ) => {
       draftState.isLoading = true;
+      draftState.minFrom = minFrom;
+      draftState.maxTo = maxTo;
       draftState.sensorId = sensorId;
+      draftState.possibleFrom = minFrom;
+      draftState.possibleTo = maxTo;
     },
   },
-  fetchSuccess: {
+  initSuccess: {
     prepare: (
       sensorId: string,
       from: number,
       to: number,
       possibleFrom: number,
       possibleTo: number
-    ) => ({
+    ): PrepareActionReturn<DetailInitSuccessPayload> => ({
       payload: { sensorId, from, to, possibleFrom, possibleTo },
     }),
     reducer: (
       draftState: DetailSliceState,
       {
         payload: { sensorId, from, to, possibleFrom, possibleTo },
-      }: PayloadAction<FetchSuccessPayload>
+      }: PayloadAction<DetailInitSuccessPayload>
     ) => {
       draftState.from = from;
       draftState.to = to;
@@ -91,7 +92,7 @@ const reducers = {
       draftState.possibleTo = possibleTo;
     },
   },
-  fetchFail: () => {},
+  initFailure: () => {},
 };
 
 const { actions: DetailAction, reducer: DetailReducer } = createSlice({
@@ -147,24 +148,23 @@ const DetailSelector = {
   },
 };
 
-function* fetch({ payload: { sensorId } }: PayloadAction<FetchPayload>): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const sensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
+function* init({
+  payload: { sensorId, maxTo, minFrom },
+}: PayloadAction<DetailInitPayload>): SagaIterator {
+  const utils: UtilService = yield call(getDependency, 'utilService');
 
   try {
-    const { possibleFrom, possibleTo, from, to } = yield call(
-      sensorManager.getSensorState,
-      sensorId
-    );
+    const to = Math.min(utils.now(), maxTo);
+    const from = Math.max(utils.threeDaysBefore(to), minFrom);
 
-    yield put(DetailAction.fetchSuccess(sensorId, from, to, possibleFrom, possibleTo));
+    yield put(DetailAction.initSuccess(sensorId, from, to, minFrom, maxTo));
   } catch (error) {
-    yield put(DetailAction.fetchFail());
+    yield put(DetailAction.initFailure());
   }
 }
 
 function* root(): SagaIterator {
-  yield takeEvery(DetailAction.fetch, fetch);
+  yield takeLatest(DetailAction.init, init);
 }
 
 const DetailSaga = { root };

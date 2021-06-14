@@ -81,10 +81,6 @@ export interface SyncTemperatureBreachesSuccessActionPayload {
   syncLogs: TemperatureBreach[];
 }
 
-export interface FailurePayload {
-  errorMessage: string;
-}
-
 export interface FetchAllSuccessActionPayload {
   loginUrl: string;
   sensorUrl: string;
@@ -107,7 +103,4 @@ export interface SyncingErrorActionPayload {
 
 export interface CountSyncQueuePayload {
   count: number;
-}
-export interface PrepareActionReturn<SomePayload> {
-  payload: SomePayload;
 }

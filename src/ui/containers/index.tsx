@@ -9,3 +9,4 @@ export { StorybookContainer } from './StorybookContainer';
 export { ErrorBoundary } from './ErrorBoundary';
 export { MigrationRunner } from './MigrationRunner';
 export { SplashScreenContainer } from './SplashScreenContainer';
+export { DevContainer } from './DevContainer';

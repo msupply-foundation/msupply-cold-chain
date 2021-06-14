@@ -6,6 +6,7 @@ export {
   CumulativeBreachSaga,
   CumulativeBreachReducer,
   CumulativeBreachManager,
+  CumulativeBreachLookup,
 } from './CumulativeBreach';
 
 export {

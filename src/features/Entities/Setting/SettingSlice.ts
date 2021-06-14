@@ -4,6 +4,7 @@ import { put, takeEvery, getContext, call } from 'redux-saga/effects';
 import { RootState } from '~store/store';
 import { SettingKey, SettingManager, SettingMap } from '~features/Entities/Setting';
 import { DEPENDENCY, REDUCER } from '~constants';
+import { PrepareActionReturn } from '~common/types/common';
 
 type SettingStateShape = SettingMap;
 
@@ -29,16 +30,12 @@ interface SettingUpdateAction {
   payload: SettingUpdatePayload;
 }
 
-export interface PrepareActionReturn<SomePayload> {
-  payload: SomePayload;
-}
-
 const reducers = {
   fetchAll: () => {},
   fetchAllSuccess: {
     prepare: (settings: SettingMap) => ({ payload: { settings } }),
     reducer: (
-      draftState: SettingStateShape,
+      _: SettingStateShape,
       { payload: { settings } }: PrepareActionReturn<{ settings: SettingMap }>
     ) => {
       return settings;

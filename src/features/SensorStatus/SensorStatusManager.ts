@@ -1,7 +1,9 @@
 import { SensorStatus } from './SensorStatusSlice';
 import { DatabaseService } from '../../common/services';
+import { ById } from '~common/types/common';
 
 enum SensorStatusQueryKey {
+  ID = 'id',
   CurrentTemperature = 'currentTemperature',
   MostRecentLogTimestamp = 'mostRecentLogTimestamp',
   NumberOfLogs = 'numberOfLogs',
@@ -12,6 +14,7 @@ enum SensorStatusQueryKey {
 }
 
 type SensorStatusQueryResult = {
+  [SensorStatusQueryKey.ID]: string;
   [SensorStatusQueryKey.CurrentTemperature]: number;
   [SensorStatusQueryKey.FirstTimestamp]: number;
   [SensorStatusQueryKey.MostRecentLogTimestamp]: number;
@@ -58,7 +61,8 @@ CurrentStats as (
     HAVING timestamp = MAX(timestamp)
 )
 
-SELECT 
+SELECT
+${SensorStatusQueryKey.ID},
 ${SensorStatusQueryKey.CurrentTemperature},
 ${SensorStatusQueryKey.MostRecentLogTimestamp},
 ${SensorStatusQueryKey.NumberOfLogs}, 
@@ -85,6 +89,7 @@ export class SensorStatusManager {
 
   mapStatusQueryResult = (result: SensorStatusQueryResult): SensorStatus => {
     return {
+      id: result.id,
       mostRecentLogTimestamp: result.mostRecentLogTimestamp,
       isInColdBreach: result.numberOfColdBreaches > 0,
       isInHotBreach: result.numberOfHotBreaches > 0,
@@ -96,6 +101,19 @@ export class SensorStatusManager {
       currentTemperature: result.currentTemperature,
       hasLogs: result.numberOfLogs > 0,
     };
+  };
+
+  getAllStatuses = async (): Promise<ById<SensorStatus>> => {
+    const query = buildSensorStatusQuery('isActive = 1');
+    const result = (await this.databaseService.query(query)) as SensorStatusQueryResult[];
+    const mappedResults = result.map(queryResult => this.mapStatusQueryResult(queryResult));
+
+    const indexed: ById<SensorStatus> = {};
+    mappedResults.forEach(sensorStatus => {
+      indexed[sensorStatus.id] = sensorStatus;
+    });
+
+    return indexed;
   };
 
   getSensorStatus = async (sensorId: string): Promise<SensorStatus> => {

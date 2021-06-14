@@ -1,6 +1,12 @@
 import { useContext } from 'react';
 import { Dependency, DependencyKey } from '~services/DependencyLocator/DependencyLocator';
-import { DependencyLocatorContext, FormatService, MigrationService, UtilService } from '~services';
+import {
+  DatabaseService,
+  DependencyLocatorContext,
+  FormatService,
+  MigrationService,
+  UtilService,
+} from '~services';
 
 export const useDependency = (service: DependencyKey): Dependency | undefined => {
   const depsLocator = useContext(DependencyLocatorContext);
@@ -22,4 +28,10 @@ export const useFormatter = (): FormatService => {
 export const useUtils = (): UtilService => {
   const utils = useDependency('utilService');
   return utils as UtilService;
+};
+
+export const useDb = (): DatabaseService => {
+  const dbService = useDependency('database');
+
+  return dbService as DatabaseService;
 };

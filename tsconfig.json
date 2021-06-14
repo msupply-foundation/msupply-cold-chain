@@ -49,6 +49,8 @@
       "~features/*": ["./src/features/*"],
       "~components": ["./src/ui/components"],
       "~components/*": ["./src/ui/components/*"],
+      "~containers": ["./src/ui/containers"],
+      "~containers/*": ["./src/ui/containers/*"],
       "~layouts": ["./src/ui/layouts"],
       "~layouts/*": ["./src/ui/layouts/*"],
       "~translations": ["./src/common/translations"],

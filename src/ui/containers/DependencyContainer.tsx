@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 
 import { ENVIRONMENT } from '~common/constants';
+import { DevContainer } from './DevContainer';
 
 import {
   Database,
@@ -48,7 +49,7 @@ export const DependencyContainer: FC = ({ children }) => {
     const permissionService = new PermissionService();
     const btService = new BleService(new BleManager(), utilService);
     const devBtService = new BleService(new DevBleManager(), utilService);
-    const formatService = new FormatService();
+    const formatService = new FormatService(utilService);
     const exportService = new ExportService();
     const devLogger = new DevLoggerService();
     const bugsnagLogger = new BugsnagLoggerService();
@@ -111,7 +112,7 @@ export const DependencyContainer: FC = ({ children }) => {
 
   return ready ? (
     <DependencyLocatorContext.Provider value={DependencyLocator}>
-      {children}
+      {__DEV__ ? <DevContainer>{children}</DevContainer> : children}
     </DependencyLocatorContext.Provider>
   ) : null;
 };

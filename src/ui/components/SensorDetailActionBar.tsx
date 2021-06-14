@@ -16,7 +16,7 @@ export const SensorDetailActionBar: FC<SensorDetailActionBarProps> = ({ id }) =>
   const dispatch = useDispatch();
   const [exportModalVariant, setExportModalVariant] = useState<'email' | '' | 'export'>('');
   const updateDateRange = (from: number, to: number) =>
-    dispatch(DetailAction.updateDateRange(from, to));
+    dispatch(DetailAction.updateDateRange(id, from, to));
 
   const { possibleFrom, possibleTo } = useSelector((state: RootState) =>
     DetailSelector.possibleFromTo(state)

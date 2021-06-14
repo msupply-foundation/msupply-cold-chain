@@ -10,6 +10,7 @@ import { SensorStatusReducer } from '~features/SensorStatus';
 import { PermissionReducer } from '~features/Permission';
 import { SyncReducer } from '~features/Sync';
 import { DevReducer } from '~features/Dev';
+import { HydrateReducer } from '~features/Hydrate';
 
 export const RootReducer = combineReducers({
   [REDUCER.ENTITIES]: EntitiesReducer,
@@ -22,4 +23,5 @@ export const RootReducer = combineReducers({
   [REDUCER.SENSOR_DETAIL]: SensorDetailReducer,
   [REDUCER.SYNC]: SyncReducer,
   [REDUCER.DEV]: DevReducer,
+  [REDUCER.HYDRATE]: HydrateReducer,
 });

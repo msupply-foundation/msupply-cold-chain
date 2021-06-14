@@ -22,7 +22,7 @@ export const SensorDetailScreenLayout: FC<SensorDetailScreenLayoutProps> = ({
   return (
     <Gradient>
       <LoadAfterInteractions withDelay={false}>
-        <Row alignItems="center" justifyContent="space-between">
+        <Row alignItems="center" justifyContent="space-between" style={{ paddingHorizontal: 20 }}>
           <View>{Name}</View>
           <View>{CumulativeBreach}</View>
         </Row>

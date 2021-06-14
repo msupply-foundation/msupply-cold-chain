@@ -23,3 +23,5 @@ export {
   DetailChartSaga,
   DetailChartSelector,
 } from './DetailChart';
+
+export * from './types';

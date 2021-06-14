@@ -1,10 +1,10 @@
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useLayoutEffect } from 'react';
 import { useNavigation } from '@react-navigation/core';
 import { FlatList } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { NAVIGATION } from '~constants';
-import { useCallbackOnGainingFocus, useOnMount } from '~hooks';
+import { useOnMount } from '~hooks';
 import {
   AcknowledgeBreachSelector,
   SensorSelector,
@@ -15,9 +15,10 @@ import {
 } from '~features';
 
 import { SensorChartRow } from '~components';
-import { AcknowledgeBreachModal } from '../../components/modal/AcknowledgeBreachModal';
+import { AcknowledgeBreachModal } from '~components/modal/AcknowledgeBreachModal';
 import { Gradient } from '~layouts';
-import { RootState } from '~store/store';
+import { RootState } from '~store';
+import { HydrateAction } from '~features/Hydrate';
 
 export const SensorListScreen: FC = () => {
   const navigation = useNavigation();
@@ -28,7 +29,7 @@ export const SensorListScreen: FC = () => {
   );
 
   const dispatch = useDispatch();
-  const getSensors = () => dispatch(SensorAction.fetchAll());
+  const hydrate = () => dispatch(HydrateAction.hydrate());
 
   const startPassiveDownloading = () => {
     setTimeout(() => {
@@ -48,8 +49,11 @@ export const SensorListScreen: FC = () => {
     }, 50000);
   };
 
-  useOnMount([startPassiveDownloading, startBatteryObserving, startIntegrating]);
-  useCallbackOnGainingFocus(getSensors);
+  useLayoutEffect(() => {
+    dispatch(SensorAction.fetchAll());
+  }, [dispatch]);
+
+  useOnMount([hydrate, startPassiveDownloading, startBatteryObserving, startIntegrating]);
 
   const renderItem = useCallback(
     ({ item }: { item: string }) => {
