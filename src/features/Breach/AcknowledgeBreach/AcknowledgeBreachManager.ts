@@ -1,15 +1,8 @@
+import { classToPlain } from 'class-transformer';
 import { IsNull, Not } from 'typeorm/browser';
-import { ENTITIES } from '../../../common/constants';
-import { DatabaseService } from '../../../common/services';
-
-interface TemperatureBreach {
-  id: string;
-  endTimestamp: number;
-  startTimestamp: number;
-  temperatureBreachConfigurationId: string;
-  acknowledged: boolean;
-  sensorId: string;
-}
+import { TemperatureBreach } from '~services/Database/entities';
+import { ENTITIES } from '~common/constants';
+import { DatabaseService } from '~common/services';
 
 export class AcknowledgeBreachManager {
   databaseService: DatabaseService;
@@ -19,13 +12,16 @@ export class AcknowledgeBreachManager {
   }
 
   getUnacknowledged = async (sensorId: string): Promise<TemperatureBreach[]> => {
-    return this.databaseService.queryWith(ENTITIES.TEMPERATURE_BREACH, {
+    const unacknowledged = await this.databaseService.queryWith(ENTITIES.TEMPERATURE_BREACH, {
       where: { sensorId, endTimestamp: Not(IsNull()), acknowledged: false },
     });
+
+    return unacknowledged.map((breach: TemperatureBreach) => classToPlain(breach));
   };
 
   acknowledge = async (breaches: TemperatureBreach[]): Promise<TemperatureBreach[]> => {
     const acknowledged = breaches.map(breach => ({ ...breach, acknowledged: true }));
-    return this.databaseService.upsert(ENTITIES.TEMPERATURE_BREACH, acknowledged);
+    const updated = await this.databaseService.upsert(ENTITIES.TEMPERATURE_BREACH, acknowledged);
+    return updated.map((breach: TemperatureBreach) => classToPlain(breach));
   };
 }

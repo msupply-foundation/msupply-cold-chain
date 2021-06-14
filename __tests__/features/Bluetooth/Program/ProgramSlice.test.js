@@ -1,12 +1,13 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import { getContext } from 'redux-saga/effects';
+import { DependencyLocator, UtilService } from '~services';
 import {
   ProgramReducer,
   ProgramInitialState,
   ProgramAction,
   ProgramSaga,
 } from '~features/Bluetooth';
-import { DEPENDENCY, SETTING } from '../../../../src/common/constants';
+import { SETTING } from '~constants';
 
 describe('ProgramReducer', () => {
   it('Sets state correctly when updating log interval for a sensor is a failure', () => {
@@ -74,16 +75,16 @@ describe('ProgramSaga', () => {
       throw new Error();
     });
     const sensorManager = { getSensorByMac: () => mockSensor };
-    const btService = {
-      updateLogInterval: mockUpdateLogInterval,
-    };
-    const getSensorManager = () => [btService, sensorManager];
-    const depsLocator = { get: getSensorManager };
+    const btService = { updateLogInterval: mockUpdateLogInterval };
+
+    DependencyLocator.register('sensorManager', sensorManager);
+    DependencyLocator.register('bleService', btService);
+    DependencyLocator.register('utilService', new UtilService());
 
     await expectSaga(ProgramSaga.tryUpdateLogInterval, {
       payload: { macAddress: 'AA:BB:CC:DD:EE:FF', logInterval: 300 },
     })
-      .provide([[getContext(DEPENDENCY.LOCATOR), depsLocator]])
+      .provide([[getContext('dependencyLocator'), DependencyLocator]])
       .run();
 
     expect(mockUpdateLogInterval).toBeCalledTimes(10);
@@ -96,13 +97,15 @@ describe('ProgramSaga', () => {
         throw new Error();
       },
     };
-    const getSensorManager = () => [btService, sensorManager];
-    const depsLocator = { get: getSensorManager };
+
+    DependencyLocator.register('settingManager', sensorManager);
+    DependencyLocator.register('bleService', btService);
+    DependencyLocator.register('utilService', new UtilService());
 
     return expectSaga(ProgramSaga.tryUpdateLogInterval, {
       payload: { macAddress: 'AA:BB:CC:DD:EE:FF', logInterval: 300 },
     })
-      .provide([[getContext(DEPENDENCY.LOCATOR), depsLocator]])
+      .provide([[getContext('dependencyLocator'), DependencyLocator]])
       .put(ProgramAction.updateLogIntervalFail())
       .run();
   });
@@ -110,13 +113,15 @@ describe('ProgramSaga', () => {
     const mockSensor = { id: '1', macAddress: 'AA:BB:CC:DD:EE:FF', batteryLevel: 90 };
     const sensorManager = { getSensorByMac: () => mockSensor };
     const btService = { updateLogInterval: () => {} };
-    const getSensorManager = () => [btService, sensorManager];
-    const depsLocator = { get: getSensorManager };
+
+    DependencyLocator.register('settingManager', sensorManager);
+    DependencyLocator.register('bleService', btService);
+    DependencyLocator.register('utilService', new UtilService());
 
     return expectSaga(ProgramSaga.tryUpdateLogInterval, {
       payload: { macAddress: 'AA:BB:CC:DD:EE:FF', logInterval: 300 },
     })
-      .provide([[getContext(DEPENDENCY.LOCATOR), depsLocator]])
+      .provide([[getContext('dependencyLocator'), DependencyLocator]])
       .put(ProgramAction.updateLogIntervalSuccess('1', 300))
       .run();
   });
@@ -128,13 +133,15 @@ describe('ProgramSaga', () => {
       updateLogInterval: () => {},
       toggleButton: toggleButtonMock,
     };
-    const getSensorManager = () => [btService, settingManager];
-    const depsLocator = { get: getSensorManager };
+
+    DependencyLocator.register('settingManager', settingManager);
+    DependencyLocator.register('bleService', btService);
+    DependencyLocator.register('utilService', new UtilService());
 
     await expectSaga(ProgramSaga.tryProgramNewSensor, {
       payload: { macAddress: 'AA:BB:CC:DD:EE:FF', logInterval: 300 },
     })
-      .provide([[getContext(DEPENDENCY.LOCATOR), depsLocator]])
+      .provide([[getContext('dependencyLocator'), DependencyLocator]])
       .run();
 
     expect(toggleButtonMock).toBeCalledTimes(1);
@@ -149,13 +156,15 @@ describe('ProgramSaga', () => {
       updateLogInterval: updateLogIntervalMock,
       toggleButton: () => {},
     };
-    const getSensorManager = () => [btService, settingManager];
-    const depsLocator = { get: getSensorManager };
+
+    DependencyLocator.register('settingManager', settingManager);
+    DependencyLocator.register('bleService', btService);
+    DependencyLocator.register('utilService', new UtilService());
 
     await expectSaga(ProgramSaga.tryProgramNewSensor, {
       payload: { macAddress: 'AA:BB:CC:DD:EE:FF', logInterval: 300 },
     })
-      .provide([[getContext(DEPENDENCY.LOCATOR), depsLocator]])
+      .provide([[getContext('dependencyLocator'), DependencyLocator]])
       .run();
 
     expect(updateLogIntervalMock).toBeCalledTimes(10);
@@ -170,13 +179,15 @@ describe('ProgramSaga', () => {
       updateLogInterval: () => {},
       toggleButton: toggleButtonMock,
     };
-    const getSensorManager = () => [btService, settingManager];
-    const depsLocator = { get: getSensorManager };
+
+    DependencyLocator.register('settingManager', settingManager);
+    DependencyLocator.register('bleService', btService);
+    DependencyLocator.register('utilService', new UtilService());
 
     await expectSaga(ProgramSaga.tryProgramNewSensor, {
       payload: { macAddress: 'AA:BB:CC:DD:EE:FF', logInterval: 300 },
     })
-      .provide([[getContext(DEPENDENCY.LOCATOR), depsLocator]])
+      .provide([[getContext('dependencyLocator'), DependencyLocator]])
       .run();
 
     expect(toggleButtonMock).toBeCalledTimes(10);
@@ -191,13 +202,15 @@ describe('ProgramSaga', () => {
       updateLogInterval: () => {},
       toggleButton: () => {},
     };
-    const getSensorManager = () => [btService, settingManager];
-    const depsLocator = { get: getSensorManager };
+
+    DependencyLocator.register('settingManager', settingManager);
+    DependencyLocator.register('bleService', btService);
+    DependencyLocator.register('utilService', new UtilService());
 
     await expectSaga(ProgramSaga.tryProgramNewSensor, {
       payload: { macAddress: 'AA:BB:CC:DD:EE:FF', logInterval: 300 },
     })
-      .provide([[getContext(DEPENDENCY.LOCATOR), depsLocator]])
+      .provide([[getContext('dependencyLocator'), DependencyLocator]])
       .run();
 
     expect(getInfoMock).toBeCalledTimes(10);
@@ -212,13 +225,15 @@ describe('ProgramSaga', () => {
       updateLogInterval: () => {},
       toggleButton: () => {},
     };
-    const getSensorManager = () => [btService, settingManager];
-    const depsLocator = { get: getSensorManager };
+
+    DependencyLocator.register('settingManager', settingManager);
+    DependencyLocator.register('bleService', btService);
+    DependencyLocator.register('utilService', new UtilService());
 
     return expectSaga(ProgramSaga.tryProgramNewSensor, {
       payload: { macAddress: 'AA:BB:CC:DD:EE:FF', logInterval: 300 },
     })
-      .provide([[getContext(DEPENDENCY.LOCATOR), depsLocator]])
+      .provide([[getContext('dependencyLocator'), DependencyLocator]])
       .put(ProgramAction.programNewSensorFail('AA:BB:CC:DD:EE:FF', 'Error: Josh'))
       .run();
   });
@@ -231,13 +246,15 @@ describe('ProgramSaga', () => {
       updateLogInterval: () => {},
       toggleButton: () => {},
     };
-    const getSensorManager = () => [btService, settingManager];
-    const depsLocator = { get: getSensorManager };
+
+    DependencyLocator.register('settingManager', settingManager);
+    DependencyLocator.register('bleService', btService);
+    DependencyLocator.register('utilService', new UtilService());
 
     return expectSaga(ProgramSaga.tryProgramNewSensor, {
       payload: { macAddress: 'AA:BB:CC:DD:EE:FF', logDelay: 0 },
     })
-      .provide([[getContext(DEPENDENCY.LOCATOR), depsLocator]])
+      .provide([[getContext('dependencyLocator'), DependencyLocator]])
       .put(ProgramAction.programNewSensorSuccess('AA:BB:CC:DD:EE:FF', 300, 0, 90))
       .run();
   });

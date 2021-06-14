@@ -24,10 +24,6 @@ export const SensorListScreen: FC = () => {
   const navigation = useNavigation();
   const sensorIds = useSelector(SensorSelector.sensorIds);
 
-  const acknowledgingSensorId = useSelector((state: RootState) =>
-    AcknowledgeBreachSelector.sensorId(state)
-  );
-
   const dispatch = useDispatch();
   const hydrate = () => dispatch(HydrateAction.hydrate());
 
@@ -69,7 +65,7 @@ export const SensorListScreen: FC = () => {
   return (
     <Gradient>
       <FlatList data={sensorIds} keyExtractor={item => item} renderItem={renderItem} />
-      <AcknowledgeBreachModal id={acknowledgingSensorId} />
+      <AcknowledgeBreachModal />
     </Gradient>
   );
 };

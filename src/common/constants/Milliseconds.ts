@@ -25,3 +25,7 @@ export const MILLISECONDS = {
   ONE_DAY,
   SIXTY_SECONDS,
 };
+
+export enum Seconds {
+  OneDay = SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY,
+}

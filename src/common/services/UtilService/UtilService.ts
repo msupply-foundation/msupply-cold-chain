@@ -3,6 +3,7 @@ import moment from 'moment';
 import generateUUID from 'react-native-uuid';
 import packageJson from '~/../../package.json';
 import { UnixTimestamp } from '~common/types/common';
+import { Seconds } from '~constants/Milliseconds';
 
 type NumberRange = [number, number];
 
@@ -11,15 +12,21 @@ export class UtilService {
 
   now = (): UnixTimestamp => moment().unix();
 
-  threeDaysAgo = (): UnixTimestamp => {
-    const threeDaysAgo = moment().subtract(3, 'days');
-    return threeDaysAgo.unix();
+  startOfMinute = (date: UnixTimestamp): UnixTimestamp => {
+    const asMoment = moment.unix(date);
+    const startOf = asMoment.startOf('minute');
+    const asUnixTimestamp = startOf.unix();
+    return asUnixTimestamp;
   };
 
-  threeDaysBefore = (someDate: number): UnixTimestamp => {
-    const someMoment = moment.unix(someDate);
-    const threeDaysBefore = someMoment.subtract(3, 'days');
-    return threeDaysBefore.unix();
+  toUnixTimestamp = (date: Date): UnixTimestamp => {
+    const asMilliseconds = date.getTime();
+    return asMilliseconds / MILLISECONDS.ONE_SECOND;
+  };
+
+  addDays = (someDate: UnixTimestamp, numberOfDays: number): UnixTimestamp => {
+    const secondsToAdd = Seconds.OneDay * numberOfDays;
+    return someDate + secondsToAdd;
   };
 
   appVersion = (): string => packageJson.version;
@@ -61,5 +68,20 @@ export class UtilService {
 
   millisecondsToMinutes = (milliseconds: number): number => {
     return milliseconds / MILLISECONDS.ONE_MINUTE;
+  };
+
+  addMinute = (time: UnixTimestamp, minutes: number): UnixTimestamp => {
+    return time + minutes * 60;
+  };
+
+  startOfNextMinute = (time: UnixTimestamp): UnixTimestamp => {
+    const nextMinute = this.addMinute(time, 1);
+    const startOfMinute = moment.unix(nextMinute).startOf('minute');
+    return startOfMinute.unix();
+  };
+
+  timeUntilNextMinute = (time: UnixTimestamp): UnixTimestamp => {
+    const nextMinute = this.startOfNextMinute(time);
+    return moment.unix(nextMinute).diff(moment.unix(time), 's');
   };
 }

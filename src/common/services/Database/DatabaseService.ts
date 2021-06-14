@@ -1,4 +1,4 @@
-import { installTriggers, Trigger, triggers } from './triggers/index';
+import { Trigger, triggers } from './triggers/index';
 import _ from 'lodash';
 import { Database } from './Database';
 import { ENTITIES, MILLISECONDS } from '~constants';

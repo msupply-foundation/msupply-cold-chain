@@ -34,3 +34,73 @@ describe('UtilService:normaliseNumber', () => {
     expect(utils.normaliseNumber(100, [70, 100])).toBe(100);
   });
 });
+
+describe('UtilService:addMinute', () => {
+  it('Correctly adds a single minute to a timestamp', () => {
+    const utils = new UtilService();
+
+    const one = 1;
+    expect(utils.addMinute(one, 1)).toEqual(61);
+
+    const two = 10000;
+    expect(utils.addMinute(two, 1)).toEqual(10060);
+
+    const three = Date.now();
+    expect(utils.addMinute(three, 1)).toEqual(three + 60);
+  });
+});
+
+describe('UtilService:startOfNextMinute', () => {
+  it('Correctly returns the start of the next minute from some time', () => {
+    const utils = new UtilService();
+
+    const one = 1;
+    expect(utils.startOfNextMinute(one, 1)).toEqual(60);
+
+    const two = 10000;
+    expect(utils.startOfNextMinute(two, 1)).toEqual(10020);
+  });
+});
+
+describe('UtilService:timeUntilNextMinute', () => {
+  it('Returns the correct number of seconds', () => {
+    const utils = new UtilService();
+
+    const one = 1;
+    expect(utils.timeUntilNextMinute(one)).toEqual(59);
+  });
+});
+
+describe('UtilService:now', () => {
+  it('Returns a number when called with no params', () => {
+    const utils = new UtilService();
+
+    expect(typeof utils.now()).toBe('number');
+  });
+});
+
+describe('UtilService:addDays', () => {
+  it('Returns the correct number of seconds when adding a positive number of days', () => {
+    const utils = new UtilService();
+
+    const one = 0;
+    const secondsInTenDays = 60 * 60 * 24 * 10;
+    expect(utils.addDays(one, 10)).toEqual(0 + secondsInTenDays);
+
+    const two = 0;
+    const secondsInOneHundredDays = 60 * 60 * 24 * 100;
+    expect(utils.addDays(two, 100)).toEqual(0 + secondsInOneHundredDays);
+  });
+
+  it('Returns the correct number of seconds when adding a negative number of days', () => {
+    const utils = new UtilService();
+
+    const one = 0;
+    const secondsInTenDays = 60 * 60 * 24 * 10;
+    expect(utils.addDays(one, -10)).toEqual(0 - secondsInTenDays);
+
+    const two = 0;
+    const secondsInOneHundredDays = 60 * 60 * 24 * 100;
+    expect(utils.addDays(two, -100)).toEqual(0 - secondsInOneHundredDays);
+  });
+});
