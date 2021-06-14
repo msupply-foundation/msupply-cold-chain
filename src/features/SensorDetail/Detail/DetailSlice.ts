@@ -155,7 +155,7 @@ function* init({
 
   try {
     const to = Math.min(utils.now(), maxTo);
-    const from = Math.max(utils.threeDaysBefore(to), minFrom);
+    const from = Math.max(utils.addDays(to, -3), minFrom);
 
     yield put(DetailAction.initSuccess(sensorId, from, to, minFrom, maxTo));
   } catch (error) {

@@ -55,8 +55,8 @@ describe('FormatService: headerDate', () => {
   it('Formats correctly', () => {
     const formatter = new FormatService();
 
-    expect(formatter.headerDate(new Date('1/1/2020'))).toBe('01 January');
-    expect(formatter.headerDate(new Date('2/20/2020'))).toBe('20 February');
+    expect(formatter.headerDate(new Date('2020-01-01').getTime() / 1000)).toBe('01 January');
+    expect(formatter.headerDate(new Date('2020-02-20').getTime() / 1000)).toBe('20 February');
   });
 });
 
@@ -64,8 +64,8 @@ describe('FormatService: headerTime', () => {
   it('Formats correctly', () => {
     const formatter = new FormatService();
 
-    expect(formatter.headerTime(new Date('1/1/2020'))).toBe('00:00');
-    expect(formatter.headerTime(new Date('1/1/2020 21:30:00'))).toBe('21:30');
+    expect(formatter.headerTime(new Date('1/1/2020').getTime() / 1000)).toBe('00:00');
+    expect(formatter.headerTime(new Date('1/1/2020 21:30:00').getTime() / 1000)).toBe('21:30');
   });
 });
 
@@ -131,6 +131,6 @@ describe('FormatService:fullDate', () => {
     const formatter = new FormatService();
     const from = 0;
 
-    expect(formatter.fullDate(from)).toEqual('01-01-1970-120000');
+    expect(formatter.fullDate(from)).toEqual('01-01-1970-12-00-00');
   });
 });

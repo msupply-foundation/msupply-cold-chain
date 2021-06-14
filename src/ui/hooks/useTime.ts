@@ -1,17 +1,19 @@
+import { MILLISECONDS } from '~constants';
+import { useUtils } from './useDependency';
 import { useEffect, useState } from 'react';
-import moment, { Moment } from 'moment';
 import { useOnAppFocus } from './useOnAppFocus';
 
-export const useTime = (): Moment => {
-  const [time, setTime] = useState(moment());
+export const useTime = (): number => {
+  const utils = useUtils();
+  const [time, setTime] = useState(utils.now());
 
-  useOnAppFocus(() => setTime(moment()));
+  useOnAppFocus(() => setTime(utils.now()));
 
   useEffect(() => {
-    const nextMinute = moment(time).add(1, 'minute').startOf('minute');
-    const diff = nextMinute.diff(time, 'ms');
-    setTimeout(() => setTime(moment()), diff);
-  }, [time]);
+    const secondsUntilNextMinute = utils.timeUntilNextMinute(utils.now());
+    const asMilliseconds = secondsUntilNextMinute * MILLISECONDS.ONE_SECOND;
+    setTimeout(() => setTime(utils.now()), asMilliseconds);
+  }, [utils, time]);
 
   return time;
 };

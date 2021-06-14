@@ -6,6 +6,7 @@ import { SettingsAddSensorModal } from './SettingsAddSensorModal';
 import { ProgramAction, BlinkAction } from '../../../features/Bluetooth';
 
 import { ConnectingWithSensorModal } from '../modal';
+import { UnixTimestamp } from '~common/types/common';
 
 interface SettingsAddSensorRowProps {
   macAddress: string;
@@ -15,7 +16,7 @@ export const SettingsAddSensorRow: FC<SettingsAddSensorRowProps> = ({ macAddress
   const [isModalOpen, toggleModal] = useToggle(false);
   const dispatch = useDispatch();
 
-  const onConfirm = (date: Date) => {
+  const onConfirm = (date: UnixTimestamp) => {
     toggleModal();
     dispatch(
       ProgramAction.tryProgramNewSensor(macAddress, Math.ceil(new Date(date).getTime() / 1000))

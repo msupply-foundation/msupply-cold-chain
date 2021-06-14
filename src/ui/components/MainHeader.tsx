@@ -22,10 +22,7 @@ export const MainHeader: FC = () => {
       <Row>
         <BatteryStatus batteryLevel={batteryLevel} isCharging={isCharging} />
         <View style={{ width: 20 }} />
-        <DateAndTime
-          date={formatter.headerDate(timeNow.toDate())}
-          time={formatter.headerTime(timeNow.toDate())}
-        />
+        <DateAndTime date={formatter.headerDate(timeNow)} time={formatter.headerTime(timeNow)} />
       </Row>
     </Row>
   );

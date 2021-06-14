@@ -4,9 +4,13 @@ import { ToastAndroid } from 'react-native';
 import { call, getContext, put, retry, takeEvery, takeLeading } from 'redux-saga/effects';
 
 import { SettingManager } from '~features/Entities/Setting/SettingManager';
-import { BleService, InfoLog } from '~services/Bluetooth/BleService';
+import { BleService } from '~services/Bluetooth/BleService';
+import { InfoLog } from '~services/Bluetooth/types';
 import { RootState } from '~store/store';
 import { DEPENDENCY, REDUCER } from '~constants';
+import { getDependency } from '~features/utils/saga';
+import { UtilService } from '~common/services';
+import { SensorManager } from '~features/Entities';
 
 interface ProgramSliceState {
   programmingByMac: Record<string, boolean>;
@@ -108,11 +112,9 @@ const { actions: ProgramAction, reducer: ProgramReducer } = createSlice({
 export function* tryProgramNewSensor({
   payload: { macAddress, logDelay },
 }: PayloadAction<TryProgramNewSensorPayload>): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const [btService, settingManager]: [
-    BleService,
-    SettingManager
-  ] = yield call(DependencyLocator.get, [DEPENDENCY.BLUETOOTH, DEPENDENCY.SETTING_MANAGER]);
+  const btService: BleService = yield call(getDependency, 'bleService');
+  const settingManager: SettingManager = yield call(getDependency, 'settingManager');
+  const utils: UtilService = yield call(getDependency, 'utilService');
 
   try {
     const logInterval: number = yield call(settingManager.getSetting, 'defaultLogInterval');
@@ -123,8 +125,10 @@ export function* tryProgramNewSensor({
       yield retry(10, 0, btService.toggleButton, macAddress);
     }
 
+    const startOfMinute = utils.startOfMinute(logDelay);
+
     yield put(
-      ProgramAction.programNewSensorSuccess(macAddress, logInterval, logDelay, batteryLevel)
+      ProgramAction.programNewSensorSuccess(macAddress, logInterval, startOfMinute, batteryLevel)
     );
     ToastAndroid.show(`Connected and setup ${macAddress}`, ToastAndroid.SHORT);
   } catch (e) {
@@ -136,11 +140,8 @@ export function* tryProgramNewSensor({
 export function* tryUpdateLogInterval({
   payload: { macAddress, logInterval },
 }: PayloadAction<TryUpdateLogInterval>): SagaIterator {
-  const DependencyLocator = yield getContext(DEPENDENCY.LOCATOR);
-  const [btService, sensorManager] = yield call(DependencyLocator.get, [
-    DEPENDENCY.BLUETOOTH,
-    DEPENDENCY.SENSOR_MANAGER,
-  ]);
+  const btService: BleService = yield call(getDependency, 'bleService');
+  const sensorManager: SensorManager = yield call(getDependency, 'sensorManager');
 
   try {
     const sensor = yield call(sensorManager.getSensorByMac, macAddress);

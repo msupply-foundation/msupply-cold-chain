@@ -1,10 +1,10 @@
 import { UtilService } from '~services/UtilService';
 import { SagaIterator } from '@redux-saga/types';
 import { NativeModules } from 'react-native';
-import { take, delay, getContext, call, all, put, takeLeading, race } from 'redux-saga/effects';
+import { take, delay, call, all, put, takeLeading, race } from 'redux-saga/effects';
 import { createSlice } from '@reduxjs/toolkit';
 import { SensorState } from '../../Entities/Sensor/SensorSlice';
-import { DEPENDENCY, REDUCER, MILLISECONDS } from '~constants';
+import { REDUCER, MILLISECONDS } from '~constants';
 import { SensorAction, SensorManager } from '~features/Entities';
 import { getDependency } from '~features/utils/saga';
 

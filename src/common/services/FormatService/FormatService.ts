@@ -39,16 +39,24 @@ export class FormatService {
     return level == null ? t('NOT_AVAILABLE') : `${level}%`;
   };
 
-  headerTime = (date: Date): string => {
-    return moment(date).format('HH:mm');
+  headerTime = (date: UnixTimestamp): string => {
+    return moment.unix(date).format('HH:mm');
   };
 
-  headerDate = (date: Date): string => {
-    return moment(date).format('DD MMMM');
+  standardDate = (date: UnixTimestamp): string => {
+    return moment.unix(date).format('DD/MM/YYYY');
+  };
+
+  standardTime = (date: UnixTimestamp): string => {
+    return moment.unix(date).format('HH:mm');
+  };
+
+  headerDate = (date: UnixTimestamp): string => {
+    return moment.unix(date).format('DD MMMM');
   };
 
   fullDate = (date: number): string => {
-    return moment.unix(date).format('DD-MM-YYYY-HHmmss');
+    return moment.unix(date).format('DD-MM-YYYY-HH-mm-ss');
   };
 
   temperature = (temperature: number): string => {
