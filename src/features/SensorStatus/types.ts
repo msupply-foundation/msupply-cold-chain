@@ -29,3 +29,10 @@ export interface SensorStatusSliceState {
   fetchingById: Record<string, boolean>;
   byId: Record<string, SensorStatus>;
 }
+
+export enum BatteryLevelThreshold {
+  Empty = 15,
+  Low = 40,
+  Medium = 65,
+  High = 90,
+}

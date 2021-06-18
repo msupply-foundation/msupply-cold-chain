@@ -1,5 +1,5 @@
-import { SensorStatus } from './SensorStatusSlice';
-import { DatabaseService } from '../../common/services';
+import { SensorStatus, BatteryLevelThreshold } from './types';
+import { DatabaseService } from '~services';
 import { ById } from '~common/types/common';
 
 enum SensorStatusQueryKey {
@@ -95,7 +95,7 @@ export class SensorStatusManager {
       isInHotBreach: result.numberOfHotBreaches > 0,
       hasHotBreach: result.numberOfHotBreaches > 0,
       hasColdBreach: result.numberOfColdBreaches > 0,
-      isLowBattery: result.batteryLevel < 80,
+      isLowBattery: result.batteryLevel < BatteryLevelThreshold.Empty,
       firstTimestamp: result.firstTimestamp,
       numberOfLogs: result.numberOfLogs,
       currentTemperature: result.currentTemperature,
