@@ -123,7 +123,7 @@ class SyncOutManager {
     temperatureLogUrl: string,
     logs: TemperatureLog[]
   ): Promise<AxiosResponse<SyncResponse>[]> => {
-    const numberOfChunks = Math.ceil(logs.length / 100);
+    const numberOfChunks = Math.ceil(logs.length / 20);
     const chunkSize = logs.length / numberOfChunks;
     const chunked = _.chunk(logs, chunkSize);
 
