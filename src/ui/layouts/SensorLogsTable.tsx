@@ -82,7 +82,7 @@ export const SensorLogsRow: FC<SensorLogsRowProps> = React.memo(
 
     const even = i % 2 === 0;
 
-    const time = formatter.fullDate(timestamp * 1000);
+    const time = `${formatter.standardDate(timestamp)} ${formatter.standardTime(timestamp)}`;
 
     const rowData = {
       isInBreach: isInColdBreach || isInHotBreach ? 'yes' : '',
