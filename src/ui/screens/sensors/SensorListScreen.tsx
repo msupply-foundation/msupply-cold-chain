@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { NAVIGATION } from '~constants';
 import { useOnMount } from '~hooks';
 import {
-  AcknowledgeBreachSelector,
   SensorSelector,
   SensorAction,
   BatteryObserverAction,
@@ -17,7 +16,6 @@ import {
 import { SensorChartRow } from '~components';
 import { AcknowledgeBreachModal } from '~components/modal/AcknowledgeBreachModal';
 import { Gradient } from '~layouts';
-import { RootState } from '~store';
 import { HydrateAction } from '~features/Hydrate';
 
 export const SensorListScreen: FC = () => {

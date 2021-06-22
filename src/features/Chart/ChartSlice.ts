@@ -1,8 +1,8 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { ActionReducerMapBuilder, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SagaIterator } from '@redux-saga/types';
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { FailurePayload, PrepareActionReturn } from '~common/types/common';
+import { ById, FailurePayload, PrepareActionReturn } from '~common/types/common';
 import { HydrateAction } from '~features/Hydrate';
 import { RootState } from '~store';
 import { REDUCER } from '~constants';
@@ -16,6 +16,7 @@ import {
   GetListChartDataPayload,
 } from '~features/Chart';
 import { GetDetailChartDataPayload, ListDataById } from '~features/Chart/types';
+import { SensorAction } from '~features/Entities';
 
 const initialState: ChartSliceState = {
   listLoadingById: {},
@@ -102,6 +103,19 @@ const reducers = {
   getDetailChartDataFailed: () => {},
 };
 
+const extraReducers = (builder: ActionReducerMapBuilder<ChartSliceState>) => {
+  builder.addCase(
+    SensorAction.fetchAllSuccess,
+    (draftState: ChartSliceState, { payload: { sensors } }) => {
+      const ids = sensors.map(({ id }) => id);
+      draftState.listLoadingById = ids.reduce(
+        (acc: ById<boolean>, sensorId: string) => ({ ...acc, [sensorId]: true }),
+        {}
+      );
+    }
+  );
+};
+
 const ChartSelector = {
   listData: ({ chart: { listDataById } }: RootState, { id }: { id: string }): ChartDataPoint[] => {
     return listDataById[id];
@@ -110,13 +124,14 @@ const ChartSelector = {
     return detailDataPoints;
   },
   isLoading: ({ chart: { listLoadingById } }: RootState, { id }: { id: string }): boolean => {
-    return listLoadingById[id] ?? true;
+    return listLoadingById[id] ?? false;
   },
 };
 
 const { actions: ChartAction, reducer: ChartReducer } = createSlice({
   name: REDUCER.CHART,
   reducers,
+  extraReducers,
   initialState,
 });
 

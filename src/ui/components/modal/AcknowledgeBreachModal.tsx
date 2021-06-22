@@ -28,15 +28,21 @@ const AcknowledgeBreachRow: FC<AcknowledgeBreachRowProps> = ({ item, formatter }
 
     <Centered>
       <NormalText style={{ textAlign: 'left' }} color={COLOUR.GREY_ONE}>
-        {`${t('STARTED')}: ${formatter.fullDate(item.startTimestamp * 1000)}`}
+        {`${t('STARTED')}: ${formatter.standardDate(item.startTimestamp)} ${formatter.standardTime(
+          item.startTimestamp
+        )}`}
       </NormalText>
     </Centered>
 
-    <Centered>
-      <NormalText style={{ textAlign: 'left' }} color={COLOUR.GREY_ONE}>
-        {`${t('ENDED')}: ${formatter.fullDate(item.endTimestamp ?? 0 * 1000)}`}
-      </NormalText>
-    </Centered>
+    {item.endTimestamp && (
+      <Centered>
+        <NormalText style={{ textAlign: 'left' }} color={COLOUR.GREY_ONE}>
+          {`${t('ENDED')}: ${formatter.standardDate(item.endTimestamp)} ${formatter.standardTime(
+            item.endTimestamp
+          )}`}
+        </NormalText>
+      </Centered>
+    )}
     <Divider />
   </Column>
 );
