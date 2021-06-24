@@ -1,4 +1,5 @@
-import { useEffect, useReducer } from 'react';
+import { MILLISECONDS } from './../../common/constants/Milliseconds';
+import { useEffect, useReducer, useRef } from 'react';
 import * as ExpoBattery from 'expo-battery';
 
 /**
@@ -105,7 +106,52 @@ const reducer = (state = initialState(), action: PowerStateAction): PowerStateSh
   }
 };
 
+type BatteryLevel = number;
+
+type BatteryLevelListener = (batteryLevel: BatteryLevel) => void;
+
+class BatteryLevelSubject {
+  listeners: Record<number, BatteryLevelListener>;
+
+  intervalHandler: NodeJS.Timeout;
+
+  currentId: number;
+
+  constructor() {
+    this.start();
+    this.currentId = 0;
+    this.listeners = {};
+  }
+
+  addListener(listener: BatteryLevelListener) {
+    const id = this.currentId;
+    this.listeners[id] = listener;
+    this.currentId += 1;
+
+    const remove = () => {
+      delete this.listeners[id];
+    };
+
+    return remove;
+  }
+
+  start() {
+    this.intervalHandler = setInterval(() => {
+      ExpoBattery.getBatteryLevelAsync().then(batteryLevel => {
+        Object.values(this.listeners).forEach(listener => {
+          listener(batteryLevel);
+        });
+      });
+    }, MILLISECONDS.TEN_SECONDS);
+  }
+
+  stop() {
+    clearInterval(this.intervalHandler);
+  }
+}
+
 export const usePowerState = (): PowerStateShape => {
+  const batterLevelSubject = useRef(new BatteryLevelSubject());
   const [powerState, dispatch] = useReducer(reducer, initialState());
 
   useEffect(() => {
@@ -124,7 +170,7 @@ export const usePowerState = (): PowerStateShape => {
   }, []);
 
   useEffect(() => {
-    const subscription = ExpoBattery.addBatteryLevelListener(({ batteryLevel }) => {
+    const remove = batterLevelSubject.current.addListener(batteryLevel => {
       dispatch(Action.batteryLevelUpdated(batteryLevel));
     });
 
@@ -135,7 +181,7 @@ export const usePowerState = (): PowerStateShape => {
 
     getInitialBatteryLevel();
 
-    return () => subscription.remove();
+    return () => remove();
   }, []);
 
   useEffect(() => {
