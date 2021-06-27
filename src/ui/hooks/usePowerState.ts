@@ -1,4 +1,4 @@
-import { MILLISECONDS } from './../../common/constants/Milliseconds';
+import { MILLISECONDS } from '~constants/Milliseconds';
 import { useEffect, useReducer, useRef } from 'react';
 import * as ExpoBattery from 'expo-battery';
 
