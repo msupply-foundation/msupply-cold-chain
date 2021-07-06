@@ -17,8 +17,7 @@ import { BLUE_MAESTRO } from './../../../common/constants/Bluetooth';
 import { DEPENDENCY, REDUCER } from '../../../common/constants';
 import { RootState } from '../../../common/store/store';
 import { SensorSelector, SensorAction, SensorState } from '~features/Entities/Sensor/SensorSlice';
-import { BleService } from '../../../common/services/Bluetooth';
-
+import { BleService } from 'msupply-ble-service';
 interface ScanSlice {
   foundSensors: string[];
   isScanning: boolean;

@@ -6,7 +6,6 @@ import { DevContainer } from './DevContainer';
 import {
   Database,
   DependencyLocator,
-  BleService,
   PermissionService,
   DatabaseService,
   ExportService,
@@ -37,7 +36,7 @@ import {
   SyncOutManager,
   DevManager,
 } from '~features';
-import { BleManager } from '~common/services/Bluetooth';
+import { BleService, BleManager } from 'msupply-ble-service';
 
 export const DependencyContainer: FC = ({ children }) => {
   const [ready, setReady] = useState(false);

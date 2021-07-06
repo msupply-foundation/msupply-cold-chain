@@ -4,8 +4,8 @@ import { ToastAndroid } from 'react-native';
 import { call, getContext, put, retry, takeEvery, takeLeading } from 'redux-saga/effects';
 
 import { SettingManager } from '~features/Entities/Setting/SettingManager';
-import { BleService } from '~services/Bluetooth/BleService';
-import { InfoLog } from '~services/Bluetooth/types';
+import { BleService } from 'msupply-ble-service';
+import { InfoLog } from 'msupply-ble-service/types';
 import { RootState } from '~store/store';
 import { DEPENDENCY, REDUCER } from '~constants';
 import { getDependency } from '~features/utils/saga';
