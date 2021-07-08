@@ -13,14 +13,14 @@ const ENVIRONMENT: EnvironmentShape = {
   QUERY_LOGGER: false,
 };
 
-(Object.keys(ENV_VARS) as Array<keyof typeof ENV_VARS>).forEach(key => {
-  const envKey = key;
-  const envVal = ENV_VARS[envKey];
-  if (envVal.toLowerCase() === 'true' || envVal.toLowerCase() === 'false') {
-    ENVIRONMENT[envKey] = Boolean(envVal.toLowerCase() === 'true');
-  } else {
-    ENVIRONMENT[envKey] = envVal;
-  }
-});
+// (Object.keys(ENV_VARS) as Array<keyof typeof ENV_VARS>).forEach(key => {
+//   const envKey = key;
+//   const envVal = ENV_VARS[envKey];
+//   if (envVal.toLowerCase() === 'true' || envVal.toLowerCase() === 'false') {
+//     ENVIRONMENT[envKey] = Boolean(envVal.toLowerCase() === 'true');
+//   } else {
+//     ENVIRONMENT[envKey] = envVal;
+//   }
+// });
 
 export { ENVIRONMENT };
