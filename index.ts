@@ -11,6 +11,6 @@ if (__DEV__) {
   require('./Reactotron.config');
 }
 
-LogBox.ignoreLogs(['Require cycle:']);
+LogBox.ignoreLogs(['Require cycle:', 'isInitialValid']);
 
 AppRegistry.registerComponent(appName, () => App);
