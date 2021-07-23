@@ -3,6 +3,7 @@ import { Buffer } from 'buffer';
 import { eventChannel } from 'redux-saga';
 import { SagaIterator } from '@redux-saga/types';
 import { ActionReducerMapBuilder, createSlice } from '@reduxjs/toolkit';
+import { BleService, ScanCallback, BleError, Device } from 'msupply-ble-service';
 import {
   take,
   getContext,
@@ -17,7 +18,7 @@ import { BLUE_MAESTRO } from './../../../common/constants/Bluetooth';
 import { DEPENDENCY, REDUCER } from '../../../common/constants';
 import { RootState } from '../../../common/store/store';
 import { SensorSelector, SensorAction, SensorState } from '~features/Entities/Sensor/SensorSlice';
-import { BleService } from 'msupply-ble-service';
+
 interface ScanSlice {
   foundSensors: string[];
   isScanning: boolean;
@@ -110,15 +111,25 @@ export function* stop(): SagaIterator {
 export function callback(btService: BleService): any {
   const throttledScan = _.throttle(btService.scanForSensors, 1000);
   return eventChannel(emitter => {
-    throttledScan((__, device) => {
-      // TODO: Make more generic.
-      if (device && device?.manufacturerData) {
-        const isBlueMaestroDevice =
-          Buffer.from(device.manufacturerData, 'base64').readInt16LE(0) ===
-          BLUE_MAESTRO.MANUFACTURER_ID;
-        if (isBlueMaestroDevice) emitter(device);
+    throttledScan(
+      (err: BleError, device: Device): ScanCallback => {
+        if (err) {
+          console.log(JSON.stringify(err));
+        }
+        // TODO: Make more generic.
+        if (device && device?.manufacturerData) {
+          const isBlueMaestroDevice =
+            Buffer.from(device.manufacturerData, 'base64').readInt16LE(0) ===
+            BLUE_MAESTRO.MANUFACTURER_ID;
+          //   console.log(`ThrottledScan returns BlueMaestro? ${isBlueMaestroDevice}`);
+          if (isBlueMaestroDevice) {
+            emitter(device);
+          }
+        } else {
+          //          console.log(`ThrottledScan returns null device`);
+        }
       }
-    });
+    );
     return () => {};
   });
 }
