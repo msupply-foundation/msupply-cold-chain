@@ -14,7 +14,7 @@ import {
   takeLeading,
   select,
 } from 'redux-saga/effects';
-import { BLUE_MAESTRO } from './../../../common/constants/Bluetooth';
+import { BLUE_MAESTRO } from '~constants';
 import { DEPENDENCY, REDUCER } from '../../../common/constants';
 import { RootState } from '../../../common/store/store';
 import { SensorSelector, SensorAction, SensorState } from '~features/Entities/Sensor/SensorSlice';
