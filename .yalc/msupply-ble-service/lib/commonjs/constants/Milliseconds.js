@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.Seconds = exports.MILLISECONDS = void 0;
 const SECONDS_PER_MINUTE = 60;
@@ -26,13 +26,13 @@ const MILLISECONDS = {
   TEN_MINUTES,
   THIRTY_MINUTES,
   ONE_DAY,
-  SIXTY_SECONDS,
+  SIXTY_SECONDS
 };
 exports.MILLISECONDS = MILLISECONDS;
 let Seconds;
 exports.Seconds = Seconds;
 
 (function (Seconds) {
-  Seconds[(Seconds['OneDay'] = SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY)] = 'OneDay';
+  Seconds[Seconds["OneDay"] = SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY] = "OneDay";
 })(Seconds || (exports.Seconds = Seconds = {}));
 //# sourceMappingURL=Milliseconds.js.map

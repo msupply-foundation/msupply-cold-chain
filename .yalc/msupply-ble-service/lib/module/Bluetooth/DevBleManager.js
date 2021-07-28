@@ -1,31 +1,19 @@
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true,
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 import { LogLevel } from 'react-native-ble-plx';
 const COMMAND_TO_RESULT_LOOKUP = {
   // *logall
   'KmxvZ2FsbA==': callback => {
     callback(null, {
-      value: 'ABEAEQARAAIBAAAAAAA6',
+      value: 'ABEAEQARAAIBAAAAAAA6'
     }); // 00110011001100020100000000003ax
 
     callback(null, {
-      value: 'ARcBFwEXARcBFwEXARcBFwEXARc=',
+      value: 'ARcBFwEXARcBFwEXARcBFwEXARc='
     }); // 0117011701170117011701170117011701170117x
 
     callback(null, {
-      value: 'ARcBFwEXARYBFgEWARguAAAAAAA=',
+      value: 'ARcBFwEXARYBFgEWARguAAAAAAA='
     }); // 01170117011701160116011601182e0000000000x
 
     callback(null, null);
@@ -33,97 +21,97 @@ const COMMAND_TO_RESULT_LOOKUP = {
   // *blink
   KmJsaW5r: callback => {
     callback(null, {
-      value: 'T2sA',
+      value: 'T2sA'
     });
     callback(null, null);
   },
   // *info
   'KmluZm8=': callback => {
     callback(null, {
-      value: 'U0VUVElOR1MAAAAAAAAAAAAAAAA=',
+      value: 'U0VUVElOR1MAAAAAAAAAAAAAAAA='
     });
     callback(null, {
-      value: 'TmFtZTogICBFNzIyOTZERQAAAAA=',
+      value: 'TmFtZTogICBFNzIyOTZERQAAAAA='
     });
     callback(null, {
-      value: 'VmVyIG5vOiAxMwAAAAAAAAAAAAA=',
+      value: 'VmVyIG5vOiAxMwAAAAAAAAAAAAA='
     });
     callback(null, {
-      value: 'U3ViIHZlciBubzogMTUuMC4wAAA=',
+      value: 'U3ViIHZlciBubzogMTUuMC4wAAA='
     });
     callback(null, {
-      value: 'UmVsIGR0ZTogMjYgU2VwIDE5AAA=',
+      value: 'UmVsIGR0ZTogMjYgU2VwIDE5AAA='
     });
     callback(null, {
-      value: 'VHhwIGx2bDogNAAAAAAAAAAAAAA=',
+      value: 'VHhwIGx2bDogNAAAAAAAAAAAAAA='
     });
     callback(null, {
-      value: 'QmF0dCBsdmw6IDEwMCUAAAAAAAA=',
+      value: 'QmF0dCBsdmw6IDEwMCUAAAAAAAA='
     });
     callback(null, {
-      value: 'TWVtIDgzMyBkYXlzAAAAAAAAAAA=',
+      value: 'TWVtIDgzMyBkYXlzAAAAAAAAAAA='
     });
     callback(null, {
-      value: 'QWR2IHdrZXVwOiBOL0EAAAAAAAA=',
+      value: 'QWR2IHdrZXVwOiBOL0EAAAAAAAA='
     });
     callback(null, {
-      value: 'VW5pdHM6IEMAAAAAAAAAAAAAAAA=',
+      value: 'VW5pdHM6IEMAAAAAAAAAAAAAAAA='
     });
     callback(null, {
-      value: 'TWVtOiAyMDAwMAAAAAAAAAAAAAA=',
+      value: 'TWVtOiAyMDAwMAAAAAAAAAAAAAA='
     });
     callback(null, {
-      value: 'QWlyIG1vZGUgb2ZmAAAAAAAAAAA=',
+      value: 'QWlyIG1vZGUgb2ZmAAAAAAAAAAA='
     });
     callback(null, {
-      value: 'UnVuIGFwcHggMTZocnMAAAAAAAA=',
+      value: 'UnVuIGFwcHggMTZocnMAAAAAAAA='
     });
     callback(null, {
-      value: 'RGF0ZSB5eW1tZGRoaG1tOgAAAAA=',
+      value: 'RGF0ZSB5eW1tZGRoaG1tOgAAAAA='
     });
     callback(null, {
-      value: 'LT4gMDA6MDA6MDA6MDA6MDAAAAA=',
+      value: 'LT4gMDA6MDA6MDA6MDA6MDAAAAA='
     });
     callback(null, {
-      value: 'SWQ6IDI1NQAAAAAAAAAAAAAAAAA=',
+      value: 'SWQ6IDI1NQAAAAAAAAAAAAAAAAA='
     });
     callback(null, {
-      value: 'QnRuIG9uL29mZjogMQAAAAAAAAA=',
+      value: 'QnRuIG9uL29mZjogMQAAAAAAAAA='
     });
     callback(null, {
-      value: 'VGVtcCBDYWwuIDAAAAAAAAAAAAA=',
+      value: 'VGVtcCBDYWwuIDAAAAAAAAAAAAA='
     });
     callback(null, {
-      value: 'SHVtIENhbHgxMCAwJQAAAAAAAAA=',
+      value: 'SHVtIENhbHgxMCAwJQAAAAAAAAA='
     });
     callback(null, null);
   },
   // *bd
   KmJk: callback => {
     callback(null, {
-      value: 'T2sA',
+      value: 'T2sA'
     });
     callback(null, null);
   },
   // *lint300
   'KmxpbnQzMDA=': callback => {
     callback(null, {
-      value: 'SW50ZXJ2YWw6IDYwcwAAAAAAAAA=',
+      value: 'SW50ZXJ2YWw6IDYwcwAAAAAAAAA='
     });
     callback(null, null);
-  },
+  }
 };
 export class DevBleManager {
   constructor() {
-    _defineProperty(this, 'connectedDevices', void 0);
+    _defineProperty(this, "connectedDevices", void 0);
 
-    _defineProperty(this, 'registeredCallbacks', void 0);
+    _defineProperty(this, "registeredCallbacks", void 0);
 
-    _defineProperty(this, 'isScanning', void 0);
+    _defineProperty(this, "isScanning", void 0);
 
-    _defineProperty(this, 'level', LogLevel.None);
+    _defineProperty(this, "level", LogLevel.None);
 
-    _defineProperty(this, 'scannerInterval', void 0);
+    _defineProperty(this, "scannerInterval", void 0);
 
     this.connectedDevices = {};
     this.registeredCallbacks = {};
@@ -141,7 +129,7 @@ export class DevBleManager {
 
   async connectToDevice(macAddress) {
     this.connectedDevices[macAddress] = {
-      id: macAddress,
+      id: macAddress
     };
 
     if (this.level !== LogLevel.None) {
@@ -149,7 +137,7 @@ export class DevBleManager {
     }
 
     return {
-      id: macAddress,
+      id: macAddress
     };
   }
 
@@ -195,16 +183,13 @@ export class DevBleManager {
     } // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore - TSC sometimes thinks it's getting setInterval from node, not react-native
 
-    this.scannerInterval = setInterval(
-      () =>
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore - Ignoring this as I don't want to create a full Device object for this development helper.
-        callback(null, {
-          id: 'AB:CD:EF:GH:IJ:KL',
-          manufacturerData: 'MwEBDAN0AFkBtwEMA3QAWQG3AMwCrAAAAAAA',
-        }),
-      1000
-    );
+
+    this.scannerInterval = setInterval(() => // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - Ignoring this as I don't want to create a full Device object for this development helper.
+    callback(null, {
+      id: 'AB:CD:EF:GH:IJ:KL',
+      manufacturerData: 'MwEBDAN0AFkBtwEMA3QAWQG3AMwCrAAAAAAA'
+    }), 1000);
   }
 
   async writeCharacteristicWithoutResponseForDevice(macAddress, _, __, command, ___) {
@@ -234,5 +219,6 @@ export class DevBleManager {
 
     return {};
   }
+
 }
 //# sourceMappingURL=DevBleManager.js.map

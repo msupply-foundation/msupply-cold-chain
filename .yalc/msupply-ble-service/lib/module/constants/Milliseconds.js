@@ -20,11 +20,11 @@ export const MILLISECONDS = {
   TEN_MINUTES,
   THIRTY_MINUTES,
   ONE_DAY,
-  SIXTY_SECONDS,
+  SIXTY_SECONDS
 };
 export let Seconds;
 
 (function (Seconds) {
-  Seconds[(Seconds['OneDay'] = SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY)] = 'OneDay';
+  Seconds[Seconds["OneDay"] = SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY] = "OneDay";
 })(Seconds || (Seconds = {}));
 //# sourceMappingURL=Milliseconds.js.map

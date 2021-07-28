@@ -1,41 +1,29 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.BleService = void 0;
 
-var _buffer = require('buffer');
+var _buffer = require("buffer");
 
-var _index = require('../index');
+var _index = require("../index");
 
-var _types = require('./types');
+var _types = require("./types");
 
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true,
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 class BleService {
   constructor(manager, utils) {
-    _defineProperty(this, 'manager', void 0);
+    _defineProperty(this, "manager", void 0);
 
-    _defineProperty(this, 'utils', void 0);
+    _defineProperty(this, "utils", void 0);
 
-    _defineProperty(this, 'connectToDevice', async macAddress => {
+    _defineProperty(this, "connectToDevice", async macAddress => {
       return this.manager.connectToDevice(macAddress);
     });
 
-    _defineProperty(this, 'connectAndDiscoverServices', async macAddress => {
+    _defineProperty(this, "connectAndDiscoverServices", async macAddress => {
       if (await this.manager.isDeviceConnected(macAddress)) {
         await this.manager.cancelDeviceConnection(macAddress);
       }
@@ -45,47 +33,36 @@ class BleService {
       return device;
     });
 
-    _defineProperty(this, 'stopScan', () => {
+    _defineProperty(this, "stopScan", () => {
       this.manager.stopDeviceScan();
     });
 
-    _defineProperty(this, 'scanForSensors', callback => {
+    _defineProperty(this, "scanForSensors", callback => {
       const scanOptions = {
-        scanMode: _types.ScanMode.LowLatency,
+        scanMode: _types.ScanMode.LowLatency
       };
       this.manager.startDeviceScan(null, scanOptions, callback);
       console.log('Started scan');
       this.manager.logLevel().then(value => console.log(`Log Level ${value}`));
     });
 
-    _defineProperty(this, 'writeCharacteristic', async (macAddress, command) => {
-      return this.manager.writeCharacteristicWithoutResponseForDevice(
-        macAddress,
-        _index.BLUETOOTH.UART_SERVICE_UUID,
-        _index.BLUETOOTH.READ_CHARACTERISTIC_UUID,
-        this.utils.base64FromString(command)
-      );
+    _defineProperty(this, "writeCharacteristic", async (macAddress, command) => {
+      return this.manager.writeCharacteristicWithoutResponseForDevice(macAddress, _index.BLUETOOTH.UART_SERVICE_UUID, _index.BLUETOOTH.READ_CHARACTERISTIC_UUID, this.utils.base64FromString(command));
     });
 
-    _defineProperty(this, 'monitorCharacteristic', (macAddress, callback) => {
+    _defineProperty(this, "monitorCharacteristic", (macAddress, callback) => {
       return new Promise((resolve, reject) => {
-        this.manager.monitorCharacteristicForDevice(
-          macAddress,
-          _index.BLUETOOTH.UART_SERVICE_UUID,
-          _index.BLUETOOTH.WRITE_CHARACTERISTIC_UUID,
-          (_, result) => {
-            callback(result, resolve, reject);
-          }
-        );
+        this.manager.monitorCharacteristicForDevice(macAddress, _index.BLUETOOTH.UART_SERVICE_UUID, _index.BLUETOOTH.WRITE_CHARACTERISTIC_UUID, (_, result) => {
+          callback(result, resolve, reject);
+        });
       });
     });
 
-    _defineProperty(this, 'writeAndMonitor', async (macAddress, command, parser) => {
+    _defineProperty(this, "writeAndMonitor", async (macAddress, command, parser) => {
       const data = [];
 
       const monitoringCallback = (result, resolve, reject) => {
-        if (result !== null && result !== void 0 && result.value) data.push(result.value);
-        else {
+        if (result !== null && result !== void 0 && result.value) data.push(result.value);else {
           try {
             resolve(parser(data));
           } catch (e) {
@@ -99,7 +76,7 @@ class BleService {
       return monitor;
     });
 
-    _defineProperty(this, 'writeWithSingleResponse', async (macAddress, command, parser) => {
+    _defineProperty(this, "writeWithSingleResponse", async (macAddress, command, parser) => {
       const monitorCharacteristicCallback = (result, resolve, reject) => {
         if (result !== null && result !== void 0 && result.value) {
           try {
@@ -115,77 +92,54 @@ class BleService {
       return monitor;
     });
 
-    _defineProperty(this, 'downloadLogs', async macAddress => {
+    _defineProperty(this, "downloadLogs", async macAddress => {
       await this.connectAndDiscoverServices(macAddress);
 
       const monitorCallback = data => {
-        const buffer = _buffer.Buffer.concat(
-          data.slice(1).map(datum => this.utils.bufferFromBase64(datum))
-        );
+        const buffer = _buffer.Buffer.concat(data.slice(1).map(datum => this.utils.bufferFromBase64(datum)));
 
-        const ind = buffer.findIndex(
-          (_, i) =>
-            (i % 2 === 0 && buffer.readInt16BE(i) === _index.BLUE_MAESTRO.DELIMITER_A) ||
-            buffer.readInt16BE(i) === _index.BLUE_MAESTRO.DELIMITER_B
-        );
+        const ind = buffer.findIndex((_, i) => i % 2 === 0 && buffer.readInt16BE(i) === _index.BLUE_MAESTRO.DELIMITER_A || buffer.readInt16BE(i) === _index.BLUE_MAESTRO.DELIMITER_B);
         return buffer.slice(0, ind).reduce((acc, _, index) => {
           if (index % 2 !== 0) return acc;
-          return [
-            ...acc,
-            {
-              temperature: buffer.readInt16BE(index) / _index.BLUE_MAESTRO.TEMPERATURE_DIVISOR,
-            },
-          ];
+          return [...acc, {
+            temperature: buffer.readInt16BE(index) / _index.BLUE_MAESTRO.TEMPERATURE_DIVISOR
+          }];
         }, []);
       };
 
-      const result = await this.writeAndMonitor(
-        macAddress,
-        _index.BLUE_MAESTRO.COMMANDS.DOWNLOAD,
-        monitorCallback
-      );
+      const result = await this.writeAndMonitor(macAddress, _index.BLUE_MAESTRO.COMMANDS.DOWNLOAD, monitorCallback);
       return result;
     });
 
-    _defineProperty(this, 'updateLogInterval', async (macAddress, logInterval) => {
+    _defineProperty(this, "updateLogInterval", async (macAddress, logInterval) => {
       await this.connectAndDiscoverServices(macAddress);
-      const result = await this.writeWithSingleResponse(
-        macAddress,
-        `${_index.BLUE_MAESTRO.COMMANDS.UPDATE_LOG_INTERVAL}${logInterval}`,
-        data => !!this.utils.stringFromBase64(data).match(/interval/i)
-      );
+      const result = await this.writeWithSingleResponse(macAddress, `${_index.BLUE_MAESTRO.COMMANDS.UPDATE_LOG_INTERVAL}${logInterval}`, data => !!this.utils.stringFromBase64(data).match(/interval/i));
       return !!result;
     });
 
-    _defineProperty(this, 'blink', async macAddress => {
+    _defineProperty(this, "blink", async macAddress => {
       await this.connectAndDiscoverServices(macAddress);
-      const result = await this.writeWithSingleResponse(
-        macAddress,
-        _index.BLUE_MAESTRO.COMMANDS.BLINK,
-        data => {
-          return !!this.utils.stringFromBase64(data).match(/ok/i);
-        }
-      );
+      const result = await this.writeWithSingleResponse(macAddress, _index.BLUE_MAESTRO.COMMANDS.BLINK, data => {
+        return !!this.utils.stringFromBase64(data).match(/ok/i);
+      });
       return result;
     });
 
-    _defineProperty(this, 'getInfo', async macAddress => {
+    _defineProperty(this, "getInfo", async macAddress => {
       await this.connectAndDiscoverServices(macAddress);
 
       const monitorResultCallback = data => {
         const parsedBase64 = data.map(this.utils.stringFromBase64);
         const defaultInfoLog = {
           batteryLevel: null,
-          isDisabled: true,
+          isDisabled: true
         };
 
         const parsedBatteryLevel = info => {
           const batteryLevelStringOrNull = info.match(/Batt lvl: [0-9]{1,3}/);
           if (!batteryLevelStringOrNull) return batteryLevelStringOrNull;
           const batteryLevel = Number(batteryLevelStringOrNull[0].match(/[0-9]{1,3}/));
-          return Number.isNaN(batteryLevel)
-            ? null
-            : this.utils.normaliseNumber(batteryLevel, [70, 100]);
+          return Number.isNaN(batteryLevel) ? null : this.utils.normaliseNumber(batteryLevel, [70, 100]);
         };
 
         const parsedIsDisabled = info => !!info.match(/Btn on\/off: 1/);
@@ -193,70 +147,52 @@ class BleService {
         return parsedBase64.reduce((acc, info) => {
           const isDisabled = parsedIsDisabled(info);
           const batteryLevel = parsedBatteryLevel(info);
-          if (isDisabled) return { ...acc, isDisabled };
-          if (batteryLevel) return { ...acc, batteryLevel };
+          if (isDisabled) return { ...acc,
+            isDisabled
+          };
+          if (batteryLevel) return { ...acc,
+            batteryLevel
+          };
           return acc;
         }, defaultInfoLog);
       };
 
-      const result = await this.writeAndMonitor(
-        macAddress,
-        _index.BLUE_MAESTRO.COMMANDS.INFO,
-        monitorResultCallback
-      );
+      const result = await this.writeAndMonitor(macAddress, _index.BLUE_MAESTRO.COMMANDS.INFO, monitorResultCallback);
       return result;
     });
 
-    _defineProperty(this, 'toggleButton', async macAddress => {
+    _defineProperty(this, "toggleButton", async macAddress => {
       await this.connectAndDiscoverServices(macAddress);
-      const result = await this.writeWithSingleResponse(
-        macAddress,
-        _index.BLUE_MAESTRO.COMMANDS.DISABLE_BUTTON,
-        data => {
-          return !!this.utils.stringFromBase64(data).match(/ok/i);
-        }
-      );
+      const result = await this.writeWithSingleResponse(macAddress, _index.BLUE_MAESTRO.COMMANDS.DISABLE_BUTTON, data => {
+        return !!this.utils.stringFromBase64(data).match(/ok/i);
+      });
       return result;
     });
 
-    _defineProperty(this, 'getInfoWithRetries', async (macAddress, retriesLeft, error) => {
+    _defineProperty(this, "getInfoWithRetries", async (macAddress, retriesLeft, error) => {
       if (!retriesLeft) throw error;
-      return this.getInfo(macAddress).catch(err =>
-        this.getInfoWithRetries(macAddress, retriesLeft - 1, err)
-      );
+      return this.getInfo(macAddress).catch(err => this.getInfoWithRetries(macAddress, retriesLeft - 1, err));
     });
 
-    _defineProperty(this, 'toggleButtonWithRetries', async (macAddress, retriesLeft, error) => {
+    _defineProperty(this, "toggleButtonWithRetries", async (macAddress, retriesLeft, error) => {
       if (!retriesLeft) throw error;
-      return this.toggleButton(macAddress).catch(err =>
-        this.toggleButtonWithRetries(macAddress, retriesLeft - 1, err)
-      );
+      return this.toggleButton(macAddress).catch(err => this.toggleButtonWithRetries(macAddress, retriesLeft - 1, err));
     });
 
-    _defineProperty(this, 'downloadLogsWithRetries', async (macAddress, retriesLeft, error) => {
+    _defineProperty(this, "downloadLogsWithRetries", async (macAddress, retriesLeft, error) => {
       if (!retriesLeft) throw error;
-      return this.downloadLogs(macAddress).catch(err =>
-        this.downloadLogsWithRetries(macAddress, retriesLeft - 1, err)
-      );
+      return this.downloadLogs(macAddress).catch(err => this.downloadLogsWithRetries(macAddress, retriesLeft - 1, err));
     });
 
-    _defineProperty(this, 'blinkWithRetries', async (macAddress, retriesLeft, error) => {
+    _defineProperty(this, "blinkWithRetries", async (macAddress, retriesLeft, error) => {
       if (!retriesLeft) throw error;
-      return this.blink(macAddress).catch(err =>
-        this.blinkWithRetries(macAddress, retriesLeft - 1, err)
-      );
+      return this.blink(macAddress).catch(err => this.blinkWithRetries(macAddress, retriesLeft - 1, err));
     });
 
-    _defineProperty(
-      this,
-      'updateLogIntervalWithRetries',
-      async (macAddress, logInterval, retriesLeft, error) => {
-        if (!retriesLeft) throw error;
-        return this.updateLogInterval(macAddress, logInterval).catch(err =>
-          this.updateLogIntervalWithRetries(macAddress, logInterval, retriesLeft - 1, err)
-        );
-      }
-    );
+    _defineProperty(this, "updateLogIntervalWithRetries", async (macAddress, logInterval, retriesLeft, error) => {
+      if (!retriesLeft) throw error;
+      return this.updateLogInterval(macAddress, logInterval).catch(err => this.updateLogIntervalWithRetries(macAddress, logInterval, retriesLeft - 1, err));
+    });
 
     this.manager = manager;
     manager.setLogLevel(_types.LogLevel.Verbose); // In the future we may want to use our own utils,
@@ -265,6 +201,7 @@ class BleService {
 
     this.utils = utils;
   }
+
 }
 
 exports.BleService = BleService;
