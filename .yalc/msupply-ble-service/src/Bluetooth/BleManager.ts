@@ -39,4 +39,4 @@ export declare class BluetoothManager {
   ): Subscription;
 }
 
-export const BleManager = (BlePlxManager as unknown) as typeof BluetoothManager;
+export const BleManager = BlePlxManager as unknown as typeof BluetoothManager;
