@@ -116,18 +116,7 @@ export function callback(btService: BleService): any {
         if (err) {
           console.log(JSON.stringify(err));
         }
-        // TODO: Make more generic.
-        if (device && device?.manufacturerData) {
-          const isBlueMaestroDevice =
-            Buffer.from(device.manufacturerData, 'base64').readInt16LE(0) ===
-            BLUE_MAESTRO.MANUFACTURER_ID;
-          //   console.log(`ThrottledScan returns BlueMaestro? ${isBlueMaestroDevice}`);
-          if (isBlueMaestroDevice) {
-            emitter(device);
-          }
-        } else {
-          //          console.log(`ThrottledScan returns null device`);
-        }
+        emitter(device);
       }
     );
     return () => {};

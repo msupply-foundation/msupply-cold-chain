@@ -14,7 +14,6 @@ import {
   BugsnagLoggerService,
   DevLoggerService,
   DevService,
-  DevBleManager,
   DependencyLocatorContext,
   MigrationService,
 } from '~services';
@@ -36,7 +35,7 @@ import {
   SyncOutManager,
   DevManager,
 } from '~features';
-import { BleService, BleManager } from 'msupply-ble-service';
+import { BleService, BleManager, DevBleManager } from 'msupply-ble-service';
 
 export const DependencyContainer: FC = ({ children }) => {
   const [ready, setReady] = useState(false);
