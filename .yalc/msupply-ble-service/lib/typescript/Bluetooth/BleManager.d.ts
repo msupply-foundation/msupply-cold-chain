@@ -1,13 +1,13 @@
 import { MacAddress } from '../types/common';
 import { Subscription, Characteristic, BleError, Device, ScanOptions, LogLevel } from 'react-native-ble-plx';
-import { BluetoothDevice } from './types';
+export declare type MockOrRealDevice = Pick<Device, 'id' | 'name'> | Device;
 export declare class BluetoothManager {
     setLogLevel(logLevel: LogLevel): void;
     logLevel(): Promise<LogLevel>;
-    connectToDevice(macAddress: MacAddress): Promise<BluetoothDevice>;
+    connectToDevice(macAddress: MacAddress): Promise<MockOrRealDevice>;
     isDeviceConnected(macAddress: MacAddress): Promise<boolean>;
-    cancelDeviceConnection(macAddress: MacAddress): Promise<BluetoothDevice>;
-    discoverAllServicesAndCharacteristicsForDevice(macAddress: MacAddress): Promise<BluetoothDevice>;
+    cancelDeviceConnection(macAddress: MacAddress): Promise<MockOrRealDevice>;
+    discoverAllServicesAndCharacteristicsForDevice(macAddress: MacAddress): Promise<MockOrRealDevice>;
     stopDeviceScan(): void;
     startDeviceScan(UUIDs: string[] | null, options: ScanOptions | null, listener: (error: BleError | null, scannedDevice: Device | null) => void): void;
     writeCharacteristicWithoutResponseForDevice(deviceIdentifier: string, serviceUUID: string, characteristicUUID: string, base64Value: string, transactionId?: string): Promise<Characteristic>;

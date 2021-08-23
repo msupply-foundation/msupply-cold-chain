@@ -1,12 +1,12 @@
-import { BluetoothDevice } from './types';
-import { BluetoothManager } from './BleManager';
+import { MacAddress } from '../types/common';
+import { BluetoothManager, MockOrRealDevice } from './BleManager';
 import { Device, BleError, ScanOptions, Characteristic, Subscription, LogLevel } from 'react-native-ble-plx';
 interface MonitorCallback {
     (error: BleError | null, characteristic: Characteristic | null): void;
 }
 export declare class DevBleManager implements BluetoothManager {
     connectedDevices: {
-        [key: string]: BluetoothDevice | null;
+        [key: string]: MockOrRealDevice | null;
     };
     registeredCallbacks: {
         [key: string]: MonitorCallback;
@@ -17,10 +17,10 @@ export declare class DevBleManager implements BluetoothManager {
     constructor();
     logLevel(): Promise<LogLevel>;
     setLogLevel(logLevel: LogLevel): void;
-    connectToDevice(macAddress: string): Promise<BluetoothDevice>;
+    connectToDevice(macAddress: MacAddress): Promise<MockOrRealDevice>;
     isDeviceConnected(macAddress: string): Promise<boolean>;
-    cancelDeviceConnection(macAddress: string): Promise<BluetoothDevice>;
-    discoverAllServicesAndCharacteristicsForDevice(macAddress: string): Promise<BluetoothDevice>;
+    cancelDeviceConnection(macAddress: string): Promise<MockOrRealDevice>;
+    discoverAllServicesAndCharacteristicsForDevice(macAddress: MacAddress): Promise<MockOrRealDevice>;
     stopDeviceScan(): void;
     startDeviceScan(_: string[] | null, __: ScanOptions | null, callback: (error: BleError | null, scannedDevice: Device | null) => void): void;
     writeCharacteristicWithoutResponseForDevice(macAddress: string, _: string, __: string, command: string, ___: string): Promise<Characteristic>;

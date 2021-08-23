@@ -138,7 +138,8 @@ class DevBleManager {
 
   async connectToDevice(macAddress) {
     this.connectedDevices[macAddress] = {
-      id: macAddress
+      id: macAddress,
+      name: 'bluemaestro'
     };
 
     if (this.level !== _reactNativeBlePlx.LogLevel.None) {
@@ -146,7 +147,8 @@ class DevBleManager {
     }
 
     return {
-      id: macAddress
+      id: macAddress,
+      name: 'bluemaestro'
     };
   }
 

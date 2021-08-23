@@ -129,7 +129,8 @@ export class DevBleManager {
 
   async connectToDevice(macAddress) {
     this.connectedDevices[macAddress] = {
-      id: macAddress
+      id: macAddress,
+      name: 'bluemaestro'
     };
 
     if (this.level !== LogLevel.None) {
@@ -137,7 +138,8 @@ export class DevBleManager {
     }
 
     return {
-      id: macAddress
+      id: macAddress,
+      name: 'bluemaestro'
     };
   }
 

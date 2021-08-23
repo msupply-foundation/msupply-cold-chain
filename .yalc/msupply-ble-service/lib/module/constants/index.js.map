@@ -1,1 +1,1 @@
-{"version":3,"sources":["index.ts"],"names":["BLUETOOTH","BLUE_MAESTRO"],"mappings":"AAAA,SAASA,SAAT,QAA0B,aAA1B;AACA,SAASC,YAAT,QAA6B,aAA7B","sourcesContent":["export { BLUETOOTH } from './Bluetooth';\nexport { BLUE_MAESTRO } from './Bluetooth';\n"]}
+{"version":3,"sources":["index.ts"],"names":["BT510","BLUE_MAESTRO"],"mappings":"AAAA,SAASA,KAAT,QAAsB,aAAtB;AACA,SAASC,YAAT,QAA6B,aAA7B","sourcesContent":["export { BT510 } from './Bluetooth';\nexport { BLUE_MAESTRO } from './Bluetooth';\n"]}

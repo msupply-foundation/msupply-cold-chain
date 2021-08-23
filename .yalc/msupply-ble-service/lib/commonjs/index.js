@@ -21,10 +21,10 @@ Object.defineProperty(exports, "BleManager", {
     return _Bluetooth.BleManager;
   }
 });
-Object.defineProperty(exports, "BLUETOOTH", {
+Object.defineProperty(exports, "BT510", {
   enumerable: true,
   get: function () {
-    return _constants.BLUETOOTH;
+    return _constants.BT510;
   }
 });
 Object.defineProperty(exports, "BLUE_MAESTRO", {

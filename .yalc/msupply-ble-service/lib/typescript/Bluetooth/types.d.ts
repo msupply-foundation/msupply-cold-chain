@@ -1,13 +1,21 @@
 import { ScanMode, Subscription, Characteristic, BleError, Device, ScanOptions, LogLevel } from 'react-native-ble-plx';
-export interface BluetoothDevice {
+import { BT510, BLUE_MAESTRO } from '../constants';
+export declare type DeviceType = typeof BT510 | typeof BLUE_MAESTRO;
+export interface TypedDevice {
     id: string;
+    deviceType: DeviceType;
 }
 export interface InfoLog {
     batteryLevel: null | number;
     isDisabled: boolean;
 }
 export interface SensorLog {
+    time: string;
     temperature: number;
+}
+export interface DataLog {
+    numEvents: number;
+    data: string;
 }
 export interface ScanCallback {
     (error: BleError | null, device: Device | null): void;
@@ -19,7 +27,7 @@ export interface ErrorRejector {
     (error: Error): void;
 }
 export interface MonitorCharacteristicCallback<ResolverResult> {
-    (result: Characteristic | null, resolver: Resolver<ResolverResult>, rejector: ErrorRejector): void;
+    (result: Characteristic | null, resolver: Resolver<ResolverResult>, rejector: ErrorRejector, subscription: Subscription): void;
 }
 export interface MonitorCharacteristicParser<ParserInput, ParserResult> {
     (result: ParserInput): ParserResult;
