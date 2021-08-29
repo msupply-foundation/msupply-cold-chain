@@ -111,14 +111,12 @@ export function* stop(): SagaIterator {
 export function callback(btService: BleService): any {
   const throttledScan = _.throttle(btService.scanForSensors, 1000);
   return eventChannel(emitter => {
-    throttledScan(
-      (err: BleError, device: Device): ScanCallback => {
-        if (err) {
-          console.log(JSON.stringify(err));
-        }
-        emitter(device);
+    throttledScan((err: BleError, deviceDescriptor: string): ScanCallback => {
+      if (err) {
+        console.log(JSON.stringify(err));
       }
-    );
+      emitter(deviceDescriptor);
+    });
     return () => {};
   });
 }
@@ -133,13 +131,20 @@ function* start(): SagaIterator {
     const channel = yield call(callback, btService);
 
     while (true) {
-      const device = yield take(channel);
+      const deviceDescriptor = yield take(channel);
       const foundSensors = yield select(ScanSelector.foundSensors);
       const macs = yield select(SensorSelector.macs);
-      const alreadyFound = foundSensors.includes(device?.id) || macs.includes(device?.id);
+      /*  Legacy Blue Maestro devices which have already been paired should be "already found" */
+      const legacy = deviceDescriptor.split('|')[0].trim();
+
+      const alreadyFound =
+        foundSensors.includes(deviceDescriptor) ||
+        macs.includes(deviceDescriptor) ||
+        foundSensors.includes(legacy) ||
+        macs.includes(legacy);
 
       if (!alreadyFound) {
-        yield put(ScanAction.foundSensor(device?.id));
+        yield put(ScanAction.foundSensor(deviceDescriptor));
       }
     }
   } catch (e) {
