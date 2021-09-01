@@ -1,9 +1,8 @@
 import _ from 'lodash';
-import { Buffer } from 'buffer';
 import { eventChannel } from 'redux-saga';
 import { SagaIterator } from '@redux-saga/types';
 import { ActionReducerMapBuilder, createSlice } from '@reduxjs/toolkit';
-import { BleService, ScanCallback, BleError, Device } from 'msupply-ble-service';
+import { BleService, ScanCallback, BleError } from 'msupply-ble-service';
 import {
   take,
   getContext,
@@ -14,7 +13,6 @@ import {
   takeLeading,
   select,
 } from 'redux-saga/effects';
-import { BLUE_MAESTRO } from '~constants';
 import { DEPENDENCY, REDUCER } from '../../../common/constants';
 import { RootState } from '../../../common/store/store';
 import { SensorSelector, SensorAction, SensorState } from '~features/Entities/Sensor/SensorSlice';
@@ -111,7 +109,7 @@ export function* stop(): SagaIterator {
 export function callback(btService: BleService): any {
   const throttledScan = _.throttle(btService.scanForSensors, 1000);
   return eventChannel(emitter => {
-    throttledScan((err: BleError, deviceDescriptor: string): ScanCallback => {
+    throttledScan((err: BleError | null, deviceDescriptor: string) => {
       if (err) {
         console.log(JSON.stringify(err));
       }
