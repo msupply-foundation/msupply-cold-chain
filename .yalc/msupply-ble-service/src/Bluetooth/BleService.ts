@@ -3,7 +3,6 @@ import { BTUtilService } from '../BTUtilService';
 import { Buffer } from 'buffer';
 import { BLUE_MAESTRO, BT510 } from '../index';
 import { MacAddress } from '../types/common';
-import moment from 'moment';
 import {
   Characteristic,
   ScanOptions,
@@ -18,7 +17,6 @@ import {
   LogLevel,
   Device,
   BleError,
-  DeviceType,
 } from './types';
 import { BluetoothManager } from './BleManager';
 
@@ -26,42 +24,27 @@ export class BleService {
   manager: BluetoothManager;
   utils: BTUtilService;
 
-  constructor(manager: BluetoothManager, utils: BTUtilService) {
+  constructor(manager: BluetoothManager) {
     this.manager = manager;
     manager.setLogLevel(LogLevel.Verbose);
-    // In the future we may want to use our own utils,
-    //  not the ones passed in from the app.
-    //this.utils = new BTUtilService();
-    this.utils = utils;
+    // Caller passes in utils from the main app,
+    // but we ignore it and use our own.
+    // This needs to be fixed in the main app.
+    this.utils = new BTUtilService();
   }
 
-  deviceConstants = (device: Pick<Device, 'id' | 'name'> | null): DeviceType => {
-    if (device?.name) {
-      if (device.name === 'BT510') {
-        // Laird doesn't include Manufacurer Data in connect response.
-        return BT510;
-      } else {
-        // Blue Maestro has part of the mac address as its name.
-        // We could check this but...
-        return BLUE_MAESTRO;
-      }
-    }
-    throw new Error('device or name is null');
+  connectToDevice = async (deviceId: string): Promise<void> => {
+    await this.manager.connectToDevice(deviceId);
   };
 
-  connectToDevice = async (macAddress: MacAddress): Promise<TypedDevice> => {
-    const device = await this.manager.connectToDevice(macAddress);
-    console.log(`BleService connectToDevice, device, id ${device?.id}, name ${device?.name}`);
-    return { id: device.id, deviceType: this.deviceConstants(device) };
-  };
-
-  connectAndDiscoverServices = async (macAddress: MacAddress): Promise<TypedDevice> => {
-    if (await this.manager.isDeviceConnected(macAddress)) {
-      await this.manager.cancelDeviceConnection(macAddress);
+  connectAndDiscoverServices = async (deviceDescriptor: string): Promise<TypedDevice> => {
+    const device = this.utils.deviceDescriptorToDevice(deviceDescriptor);
+    if (await this.manager.isDeviceConnected(device.id)) {
+      await this.manager.cancelDeviceConnection(device.id);
     }
-    const device = await this.connectToDevice(macAddress);
+    await this.connectToDevice(device.id);
 
-    await this.manager.discoverAllServicesAndCharacteristicsForDevice(macAddress);
+    await this.manager.discoverAllServicesAndCharacteristicsForDevice(device.id);
     return device;
   };
 
@@ -71,7 +54,7 @@ export class BleService {
 
   scanForSensors = (callback: ScanCallback): void => {
     const scanOptions: ScanOptions = { scanMode: ScanMode.LowLatency };
-    const filteredCallback: ScanCallback = (err: BleError | null, device: Device | null): void => {
+    const filteredCallback = (err: BleError | null, device: Device | null): void => {
       if (err) {
         console.log('BleService Scan Error:', JSON.stringify(err));
       }
@@ -79,20 +62,16 @@ export class BleService {
       if (device?.manufacturerData) {
         const mfgId = Buffer.from(device.manufacturerData, 'base64').readInt16LE(0);
         if (mfgId === BLUE_MAESTRO.MANUFACTURER_ID || mfgId === BT510.MANUFACTURER_ID) {
-          // console.log(
-          //   `BleService Found device: ${device.id}, ${device.name}, ${mfgId}`
-          // );
-          callback(err, device);
+          const descriptor = this.utils.deviceToDeviceDescriptor(device.id, mfgId);
+
+          callback(err, descriptor);
         }
       }
     };
     this.manager.startDeviceScan(null, scanOptions, filteredCallback);
-    console.log('BleService Started scan');
-    //this.manager.logLevel().then(value => console.log(`Log Level ${value}`));
   };
 
   writeCharacteristic = async (device: TypedDevice, command: string): Promise<Characteristic> => {
-    //console.log(`BleService Writing to ${device.id}`);
     return this.manager.writeCharacteristicWithoutResponseForDevice(
       device.id,
       device.deviceType.BLUETOOTH_UART_SERVICE_UUID,
@@ -105,7 +84,6 @@ export class BleService {
     device: TypedDevice,
     callback: MonitorCharacteristicCallback<boolean | SensorLog[] | InfoLog | DataLog>
   ): Promise<boolean | SensorLog[] | InfoLog | DataLog> => {
-    //console.log(`BleService Monitoring from ${device.id}`);
     return new Promise((resolve, reject) => {
       const subscription = this.manager.monitorCharacteristicForDevice(
         device.id,
@@ -131,7 +109,6 @@ export class BleService {
       const str = this.utils.stringFromBase64(val);
       const pattern = /.*}$/;
       const result = pattern.test(str);
-      //console.log(`BleService Monitor receives ${str.slice(0, 10)}, ${result}`);
       return result;
     };
 
@@ -179,11 +156,6 @@ export class BleService {
       subscription
     ) => {
       if (result?.value) {
-        // console.log(
-        //   `BleService SingleMonitor receives ${this.utils
-        //     .stringFromBase64(result.value)
-        //     .slice(0, 10)}`
-        // );
         try {
           subscription?.remove();
           resolve(parser(result.value));
@@ -192,7 +164,6 @@ export class BleService {
         }
       } else reject(new Error(`Command Failed`));
     };
-    //console.log(`BleService writeWithSingleResponse: ${command}`);
     const monitor = this.monitorCharacteristic(device, monitorCharacteristicCallback);
     await this.writeCharacteristic(device, command);
 
@@ -206,7 +177,6 @@ export class BleService {
       data: string[]
     ) => {
       if (device.deviceType === BLUE_MAESTRO) {
-        console.table(data.concat(['BleService']));
         const buffer = Buffer.concat(
           data.slice(1).map(datum => this.utils.bufferFromBase64(datum))
         );
@@ -228,11 +198,10 @@ export class BleService {
         const buffer = Buffer.concat(data.map(datum => this.utils.bufferFromBase64(datum)));
         const result = JSON.parse(buffer.toString());
         const numEvents = Number(result.result[0] / 8);
-        console.log(`BleService downloaded ${numEvents} events`);
-        //        console.log(`BleService data is ${result.result[1].slice(0, 10)}`);
         return { numEvents, data: result.result[1] };
       }
-    };
+    }; // end monitor callback
+
     if (device.deviceType === BT510) {
       // const FIFO = '0';
       // const LIFO = '1';
@@ -242,7 +211,6 @@ export class BleService {
         return (await this.writeWithSingleResponse(device, prepCommand, data => {
           const info = this.utils.stringFromBase64(data);
           const result = JSON.parse(info).result;
-          console.log(`BleService Log Prepared, ${result} events`);
           return !!result;
         })) as boolean;
       };
@@ -252,7 +220,6 @@ export class BleService {
           const info = this.utils.stringFromBase64(data);
           const result = !!(JSON.parse(info).result === numEvents);
           if (!result) throw new Error(`BleService ${info}`);
-          console.log(`BleService Log Acknowledged, ${numEvents} events`);
           return result;
         })) as boolean;
       };
@@ -269,64 +236,38 @@ export class BleService {
         const logBuffer = this.utils.bufferFromBase64(dataLog.data);
         const log = logBuffer.reduce((acc: SensorLog[], _, index) => {
           if (index % 8 !== 0) return acc;
-          const time = moment.unix(logBuffer.readInt32LE(index)).format('l HH:mm:ss');
+          //const time = moment.unix(logBuffer.readInt32LE(index)).format('l HH:mm:ss');
           //const time = logBuffer.readInt32LE(index);
           const temperature =
             Math.round((logBuffer.readInt16LE(index + 4) / BT510.TEMPERATURE_DIVISOR) * 10) / 10;
           const eventType = logBuffer.readInt8(index + 6);
-          //console.log(`BleService reducing event ${time}, ${temperature}, ${eventType}`);
-          const salt = logBuffer.readInt8(index + 7);
+          //const salt = logBuffer.readInt8(index + 7);
           if (eventType === 1) {
             // temperature
             return [
               ...acc,
               {
-                time,
                 temperature,
                 //                  eventType,
                 //                  salt,
               },
             ];
           } else {
-            console.log(
-              `BleService Event type ${eventType}, Data: ${Number(
-                logBuffer.readInt16LE(index + 4)
-              )}, Time: ${time}, Salt: ${salt}`
-            );
             return [...acc];
           }
         }, []);
-        //console.log(`BleService log ${JSON.stringify(log)}`);
 
         sensorLog = sensorLog.concat(log);
-        //console.log(`BleService sensorLog inside while loop ${JSON.stringify(sensorLog)}`);
         try {
           await ackLogs(dataLog.numEvents);
-        } catch (e) {
-          console.log(`BleService Ack failed ${e.message}`);
-        }
+        } catch (e) {}
       }
       // The table only shows up on flipper, and then
       // only the first 100 items are printed.
-      console.table(
-        [
-          { time: '', temperature: 'BleService' as unknown as number },
-          { time: '', temperature: device.id as unknown as number },
-        ].concat(sensorLog)
-      );
       return sensorLog;
     } else {
       const command = BLUE_MAESTRO.COMMAND_DOWNLOAD.replace('NUMEVENTS', '500');
       const result = (await this.writeAndMonitor(device, command, monitorCallback)) as SensorLog[];
-      console.table(
-        [
-          { time: '', temperature: 'BleService' as unknown as number },
-          {
-            time: '',
-            temperature: device.id as unknown as number,
-          },
-        ].concat(result)
-      );
       return result;
     }
   };
@@ -337,7 +278,6 @@ export class BleService {
       'INTERVAL',
       logInterval.toString()
     );
-    console.log(`BleService logInterval command: ${command}`);
     const result = await this.writeWithSingleResponse(device, command, data => {
       const info = this.utils.stringFromBase64(data);
       return (
@@ -347,21 +287,18 @@ export class BleService {
     });
     // Clear logs
     if (device.deviceType === BT510) {
-      this.downloadLogs(device.id);
+      this.downloadLogs(macAddress);
     }
-    //console.log(`BleService logInterval result: ${result}`);
     return !!result;
   };
 
   blink = async (macAddress: MacAddress): Promise<boolean> => {
     const device = await this.connectAndDiscoverServices(macAddress);
-    //console.log(`BleService Blinking ${device.deviceType.COMMAND_BLINK}`);
     const result = (await this.writeWithSingleResponse(
       device,
       device.deviceType.COMMAND_BLINK,
       data => {
         const answer = this.utils.stringFromBase64(data);
-        //console.log(`BleService data returned from blink write: ${result}`);
         return !!answer.match(/ok/i);
       }
     )) as boolean;
@@ -371,12 +308,11 @@ export class BleService {
 
   getInfo = async (macAddress: MacAddress): Promise<InfoLog> => {
     const device = await this.connectAndDiscoverServices(macAddress);
-    //console.log(`BleService getInfo, ${device.id}`);
 
     const monitorResultCallback: MonitorCharacteristicParser<string[], InfoLog> = data => {
       const parsedBase64 = data.map(this.utils.stringFromBase64);
       const defaultInfoLog: InfoLog = { batteryLevel: null, isDisabled: true };
-      //console.log(`BleService getInfo parser callback ${parsedBase64[0]}`);
+
       const blueMaestroBatteryLevel = (info: string): number | null => {
         const batteryLevelStringOrNull = info.match(/Batt lvl: [0-9]{1,3}/);
 
@@ -396,7 +332,6 @@ export class BleService {
         }
 
         const batteryLevel = Number(JSON.parse(info).batteryVoltageMv);
-        //console.log(`BleService Battery Level ${batteryLevel}`);
 
         return Number.isNaN(batteryLevel)
           ? null
@@ -423,7 +358,7 @@ export class BleService {
       device.deviceType.COMMAND_INFO,
       monitorResultCallback
     )) as InfoLog;
-    console.log(`BleService getInfo ${device.id} ${JSON.stringify(result)}`);
+
     return result;
   };
 

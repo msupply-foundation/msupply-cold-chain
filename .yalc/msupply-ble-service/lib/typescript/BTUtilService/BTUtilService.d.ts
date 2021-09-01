@@ -1,4 +1,6 @@
 /// <reference types="node" />
+import { TypedDevice } from '../Bluetooth/types';
+import { BT510, BLUE_MAESTRO } from '../constants';
 declare type NumberRange = [number, number];
 export declare class BTUtilService {
     /**
@@ -13,5 +15,7 @@ export declare class BTUtilService {
      * number within 0-100.
      */
     normaliseNumber: (currentVal: number, oldRange: NumberRange, newRange?: number[]) => number;
+    deviceDescriptorToDevice: (macAddress: string) => TypedDevice;
+    deviceToDeviceDescriptor: (deviceId: string, mfgId: BLUE_MAESTRO.MANUFACTURER_ID | BT510.MANUFACTURER_ID) => string;
 }
 export {};

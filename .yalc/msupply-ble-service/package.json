@@ -1,6 +1,6 @@
 {
   "name": "msupply-ble-service",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Low level bluetooth library",
   "author": "Chester Wood <chetstone@malamode.io> (https://github.com/chetstone)",
   "license": "GPL-3.0-or-later",
@@ -13,13 +13,8 @@
   "files": [
     "src",
     "lib",
-    "android",
-    "ios",
-    "cpp",
-    "msupply-ble-service.podspec",
+    "!**/.log",
     "!lib/typescript/example",
-    "!android/build",
-    "!ios/build",
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__"
@@ -139,5 +134,5 @@
   "dependencies": {
     "buffer": "^6.0.3"
   },
-  "yalcSig": "70ec037dc79c99f57d789c3d66a617fd"
+  "yalcSig": "0afd9b14614baa9c8a74286d50ac4d1e"
 }

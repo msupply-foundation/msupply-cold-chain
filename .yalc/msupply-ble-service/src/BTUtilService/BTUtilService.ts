@@ -1,8 +1,5 @@
-// This just here to satisfy TS for now
-// We're really using the UtilService passed into the bleService constructor
-// By the main app
-//
-
+import { TypedDevice } from '../Bluetooth/types';
+import { BT510, BLUE_MAESTRO } from '../constants';
 type NumberRange = [number, number];
 
 export class BTUtilService {
@@ -27,5 +24,21 @@ export class BTUtilService {
     const newVal = ((currentVal - oldMin) * (newMax - newMin)) / (oldMax - oldMin) + newMin;
 
     return Math.floor(newVal);
+  };
+  deviceDescriptorToDevice = (macAddress: string): TypedDevice => {
+    const parts = macAddress.split('|');
+    return {
+      id: parts[0].trim(),
+      // If the descriptor doesn't have a device field, it's a Blue Maestro that
+      // was previously paired.
+      deviceType: (parts[1]?.trim() === 'BT510' ? BT510 : BLUE_MAESTRO) ?? BLUE_MAESTRO,
+    };
+  };
+  deviceToDeviceDescriptor = (
+    deviceId: string,
+    mfgId: BLUE_MAESTRO.MANUFACTURER_ID | BT510.MANUFACTURER_ID
+  ): string => {
+    const deviceType = mfgId === BLUE_MAESTRO.MANUFACTURER_ID ? 'BLUE_MAESTRO' : 'BT510';
+    return `${deviceId} | ${deviceType}`;
   };
 }

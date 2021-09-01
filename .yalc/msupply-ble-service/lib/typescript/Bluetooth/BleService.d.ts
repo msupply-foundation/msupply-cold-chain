@@ -1,14 +1,13 @@
 import { BTUtilService } from '../BTUtilService';
 import { MacAddress } from '../types/common';
-import { Characteristic, TypedDevice, InfoLog, MonitorCharacteristicCallback, MonitorCharacteristicParser, ScanCallback, SensorLog, DataLog, Device, DeviceType } from './types';
+import { Characteristic, TypedDevice, InfoLog, MonitorCharacteristicCallback, MonitorCharacteristicParser, ScanCallback, SensorLog, DataLog } from './types';
 import { BluetoothManager } from './BleManager';
 export declare class BleService {
     manager: BluetoothManager;
     utils: BTUtilService;
-    constructor(manager: BluetoothManager, utils: BTUtilService);
-    deviceConstants: (device: Pick<Device, 'id' | 'name'> | null) => DeviceType;
-    connectToDevice: (macAddress: MacAddress) => Promise<TypedDevice>;
-    connectAndDiscoverServices: (macAddress: MacAddress) => Promise<TypedDevice>;
+    constructor(manager: BluetoothManager);
+    connectToDevice: (deviceId: string) => Promise<void>;
+    connectAndDiscoverServices: (deviceDescriptor: string) => Promise<TypedDevice>;
     stopScan: () => void;
     scanForSensors: (callback: ScanCallback) => void;
     writeCharacteristic: (device: TypedDevice, command: string) => Promise<Characteristic>;

@@ -3,6 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+var _exportNames = {
+  BleService: true,
+  DevBleManager: true,
+  BleManager: true,
+  BT510: true,
+  BLUE_MAESTRO: true
+};
 Object.defineProperty(exports, "BleService", {
   enumerable: true,
   get: function () {
@@ -37,4 +44,18 @@ Object.defineProperty(exports, "BLUE_MAESTRO", {
 var _Bluetooth = require("./Bluetooth");
 
 var _constants = require("./constants");
+
+var _types = require("./Bluetooth/types");
+
+Object.keys(_types).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _types[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _types[key];
+    }
+  });
+});
 //# sourceMappingURL=index.js.map
