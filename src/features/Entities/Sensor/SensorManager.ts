@@ -102,8 +102,7 @@ export class SensorManager {
   };
 
   getSensorByMac = async (macAddress: string): Promise<Sensor> => {
-    const sensor = await this.databaseService.queryWith(ENTITIES.SENSOR, { macAddress });
-    return sensor[0];
+    return await this.databaseService.findOneOrFail(ENTITIES.SENSOR, { macAddress });
   };
 
   getMostRecentLogTime = async (id: string): Promise<number> => {
@@ -129,7 +128,17 @@ export class SensorManager {
     logDelay: number,
     batteryLevel: number
   ): Promise<Sensor> => {
-    const id = this.utils.uuid();
+    let id = null;
+    try {
+      id = (await this.getSensorByMac(macAddress)).id;
+    } catch (e) {
+      id = this.utils.uuid();
+    }
+    // Just to make sure
+    if (!id) {
+      id = this.utils.uuid();
+    }
+
     const name = macAddress;
     return this.upsert({
       name,
@@ -138,6 +147,7 @@ export class SensorManager {
       id,
       batteryLevel,
       logDelay,
+      isActive: true,
       programmedDate: this.utils.now(),
     });
   };
