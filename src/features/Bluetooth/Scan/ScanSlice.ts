@@ -105,8 +105,7 @@ export function* stop(): SagaIterator {
   }
 }
 
-// TODO: Fix type
-export function callback(btService: BleService): any {
+export function callback(btService: BleService) {
   const throttledScan = _.throttle(btService.scanForSensors, 1000);
   return eventChannel(emitter => {
     throttledScan((err: BleError | null, deviceDescriptor: string) => {
