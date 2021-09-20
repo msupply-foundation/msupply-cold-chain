@@ -13247,15 +13247,15 @@ react-native-elements@^3.4.0:
     react-native-ratings "8.0.4"
     react-native-size-matters "^0.3.1"
 
+react-native-flipper@^0.110.0:
+  version "0.110.0"
+  resolved "https://registry.yarnpkg.com/react-native-flipper/-/react-native-flipper-0.110.0.tgz#d32975d1d2df3f55f234222a7f53b4d9ea70e450"
+  integrity sha512-VhHodD04j3SQoPUxHoSHV4jHZyxsdRn7svgA2XteAmw03kF/GF1/ytrcelq9yR/VvWXeUtdrJJ99az0b1nXLjQ==
+
 react-native-flipper@^0.34.0:
   version "0.34.0"
   resolved "https://registry.yarnpkg.com/react-native-flipper/-/react-native-flipper-0.34.0.tgz#7df1f38ba5d97a9321125fe0fccbe47d99e6fa1d"
   integrity sha512-48wgm29HJTOlZ0DibBsvXueEOY0EPIVL0wWKbwRfgrk86+luSEuLW3aZC50oJa95zSFb9qYShTV/6dWqh4Jamg==
-
-react-native-flipper@^0.85.0:
-  version "0.85.0"
-  resolved "https://registry.yarnpkg.com/react-native-flipper/-/react-native-flipper-0.85.0.tgz#c5e682203e706d0a3a1b037ba4e6c417804ea8f2"
-  integrity sha512-a+LcJwhgN6Q298wYfXBKzT3Bx0Kp1aTFOoPT9XHWWE7g9tP4zoeFu6lHNW1rOdqp+wQ2/SlV5+RixZ0i4NKx5w==
 
 react-native-fs@^2.17.0:
   version "2.18.0"
@@ -13758,10 +13758,10 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
-redux-flipper@^1.4.2:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/redux-flipper/-/redux-flipper-1.4.2.tgz#da765a675136e9893a002730703ec58d2f0e359b"
-  integrity sha512-VfSdmWATaZD2BHAiMOEzxk+KSiSTAv/N5AyY64+dU+qif/KfinSHWW3+YVMCO+5rxne1Fr92YwsYJl8l9injDA==
+redux-flipper@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/redux-flipper/-/redux-flipper-2.0.1.tgz#a43603a13e6f06a48c627ae7c144579bd4f1fa54"
+  integrity sha512-JqgnL+fUp3h2fPQRszItLkarTbIf5gjU4Sn0IY/ZxUo6oUUmMh4Lx2J7BBy78cE8KEW9prRRpvJ6NH2uc/QktA==
   dependencies:
     cycle "^1.0.3"
     dayjs "^1.8.29"
