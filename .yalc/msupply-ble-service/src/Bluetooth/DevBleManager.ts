@@ -84,6 +84,10 @@ export class DevBleManager implements BluetoothManager {
     return this.level;
   }
 
+  cancelTransaction(transactionId: string): void {
+    console.log(`Canceling transaction ${transactionId}`);
+  }
+
   setLogLevel(logLevel: LogLevel): void {
     this.level = logLevel;
   }

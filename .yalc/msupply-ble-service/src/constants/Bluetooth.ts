@@ -7,7 +7,7 @@ export enum BT510 {
   COMMAND_PREPARE_LOG = '{ "jsonrpc": "2.0", "method": "prepareLog", "params": [MODE], "id": 2 }',
   COMMAND_DOWNLOAD = '{ "jsonrpc": "2.0", "method": "readLog", "params": [NUMEVENTS], "id": 3 }',
   COMMAND_INFO = '{"jsonrpc": "2.0", "method": "get", "params": ["batteryVoltageMv"], "id": 4}',
-  COMMAND_UPDATE_LOG_INTERVAL = '{"jsonrpc": "2.0", "method": "set", "params": {"temperatureSenseInterval": INTERVAL}, "id": 5}',
+  COMMAND_UPDATE_LOG_INTERVAL = '{"jsonrpc": "2.0", "method": "set", "params": {"temperatureSenseInterval": LOG_INTERVAL, "batterySenseInterval": 600}, "id": 5}',
   COMMAND_ACK_LOG = '{ "jsonrpc": "2.0", "method": "ackLog", "params": [NUMEVENTS], "id": 6 }',
   MANUFACTURER_ID = 228, // 0xE4
   TEMPERATURE_DIVISOR = 100.0,
@@ -21,7 +21,7 @@ export enum BLUE_MAESTRO {
   COMMAND_BLINK = '*blink',
   COMMAND_DOWNLOAD = '*logall',
   COMMAND_INFO = '*info',
-  COMMAND_UPDATE_LOG_INTERVAL = '*lintINTERVAL',
+  COMMAND_UPDATE_LOG_INTERVAL = '*lintLOG_INTERVAL',
   COMMAND_DISABLE_BUTTON = '*bd',
   MANUFACTURER_ID = 307,
   DELIMITER_A = 11776,

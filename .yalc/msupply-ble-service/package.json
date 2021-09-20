@@ -1,6 +1,6 @@
 {
   "name": "msupply-ble-service",
-  "version": "0.2.1",
+  "version": "0.3.1",
   "description": "Low level bluetooth library",
   "author": "Chester Wood <chetstone@malamode.io> (https://github.com/chetstone)",
   "license": "GPL-3.0-or-later",
@@ -27,10 +27,10 @@
     "test": "jest",
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "release": "release-it",
     "example": "yarn --cwd example",
     "pods": "cd example && pod-install --quiet",
-    "bootstrap": "yarn example && yarn"
+    "bootstrap": "yarn example && yarn",
+    "postversion": "npx yalc publish --private --scripts"
   },
   "keywords": [
     "react-native",
@@ -60,23 +60,6 @@
   "husky": {
     "hooks": {
       "pre-commit": "yarn lint && yarn typescript"
-    }
-  },
-  "release-it": {
-    "git": {
-      "commitMessage": "chore: release ${version}",
-      "tagName": "v${version}"
-    },
-    "npm": {
-      "publish": true
-    },
-    "github": {
-      "release": true
-    },
-    "plugins": {
-      "@release-it/conventional-changelog": {
-        "preset": "angular"
-      }
     }
   },
   "eslintConfig": {
@@ -134,5 +117,5 @@
   "dependencies": {
     "buffer": "^6.0.3"
   },
-  "yalcSig": "0afd9b14614baa9c8a74286d50ac4d1e"
+  "yalcSig": "0864e7178afc53b52b6dd2b6c2a61028"
 }

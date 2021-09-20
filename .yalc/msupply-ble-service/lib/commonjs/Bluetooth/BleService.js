@@ -21,8 +21,8 @@ class BleService {
 
     _defineProperty(this, "utils", void 0);
 
-    _defineProperty(this, "connectToDevice", async deviceId => {
-      await this.manager.connectToDevice(deviceId);
+    _defineProperty(this, "connectToDevice", deviceId => {
+      return this.manager.connectToDevice(deviceId);
     });
 
     _defineProperty(this, "connectAndDiscoverServices", async deviceDescriptor => {
@@ -68,13 +68,15 @@ class BleService {
       return this.manager.writeCharacteristicWithoutResponseForDevice(device.id, device.deviceType.BLUETOOTH_UART_SERVICE_UUID, device.deviceType.BLUETOOTH_READ_CHARACTERISTIC_UUID, this.utils.base64FromString(command));
     });
 
-    _defineProperty(this, "monitorCharacteristic", (device, callback) => {
+    _defineProperty(this, "monitorCharacteristic", (device, callback, transactionId) => {
       return new Promise((resolve, reject) => {
         const subscription = this.manager.monitorCharacteristicForDevice(device.id, device.deviceType.BLUETOOTH_UART_SERVICE_UUID, device.deviceType.BLUETOOTH_WRITE_CHARACTERISTIC_UUID, (_, result) => {
           callback(result, resolve, reject, subscription);
-        });
+        }, transactionId);
       });
     });
+
+    _defineProperty(this, "transactionId", () => '_' + Math.random().toString(36).substr(2, 9));
 
     _defineProperty(this, "writeAndMonitor", async (device, command, parser) => {
       const data = [];
@@ -107,32 +109,44 @@ class BleService {
             return;
           }
 
+          if (data.length === 0) throw new Error(' callback no data returned');
           resolve(parser(data));
         } catch (e) {
-          reject(new Error(`Parsing failed: ${e.message}`));
+          reject(new Error(` callback parsing failed, ${e.message}`));
         }
-      };
+      }; // end monitoringCallback
 
-      const monitor = this.monitorCharacteristic(device, monitoringCallback);
-      await this.writeCharacteristic(device, command);
-      return monitor;
+
+      const transactionId = this.transactionId();
+      const monitor = this.monitorCharacteristic(device, monitoringCallback, transactionId); // We only care about the result if both the write and monitor succeed.
+
+      return Promise.all([monitor, this.writeCharacteristic(device, command)]).then(r => r[0]).catch(e => {
+        this.manager.cancelTransaction(transactionId);
+        throw new Error(` writeAndMonitor rejected, ${device.id} ${e.message}`);
+      });
     });
 
     _defineProperty(this, "writeWithSingleResponse", async (device, command, parser) => {
       const monitorCharacteristicCallback = (result, resolve, reject, subscription) => {
+        subscription === null || subscription === void 0 ? void 0 : subscription.remove();
+
         if (result !== null && result !== void 0 && result.value) {
           try {
-            subscription === null || subscription === void 0 ? void 0 : subscription.remove();
             resolve(parser(result.value));
           } catch (e) {
-            reject(new Error(`Parsing failed: ${e.message}`));
+            reject(new Error(` callback parsing failed: ${e.message}`));
           }
-        } else reject(new Error(`Command Failed`));
-      };
+        } else reject(new Error(` callback returns null`));
+      }; // end monitorCharacteristicCallback
 
-      const monitor = this.monitorCharacteristic(device, monitorCharacteristicCallback);
-      await this.writeCharacteristic(device, command);
-      return monitor;
+
+      const transactionId = this.transactionId();
+      const monitor = this.monitorCharacteristic(device, monitorCharacteristicCallback, transactionId); // We only care about the result if both the write and monitor succeed.
+
+      return Promise.all([monitor, this.writeCharacteristic(device, command)]).then(r => r[0]).catch(e => {
+        this.manager.cancelTransaction(transactionId);
+        throw new Error(` writeWithSingleResponse rejected, ${device.id} ${e.message}`);
+      });
     });
 
     _defineProperty(this, "downloadLogs", async macAddress => {
@@ -172,8 +186,7 @@ class BleService {
 
           return await this.writeWithSingleResponse(device, prepCommand, data => {
             const info = this.utils.stringFromBase64(data);
-            const result = JSON.parse(info).result;
-            return !!result;
+            return JSON.parse(info).result !== 0;
           });
         };
 
@@ -182,45 +195,43 @@ class BleService {
 
           return await this.writeWithSingleResponse(device, ackCommand, data => {
             const info = this.utils.stringFromBase64(data);
-            const result = !!(JSON.parse(info).result === numEvents);
-            if (!result) throw new Error(`BleService ${info}`);
-            return result;
+            return JSON.parse(info).result === numEvents;
           });
         };
 
         let sensorLog = [];
 
-        while (await prepareLogs()) {
-          const downloadCommand = _index.BT510.COMMAND_DOWNLOAD.replace('NUMEVENTS', '500');
+        try {
+          while (await prepareLogs()) {
+            const downloadCommand = _index.BT510.COMMAND_DOWNLOAD.replace('NUMEVENTS', '500');
 
-          const dataLog = await this.writeAndMonitor(device, downloadCommand, monitorCallback);
-          const logBuffer = this.utils.bufferFromBase64(dataLog.data);
-          const log = logBuffer.reduce((acc, _, index) => {
-            if (index % 8 !== 0) return acc; //const time = moment.unix(logBuffer.readInt32LE(index)).format('l HH:mm:ss');
-            //const time = logBuffer.readInt32LE(index);
+            const dataLog = await this.writeAndMonitor(device, downloadCommand, monitorCallback);
+            const logBuffer = this.utils.bufferFromBase64(dataLog.data);
+            const log = logBuffer.reduce((acc, _, index) => {
+              if (index % 8 !== 0) return acc; //const time = logBuffer.readInt32LE(index);
 
-            const temperature = Math.round(logBuffer.readInt16LE(index + 4) / _index.BT510.TEMPERATURE_DIVISOR * 10) / 10;
-            const eventType = logBuffer.readInt8(index + 6); //const salt = logBuffer.readInt8(index + 7);
+              const temperature = Math.round(logBuffer.readInt16LE(index + 4) / _index.BT510.TEMPERATURE_DIVISOR * 10) / 10;
+              const eventType = logBuffer.readInt8(index + 6); //const salt = logBuffer.readInt8(index + 7);
 
-            if (eventType === 1) {
-              // temperature
-              return [...acc, {
-                temperature //                  eventType,
-                //                  salt,
+              if (eventType === 1) {
+                return [...acc, {
+                  temperature
+                }];
+              } else {
+                return [...acc];
+              }
+            }, []);
 
-              }];
-            } else {
-              return [...acc];
+            if (await ackLogs(dataLog.numEvents)) {
+              sensorLog = sensorLog.concat(log);
             }
-          }, []);
-          sensorLog = sensorLog.concat(log);
+          }
+        } catch (e) {
+          if (sensorLog.length === 0) {
+            throw new Error(`downloadLogs ${e.message}`);
+          } // But if we partially succeeded, return that
 
-          try {
-            await ackLogs(dataLog.numEvents);
-          } catch (e) {}
-        } // The table only shows up on flipper, and then
-        // only the first 100 items are printed.
-
+        }
 
         return sensorLog;
       } else {
@@ -231,19 +242,22 @@ class BleService {
       }
     });
 
-    _defineProperty(this, "updateLogInterval", async (macAddress, logInterval) => {
+    _defineProperty(this, "updateLogInterval", async (macAddress, logInterval, clearLogs = true) => {
       const device = await this.connectAndDiscoverServices(macAddress);
-      const command = device.deviceType.COMMAND_UPDATE_LOG_INTERVAL.replace('INTERVAL', logInterval.toString());
+      const command = device.deviceType.COMMAND_UPDATE_LOG_INTERVAL.replace('LOG_INTERVAL', logInterval.toString());
       const result = await this.writeWithSingleResponse(device, command, data => {
         const info = this.utils.stringFromBase64(data);
         return device.deviceType === _index.BT510 && JSON.parse(info).result === 'ok' || !!info.match(/interval/i);
-      }); // Clear logs
+      }); // Clear logs if we haven't just downloaded
+      // BlueMaestro automatically clears logs when log interval is set,
+      // But we have to download all the logs to clear them on BT510
 
-      if (device.deviceType === _index.BT510) {
-        this.downloadLogs(macAddress);
+      if (clearLogs && device.deviceType === _index.BT510) {
+        await this.downloadLogs(macAddress);
       }
 
-      return !!result;
+      if (result) return true;
+      throw new Error(` command returned not OK result`);
     });
 
     _defineProperty(this, "blink", async macAddress => {
@@ -252,7 +266,8 @@ class BleService {
         const answer = this.utils.stringFromBase64(data);
         return !!answer.match(/ok/i);
       });
-      return result;
+      if (result) return true;
+      throw new Error(` acknowledgement false`);
     });
 
     _defineProperty(this, "getInfo", async macAddress => {
@@ -269,17 +284,25 @@ class BleService {
           const batteryLevelStringOrNull = info.match(/Batt lvl: [0-9]{1,3}/);
           if (!batteryLevelStringOrNull) return batteryLevelStringOrNull;
           const batteryLevel = Number(batteryLevelStringOrNull[0].match(/[0-9]{1,3}/));
-          return Number.isNaN(batteryLevel) ? null : this.utils.normaliseNumber(batteryLevel, [70, 100]);
+          return Number.isNaN(batteryLevel) ? null : this.utils.normaliseNumber(batteryLevel, [75, 100]);
         };
 
         const bt510BatteryLevel = info => {
-          if (JSON.parse(info).result !== 'ok') {
-            /* {"jsonrpc":"2.0","id":3,"error":{"code":-32602,"message":"Attribute Not Found"}} */
+          let batteryLevel = null;
+
+          if (info) {
+            const parsedInfo = JSON.parse(info);
+
+            if ((parsedInfo === null || parsedInfo === void 0 ? void 0 : parsedInfo.result) !== 'ok') {
+              return null;
+            }
+
+            batteryLevel = Number(parsedInfo.batteryVoltageMv);
+          } else {
             return null;
           }
 
-          const batteryLevel = Number(JSON.parse(info).batteryVoltageMv);
-          return Number.isNaN(batteryLevel) ? null : this.utils.normaliseNumber(Math.min(batteryLevel, 3000), [2100, 3000]);
+          return Number.isNaN(batteryLevel) ? null : this.utils.normaliseNumber(Math.min(batteryLevel, 3000), [2250, 3000]);
         };
 
         const parsedIsDisabled = info => !!info.match(/Btn on\/off: 1/);
@@ -342,9 +365,9 @@ class BleService {
       return this.blink(macAddress).catch(err => this.blinkWithRetries(macAddress, retriesLeft - 1, err));
     });
 
-    _defineProperty(this, "updateLogIntervalWithRetries", async (macAddress, logInterval, retriesLeft, error) => {
+    _defineProperty(this, "updateLogIntervalWithRetries", async (macAddress, logInterval, retriesLeft, clearLogs, error) => {
       if (!retriesLeft) throw error;
-      return this.updateLogInterval(macAddress, logInterval).catch(err => this.updateLogIntervalWithRetries(macAddress, logInterval, retriesLeft - 1, err));
+      return this.updateLogInterval(macAddress, logInterval, clearLogs).catch(err => this.updateLogIntervalWithRetries(macAddress, logInterval, retriesLeft - 1, clearLogs, err));
     });
 
     this.manager = manager;

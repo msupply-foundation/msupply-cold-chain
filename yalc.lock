@@ -2,7 +2,7 @@
   "version": "v1",
   "packages": {
     "msupply-ble-service": {
-      "signature": "0afd9b14614baa9c8a74286d50ac4d1e",
+      "signature": "0864e7178afc53b52b6dd2b6c2a61028",
       "file": true,
       "replaced": "link:../msupply-ble-service"
     }

@@ -14,6 +14,7 @@ export type MockOrRealDevice = Pick<Device, 'id' | 'name'> | Device;
 export declare class BluetoothManager {
   setLogLevel(logLevel: LogLevel): void;
   logLevel(): Promise<LogLevel>;
+  cancelTransaction(transactionId: string): void;
   connectToDevice(macAddress: MacAddress): Promise<MockOrRealDevice>;
   isDeviceConnected(macAddress: MacAddress): Promise<boolean>;
   cancelDeviceConnection(macAddress: MacAddress): Promise<MockOrRealDevice>;

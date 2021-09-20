@@ -16,6 +16,7 @@ export declare class DevBleManager implements BluetoothManager {
     scannerInterval: number | null;
     constructor();
     logLevel(): Promise<LogLevel>;
+    cancelTransaction(transactionId: string): void;
     setLogLevel(logLevel: LogLevel): void;
     connectToDevice(macAddress: MacAddress): Promise<MockOrRealDevice>;
     isDeviceConnected(macAddress: string): Promise<boolean>;

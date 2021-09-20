@@ -18,7 +18,7 @@ import {
   Device,
   BleError,
 } from './types';
-import { BluetoothManager } from './BleManager';
+import { BluetoothManager, MockOrRealDevice } from './BleManager';
 
 export class BleService {
   manager: BluetoothManager;
@@ -33,8 +33,8 @@ export class BleService {
     this.utils = new BTUtilService();
   }
 
-  connectToDevice = async (deviceId: string): Promise<void> => {
-    await this.manager.connectToDevice(deviceId);
+  connectToDevice = (deviceId: string): Promise<MockOrRealDevice> => {
+    return this.manager.connectToDevice(deviceId);
   };
 
   connectAndDiscoverServices = async (deviceDescriptor: string): Promise<TypedDevice> => {
@@ -82,7 +82,8 @@ export class BleService {
 
   monitorCharacteristic = (
     device: TypedDevice,
-    callback: MonitorCharacteristicCallback<boolean | SensorLog[] | InfoLog | DataLog>
+    callback: MonitorCharacteristicCallback<boolean | SensorLog[] | InfoLog | DataLog>,
+    transactionId: string
   ): Promise<boolean | SensorLog[] | InfoLog | DataLog> => {
     return new Promise((resolve, reject) => {
       const subscription = this.manager.monitorCharacteristicForDevice(
@@ -91,10 +92,14 @@ export class BleService {
         device.deviceType.BLUETOOTH_WRITE_CHARACTERISTIC_UUID,
         (_, result) => {
           callback(result, resolve, reject, subscription);
-        }
+        },
+        transactionId
       );
     });
   };
+
+  // https://gist.github.com/gordonbrander/2230317
+  transactionId = () => '_' + Math.random().toString(36).substr(2, 9);
 
   writeAndMonitor = async (
     device: TypedDevice,
@@ -132,16 +137,22 @@ export class BleService {
           // to the caller)
           return;
         }
+        if (data.length === 0) throw new Error(' callback no data returned');
         resolve(parser(data));
       } catch (e) {
-        reject(new Error(`Parsing failed: ${e.message}`));
+        reject(new Error(` callback parsing failed, ${e.message}`));
       }
-    };
+    }; // end monitoringCallback
 
-    const monitor = this.monitorCharacteristic(device, monitoringCallback);
-    await this.writeCharacteristic(device, command);
-
-    return monitor;
+    const transactionId = this.transactionId();
+    const monitor = this.monitorCharacteristic(device, monitoringCallback, transactionId);
+    // We only care about the result if both the write and monitor succeed.
+    return Promise.all([monitor, this.writeCharacteristic(device, command)])
+      .then(r => r[0])
+      .catch(e => {
+        this.manager.cancelTransaction(transactionId);
+        throw new Error(` writeAndMonitor rejected, ${device.id} ${e.message}`);
+      });
   };
 
   writeWithSingleResponse = async (
@@ -155,19 +166,29 @@ export class BleService {
       reject,
       subscription
     ) => {
+      subscription?.remove();
       if (result?.value) {
         try {
-          subscription?.remove();
           resolve(parser(result.value));
         } catch (e) {
-          reject(new Error(`Parsing failed: ${e.message}`));
+          reject(new Error(` callback parsing failed: ${e.message}`));
         }
-      } else reject(new Error(`Command Failed`));
-    };
-    const monitor = this.monitorCharacteristic(device, monitorCharacteristicCallback);
-    await this.writeCharacteristic(device, command);
+      } else reject(new Error(` callback returns null`));
+    }; // end monitorCharacteristicCallback
 
-    return monitor;
+    const transactionId = this.transactionId();
+    const monitor = this.monitorCharacteristic(
+      device,
+      monitorCharacteristicCallback,
+      transactionId
+    );
+    // We only care about the result if both the write and monitor succeed.
+    return Promise.all([monitor, this.writeCharacteristic(device, command)])
+      .then(r => r[0])
+      .catch(e => {
+        this.manager.cancelTransaction(transactionId);
+        throw new Error(` writeWithSingleResponse rejected, ${device.id} ${e.message}`);
+      });
   };
 
   downloadLogs = async (macAddress: MacAddress): Promise<SensorLog[]> => {
@@ -208,62 +229,60 @@ export class BleService {
 
       const prepareLogs = async (): Promise<boolean> => {
         const prepCommand = BT510.COMMAND_PREPARE_LOG.replace('MODE', '0');
+
         return (await this.writeWithSingleResponse(device, prepCommand, data => {
           const info = this.utils.stringFromBase64(data);
-          const result = JSON.parse(info).result;
-          return !!result;
+          return JSON.parse(info).result !== 0;
         })) as boolean;
       };
       const ackLogs = async (numEvents: number): Promise<boolean> => {
         const ackCommand = BT510.COMMAND_ACK_LOG.replace('NUMEVENTS', numEvents.toString());
         return (await this.writeWithSingleResponse(device, ackCommand, data => {
           const info = this.utils.stringFromBase64(data);
-          const result = !!(JSON.parse(info).result === numEvents);
-          if (!result) throw new Error(`BleService ${info}`);
-          return result;
+          return JSON.parse(info).result === numEvents;
         })) as boolean;
       };
 
       let sensorLog = [] as SensorLog[];
+      try {
+        while (await prepareLogs()) {
+          const downloadCommand = BT510.COMMAND_DOWNLOAD.replace('NUMEVENTS', '500');
+          const dataLog = (await this.writeAndMonitor(
+            device,
+            downloadCommand,
+            monitorCallback
+          )) as DataLog;
+          const logBuffer = this.utils.bufferFromBase64(dataLog.data);
 
-      while (await prepareLogs()) {
-        const downloadCommand = BT510.COMMAND_DOWNLOAD.replace('NUMEVENTS', '500');
-        const dataLog = (await this.writeAndMonitor(
-          device,
-          downloadCommand,
-          monitorCallback
-        )) as DataLog;
-        const logBuffer = this.utils.bufferFromBase64(dataLog.data);
-        const log = logBuffer.reduce((acc: SensorLog[], _, index) => {
-          if (index % 8 !== 0) return acc;
-          //const time = moment.unix(logBuffer.readInt32LE(index)).format('l HH:mm:ss');
-          //const time = logBuffer.readInt32LE(index);
-          const temperature =
-            Math.round((logBuffer.readInt16LE(index + 4) / BT510.TEMPERATURE_DIVISOR) * 10) / 10;
-          const eventType = logBuffer.readInt8(index + 6);
-          //const salt = logBuffer.readInt8(index + 7);
-          if (eventType === 1) {
-            // temperature
-            return [
-              ...acc,
-              {
-                temperature,
-                //                  eventType,
-                //                  salt,
-              },
-            ];
-          } else {
-            return [...acc];
+          const log = logBuffer.reduce((acc: SensorLog[], _, index) => {
+            if (index % 8 !== 0) return acc;
+            //const time = logBuffer.readInt32LE(index);
+            const temperature =
+              Math.round((logBuffer.readInt16LE(index + 4) / BT510.TEMPERATURE_DIVISOR) * 10) / 10;
+            const eventType = logBuffer.readInt8(index + 6);
+            //const salt = logBuffer.readInt8(index + 7);
+            if (eventType === 1) {
+              return [
+                ...acc,
+                {
+                  temperature,
+                },
+              ];
+            } else {
+              return [...acc];
+            }
+          }, []);
+
+          if (await ackLogs(dataLog.numEvents)) {
+            sensorLog = sensorLog.concat(log);
           }
-        }, []);
-
-        sensorLog = sensorLog.concat(log);
-        try {
-          await ackLogs(dataLog.numEvents);
-        } catch (e) {}
+        }
+      } catch (e) {
+        if (sensorLog.length === 0) {
+          throw new Error(`downloadLogs ${e.message}`);
+        }
+        // But if we partially succeeded, return that
       }
-      // The table only shows up on flipper, and then
-      // only the first 100 items are printed.
       return sensorLog;
     } else {
       const command = BLUE_MAESTRO.COMMAND_DOWNLOAD.replace('NUMEVENTS', '500');
@@ -272,10 +291,15 @@ export class BleService {
     }
   };
 
-  updateLogInterval = async (macAddress: MacAddress, logInterval: number): Promise<boolean> => {
+  updateLogInterval = async (
+    macAddress: MacAddress,
+    logInterval: number,
+    clearLogs = true
+  ): Promise<boolean> => {
     const device = await this.connectAndDiscoverServices(macAddress);
+
     const command = device.deviceType.COMMAND_UPDATE_LOG_INTERVAL.replace(
-      'INTERVAL',
+      'LOG_INTERVAL',
       logInterval.toString()
     );
     const result = await this.writeWithSingleResponse(device, command, data => {
@@ -285,11 +309,14 @@ export class BleService {
         !!info.match(/interval/i)
       );
     });
-    // Clear logs
-    if (device.deviceType === BT510) {
-      this.downloadLogs(macAddress);
+    // Clear logs if we haven't just downloaded
+    // BlueMaestro automatically clears logs when log interval is set,
+    // But we have to download all the logs to clear them on BT510
+    if (clearLogs && device.deviceType === BT510) {
+      await this.downloadLogs(macAddress);
     }
-    return !!result;
+    if (result) return true;
+    throw new Error(` command returned not OK result`);
   };
 
   blink = async (macAddress: MacAddress): Promise<boolean> => {
@@ -303,16 +330,15 @@ export class BleService {
       }
     )) as boolean;
 
-    return result;
+    if (result) return true;
+    throw new Error(` acknowledgement false`);
   };
 
   getInfo = async (macAddress: MacAddress): Promise<InfoLog> => {
     const device = await this.connectAndDiscoverServices(macAddress);
-
     const monitorResultCallback: MonitorCharacteristicParser<string[], InfoLog> = data => {
       const parsedBase64 = data.map(this.utils.stringFromBase64);
       const defaultInfoLog: InfoLog = { batteryLevel: null, isDisabled: true };
-
       const blueMaestroBatteryLevel = (info: string): number | null => {
         const batteryLevelStringOrNull = info.match(/Batt lvl: [0-9]{1,3}/);
 
@@ -322,20 +348,25 @@ export class BleService {
 
         return Number.isNaN(batteryLevel)
           ? null
-          : this.utils.normaliseNumber(batteryLevel, [70, 100]);
+          : this.utils.normaliseNumber(batteryLevel, [75, 100]);
       };
 
       const bt510BatteryLevel = (info: string): number | null => {
-        if (JSON.parse(info).result !== 'ok') {
-          /* {"jsonrpc":"2.0","id":3,"error":{"code":-32602,"message":"Attribute Not Found"}} */
+        let batteryLevel = null;
+        if (info) {
+          const parsedInfo = JSON.parse(info);
+
+          if (parsedInfo?.result !== 'ok') {
+            return null;
+          }
+
+          batteryLevel = Number(parsedInfo.batteryVoltageMv);
+        } else {
           return null;
         }
-
-        const batteryLevel = Number(JSON.parse(info).batteryVoltageMv);
-
         return Number.isNaN(batteryLevel)
           ? null
-          : this.utils.normaliseNumber(Math.min(batteryLevel, 3000), [2100, 3000]);
+          : this.utils.normaliseNumber(Math.min(batteryLevel, 3000), [2250, 3000]);
       };
 
       const parsedIsDisabled = (info: string): boolean => !!info.match(/Btn on\/off: 1/);
@@ -430,12 +461,13 @@ export class BleService {
     macAddress: MacAddress,
     logInterval: number,
     retriesLeft: number,
+    clearLogs: boolean,
     error: Error | null
   ): Promise<boolean> => {
     if (!retriesLeft) throw error;
 
-    return this.updateLogInterval(macAddress, logInterval).catch(err =>
-      this.updateLogIntervalWithRetries(macAddress, logInterval, retriesLeft - 1, err)
+    return this.updateLogInterval(macAddress, logInterval, clearLogs).catch(err =>
+      this.updateLogIntervalWithRetries(macAddress, logInterval, retriesLeft - 1, clearLogs, err)
     );
   };
 }

@@ -123,6 +123,10 @@ export class DevBleManager {
     return this.level;
   }
 
+  cancelTransaction(transactionId) {
+    console.log(`Canceling transaction ${transactionId}`);
+  }
+
   setLogLevel(logLevel) {
     this.level = logLevel;
   }
