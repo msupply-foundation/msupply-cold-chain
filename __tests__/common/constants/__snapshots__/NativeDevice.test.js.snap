@@ -14,7 +14,7 @@ exports[`Constants: DANGEROUS_BATTERY_LEVEL Matches snapshot 1`] = `20`;
 
 exports[`Constants: PERMISSION Matches snapshot 1`] = `
 Object {
-  "LOCATION": "android.permission.ACCESS_COARSE_LOCATION",
+  "LOCATION": "android.permission.ACCESS_FINE_LOCATION",
   "STORAGE": "android.permission.WRITE_EXTERNAL_STORAGE",
 }
 `;
