@@ -110,10 +110,8 @@ const reducers = {
       draftState: LogTableSliceState,
       { payload: { data } }: PayloadAction<FetchSuccessPayload>
     ) => {
-      const { limit, offset } = draftState;
       draftState.data = data;
       draftState.isLoading = false;
-      draftState.offset = offset + limit;
     },
   },
   fetchFail: {
