@@ -150,8 +150,10 @@ class BatteryLevelSubject {
   }
 }
 
+const batteryLevelSubject = new BatteryLevelSubject();
+
 export const usePowerState = (): PowerStateShape => {
-  const batterLevelSubject = useRef(new BatteryLevelSubject());
+  const batterLevelSubject = useRef(batteryLevelSubject);
   const [powerState, dispatch] = useReducer(reducer, initialState());
 
   useEffect(() => {
