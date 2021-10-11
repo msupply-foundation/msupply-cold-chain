@@ -2,6 +2,7 @@
 
 exports[`Constants: PERMISSION Matches snapshot 1`] = `
 Object {
+  "BLACK_CIRCLE": "●",
   "CELSIUS": "C",
   "DASH": "-",
   "DEGREE": "°",
