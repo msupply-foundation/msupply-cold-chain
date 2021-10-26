@@ -45,8 +45,8 @@ export const DependencyContainer: FC = ({ children }) => {
     const db = new Database();
     const dbService = new DatabaseService(db);
     const permissionService = new PermissionService();
-    const btService = new BleService(new BleManager(), utilService);
-    const devBtService = new BleService(new DevBleManager(), utilService);
+    const btService = new BleService(new BleManager());
+    const devBtService = new BleService(new DevBleManager());
     const formatService = new FormatService(utilService);
     const exportService = new ExportService();
     const devLogger = new DevLoggerService();
