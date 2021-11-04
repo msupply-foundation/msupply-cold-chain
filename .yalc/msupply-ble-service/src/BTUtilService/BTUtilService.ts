@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { TypedDevice } from '../Bluetooth/types';
 import { BT510, BLUE_MAESTRO } from '../constants';
 type NumberRange = [number, number];

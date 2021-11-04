@@ -22,6 +22,7 @@ export declare enum BLUE_MAESTRO {
     COMMAND_INFO = "*info",
     COMMAND_UPDATE_LOG_INTERVAL = "*lintLOG_INTERVAL",
     COMMAND_DISABLE_BUTTON = "*bd",
+    COMMAND_CLEAR = "*clr",
     MANUFACTURER_ID = 307,
     DELIMITER_A = 11776,
     DELIMITER_B = 11308,

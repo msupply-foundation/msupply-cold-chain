@@ -2,27 +2,66 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 import { BTUtilService } from '../BTUtilService';
 import { Buffer } from 'buffer';
-import { BLUE_MAESTRO, BT510 } from '../index';
+import { BLUE_MAESTRO, BT510 } from '../constants';
 import { ScanMode, LogLevel } from './types';
+const dummyLogger = {
+  trace: (_message, _details) => {
+    /*do nothing*/
+  },
+  debug: (_message, _details) => {
+    /*do nothing*/
+  },
+  info: (_message, _details) => {
+    /*do nothing*/
+  },
+  warn: (_message, _details) => {
+    /*do nothing*/
+  },
+  error: (_message, _details) => {
+    /*do nothing*/
+  },
+  fatal: (_message, _details) => {
+    /*do nothing*/
+  },
+  setLogLevel: (_transportKey, _newLevel) => {
+    /*do nothing*/
+  }
+};
 export class BleService {
-  constructor(manager) {
+  constructor(manager, logger = dummyLogger) {
     _defineProperty(this, "manager", void 0);
 
     _defineProperty(this, "utils", void 0);
 
+    _defineProperty(this, "logger", void 0);
+
     _defineProperty(this, "connectToDevice", deviceId => {
+      this.logger.info('connectToDevice', {
+        deviceId
+      });
       return this.manager.connectToDevice(deviceId);
     });
 
     _defineProperty(this, "connectAndDiscoverServices", async deviceDescriptor => {
+      this.logger.info('connectAndDiscoverServices', {
+        deviceDescriptor
+      });
       const device = this.utils.deviceDescriptorToDevice(deviceDescriptor);
+      const deviceIsConnected = await this.manager.isDeviceConnected(device.id);
+      this.logger.info('deviceIsConnected?', {
+        deviceIsConnected
+      });
 
-      if (await this.manager.isDeviceConnected(device.id)) {
+      if (deviceIsConnected) {
         await this.manager.cancelDeviceConnection(device.id);
       }
 
       await this.connectToDevice(device.id);
       await this.manager.discoverAllServicesAndCharacteristicsForDevice(device.id);
+      this.logger.info('Discovered all services and characteristics for device', {
+        id: device.id,
+        manufacturer: device.deviceType.MANUFACTURER_ID
+      });
       return device;
     });
 
@@ -31,6 +70,7 @@ export class BleService {
     });
 
     _defineProperty(this, "scanForSensors", callback => {
+      this.logger.info('scanning for sensors', {});
       const scanOptions = {
         scanMode: ScanMode.LowLatency
       };
@@ -75,7 +115,8 @@ export class BleService {
 
       const transmissionDone = val => {
         const str = this.utils.stringFromBase64(val);
-        const pattern = /.*}$/;
+        const pattern = new RegExp('.*}$'); // workaround for emacs web mode confused by bracket in a regexp literal
+
         const result = pattern.test(str);
         return result;
       };
@@ -138,10 +179,29 @@ export class BleService {
       });
     });
 
-    _defineProperty(this, "downloadLogs", async macAddress => {
+    _defineProperty(this, "clearLogs", async macAddress => {
       const device = await this.connectAndDiscoverServices(macAddress);
 
+      if ((device === null || device === void 0 ? void 0 : device.deviceType) === BT510) {
+        await this.downloadLogs(macAddress);
+      } else {
+        await this.writeWithSingleResponse(device, BLUE_MAESTRO.COMMAND_CLEAR, data => {
+          return !!this.utils.stringFromBase64(data);
+        });
+      }
+    });
+
+    _defineProperty(this, "downloadLogs", async macAddress => {
+      const device = await this.connectAndDiscoverServices(macAddress);
+      this.logger.info('Download logs connected and discovered services', {
+        macAddress
+      });
+
       const monitorCallback = data => {
+        this.logger.info('Write and monitor found some data!', {
+          data
+        });
+
         if (device.deviceType === BLUE_MAESTRO) {
           const buffer = Buffer.concat(data.slice(1).map(datum => this.utils.bufferFromBase64(datum)));
           const ind = buffer.findIndex((_, i) => i % 2 === 0 && buffer.readInt16BE(i) === BLUE_MAESTRO.DELIMITER_A || buffer.readInt16BE(i) === BLUE_MAESTRO.DELIMITER_B);
@@ -339,6 +399,11 @@ export class BleService {
     });
 
     _defineProperty(this, "downloadLogsWithRetries", async (macAddress, retriesLeft, error) => {
+      this.logger.info('Starting to download logs', {
+        macAddress,
+        retriesLeft,
+        error
+      });
       if (!retriesLeft) throw error;
       return this.downloadLogs(macAddress).catch(err => this.downloadLogsWithRetries(macAddress, retriesLeft - 1, err));
     });
@@ -354,11 +419,14 @@ export class BleService {
     });
 
     this.manager = manager;
+    this.logger = logger;
+    console.log(`logger is ${JSON.stringify(logger)}`);
     manager.setLogLevel(LogLevel.Verbose); // Caller passes in utils from the main app,
     // but we ignore it and use our own.
     // This needs to be fixed in the main app.
 
     this.utils = new BTUtilService();
+    logger.info('BleService constructor called', {});
   }
 
 }

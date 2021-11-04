@@ -1,7 +1,7 @@
 import { BTUtilService } from '../BTUtilService';
 
 import { Buffer } from 'buffer';
-import { BLUE_MAESTRO, BT510 } from '../index';
+import { BLUE_MAESTRO, BT510 } from '../constants';
 import { MacAddress } from '../types/common';
 import {
   Characteristic,
@@ -20,31 +20,77 @@ import {
 } from './types';
 import { BluetoothManager, MockOrRealDevice } from './BleManager';
 
+// types copied from mobile/src/utilities/logging/
+type Action = (message: string | Error, details?: Record<string, unknown>) => void;
+interface Logger {
+  trace: Action;
+  debug: Action;
+  info: Action;
+  warn: Action;
+  error: Action;
+  fatal: Action;
+  setLogLevel: (transportKey: string, newLevel: number) => void;
+}
+const dummyLogger: Logger = {
+  trace: (_message, _details) => {
+    /*do nothing*/
+  },
+  debug: (_message, _details) => {
+    /*do nothing*/
+  },
+  info: (_message, _details) => {
+    /*do nothing*/
+  },
+  warn: (_message, _details) => {
+    /*do nothing*/
+  },
+  error: (_message, _details) => {
+    /*do nothing*/
+  },
+  fatal: (_message, _details) => {
+    /*do nothing*/
+  },
+  setLogLevel: (_transportKey, _newLevel) => {
+    /*do nothing*/
+  },
+};
+
 export class BleService {
   manager: BluetoothManager;
   utils: BTUtilService;
-
-  constructor(manager: BluetoothManager) {
+  logger: Logger;
+  constructor(manager: BluetoothManager, logger = dummyLogger) {
     this.manager = manager;
+    this.logger = logger;
+    console.log(`logger is ${JSON.stringify(logger)}`);
     manager.setLogLevel(LogLevel.Verbose);
     // Caller passes in utils from the main app,
     // but we ignore it and use our own.
     // This needs to be fixed in the main app.
     this.utils = new BTUtilService();
+    logger.info('BleService constructor called', {});
   }
 
   connectToDevice = (deviceId: string): Promise<MockOrRealDevice> => {
+    this.logger.info('connectToDevice', { deviceId });
     return this.manager.connectToDevice(deviceId);
   };
 
   connectAndDiscoverServices = async (deviceDescriptor: string): Promise<TypedDevice> => {
+    this.logger.info('connectAndDiscoverServices', { deviceDescriptor });
     const device = this.utils.deviceDescriptorToDevice(deviceDescriptor);
-    if (await this.manager.isDeviceConnected(device.id)) {
+    const deviceIsConnected = await this.manager.isDeviceConnected(device.id);
+    this.logger.info('deviceIsConnected?', { deviceIsConnected });
+    if (deviceIsConnected) {
       await this.manager.cancelDeviceConnection(device.id);
     }
     await this.connectToDevice(device.id);
 
     await this.manager.discoverAllServicesAndCharacteristicsForDevice(device.id);
+    this.logger.info('Discovered all services and characteristics for device', {
+      id: device.id,
+      manufacturer: device.deviceType.MANUFACTURER_ID,
+    });
     return device;
   };
 
@@ -53,6 +99,7 @@ export class BleService {
   };
 
   scanForSensors = (callback: ScanCallback): void => {
+    this.logger.info('scanning for sensors', {});
     const scanOptions: ScanOptions = { scanMode: ScanMode.LowLatency };
     const filteredCallback = (err: BleError | null, device: Device | null): void => {
       if (err) {
@@ -99,7 +146,7 @@ export class BleService {
   };
 
   // https://gist.github.com/gordonbrander/2230317
-  transactionId = () => '_' + Math.random().toString(36).substr(2, 9);
+  transactionId = (): string => '_' + Math.random().toString(36).substr(2, 9);
 
   writeAndMonitor = async (
     device: TypedDevice,
@@ -112,7 +159,7 @@ export class BleService {
 
     const transmissionDone = (val: string): boolean => {
       const str = this.utils.stringFromBase64(val);
-      const pattern = /.*}$/;
+      const pattern = new RegExp('.*}$'); // workaround for emacs web mode confused by bracket in a regexp literal
       const result = pattern.test(str);
       return result;
     };
@@ -191,12 +238,32 @@ export class BleService {
       });
   };
 
+  /** Facade for clearing logs.
+   *
+   * Connects with a sensor and clears all temperature logs.
+   *
+   * Returns a promise which resolves to boolean, which is ignored by the caller.
+   *
+   * @param {String} macAddress
+   */
+  clearLogs = async (macAddress: MacAddress): Promise<void> => {
+    const device = await this.connectAndDiscoverServices(macAddress);
+    if (device?.deviceType === BT510) {
+      await this.downloadLogs(macAddress);
+    } else {
+      await this.writeWithSingleResponse(device, BLUE_MAESTRO.COMMAND_CLEAR, data => {
+        return !!this.utils.stringFromBase64(data);
+      });
+    }
+  };
+
   downloadLogs = async (macAddress: MacAddress): Promise<SensorLog[]> => {
     const device = await this.connectAndDiscoverServices(macAddress);
-
+    this.logger.info('Download logs connected and discovered services', { macAddress });
     const monitorCallback: MonitorCharacteristicParser<string[], SensorLog[] | DataLog> = (
       data: string[]
     ) => {
+      this.logger.info('Write and monitor found some data!', { data });
       if (device.deviceType === BLUE_MAESTRO) {
         const buffer = Buffer.concat(
           data.slice(1).map(datum => this.utils.bufferFromBase64(datum))
@@ -438,6 +505,7 @@ export class BleService {
     retriesLeft: number,
     error: Error | null
   ): Promise<SensorLog[]> => {
+    this.logger.info('Starting to download logs', { macAddress, retriesLeft, error });
     if (!retriesLeft) throw error;
 
     return this.downloadLogs(macAddress).catch(err =>

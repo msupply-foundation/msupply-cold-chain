@@ -9,31 +9,71 @@ var _BTUtilService = require("../BTUtilService");
 
 var _buffer = require("buffer");
 
-var _index = require("../index");
+var _constants = require("../constants");
 
 var _types = require("./types");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+const dummyLogger = {
+  trace: (_message, _details) => {
+    /*do nothing*/
+  },
+  debug: (_message, _details) => {
+    /*do nothing*/
+  },
+  info: (_message, _details) => {
+    /*do nothing*/
+  },
+  warn: (_message, _details) => {
+    /*do nothing*/
+  },
+  error: (_message, _details) => {
+    /*do nothing*/
+  },
+  fatal: (_message, _details) => {
+    /*do nothing*/
+  },
+  setLogLevel: (_transportKey, _newLevel) => {
+    /*do nothing*/
+  }
+};
+
 class BleService {
-  constructor(manager) {
+  constructor(manager, logger = dummyLogger) {
     _defineProperty(this, "manager", void 0);
 
     _defineProperty(this, "utils", void 0);
 
+    _defineProperty(this, "logger", void 0);
+
     _defineProperty(this, "connectToDevice", deviceId => {
+      this.logger.info('connectToDevice', {
+        deviceId
+      });
       return this.manager.connectToDevice(deviceId);
     });
 
     _defineProperty(this, "connectAndDiscoverServices", async deviceDescriptor => {
+      this.logger.info('connectAndDiscoverServices', {
+        deviceDescriptor
+      });
       const device = this.utils.deviceDescriptorToDevice(deviceDescriptor);
+      const deviceIsConnected = await this.manager.isDeviceConnected(device.id);
+      this.logger.info('deviceIsConnected?', {
+        deviceIsConnected
+      });
 
-      if (await this.manager.isDeviceConnected(device.id)) {
+      if (deviceIsConnected) {
         await this.manager.cancelDeviceConnection(device.id);
       }
 
       await this.connectToDevice(device.id);
       await this.manager.discoverAllServicesAndCharacteristicsForDevice(device.id);
+      this.logger.info('Discovered all services and characteristics for device', {
+        id: device.id,
+        manufacturer: device.deviceType.MANUFACTURER_ID
+      });
       return device;
     });
 
@@ -42,6 +82,7 @@ class BleService {
     });
 
     _defineProperty(this, "scanForSensors", callback => {
+      this.logger.info('scanning for sensors', {});
       const scanOptions = {
         scanMode: _types.ScanMode.LowLatency
       };
@@ -54,7 +95,7 @@ class BleService {
         if (device !== null && device !== void 0 && device.manufacturerData) {
           const mfgId = _buffer.Buffer.from(device.manufacturerData, 'base64').readInt16LE(0);
 
-          if (mfgId === _index.BLUE_MAESTRO.MANUFACTURER_ID || mfgId === _index.BT510.MANUFACTURER_ID) {
+          if (mfgId === _constants.BLUE_MAESTRO.MANUFACTURER_ID || mfgId === _constants.BT510.MANUFACTURER_ID) {
             const descriptor = this.utils.deviceToDeviceDescriptor(device.id, mfgId);
             callback(err, descriptor);
           }
@@ -86,7 +127,8 @@ class BleService {
 
       const transmissionDone = val => {
         const str = this.utils.stringFromBase64(val);
-        const pattern = /.*}$/;
+        const pattern = new RegExp('.*}$'); // workaround for emacs web mode confused by bracket in a regexp literal
+
         const result = pattern.test(str);
         return result;
       };
@@ -95,13 +137,13 @@ class BleService {
         if (result !== null && result !== void 0 && result.value) {
           data.push(result.value); // return to wait for next chunk
 
-          if (device.deviceType === _index.BLUE_MAESTRO || !transmissionDone(result.value)) return;
+          if (device.deviceType === _constants.BLUE_MAESTRO || !transmissionDone(result.value)) return;
         }
 
         try {
           subscription.remove();
 
-          if (device.deviceType === _index.BT510 && alreadyDone()) {
+          if (device.deviceType === _constants.BT510 && alreadyDone()) {
             // Don't call the parser more than once.
             // (Although it probably doesn't hurt anything,
             // since the Promise has already resolved and returned the result
@@ -149,19 +191,38 @@ class BleService {
       });
     });
 
-    _defineProperty(this, "downloadLogs", async macAddress => {
+    _defineProperty(this, "clearLogs", async macAddress => {
       const device = await this.connectAndDiscoverServices(macAddress);
 
+      if ((device === null || device === void 0 ? void 0 : device.deviceType) === _constants.BT510) {
+        await this.downloadLogs(macAddress);
+      } else {
+        await this.writeWithSingleResponse(device, _constants.BLUE_MAESTRO.COMMAND_CLEAR, data => {
+          return !!this.utils.stringFromBase64(data);
+        });
+      }
+    });
+
+    _defineProperty(this, "downloadLogs", async macAddress => {
+      const device = await this.connectAndDiscoverServices(macAddress);
+      this.logger.info('Download logs connected and discovered services', {
+        macAddress
+      });
+
       const monitorCallback = data => {
-        if (device.deviceType === _index.BLUE_MAESTRO) {
+        this.logger.info('Write and monitor found some data!', {
+          data
+        });
+
+        if (device.deviceType === _constants.BLUE_MAESTRO) {
           const buffer = _buffer.Buffer.concat(data.slice(1).map(datum => this.utils.bufferFromBase64(datum)));
 
-          const ind = buffer.findIndex((_, i) => i % 2 === 0 && buffer.readInt16BE(i) === _index.BLUE_MAESTRO.DELIMITER_A || buffer.readInt16BE(i) === _index.BLUE_MAESTRO.DELIMITER_B);
+          const ind = buffer.findIndex((_, i) => i % 2 === 0 && buffer.readInt16BE(i) === _constants.BLUE_MAESTRO.DELIMITER_A || buffer.readInt16BE(i) === _constants.BLUE_MAESTRO.DELIMITER_B);
           return buffer.slice(0, ind).reduce((acc, _, index) => {
             if (index % 2 !== 0) return acc;
             return [...acc, {
               time: '',
-              temperature: buffer.readInt16BE(index) / _index.BLUE_MAESTRO.TEMPERATURE_DIVISOR
+              temperature: buffer.readInt16BE(index) / _constants.BLUE_MAESTRO.TEMPERATURE_DIVISOR
             }];
           }, []);
         } else {
@@ -178,11 +239,11 @@ class BleService {
       }; // end monitor callback
 
 
-      if (device.deviceType === _index.BT510) {
+      if (device.deviceType === _constants.BT510) {
         // const FIFO = '0';
         // const LIFO = '1';
         const prepareLogs = async () => {
-          const prepCommand = _index.BT510.COMMAND_PREPARE_LOG.replace('MODE', '0');
+          const prepCommand = _constants.BT510.COMMAND_PREPARE_LOG.replace('MODE', '0');
 
           return await this.writeWithSingleResponse(device, prepCommand, data => {
             const info = this.utils.stringFromBase64(data);
@@ -191,7 +252,7 @@ class BleService {
         };
 
         const ackLogs = async numEvents => {
-          const ackCommand = _index.BT510.COMMAND_ACK_LOG.replace('NUMEVENTS', numEvents.toString());
+          const ackCommand = _constants.BT510.COMMAND_ACK_LOG.replace('NUMEVENTS', numEvents.toString());
 
           return await this.writeWithSingleResponse(device, ackCommand, data => {
             const info = this.utils.stringFromBase64(data);
@@ -203,14 +264,14 @@ class BleService {
 
         try {
           while (await prepareLogs()) {
-            const downloadCommand = _index.BT510.COMMAND_DOWNLOAD.replace('NUMEVENTS', '500');
+            const downloadCommand = _constants.BT510.COMMAND_DOWNLOAD.replace('NUMEVENTS', '500');
 
             const dataLog = await this.writeAndMonitor(device, downloadCommand, monitorCallback);
             const logBuffer = this.utils.bufferFromBase64(dataLog.data);
             const log = logBuffer.reduce((acc, _, index) => {
               if (index % 8 !== 0) return acc; //const time = logBuffer.readInt32LE(index);
 
-              const temperature = Math.round(logBuffer.readInt16LE(index + 4) / _index.BT510.TEMPERATURE_DIVISOR * 10) / 10;
+              const temperature = Math.round(logBuffer.readInt16LE(index + 4) / _constants.BT510.TEMPERATURE_DIVISOR * 10) / 10;
               const eventType = logBuffer.readInt8(index + 6); //const salt = logBuffer.readInt8(index + 7);
 
               if (eventType === 1) {
@@ -235,7 +296,7 @@ class BleService {
 
         return sensorLog;
       } else {
-        const command = _index.BLUE_MAESTRO.COMMAND_DOWNLOAD.replace('NUMEVENTS', '500');
+        const command = _constants.BLUE_MAESTRO.COMMAND_DOWNLOAD.replace('NUMEVENTS', '500');
 
         const result = await this.writeAndMonitor(device, command, monitorCallback);
         return result;
@@ -247,12 +308,12 @@ class BleService {
       const command = device.deviceType.COMMAND_UPDATE_LOG_INTERVAL.replace('LOG_INTERVAL', logInterval.toString());
       const result = await this.writeWithSingleResponse(device, command, data => {
         const info = this.utils.stringFromBase64(data);
-        return device.deviceType === _index.BT510 && JSON.parse(info).result === 'ok' || !!info.match(/interval/i);
+        return device.deviceType === _constants.BT510 && JSON.parse(info).result === 'ok' || !!info.match(/interval/i);
       }); // Clear logs if we haven't just downloaded
       // BlueMaestro automatically clears logs when log interval is set,
       // But we have to download all the logs to clear them on BT510
 
-      if (clearLogs && device.deviceType === _index.BT510) {
+      if (clearLogs && device.deviceType === _constants.BT510) {
         await this.downloadLogs(macAddress);
       }
 
@@ -307,7 +368,7 @@ class BleService {
 
         const parsedIsDisabled = info => !!info.match(/Btn on\/off: 1/);
 
-        if (device.deviceType === _index.BLUE_MAESTRO) {
+        if (device.deviceType === _constants.BLUE_MAESTRO) {
           return parsedBase64.reduce((acc, info) => {
             const isDisabled = parsedIsDisabled(info);
             const batteryLevel = blueMaestroBatteryLevel(info);
@@ -334,12 +395,12 @@ class BleService {
     _defineProperty(this, "toggleButton", async macAddress => {
       const device = await this.connectAndDiscoverServices(macAddress);
 
-      if (device.deviceType === _index.BT510) {
+      if (device.deviceType === _constants.BT510) {
         // Laird doesn't have this command
         return true;
       }
 
-      const result = await this.writeWithSingleResponse(device, _index.BLUE_MAESTRO.COMMAND_DISABLE_BUTTON, data => {
+      const result = await this.writeWithSingleResponse(device, _constants.BLUE_MAESTRO.COMMAND_DISABLE_BUTTON, data => {
         return !!this.utils.stringFromBase64(data).match(/ok/i);
       });
       return result;
@@ -356,6 +417,11 @@ class BleService {
     });
 
     _defineProperty(this, "downloadLogsWithRetries", async (macAddress, retriesLeft, error) => {
+      this.logger.info('Starting to download logs', {
+        macAddress,
+        retriesLeft,
+        error
+      });
       if (!retriesLeft) throw error;
       return this.downloadLogs(macAddress).catch(err => this.downloadLogsWithRetries(macAddress, retriesLeft - 1, err));
     });
@@ -371,11 +437,14 @@ class BleService {
     });
 
     this.manager = manager;
+    this.logger = logger;
+    console.log(`logger is ${JSON.stringify(logger)}`);
     manager.setLogLevel(_types.LogLevel.Verbose); // Caller passes in utils from the main app,
     // but we ignore it and use our own.
     // This needs to be fixed in the main app.
 
     this.utils = new _BTUtilService.BTUtilService();
+    logger.info('BleService constructor called', {});
   }
 
 }
