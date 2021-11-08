@@ -1,3 +1,4 @@
+import { BtUtilService } from 'msupply-ble-service';
 import {
   AcknowledgeBreachManager,
   CumulativeBreachManager,
@@ -18,7 +19,6 @@ import {
 
 import {
   Database,
-  BleService,
   DatabaseService,
   ExportService,
   FormatService,
@@ -36,6 +36,7 @@ export type DependencyKey =
   | 'migrationService'
   | 'dependencyLocator'
   | 'bleService'
+  | 'btUtilService'
   | 'database'
   | 'permissionService'
   | 'loggerService'
@@ -60,6 +61,7 @@ export type DependencyKey =
 
 export type Dependency =
   | BleService
+  | BtUtilService
   | DatabaseService
   | ExportService
   | FormatService
@@ -84,6 +86,7 @@ export interface DependencyShape {
   migrationService?: MigrationService;
   dependencyLocator?: DependencyLocator;
   bleService?: BleService;
+  btUtilService?: BtUtilService;
   database?: Database;
   permissionService?: PermissionService;
   loggerService?: DevLoggerService;
@@ -126,6 +129,8 @@ export class DependencyLocator {
   register = (key: DependencyKey, dependency: Dependency): boolean => {
     if (key === 'bleService') {
       this.dependencies.bleService = dependency as BleService;
+    } else if (key === 'btUtilService') {
+      this.dependencies.btUtilService = dependency as BtUtilService;
     } else if (key === 'acknowledgeBreachManager') {
       this.dependencies.acknowledgeBreachManager = dependency as AcknowledgeBreachManager;
     } else if (key === 'breachConfigurationManager') {
