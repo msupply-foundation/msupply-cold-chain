@@ -14,7 +14,7 @@ import {
 } from 'redux-saga/effects';
 import { getDependency } from '~features/utils/saga';
 import { SensorState } from '~features/Entities/Sensor/SensorSlice';
-import { BleService } from '~services/Bluetooth/BleService';
+import { BleService } from 'msupply-ble-service';
 import { MILLISECONDS, REDUCER } from '~common/constants';
 import {
   DownloadManager,
@@ -130,7 +130,14 @@ function* tryDownloadForSensor({
 
       yield call(downloadManager.saveLogs, sensorLogs);
       if (numberOfLogsToSave) {
-        yield call(btService.updateLogIntervalWithRetries, macAddress, logInterval, 10, null);
+        yield call(
+          btService.updateLogIntervalWithRetries,
+          macAddress,
+          logInterval,
+          10,
+          false,
+          null
+        );
       }
       yield put(ConsecutiveBreachAction.create(sensor));
       yield put(DownloadAction.passiveDownloadForSensorSuccess(sensor.id));

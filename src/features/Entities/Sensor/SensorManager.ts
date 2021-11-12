@@ -4,6 +4,7 @@ import { classToPlain } from 'class-transformer';
 import { ENTITIES } from '../../../common/constants';
 
 import { IsNull } from 'typeorm/browser';
+import { BtUtilService } from 'msupply-ble-service';
 
 const SENSOR_STATE = `
 with breach as (
@@ -40,7 +41,7 @@ with breach as (
             count(*) numberOfLogs,
             tl.sensorid,
             *
-    FROM temperaturelog tl 
+    FROM temperaturelog tl
     LEFT OUTER JOIN
       (
         SELECT   max(startTimestamp) startTimestamp,
@@ -49,13 +50,13 @@ with breach as (
         sensorid
         FROM temperaturebreach tb
         GROUP BY sensorid
-  
+
       ) tb
     ON tl.sensorid = tb.sensorid
     GROUP BY tl.sensorid
     order by timestamp
   ) logs
-  ON logs.sensorid = s.id 
+  ON logs.sensorid = s.id
   where s.id = ?
 `;
 
@@ -83,10 +84,12 @@ export class SensorManager {
   databaseService: DatabaseService;
 
   utils: UtilService;
+  btUtils: BtUtilService;
 
-  constructor(dbService: DatabaseService, utils: UtilService) {
+  constructor(dbService: DatabaseService, utils: UtilService, btUtils: BtUtilService) {
     this.databaseService = dbService;
     this.utils = utils;
+    this.btUtils = btUtils;
   }
 
   getAll = async (): Promise<Sensor[]> => {
@@ -102,8 +105,7 @@ export class SensorManager {
   };
 
   getSensorByMac = async (macAddress: string): Promise<Sensor> => {
-    const sensor = await this.databaseService.queryWith(ENTITIES.SENSOR, { macAddress });
-    return sensor[0];
+    return await this.databaseService.findOneOrFail(ENTITIES.SENSOR, { macAddress });
   };
 
   getMostRecentLogTime = async (id: string): Promise<number> => {
@@ -129,8 +131,19 @@ export class SensorManager {
     logDelay: number,
     batteryLevel: number
   ): Promise<Sensor> => {
-    const id = this.utils.uuid();
-    const name = macAddress;
+    let id = null;
+    try {
+      id = (await this.getSensorByMac(macAddress)).id;
+    } catch (e) {
+      id = this.utils.uuid();
+    }
+    // Just to make sure
+    if (!id) {
+      id = this.utils.uuid();
+    }
+
+    const name = this.btUtils.deviceDescriptorToDevice(macAddress).id;
+
     return this.upsert({
       name,
       logInterval,
@@ -138,6 +151,7 @@ export class SensorManager {
       id,
       batteryLevel,
       logDelay,
+      isActive: true,
       programmedDate: this.utils.now(),
     });
   };

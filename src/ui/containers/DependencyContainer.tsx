@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
+import { BleService, BleManager, DevBleManager, BtUtilService } from 'msupply-ble-service';
 
 import { ENVIRONMENT } from '~common/constants';
 import { DevContainer } from './DevContainer';
@@ -6,7 +7,6 @@ import { DevContainer } from './DevContainer';
 import {
   Database,
   DependencyLocator,
-  BleService,
   PermissionService,
   DatabaseService,
   ExportService,
@@ -15,7 +15,6 @@ import {
   BugsnagLoggerService,
   DevLoggerService,
   DevService,
-  DevBleManager,
   DependencyLocatorContext,
   MigrationService,
 } from '~services';
@@ -37,18 +36,18 @@ import {
   SyncOutManager,
   DevManager,
 } from '~features';
-import { BleManager } from '~common/services/Bluetooth';
 
 export const DependencyContainer: FC = ({ children }) => {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const utilService = new UtilService();
+    const btUtilService = new BtUtilService();
     const db = new Database();
     const dbService = new DatabaseService(db);
     const permissionService = new PermissionService();
-    const btService = new BleService(new BleManager(), utilService);
-    const devBtService = new BleService(new DevBleManager(), utilService);
+    const btService = new BleService(new BleManager());
+    const devBtService = new BleService(new DevBleManager());
     const formatService = new FormatService(utilService);
     const exportService = new ExportService();
     const devLogger = new DevLoggerService();
@@ -62,6 +61,7 @@ export const DependencyContainer: FC = ({ children }) => {
     DependencyLocator.register('database', dbService);
     DependencyLocator.register('formatService', formatService);
     DependencyLocator.register('utilService', utilService);
+    DependencyLocator.register('btUtilService', btUtilService);
     DependencyLocator.register('exportService', exportService);
     DependencyLocator.register('loggerService', ENVIRONMENT.DEV_LOGGER ? devLogger : bugsnagLogger);
 
@@ -73,7 +73,7 @@ export const DependencyContainer: FC = ({ children }) => {
     const ackBreachManager = new AcknowledgeBreachManager(dbService);
     const logTableManager = new LogTableManager(dbService);
     const downloadManager = new DownloadManager(dbService, utilService);
-    const sensorsManager = new SensorManager(dbService, utilService);
+    const sensorsManager = new SensorManager(dbService, utilService, btUtilService);
     const temperatureLogManager = new TemperatureLogManager(dbService, utilService);
     const reportManager = new ReportManager(
       dbService,

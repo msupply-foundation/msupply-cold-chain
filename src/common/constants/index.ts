@@ -16,10 +16,10 @@ export { ICON } from './Icon';
 export { FORMAT } from './Format';
 export { CHART } from './Chart';
 export { NAVIGATION } from './Navigation';
-export { BLUETOOTH } from './Bluetooth';
+export { BLUETOOTH } from 'msupply-ble-service';
 export { SETTING } from './Setting';
 export { SPECIAL_CHARACTER } from './SpecialCharacter';
-export { BLUE_MAESTRO } from './Bluetooth';
+export { BLUE_MAESTRO } from 'msupply-ble-service';
 export { ENVIRONMENT } from './Environment';
 
 export { SETTINGS_STACK } from './Navigation';

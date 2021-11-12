@@ -37,9 +37,12 @@ const createMockBleManager = ({
     callback(null, { manufacturerData: 'not right', id: '2' });
     callback(null, { manufacturerData: 'MwEBDAN0AFkBtwEMA3QAWQG3AMwCrAAAAAAA', id: '1' });
   });
+  const mockSetLogLevel = jest.fn();
+  const mockLogLevel = jest.fn(async () => {});
 
   const manager = {
-    discoverAllServicesAndCharacteristicsForDevice: mockDiscoverAllServicesAndCharacteristicsForDevice,
+    discoverAllServicesAndCharacteristicsForDevice:
+      mockDiscoverAllServicesAndCharacteristicsForDevice,
     cancelDeviceConnection: mockCancelDeviceConnection,
     connectToDevice: mockConnectToDevice,
     stopDeviceScan: mockStopDeviceScan,
@@ -47,6 +50,8 @@ const createMockBleManager = ({
     monitorCharacteristicForDevice: mockMonitorCharacteristicForDevice,
     writeCharacteristicWithoutResponseForDevice: mockWriteCharacteristicWithoutResponseForDevice,
     isDeviceConnected: mockIsDeviceConnected,
+    setLogLevel: mockSetLogLevel,
+    logLevel: mockLogLevel,
   };
 
   return {
