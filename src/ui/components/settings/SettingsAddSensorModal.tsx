@@ -61,9 +61,8 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
 
   const { [macAddress]: isBlinking } = useSelector(BlinkSelector.isBlinking);
 
-  const maximumDate = utils.addDays(utils.now(), 30);
-  const minimumDate = utils.now();
-
+  const maximumDate = utils.addDays(utils.now(), 30) * 1000;
+  const minimumDate = utils.now() * 1000;
   return (
     <>
       <SettingsEditModal
