@@ -74,7 +74,7 @@ export const SensorSettingsScreen: FC<SensorSettingsScreenProps> = React.memo(({
           }
           initialValue={Number(defaultLoggingInterval) / 60}
           editDescription={t('DEFAULT_LOG_INTERVAL')}
-          maximumValue={30}
+          maximumValue={60}
           minimumValue={1}
           step={1}
           metric={t('MINUTES')}
