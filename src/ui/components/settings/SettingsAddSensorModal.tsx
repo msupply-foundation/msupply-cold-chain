@@ -43,21 +43,32 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
   const formatter = useFormatter();
   const [date, setDate] = useState(utils.now());
 
-  const validator = useCallback(
+  const dateValidator = useCallback(
     inputDate => {
       const now = utils.now();
       const input = utils.toUnixTimestamp(inputDate);
-      if (now > input) {
-        setDate(now);
-      } else {
-        setDate(input);
+      const newDate = utils.setDateValue(date, input);
+      if (now < newDate) {
+        setDate(newDate);
       }
     },
-    [setDate, utils]
+    [setDate, utils, date]
   );
 
-  const [isDatePickerOpen, onChangeDate, toggleDatePicker] = useDatePicker(validator);
-  const [isTimePickerOpen, onChangeTime, toggleTimePicker] = useDatePicker(validator);
+  const timeValidator = useCallback(
+    inputDate => {
+      const now = utils.now();
+      const input = utils.toUnixTimestamp(inputDate);
+      const newDate = utils.setTimeValue(date, input);
+      if (newDate < now) {
+        setDate(newDate);
+      }
+    },
+    [setDate, utils, date]
+  );
+
+  const [isDatePickerOpen, onChangeDate, toggleDatePicker] = useDatePicker(dateValidator);
+  const [isTimePickerOpen, onChangeTime, toggleTimePicker] = useDatePicker(timeValidator);
 
   const { [macAddress]: isBlinking } = useSelector(BlinkSelector.isBlinking);
 
