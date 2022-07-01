@@ -18,9 +18,7 @@ export const SettingsAddSensorRow: FC<SettingsAddSensorRowProps> = ({ macAddress
 
   const onConfirm = (date: UnixTimestamp) => {
     toggleModal();
-    dispatch(
-      ProgramAction.tryProgramNewSensor(macAddress, Math.ceil(new Date(date).getTime() / 1000))
-    );
+    dispatch(ProgramAction.tryProgramNewSensor(macAddress, date));
   };
 
   const onBlink = () => dispatch(BlinkAction.tryBlinkSensor(macAddress));
