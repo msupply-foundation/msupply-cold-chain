@@ -60,7 +60,7 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
       const now = utils.now();
       const input = utils.toUnixTimestamp(inputDate);
       const newDate = utils.setTimeValue(date, input);
-      if (newDate < now) {
+      if (now < newDate) {
         setDate(newDate);
       }
     },
@@ -119,7 +119,7 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
       />
       {isDatePickerOpen && (
         <DateTimePicker
-          value={new Date()}
+          value={new Date(date * 1000)}
           onChange={onChangeDate}
           minimumDate={new Date(minimumDate)}
           maximumDate={new Date(maximumDate)}
@@ -129,7 +129,7 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
       )}
       {isTimePickerOpen && (
         <DateTimePicker
-          value={new Date()}
+          value={new Date(date * 1000)}
           onChange={onChangeTime}
           mode="time"
           display="spinner"
