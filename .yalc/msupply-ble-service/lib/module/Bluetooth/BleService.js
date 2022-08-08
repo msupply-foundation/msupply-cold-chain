@@ -46,13 +46,22 @@ export class BleService {
       this.logger.info('connectAndDiscoverServices', {
         deviceDescriptor
       });
-      const device = this.utils.deviceDescriptorToDevice(deviceDescriptor);
-      const deviceIsConnected = await this.manager.isDeviceConnected(device.id);
-      this.logger.info('deviceIsConnected?', {
-        deviceIsConnected
-      });
+      const device = this.utils.deviceDescriptorToDevice(deviceDescriptor); // the Blue Maestro devices are incorrectly reporting connection status
+      // thus: deviceIsConnected?	{ deviceIsConnected: true }
+      // then if disconnecting [BleError: Device D7:D6:67:E0:02:34 is not connected]
+      // in which case an error is thrown when trying to connect: [BleError: Device ? is already connected]
+      // to work around this, we disconnect the device, ignoring any errors, before connecting again
 
-      if (deviceIsConnected) {
+      if (device.deviceType === BLUE_MAESTRO) {
+        try {
+          await this.manager.cancelDeviceConnection(device.id);
+        } catch {// ignore error
+        }
+      } else {
+        const deviceIsConnected = await this.manager.isDeviceConnected(device.id);
+        this.logger.info('deviceIsConnected?', {
+          deviceIsConnected
+        });
         await this.manager.cancelDeviceConnection(device.id);
       }
 
@@ -185,9 +194,7 @@ export class BleService {
       if ((device === null || device === void 0 ? void 0 : device.deviceType) === BT510) {
         await this.downloadLogs(macAddress);
       } else {
-        await this.writeWithSingleResponse(device, BLUE_MAESTRO.COMMAND_CLEAR, data => {
-          return !!this.utils.stringFromBase64(data);
-        });
+        await this.writeWithSingleResponse(device, BLUE_MAESTRO.COMMAND_CLEAR, data => !!this.utils.stringFromBase64(data));
       }
     });
 
