@@ -43,27 +43,37 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
   const formatter = useFormatter();
   const [date, setDate] = useState(utils.now());
 
-  const validator = useCallback(
+  const dateValidator = useCallback(
     inputDate => {
       const now = utils.now();
       const input = utils.toUnixTimestamp(inputDate);
-      if (now > input) {
-        setDate(now);
-      } else {
-        setDate(input);
+      const newDate = utils.setDateValue(date, input);
+      if (now < newDate) {
+        setDate(newDate);
       }
     },
-    [setDate, utils]
+    [setDate, utils, date]
   );
 
-  const [isDatePickerOpen, onChangeDate, toggleDatePicker] = useDatePicker(validator);
-  const [isTimePickerOpen, onChangeTime, toggleTimePicker] = useDatePicker(validator);
+  const timeValidator = useCallback(
+    inputDate => {
+      const now = utils.now();
+      const input = utils.toUnixTimestamp(inputDate);
+      const newDate = utils.setTimeValue(date, input);
+      if (now < newDate) {
+        setDate(newDate);
+      }
+    },
+    [setDate, utils, date]
+  );
+
+  const [isDatePickerOpen, onChangeDate, toggleDatePicker] = useDatePicker(dateValidator);
+  const [isTimePickerOpen, onChangeTime, toggleTimePicker] = useDatePicker(timeValidator);
 
   const { [macAddress]: isBlinking } = useSelector(BlinkSelector.isBlinking);
 
-  const maximumDate = utils.addDays(utils.now(), 30);
-  const minimumDate = utils.now();
-
+  const maximumDate = utils.addDays(utils.now(), 30) * 1000;
+  const minimumDate = utils.now() * 1000;
   return (
     <>
       <SettingsEditModal
@@ -109,7 +119,7 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
       />
       {isDatePickerOpen && (
         <DateTimePicker
-          value={new Date()}
+          value={new Date(date * 1000)}
           onChange={onChangeDate}
           minimumDate={new Date(minimumDate)}
           maximumDate={new Date(maximumDate)}
@@ -119,7 +129,7 @@ export const SettingsAddSensorModal: FC<SettingsAddSensorModalProps> = ({
       )}
       {isTimePickerOpen && (
         <DateTimePicker
-          value={new Date()}
+          value={new Date(date * 1000)}
           onChange={onChangeTime}
           mode="time"
           display="spinner"

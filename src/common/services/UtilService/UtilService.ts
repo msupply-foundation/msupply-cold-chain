@@ -102,4 +102,25 @@ export class UtilService {
     const nextMinute = this.startOfNextMinute(time);
     return moment.unix(nextMinute).diff(moment.unix(time), 's');
   };
+
+  setDateValue = (currentDate: UnixTimestamp, newDate: UnixTimestamp): UnixTimestamp => {
+    const currentAsMoment = moment.unix(currentDate);
+    const newAsMoment = moment.unix(newDate);
+
+    currentAsMoment.date(newAsMoment.date());
+    currentAsMoment.month(newAsMoment.month());
+    currentAsMoment.year(newAsMoment.year());
+
+    return currentAsMoment.unix();
+  };
+
+  setTimeValue = (currentDate: UnixTimestamp, newDate: UnixTimestamp): UnixTimestamp => {
+    const currentAsMoment = moment.unix(currentDate);
+    const newAsMoment = moment.unix(newDate);
+
+    currentAsMoment.hour(newAsMoment.hour());
+    currentAsMoment.minute(newAsMoment.minute());
+
+    return currentAsMoment.unix();
+  };
 }
