@@ -11,8 +11,9 @@ import {
 import { SettingsList } from '~layouts';
 import { useDependency } from '~hooks';
 import { DEPENDENCY } from '~constants';
-import { DevLoggerService } from '~common/services';
+import { FileLoggerService } from '~common/services';
 import { SettingsSelectRow } from '~components/settings/SettingsSelectRow';
+import { ENVIRONMENT } from '~common/constants';
 
 const fromValue = (value: string) => {
   switch (value) {
@@ -41,14 +42,14 @@ const toValue = (level: LogLevel) => {
 };
 
 export const DebugSettingsScreen: FC = () => {
-  const loggerService: DevLoggerService = useDependency(
+  const loggerService: FileLoggerService = useDependency(
     DEPENDENCY.LOGGER_SERVICE
-  ) as DevLoggerService;
+  ) as FileLoggerService;
 
   const [to, setTo] = useState();
   const [enabled, setEnabled] = useState(loggerService.enabled);
+  const [captureConsole, setCaptureConsole] = useState(loggerService.captureConsole);
   const [logLevel, setLogLevel] = useState(toValue(loggerService.logLevel));
-
   const options = [
     { label: 'Debug', value: 'debug' },
     { label: 'Info', value: 'info' },
@@ -64,11 +65,19 @@ export const DebugSettingsScreen: FC = () => {
     loggerService.setLogLevel(fromValue(logLevel));
   }, [loggerService, logLevel]);
 
-  console.log(`\n\n\n *** ENABLED : ${loggerService.enabled}...${enabled} ***\n\n\n`);
+  useEffect(() => {
+    loggerService.setCaptureConsole(captureConsole);
+  }, [loggerService, captureConsole]);
+
   return (
     <SettingsList>
       <SettingsGroup title="Debug logging">
-        <SettingsSwitchRow label="Enable" isOn={enabled} onPress={() => setEnabled(!enabled)} />
+        <SettingsSwitchRow
+          label="Enable"
+          isOn={enabled}
+          onPress={() => setEnabled(!enabled)}
+          isDisabled={ENVIRONMENT.DEV_LOGGER}
+        />
       </SettingsGroup>
       {enabled && (
         <>
@@ -77,6 +86,11 @@ export const DebugSettingsScreen: FC = () => {
             options={options}
             onChange={setLogLevel}
             value={logLevel}
+          />
+          <SettingsSwitchRow
+            label="Capture console"
+            isOn={captureConsole}
+            onPress={() => setCaptureConsole(!captureConsole)}
           />
           <SettingsGroup title="Email logs">
             <SettingsTextInputRow

@@ -24,7 +24,7 @@ import {
   FormatService,
   UtilService,
   PermissionService,
-  DevLoggerService,
+  FileLoggerService,
   MigrationService,
 } from '~services';
 
@@ -67,7 +67,7 @@ export type Dependency =
   | FormatService
   | UtilService
   | PermissionService
-  | DevLoggerService
+  | FileLoggerService
   | SensorManager
   | SettingManager
   | BreachConfigurationManager
@@ -89,7 +89,7 @@ export interface DependencyShape {
   btUtilService?: BtUtilService;
   database?: Database;
   permissionService?: PermissionService;
-  loggerService?: DevLoggerService;
+  loggerService?: FileLoggerService;
   exportService?: ExportService;
   formatService?: FormatService;
   utilService?: UtilService;
@@ -154,7 +154,7 @@ export class DependencyLocator {
     } else if (key === 'logTableManager') {
       this.dependencies.logTableManager = dependency as LogTableManager;
     } else if (key === 'loggerService') {
-      this.dependencies.loggerService = dependency as DevLoggerService;
+      this.dependencies.loggerService = dependency as FileLoggerService;
     } else if (key === 'migrationService') {
       this.dependencies.migrationService = dependency as MigrationService;
     } else if (key === 'permissionService') {

@@ -14,10 +14,6 @@ export class BugsnagLoggerService {
   warn(): void {}
   error(): void {}
 
-  deleteLogFiles(): Promise<void> {
-    return new Promise(resolve => resolve());
-  }
-
   emailLogFiles(): Promise<void> {
     return new Promise(resolve => resolve());
   }

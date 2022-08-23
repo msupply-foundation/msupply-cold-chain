@@ -12,7 +12,6 @@ import {
   ExportService,
   UtilService,
   FormatService,
-  BugsnagLoggerService,
   DevLoggerService,
   DevService,
   DependencyLocatorContext,
@@ -36,6 +35,7 @@ import {
   SyncOutManager,
   DevManager,
 } from '~features';
+import { FileLoggerService } from '~common/services/LoggerService';
 
 export const DependencyContainer: FC = ({ children }) => {
   const [ready, setReady] = useState(false);
@@ -46,12 +46,11 @@ export const DependencyContainer: FC = ({ children }) => {
     const db = new Database();
     const dbService = new DatabaseService(db);
     const permissionService = new PermissionService();
-    const btService = new BleService(new BleManager());
     const devBtService = new BleService(new DevBleManager());
     const formatService = new FormatService(utilService);
     const exportService = new ExportService();
-    const devLogger = new DevLoggerService();
-    const bugsnagLogger = new BugsnagLoggerService();
+    const fileLogger = new FileLoggerService(!!ENVIRONMENT.DEV_LOGGER);
+    const btService = new BleService(new BleManager(), fileLogger);
     const devService = new DevService();
     const migrationService = new MigrationService(dbService, utilService);
 
@@ -63,7 +62,7 @@ export const DependencyContainer: FC = ({ children }) => {
     DependencyLocator.register('utilService', utilService);
     DependencyLocator.register('btUtilService', btUtilService);
     DependencyLocator.register('exportService', exportService);
-    DependencyLocator.register('loggerService', ENVIRONMENT.DEV_LOGGER ? devLogger : bugsnagLogger);
+    DependencyLocator.register('loggerService', fileLogger);
 
     const settingManager = new SettingManager(dbService);
     const breachConfigurationManager = new BreachConfigurationManager(dbService);

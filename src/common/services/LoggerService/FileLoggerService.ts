@@ -2,38 +2,42 @@ import { FileLogger, LogLevel } from 'react-native-file-logger';
 
 export class FileLoggerService {
   public enabled = false;
-  captureConsole = true;
+  public captureConsole = false;
   public logLevel = LogLevel.Debug;
+  isDevelopment;
 
-  constructor() {
+  constructor(isDevelopment?: boolean) {
     const { captureConsole, logLevel } = this;
     FileLogger.configure({ captureConsole, logLevel });
+    this.isDevelopment = isDevelopment ?? false;
+
+    // FileLogger.getLogFilePaths().then((path: string) =>
+    //   console.log(`***** log path ${path} ******`)
+    // );
   }
 
   breadcrumb(message: string): void {
+    if (!this.isDevelopment) return;
+
     console.log('-------------------------------------');
     console.log(message);
     console.log('-------------------------------------');
   }
 
-  debug(message: string): void {
-    FileLogger.debug(message);
+  public debug(message: string): void {
+    if (this.enabled) FileLogger.debug(message);
   }
-  info(message: string): void {
-    FileLogger.info(message);
+  public info(message: string): void {
+    if (this.enabled) FileLogger.info(message);
   }
-  warn(message: string): void {
-    FileLogger.warn(message);
+  public warn(message: string): void {
+    if (this.enabled) FileLogger.warn(message);
   }
-  error(message: string): void {
-    FileLogger.error(message);
-  }
-
-  deleteLogFiles(): Promise<void> {
-    return FileLogger.deleteLogFiles();
+  public error(message: string): void {
+    if (this.enabled) FileLogger.error(message);
   }
 
-  emailLogFiles({
+  public emailLogFiles({
     to,
     subject = 'mSupply Cold Chain Logs',
     body = 'Developer logs from mSupply cold chain',
@@ -46,23 +50,21 @@ export class FileLoggerService {
   }
 
   notify(error: Error, metadata: string): void {
+    if (!this.isDevelopment) return;
+
     console.log('#####################################');
     console.log(error?.message);
     console.log(metadata);
     console.log('#####################################');
   }
 
-  //   setEnabled(enabled: boolean): void {
-  //     this.enabled = enabled;
-  //   }
-
-  setCaptureConsole(captureConsole: boolean): void {
+  public setCaptureConsole(captureConsole: boolean): void {
     this.captureConsole = captureConsole;
     if (captureConsole) FileLogger.enableConsoleCapture();
     else FileLogger.disableConsoleCapture();
   }
 
-  setLogLevel(logLevel: LogLevel): void {
+  public setLogLevel(logLevel: LogLevel): void {
     this.logLevel = logLevel;
     FileLogger.setLogLevel(logLevel);
   }

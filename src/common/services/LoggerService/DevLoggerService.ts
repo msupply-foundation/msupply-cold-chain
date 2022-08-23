@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export class DevLoggerService {
+  public captureConsole: boolean;
   public enabled: boolean;
   public logLevel: any;
 
@@ -27,10 +28,6 @@ export class DevLoggerService {
   }
   error(message: string): void {
     this.breadcrumb(message);
-  }
-
-  deleteLogFiles(): Promise<void> {
-    return new Promise(resolve => resolve());
   }
 
   emailLogFiles(props: { to: string; subject?: string; body?: string }): Promise<void> {
