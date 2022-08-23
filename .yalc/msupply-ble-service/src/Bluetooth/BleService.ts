@@ -100,8 +100,10 @@ export class BleService {
       }
     }
     await this.connectToDevice(device.id);
+    this.logger.debug(`Connected to ${deviceDescriptor}`);
 
     await this.manager.discoverAllServicesAndCharacteristicsForDevice(device.id);
+    this.logger.debug(`Discovered all services for ${deviceDescriptor}`);
     this.logger.info('Discovered all services and characteristics for device', {
       id: device.id,
       manufacturer: device.deviceType.MANUFACTURER_ID,
@@ -445,7 +447,7 @@ export class BleService {
       };
 
       const bt510BatteryLevel = (info: string): number | null => {
-        let batteryLevel = null;
+        let batteryLevel: number | null = null;
         if (info) {
           const parsedInfo = JSON.parse(info);
 
