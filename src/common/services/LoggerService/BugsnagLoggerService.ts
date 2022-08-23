@@ -8,4 +8,21 @@ export class BugsnagLoggerService {
   notify(): void {
     // TODO
   }
+
+  debug(): void {}
+  info(): void {}
+  warn(): void {}
+  error(): void {}
+
+  deleteLogFiles(): Promise<void> {
+    return new Promise(resolve => resolve());
+  }
+
+  emailLogFiles(): Promise<void> {
+    return new Promise(resolve => resolve());
+  }
+
+  setEnabled(): void {}
+  setCaptureConsole(): void {}
+  setLogLevel(): void {}
 }

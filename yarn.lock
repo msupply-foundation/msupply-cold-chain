@@ -2437,6 +2437,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-masked-view/masked-view/-/masked-view-0.2.5.tgz#2505f269a53b134e3306a2772d981138e11f1537"
   integrity sha512-yXaWyV8xu1N5tfdfP8L29U0TIDvBriN4zHUI+Zs7Sw+VI8pBbEEYoITK9aFt495Y0/PPm4FsTpa35hOeTLfGPA==
 
+"@react-native-picker/picker@^2.4.4":
+  version "2.4.4"
+  resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-2.4.4.tgz#4e4d2ec4b040e24d8b99c6be8f8b3201bb29fad3"
+  integrity sha512-sz5CPAE8cu//RGOSK4tIcbVi/uNihznrIk4D656/5iz5cqg1zHbVeaQf1eLJRlT7EW1KCH40nk3z4Fzqjmaarw==
+
 "@react-native/assets@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@react-native/assets/-/assets-1.0.0.tgz#c6f9bf63d274bafc8e970628de24986b30a55c8e"
@@ -11558,7 +11563,7 @@ ms@^2.1.1:
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
 "msupply-ble-service@file:.yalc/msupply-ble-service":
-  version "0.5.0"
+  version "0.5.2"
   dependencies:
     buffer "^6.0.3"
 
@@ -13246,6 +13251,11 @@ react-native-elements@^3.4.0:
     opencollective-postinstall "^2.0.3"
     react-native-ratings "8.0.4"
     react-native-size-matters "^0.3.1"
+
+react-native-file-logger@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-file-logger/-/react-native-file-logger-0.3.0.tgz#66e18fafac2622eb3155836db36e40647ddfb866"
+  integrity sha512-VEB7DYzdHmaMCQhnexL3k18vBiv20cRSUo81ANgbmlykMC8/xMGXAasQ6Lw5eUb37eQN0INf8fM5zD/eGYf3Wg==
 
 react-native-flipper@^0.110.0:
   version "0.110.0"
