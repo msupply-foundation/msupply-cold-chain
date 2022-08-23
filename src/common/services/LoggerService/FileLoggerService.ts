@@ -39,7 +39,7 @@ export class FileLoggerService {
 
   public emailLogFiles({
     to,
-    subject = 'mSupply Cold Chain Logs',
+    subject = 'mSupply Cold Chain logs',
     body = 'Developer logs from mSupply cold chain',
   }: {
     to: string;

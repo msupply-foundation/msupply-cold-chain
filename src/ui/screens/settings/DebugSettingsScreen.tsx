@@ -46,7 +46,6 @@ export const DebugSettingsScreen: FC = () => {
     DEPENDENCY.LOGGER_SERVICE
   ) as FileLoggerService;
 
-  const [to, setTo] = useState();
   const [enabled, setEnabled] = useState(loggerService.enabled);
   const [captureConsole, setCaptureConsole] = useState(loggerService.captureConsole);
   const [logLevel, setLogLevel] = useState(toValue(loggerService.logLevel));
@@ -74,6 +73,7 @@ export const DebugSettingsScreen: FC = () => {
       <SettingsGroup title="Debug logging">
         <SettingsSwitchRow
           label="Enable"
+          subtext="Enable logging of events to a log file. Logs are rotated at least daily, with a maximum of 5 of logs."
           isOn={enabled}
           onPress={() => setEnabled(!enabled)}
           isDisabled={ENVIRONMENT.DEV_LOGGER}
@@ -88,27 +88,16 @@ export const DebugSettingsScreen: FC = () => {
             value={logLevel}
           />
           <SettingsSwitchRow
-            label="Capture console"
+            label="Capture console logs"
+            subtext="Writes all console log entries to the log file, use only if you are having real trouble"
             isOn={captureConsole}
             onPress={() => setCaptureConsole(!captureConsole)}
           />
-          <SettingsGroup title="Email logs">
-            <SettingsTextInputRow
-              label="Email recipient"
-              value={to}
-              onConfirm={({ inputValue }: { inputValue: string }) => setTo(inputValue)}
-              validation={Yup.string().email()}
-            />
-            <SettingsButtonRow
-              isDisabled={!to}
-              label="Send logs"
-              onPress={() =>
-                loggerService
-                  .emailLogFiles({ to })
-                  .then(() => ToastAndroid.show(`Logs emailed to ${to}`, ToastAndroid.LONG))
-              }
-            />
-          </SettingsGroup>
+          <SettingsButtonRow
+            subtext="Click to email a copy of the latest log files"
+            label="Send logs"
+            onPress={() => loggerService.emailLogFiles({ to: '' })}
+          />
         </>
       )}
     </SettingsList>
