@@ -8,6 +8,7 @@ import { SensorSettingsScreen } from './SensorSettingsScreen';
 import { TemperatureBreachSettingsScreen } from './TemperatureBreachSettingsScreen';
 import { TemperatureBreachDetailScreen } from './TemperatureBreachDetailScreen';
 import { DevSettingsScreen } from './DevSettingsScreen';
+import { DebugSettingsScreen } from './DebugSettingsScreen';
 import { CumulativeDetailSettingScreen } from './CumulativeDetailSettingScreen';
 import { SensorDetailSettingsScreen } from './SensorDetailSettingsScreen';
 import { SyncSettingsScreen } from './SyncSettingsScreen';
@@ -29,6 +30,7 @@ export const Settings: FC = () => (
       component={TemperatureBreachDetailScreen}
     />
     <SettingsStackScreen name={SETTINGS_STACK.DEVELOPER} component={DevSettingsScreen} />
+    <SettingsStackScreen name={SETTINGS_STACK.DEBUG} component={DebugSettingsScreen} />
     <SettingsStackScreen
       name={SETTINGS_STACK.TEMPERATURE_CUMULATIVE_DETAIL}
       component={CumulativeDetailSettingScreen}

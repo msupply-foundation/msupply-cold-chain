@@ -7,7 +7,7 @@ interface SettingsSwitchRowProps {
   subtext: string;
   onPress: () => void;
   isOn: boolean;
-  isDisabled: boolean;
+  isDisabled?: boolean;
 }
 
 export const SettingsSwitchRow: FC<SettingsSwitchRowProps> = ({
@@ -15,7 +15,7 @@ export const SettingsSwitchRow: FC<SettingsSwitchRowProps> = ({
   subtext,
   onPress,
   isOn,
-  isDisabled,
+  isDisabled = false,
 }) => {
   const RightComponent = <Switch isOn={isOn} isDisabled={isDisabled} onPress={onPress} />;
   return (
