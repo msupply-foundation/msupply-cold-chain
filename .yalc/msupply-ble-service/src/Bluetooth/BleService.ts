@@ -59,6 +59,7 @@ export class BleService {
   manager: BluetoothManager;
   utils: BtUtilService;
   logger: Logger;
+
   constructor(manager: BluetoothManager, logger = dummyLogger) {
     this.manager = manager;
     this.logger = logger;
@@ -67,16 +68,22 @@ export class BleService {
     // but we ignore it and use our own.
     // This needs to be fixed in the main app.
     this.utils = new BtUtilService();
-    logger.info('BleService constructor called', {});
+    logger.info('BleService constructor called');
   }
 
   connectToDevice = (deviceId: string): Promise<MockOrRealDevice> => {
-    this.logger.info('connectToDevice', { deviceId });
+    this.logger.debug(`${deviceId} Connect to device`);
+    try{
     return this.manager.connectToDevice(deviceId);
+    }
+  catch(e){
+    this.logger.error(`${deviceId} Error connecting to device. ${e.message}`);
+    throw e;
+  }
   };
 
   connectAndDiscoverServices = async (deviceDescriptor: string): Promise<TypedDevice> => {
-    this.logger.info('connectAndDiscoverServices', { deviceDescriptor });
+    this.logger.info(`${deviceDescriptor} connectAndDiscoverServices`);
     const device = this.utils.deviceDescriptorToDevice(deviceDescriptor);
     // the Blue Maestro devices are incorrectly reporting connection status
     // thus: deviceIsConnected?	{ deviceIsConnected: true }
@@ -84,30 +91,26 @@ export class BleService {
     // in which case an error is thrown when trying to connect: [BleError: Device ? is already connected]
     // to work around this, we disconnect the device, ignoring any errors, before connecting again
     if (device.deviceType === BLUE_MAESTRO) {
-      this.logger.debug(`Connecting to BM device::${deviceDescriptor}`);
+      this.logger.debug(`${deviceDescriptor} Connecting to BM device`);
       try {
         await this.manager.cancelDeviceConnection(device.id);
       } catch(e) {
-        this.logger.warn(`Error disconnecting from ${deviceDescriptor}: ${e.message}`);
+        this.logger.warn(`${deviceDescriptor} Error disconnecting! ${e.message}`);
         // ignore error
       }
     } else {
-      this.logger.debug(`Connecting to other device::${deviceDescriptor}`);
+      this.logger.debug(`${deviceDescriptor} Connecting to other device`);
       const deviceIsConnected = await this.manager.isDeviceConnected(device.id);
       if (deviceIsConnected) {
-        this.logger.debug(`Disconnecting from ${deviceDescriptor}`);
+        this.logger.debug(`${deviceDescriptor} Disconnecting`);
         await this.manager.cancelDeviceConnection(device.id);
       }
     }
     await this.connectToDevice(device.id);
-    this.logger.debug(`Connected to ${deviceDescriptor}`);
+    this.logger.debug(`${device.id} Connected to ${deviceDescriptor}`);
 
     await this.manager.discoverAllServicesAndCharacteristicsForDevice(device.id);
-    this.logger.debug(`Discovered all services for ${deviceDescriptor}`);
-    this.logger.info('Discovered all services and characteristics for device', {
-      id: device.id,
-      manufacturer: device.deviceType.MANUFACTURER_ID,
-    });
+    this.logger.info(`${deviceDescriptor} Discovered all services and characteristics. id: ${device.id} manufacturer: ${device.deviceType.MANUFACTURER_ID}`);
     return device;
   };
 
@@ -116,7 +119,7 @@ export class BleService {
   };
 
   scanForSensors = (callback: ScanCallback): void => {
-    this.logger.info('scanning for sensors', {});
+    this.logger.info('Scanning for sensors');
     const scanOptions: ScanOptions = { scanMode: ScanMode.LowLatency };
     const filteredCallback = (err: BleError | null, device: Device | null): void => {
       if (err) {
@@ -201,6 +204,8 @@ export class BleService {
           // to the caller)
           return;
         }
+        this.logger.debug(`${device.id} Monitor callback. Data length: ${data.length}`);
+
         if (data.length === 0) throw new Error(' callback no data returned');
         resolve(parser(data));
       } catch (e) {
@@ -210,11 +215,13 @@ export class BleService {
 
     const transactionId = this.transactionId();
     const monitor = this.monitorCharacteristic(device, monitoringCallback, transactionId);
+
     // We only care about the result if both the write and monitor succeed.
     return Promise.all([monitor, this.writeCharacteristic(device, command)])
       .then(r => r[0])
       .catch(e => {
         this.manager.cancelTransaction(transactionId);
+        this.logger.error(`${device.id}  writeAndMonitor rejected. ${e.message}`);
         throw new Error(` writeAndMonitor rejected, ${device.id} ${e.message}`);
       });
   };
@@ -264,6 +271,7 @@ export class BleService {
    * @param {String} macAddress
    */
   clearLogs = async (macAddress: MacAddress): Promise<void> => {
+    this.logger.debug(`${macAddress} Clearing logs`);
     const device = await this.connectAndDiscoverServices(macAddress);
     if (device?.deviceType === BT510) {
       await this.downloadLogs(macAddress);
@@ -277,12 +285,14 @@ export class BleService {
   };
 
   downloadLogs = async (macAddress: MacAddress): Promise<SensorLog[]> => {
+    this.logger.debug(`${macAddress} Download logs`);
     const device = await this.connectAndDiscoverServices(macAddress);
-    this.logger.info('Download logs connected and discovered services', { macAddress });
+    this.logger.info(`${macAddress} Download logs connected and discovered services`);
     const monitorCallback: MonitorCharacteristicParser<string[], SensorLog[] | DataLog> = (
       data: string[]
     ) => {
-      this.logger.info('Write and monitor found some data!', { data });
+      this.logger.info(`${macAddress} Write and monitor found some data! ${data.length}`);
+      this.logger.debug(`${macAddress} ${data.join('; ')}`);
       if (device.deviceType === BLUE_MAESTRO) {
         const buffer = Buffer.concat(
           data.slice(1).map(datum => this.utils.bufferFromBase64(datum))
@@ -312,7 +322,7 @@ export class BleService {
     if (device.deviceType === BT510) {
       // const FIFO = '0';
       // const LIFO = '1';
-      this.logger.debug(`Preparing to download logs for ${macAddress}`);
+      this.logger.debug(`${macAddress} Preparing to download logs`);
       const prepareLogs = async (): Promise<boolean> => {
         const prepCommand = BT510.COMMAND_PREPARE_LOG.replace('MODE', '0');
 
@@ -333,7 +343,7 @@ export class BleService {
       try {
         while (await prepareLogs()) {
           const downloadCommand = BT510.COMMAND_DOWNLOAD.replace('NUMEVENTS', '500');
-          this.logger.debug(`Sending download command to ${macAddress}`);
+          this.logger.debug(`${macAddress} Sending download command`);
           const dataLog = (await this.writeAndMonitor(
             device,
             downloadCommand,
@@ -361,12 +371,12 @@ export class BleService {
           }, []);
 
           if (await ackLogs(dataLog.numEvents)) {
-            this.logger.debug(`Ack received for ${macAddress}`);
+            this.logger.debug(`${macAddress} Ack received`);
             sensorLog = sensorLog.concat(log);
           }
         }
       } catch (e) {
-        this.logger.error(`Error downloading logs: ${e.message}`);
+        this.logger.error(`${macAddress} Error downloading logs. ${e.message}`);
         if (sensorLog.length === 0) {
           throw new Error(`downloadLogs ${e.message}`);
         }
@@ -376,11 +386,12 @@ export class BleService {
     } else {
       try {
         const command = BLUE_MAESTRO.COMMAND_DOWNLOAD.replace('NUMEVENTS', '500');
+        this.logger.debug(`${macAddress} Sending download command`);
         const result = (await this.writeAndMonitor(device, command, monitorCallback)) as SensorLog[];
         return result;
       }
       catch (e) {
-        this.logger.error(`Error downloading logs: ${e.message}`);
+        this.logger.error(`${macAddress} Error downloading logs! ${e.message}`);
       }
       return [] as SensorLog[];
     }
@@ -391,6 +402,7 @@ export class BleService {
     logInterval: number,
     clearLogs = true
   ): Promise<boolean> => {
+    this.logger.debug(`${macAddress} Update log interval`);
     const device = await this.connectAndDiscoverServices(macAddress);
 
     const command = device.deviceType.COMMAND_UPDATE_LOG_INTERVAL.replace(
@@ -415,6 +427,7 @@ export class BleService {
   };
 
   blink = async (macAddress: MacAddress): Promise<boolean> => {
+    this.logger.debug(`${macAddress} Blink`);
     const device = await this.connectAndDiscoverServices(macAddress);
     const result = (await this.writeWithSingleResponse(
       device,
@@ -430,6 +443,7 @@ export class BleService {
   };
 
   getInfo = async (macAddress: MacAddress): Promise<InfoLog> => {
+    this.logger.debug(`${macAddress} Get info`);
     const device = await this.connectAndDiscoverServices(macAddress);
     const monitorResultCallback: MonitorCharacteristicParser<string[], InfoLog> = data => {
       const parsedBase64 = data.map(this.utils.stringFromBase64);
@@ -489,6 +503,7 @@ export class BleService {
   };
 
   toggleButton = async (macAddress: MacAddress): Promise<boolean> => {
+    this.logger.debug(`${macAddress} Toggle button`);
     const device = await this.connectAndDiscoverServices(macAddress);
     if (device.deviceType === BT510) {
       // Laird doesn't have this command
@@ -509,7 +524,9 @@ export class BleService {
     retriesLeft: number,
     error: Error | null
   ): Promise<InfoLog> => {
-    if (!retriesLeft) throw error;
+    if (!retriesLeft) {
+      this.logger.error(`${macAddress} getInfoWithRetries failed. ${error?.message}`);
+      throw error;}
 
     return this.getInfo(macAddress).catch(err =>
       this.getInfoWithRetries(macAddress, retriesLeft - 1, err)
@@ -533,7 +550,7 @@ export class BleService {
     retriesLeft: number,
     error: Error | null
   ): Promise<SensorLog[]> => {
-    this.logger.info('Starting to download logs', { macAddress, retriesLeft, error });
+    this.logger.info(`${macAddress} Starting to download logs. There are ${retriesLeft} retries left. Error: ${error?.message} }`);
     if (!retriesLeft) throw error;
 
     return this.downloadLogs(macAddress).catch(err =>

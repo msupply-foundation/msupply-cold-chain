@@ -1,13 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
-import { ToastAndroid } from 'react-native';
-import * as Yup from 'yup';
 import { LogLevel } from 'react-native-file-logger';
-import {
-  SettingsButtonRow,
-  SettingsGroup,
-  SettingsSwitchRow,
-  SettingsTextInputRow,
-} from '~components/settings';
+import { SettingsButtonRow, SettingsGroup, SettingsSwitchRow } from '~components/settings';
 import { SettingsList } from '~layouts';
 import { useDependency } from '~hooks';
 import { DEPENDENCY } from '~constants';
@@ -15,16 +8,18 @@ import { FileLoggerService } from '~common/services';
 import { SettingsSelectRow } from '~components/settings/SettingsSelectRow';
 import { ENVIRONMENT } from '~common/constants';
 
-const fromValue = (value: string) => {
+const fromValue = (value?: string) => {
   switch (value) {
     case 'debug':
       return LogLevel.Debug;
     case 'info':
       return LogLevel.Info;
     case 'warn':
-      return LogLevel.Warn;
+      return LogLevel.Warning;
     case 'error':
       return LogLevel.Error;
+    default:
+      return LogLevel.Info;
   }
 };
 
@@ -34,7 +29,7 @@ const toValue = (level: LogLevel) => {
       return 'debug';
     case LogLevel.Info:
       return 'info';
-    case LogLevel.Warn:
+    case LogLevel.Warning:
       return 'warn';
     case LogLevel.Error:
       return 'error';
@@ -73,10 +68,10 @@ export const DebugSettingsScreen: FC = () => {
       <SettingsGroup title="Debug logging">
         <SettingsSwitchRow
           label="Enable"
-          subtext="Enable logging of events to a log file. Logs are rotated at least daily, with a maximum of 5 of logs."
+          subtext="Enable logging of events to a log file. Logs are rotated at least daily, with a maximum of 5 logs."
           isOn={enabled}
           onPress={() => setEnabled(!enabled)}
-          isDisabled={ENVIRONMENT.DEV_LOGGER}
+          isDisabled={!!ENVIRONMENT.DEV_LOGGER}
         />
       </SettingsGroup>
       {enabled && (
@@ -96,7 +91,7 @@ export const DebugSettingsScreen: FC = () => {
           <SettingsButtonRow
             subtext="Click to email a copy of the latest log files"
             label="Send logs"
-            onPress={() => loggerService.emailLogFiles({ to: '' })}
+            onPress={() => loggerService.emailLogFiles({})}
           />
         </>
       )}

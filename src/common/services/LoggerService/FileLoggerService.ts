@@ -42,7 +42,7 @@ export class FileLoggerService {
     subject = 'mSupply Cold Chain logs',
     body = 'Developer logs from mSupply cold chain',
   }: {
-    to: string;
+    to?: string;
     subject?: string;
     body?: string;
   }): Promise<void> {
