@@ -3,7 +3,7 @@ import { FileLogger, LogLevel } from 'react-native-file-logger';
 export class FileLoggerService {
   public enabled = false;
   public captureConsole = false;
-  public logLevel = LogLevel.Debug;
+  public logLevel = LogLevel.Warning;
   isDevelopment;
 
   constructor(isDevelopment?: boolean) {

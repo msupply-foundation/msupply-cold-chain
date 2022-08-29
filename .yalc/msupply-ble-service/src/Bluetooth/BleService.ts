@@ -54,7 +54,9 @@ const dummyLogger: Logger = {
     /*do nothing*/
   },
 };
-
+const RETRY_DELAY = 1000;
+const sleep = (delay: number) =>
+  new Promise(resolve => setTimeout(resolve, delay));
 export class BleService {
   manager: BluetoothManager;
   utils: BtUtilService;
@@ -73,13 +75,13 @@ export class BleService {
 
   connectToDevice = (deviceId: string): Promise<MockOrRealDevice> => {
     this.logger.debug(`${deviceId} Connect to device`);
-    try{
-    return this.manager.connectToDevice(deviceId);
+    try {
+      return this.manager.connectToDevice(deviceId);
     }
-  catch(e){
-    this.logger.error(`${deviceId} Error connecting to device. ${e.message}`);
-    throw e;
-  }
+    catch(e) {
+      this.logger.error(`${deviceId} Error connecting to device. ${e.message}`);
+      throw e;
+    }
   };
 
   connectAndDiscoverServices = async (deviceDescriptor: string): Promise<TypedDevice> => {
@@ -111,6 +113,7 @@ export class BleService {
 
     await this.manager.discoverAllServicesAndCharacteristicsForDevice(device.id);
     this.logger.info(`${deviceDescriptor} Discovered all services and characteristics. id: ${device.id} manufacturer: ${device.deviceType.MANUFACTURER_ID}`);
+
     return device;
   };
 
@@ -328,6 +331,7 @@ export class BleService {
 
         return (await this.writeWithSingleResponse(device, prepCommand, data => {
           const info = this.utils.stringFromBase64(data);
+          this.logger.debug(`${macAddress} Prepare logs response: ${info}`);
           return JSON.parse(info).result !== 0;
         })) as boolean;
       };
@@ -528,6 +532,8 @@ export class BleService {
       this.logger.error(`${macAddress} getInfoWithRetries failed. ${error?.message}`);
       throw error;}
 
+      await sleep(RETRY_DELAY);
+
     return this.getInfo(macAddress).catch(err =>
       this.getInfoWithRetries(macAddress, retriesLeft - 1, err)
     );
@@ -540,6 +546,8 @@ export class BleService {
   ): Promise<boolean> => {
     if (!retriesLeft) throw error;
 
+        await sleep(RETRY_DELAY);
+
     return this.toggleButton(macAddress).catch(err =>
       this.toggleButtonWithRetries(macAddress, retriesLeft - 1, err)
     );
@@ -550,8 +558,11 @@ export class BleService {
     retriesLeft: number,
     error: Error | null
   ): Promise<SensorLog[]> => {
-    this.logger.info(`${macAddress} Starting to download logs. There are ${retriesLeft} retries left. Error: ${error?.message} }`);
+    this.logger.info(`${macAddress} Download logs with retries`);
+    this.logger.debug(`${macAddress} Starting to download logs. There are ${retriesLeft} retries left. Error: ${error?.message}`);
     if (!retriesLeft) throw error;
+
+    await sleep(RETRY_DELAY);
 
     return this.downloadLogs(macAddress).catch(err =>
       this.downloadLogsWithRetries(macAddress, retriesLeft - 1, err)
@@ -564,6 +575,8 @@ export class BleService {
     error: Error | null
   ): Promise<boolean> => {
     if (!retriesLeft) throw error;
+
+    await sleep(RETRY_DELAY);
 
     return this.blink(macAddress).catch(err =>
       this.blinkWithRetries(macAddress, retriesLeft - 1, err)
@@ -578,6 +591,8 @@ export class BleService {
     error: Error | null
   ): Promise<boolean> => {
     if (!retriesLeft) throw error;
+
+    await sleep(RETRY_DELAY);
 
     return this.updateLogInterval(macAddress, logInterval, clearLogs).catch(err =>
       this.updateLogIntervalWithRetries(macAddress, logInterval, retriesLeft - 1, clearLogs, err)
