@@ -1,9 +1,10 @@
-import { FileLogger, LogLevel } from 'react-native-file-logger';
+import { FileLogger, LogLevel as FileLogLevel } from 'react-native-file-logger';
+import { LogLevel } from 'react-native-ble-plx';
 
 export class FileLoggerService {
   public enabled = false;
   public captureConsole = false;
-  public logLevel = LogLevel.Warning;
+  public logLevel = FileLogLevel.Warning;
   isDevelopment;
 
   constructor(isDevelopment?: boolean) {
@@ -24,17 +25,23 @@ export class FileLoggerService {
     console.log('-------------------------------------');
   }
 
-  public debug(message: string): void {
-    if (this.enabled) FileLogger.debug(message);
+  public trace(error: string | Error): void {
+    if (this.enabled) FileLogger.debug(String(error));
   }
-  public info(message: string): void {
-    if (this.enabled) FileLogger.info(message);
+  public debug(error: string | Error): void {
+    if (this.enabled) FileLogger.debug(String(error));
   }
-  public warn(message: string): void {
-    if (this.enabled) FileLogger.warn(message);
+  public info(error: string | Error): void {
+    if (this.enabled) FileLogger.info(String(error));
   }
-  public error(message: string): void {
-    if (this.enabled) FileLogger.error(message);
+  public warn(error: string | Error): void {
+    if (this.enabled) FileLogger.warn(String(error));
+  }
+  public error(error: string | Error): void {
+    if (this.enabled) FileLogger.error(String(error));
+  }
+  public fatal(error: string | Error): void {
+    if (this.enabled) FileLogger.error(String(error));
   }
 
   public emailLogFiles({
@@ -65,7 +72,28 @@ export class FileLoggerService {
   }
 
   public setLogLevel(logLevel: LogLevel): void {
-    this.logLevel = logLevel;
-    FileLogger.setLogLevel(logLevel);
+    if (logLevel === LogLevel.None) {
+      this.enabled = false;
+      return;
+    }
+
+    this.logLevel = this.mapLogLevel(logLevel);
+    FileLogger.setLogLevel(this.logLevel);
   }
+
+  mapLogLevel = (logLevel: LogLevel): FileLogLevel => {
+    switch (logLevel) {
+      case LogLevel.Verbose:
+      case LogLevel.Debug:
+        return FileLogLevel.Debug;
+      case LogLevel.Info:
+        return FileLogLevel.Info;
+      case LogLevel.Warning:
+        return FileLogLevel.Warning;
+      case LogLevel.Error:
+        return FileLogLevel.Error;
+      default:
+        return FileLogLevel.Warning;
+    }
+  };
 }

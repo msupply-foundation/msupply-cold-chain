@@ -29,7 +29,7 @@ interface Logger {
   warn: Action;
   error: Action;
   fatal: Action;
-  setLogLevel: (transportKey: string, newLevel: number) => void;
+  setLogLevel: (logLevel: LogLevel) => void;
 }
 const dummyLogger: Logger = {
   trace: (_message, _details) => {
@@ -50,7 +50,7 @@ const dummyLogger: Logger = {
   fatal: (_message, _details) => {
     /*do nothing*/
   },
-  setLogLevel: (_transportKey, _newLevel) => {
+  setLogLevel: (_logLevel) => {
     /*do nothing*/
   },
 };

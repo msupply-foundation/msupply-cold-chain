@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
-import { LogLevel } from 'react-native-file-logger';
+import { LogLevel } from 'react-native-ble-plx';
+import { LogLevel as FileLogLevel } from 'react-native-file-logger';
 import { SettingsButtonRow, SettingsGroup, SettingsSwitchRow } from '~components/settings';
 import { SettingsList } from '~layouts';
 import { useDependency } from '~hooks';
@@ -23,15 +24,15 @@ const fromValue = (value?: string) => {
   }
 };
 
-const toValue = (level: LogLevel) => {
+const toValue = (level: FileLogLevel) => {
   switch (level) {
-    case LogLevel.Debug:
+    case FileLogLevel.Debug:
       return 'debug';
-    case LogLevel.Info:
+    case FileLogLevel.Info:
       return 'info';
-    case LogLevel.Warning:
+    case FileLogLevel.Warning:
       return 'warn';
-    case LogLevel.Error:
+    case FileLogLevel.Error:
       return 'error';
   }
 };

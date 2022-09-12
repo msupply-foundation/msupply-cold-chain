@@ -12,7 +12,6 @@ import {
   ExportService,
   UtilService,
   FormatService,
-  DevLoggerService,
   DevService,
   DependencyLocatorContext,
   MigrationService,
@@ -36,9 +35,19 @@ import {
   DevManager,
 } from '~features';
 import { FileLoggerService } from '~common/services/LoggerService';
+import { useOnMount } from '~hooks';
+import { MonitorAction } from '~features/Monitor/MonitorSlice';
+import { useDispatch } from 'react-redux';
 
 export const DependencyContainer: FC = ({ children }) => {
   const [ready, setReady] = useState(false);
+  const dispatch = useDispatch();
+
+  const startDependencyMonitor = () => {
+    setTimeout(() => {
+      dispatch(MonitorAction.start());
+    }, 50000);
+  };
 
   useEffect(() => {
     const utilService = new UtilService();
@@ -108,6 +117,8 @@ export const DependencyContainer: FC = ({ children }) => {
       setReady(true);
     })();
   }, []);
+
+  useOnMount([startDependencyMonitor]);
 
   return ready ? (
     <DependencyLocatorContext.Provider value={DependencyLocator}>
