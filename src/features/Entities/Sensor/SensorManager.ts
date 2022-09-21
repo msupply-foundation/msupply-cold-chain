@@ -125,7 +125,7 @@ export class SensorManager {
     return [canDownloadLogs];
   };
 
-  addNewSensor = async (
+  private _addNewSensor = async (
     macAddress: string,
     logInterval: number,
     logDelay: number,
@@ -155,6 +155,12 @@ export class SensorManager {
       programmedDate: this.utils.now(),
     });
   };
+  public get addNewSensor() {
+    return this._addNewSensor;
+  }
+  public set addNewSensor(value) {
+    this._addNewSensor = value;
+  }
 
   remove = async (id: string): Promise<Sensor> => {
     return this.databaseService.update(ENTITIES.SENSOR, id, { isActive: false });

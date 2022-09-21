@@ -80,7 +80,7 @@ export const DependencyContainer: FC = ({ children }) => {
     const cumulativeBreachManager = new CumulativeBreachManager(dbService);
     const ackBreachManager = new AcknowledgeBreachManager(dbService);
     const logTableManager = new LogTableManager(dbService);
-    const downloadManager = new DownloadManager(dbService, utilService);
+    const downloadManager = new DownloadManager(dbService, utilService, fileLogger);
     const sensorsManager = new SensorManager(dbService, utilService, btUtilService);
     const temperatureLogManager = new TemperatureLogManager(dbService, utilService);
     const reportManager = new ReportManager(

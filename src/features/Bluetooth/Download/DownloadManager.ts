@@ -1,6 +1,6 @@
 import { SensorState } from '../../Entities/Sensor/SensorSlice';
 import { ENTITIES } from '../../../common/constants';
-import { DatabaseService, UtilService } from '../../../common/services';
+import { DatabaseService, FileLoggerService, UtilService } from '../../../common/services';
 import { UnixTimestamp } from '~common/types/common';
 
 interface TemperatureLog {
@@ -13,12 +13,13 @@ interface TemperatureLog {
 
 export class DownloadManager {
   databaseService: DatabaseService;
-
   utils: UtilService;
+  logger?: FileLoggerService;
 
-  constructor(databaseService: DatabaseService, utils: UtilService) {
+  constructor(databaseService: DatabaseService, utils: UtilService, logger?: FileLoggerService) {
     this.databaseService = databaseService;
     this.utils = utils;
+    this.logger = logger;
   }
 
   // Calculates the number of sensor logs that should be saved from some given starting
@@ -50,6 +51,9 @@ export class DownloadManager {
     const sliceIndex = logs.length - maxNumberToSave;
     const logsToSave = logs.slice(sliceIndex);
 
+    this.logger?.debug(
+      `${sensor.id} Create logs. logsToSave: ${logsToSave.length}, sliceIndex: ${sliceIndex}, mostRecentLogTime: ${mostRecentLogTime}, now: ${now}`
+    );
     let initial = 0;
     if (!mostRecentLogTime) {
       const lookbackSeconds = (logsToSave.length - 1) * logInterval;
@@ -65,6 +69,8 @@ export class DownloadManager {
       initial = mostRecentLogTime + lookback;
     }
 
+    this.logger?.debug(`${sensor.id} initial: ${initial}`);
+
     return logsToSave.map(({ temperature = 0 }, i) => {
       const offset = logInterval * i;
       const timestamp = initial + offset;
@@ -75,6 +81,8 @@ export class DownloadManager {
   };
 
   saveLogs = async (logsToSave: Partial<TemperatureLog>[]): Promise<TemperatureLog[]> => {
+    this.logger?.debug(`saving ${logsToSave.length} logs`);
+
     return this.databaseService.insert(ENTITIES.TEMPERATURE_LOG, logsToSave);
   };
 }

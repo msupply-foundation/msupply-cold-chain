@@ -5,28 +5,10 @@ import packageJson from '~/../../package.json';
 import { UnixTimestamp } from '~common/types/common';
 import { Seconds } from '~constants/Milliseconds';
 
-const PAUSE_IN_MILLISECONDS = 1;
 type NumberRange = [number, number];
 
 export class UtilService {
-  uuid = (): string => {
-    try {
-      return generateUUID.v1() as string;
-    } catch (e: any) {
-      // catch the error "uuid.v1(): Can\'t create more than 10M uuids/sec"
-      if (e.message.includes('more than 10M uuids/sec')) {
-        // pause to allow the uuid to be generated and try again, throw error if it fails again
-        const start = new Date().getTime();
-        for (let i = 0; i < 1e7; i++) {
-          if (new Date().getTime() - start > PAUSE_IN_MILLISECONDS) {
-            break;
-          }
-        }
-        return generateUUID.v1() as string;
-      }
-      throw e;
-    }
-  };
+  uuid = (): string => generateUUID.v4() as string;
 
   now = (): UnixTimestamp => moment().unix();
 

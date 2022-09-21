@@ -145,6 +145,7 @@ function* tryDownloadForSensor({
         logInterval
       );
 
+      logger.debug(`${sensorId} ${numberOfLogsToSave} logs to save`);
       const sensorLogs = yield call(
         downloadManager.createLogs,
         logs,
@@ -171,6 +172,7 @@ function* tryDownloadForSensor({
       yield put(DownloadAction.passiveDownloadForSensorFail(sensor.id));
     }
   } catch (error) {
+    logger.error(`${sensorId} Error in tryDownloadForSensor: ${(error as Error)?.message}`);
     yield put(DownloadAction.passiveDownloadForSensorFail((error as Error)?.message));
   }
 
