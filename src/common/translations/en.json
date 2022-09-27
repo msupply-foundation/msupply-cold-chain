@@ -14,6 +14,7 @@
   "SETTINGS_STACK/TemperatureCumulativeDetail": "Temperature Cumulative Detail",
   "SETTINGS_STACK/Sync": "Sync",
   "SETTINGS_STACK/Developer": "Developer",
+  "SETTINGS_STACK/Debug": "Debug Configuration",
   "BLUETOOTH_SETTINGS": "Bluetooth",
   "BLUETOOTH_SETTINGS_SUBTEXT": "Manage bluetooth",
   "SENSOR_SETTINGS": "Sensor",
@@ -72,7 +73,7 @@
   "AVAILABLE_SENSORS": "Available sensors",
   "AUTO_APPLY_BREACH": "Temperature breach configurations",
   "AUTO_APPLY_BREACH_SUBTEXT": "Auto apply all active breach configurations to new sensors",
-  "DEFAULT_LOG_INTERVAL": "Logging interval",
+  "DEFAULT_LOG_INTERVAL": "Default interval",
   "DEFAULT_LOG_INTERVAL_SUBTEXT": "The default logging interval for all new sensors",
   "BLINKED_SENSOR_SUCCESS": "Sensor blink successful",
   "BLINKED_SENSOR_FAILED": "Sensor blink unsuccessful",
@@ -132,5 +133,7 @@
   "BREACH_ONGOING": "The current breach is ongoing!",
   "STARTED": "started",
   "ENDED": "ended",
-  "ACKNOWLEDGE": "ACKNOWLEDGE"
+  "ACKNOWLEDGE": "ACKNOWLEDGE",
+  "DEBUG_SETTINGS": "Debug settings",
+  "DEBUG_CONFIGURATION": "Manage settings such as debug logging"
 }

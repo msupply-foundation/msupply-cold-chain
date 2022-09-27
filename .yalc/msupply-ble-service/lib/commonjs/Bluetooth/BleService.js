@@ -74,7 +74,9 @@ class BleService {
         this.logger.info('deviceIsConnected?', {
           deviceIsConnected
         });
-        await this.manager.cancelDeviceConnection(device.id);
+        if (deviceIsConnected) {
+          await this.manager.cancelDeviceConnection(device.id);
+        }
       }
 
       await this.connectToDevice(device.id);

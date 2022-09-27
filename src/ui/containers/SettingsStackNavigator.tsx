@@ -19,6 +19,7 @@ export type SettingsStackParameters = {
   [SETTINGS_STACK.TEMPERATURE_CUMULATIVE_DETAIL]: Record<string, unknown>;
   [SETTINGS_STACK.DEVELOPER]: undefined;
   [SETTINGS_STACK.SYNC]: undefined;
+  [SETTINGS_STACK.DEBUG]: undefined;
 };
 
 // Create a stack navigator

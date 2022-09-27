@@ -47,6 +47,12 @@ export const MainSettingsScreen: FC<MainSettingsScreenProps> = ({ navigation }) 
           onPress={() => navigation.navigate(SETTINGS_STACK.SYNC)}
           RightComponent={ChevronIcon}
         />
+        <SettingsItem
+          label={t('DEBUG_SETTINGS')}
+          subtext={t('DEBUG_CONFIGURATION')}
+          onPress={() => navigation.navigate(SETTINGS_STACK.DEBUG)}
+          RightComponent={ChevronIcon}
+        />
 
         {__DEV__ && (
           <SettingsItem
