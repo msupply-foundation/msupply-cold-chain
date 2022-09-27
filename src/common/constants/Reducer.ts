@@ -31,4 +31,5 @@ export enum REDUCER {
   DETAIL_CUMULATIVE_BREACH = 'detailCumulative',
   SYNC = 'sync',
   HYDRATE = 'hydrate',
+  MONITOR = 'monitor',
 }

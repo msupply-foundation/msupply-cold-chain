@@ -4,8 +4,8 @@ import { ToastAndroid } from 'react-native';
 import { call, getContext, put, retry, takeEvery, takeLeading } from 'redux-saga/effects';
 
 import { SettingManager } from '~features/Entities/Setting/SettingManager';
-import { BleService } from '~services/Bluetooth/BleService';
-import { InfoLog } from '~services/Bluetooth/types';
+import { BleService } from 'msupply-ble-service';
+import { InfoLog } from 'msupply-ble-service/types';
 import { RootState } from '~store/store';
 import { DEPENDENCY, REDUCER } from '~constants';
 import { getDependency } from '~features/utils/saga';
@@ -119,7 +119,7 @@ export function* tryProgramNewSensor({
   try {
     const logInterval: number = yield call(settingManager.getSetting, 'defaultLogInterval');
     const { batteryLevel, isDisabled }: InfoLog = yield retry(10, 0, btService.getInfo, macAddress);
-    yield retry(10, 0, btService.updateLogInterval, macAddress, logInterval);
+    yield retry(10, 0, btService.updateLogInterval, macAddress, logInterval, true /* clear logs */);
 
     if (!isDisabled) {
       yield retry(10, 0, btService.toggleButton, macAddress);
@@ -145,7 +145,7 @@ export function* tryUpdateLogInterval({
 
   try {
     const sensor = yield call(sensorManager.getSensorByMac, macAddress);
-    yield retry(10, 0, btService.updateLogInterval, sensor.macAddress, logInterval);
+    yield retry(10, 0, btService.updateLogInterval, sensor.macAddress, logInterval, true);
     yield put(ProgramAction.updateLogIntervalSuccess(sensor.id, logInterval));
     ToastAndroid.show('Updated log interval', ToastAndroid.SHORT);
   } catch (e) {

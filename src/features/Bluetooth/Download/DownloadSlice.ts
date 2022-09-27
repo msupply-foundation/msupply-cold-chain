@@ -11,10 +11,11 @@ import {
   takeLeading,
   actionChannel,
   fork,
+  select,
 } from 'redux-saga/effects';
 import { getDependency } from '~features/utils/saga';
 import { SensorState } from '~features/Entities/Sensor/SensorSlice';
-import { BleService } from '~services/Bluetooth/BleService';
+import { BleService } from 'msupply-ble-service';
 import { MILLISECONDS, REDUCER } from '~common/constants';
 import {
   DownloadManager,
@@ -22,7 +23,10 @@ import {
   CumulativeBreachAction,
   ConsecutiveBreachAction,
 } from '~features';
+import { FileLoggerService } from '~common/services';
+import { RootState } from '~common/store';
 
+const DOWNLOAD_RETRIES = 3;
 interface DownloadSliceState {
   downloadingById: Record<string, boolean>;
   passiveDownloadEnabled: boolean;
@@ -38,6 +42,16 @@ export const DownloadInitialState: DownloadSliceState = {
 interface DownloadStartPayload {
   sensorId: string;
 }
+
+export const isSensorDownloading =
+  (sensorId: string) =>
+  (state: RootState): boolean => {
+    try {
+      return state.bluetooth.download.downloadingById[sensorId] || false;
+    } catch {
+      return false;
+    }
+  };
 
 const reducers = {
   passiveDownloadingStart: (draftState: DownloadSliceState) => {
@@ -102,16 +116,27 @@ function* tryDownloadForSensor({
   const btService: BleService = yield call(getDependency, 'bleService');
   const sensorManager: SensorManager = yield call(getDependency, 'sensorManager');
   const downloadManager: DownloadManager = yield call(getDependency, 'downloadManager');
+  const logger: FileLoggerService = yield call(getDependency, 'loggerService');
 
   try {
     const sensor = yield call(sensorManager.getSensorById, sensorId);
     const [canDownload] = yield call(sensorManager.getCanDownload, sensorId);
+    const isDownloading = yield select(isSensorDownloading(sensorId));
 
-    if (canDownload) {
+    logger.debug(
+      `${sensorId} tryDownloadForSensor canDownload: ${canDownload} isDownloading: ${isDownloading}`
+    );
+    if (canDownload && !isDownloading) {
       yield put(DownloadAction.downloadStart(sensorId));
 
       const { macAddress, logInterval, logDelay, programmedDate } = sensor;
-      const logs = yield call(btService.downloadLogsWithRetries, macAddress, 10, null);
+      const logs = yield call(
+        btService.downloadLogsWithRetries,
+        macAddress,
+        DOWNLOAD_RETRIES,
+        null
+      );
+      logger.info(`${sensorId} logs downloaded: ${logs.length}`);
       const mostRecentLogTime = yield call(sensorManager.getMostRecentLogTime, sensorId);
 
       const numberOfLogsToSave = yield call(
@@ -120,6 +145,7 @@ function* tryDownloadForSensor({
         logInterval
       );
 
+      logger.debug(`${sensorId} ${numberOfLogsToSave} logs to save`);
       const sensorLogs = yield call(
         downloadManager.createLogs,
         logs,
@@ -130,7 +156,14 @@ function* tryDownloadForSensor({
 
       yield call(downloadManager.saveLogs, sensorLogs);
       if (numberOfLogsToSave) {
-        yield call(btService.updateLogIntervalWithRetries, macAddress, logInterval, 10, null);
+        yield call(
+          btService.updateLogIntervalWithRetries,
+          macAddress,
+          logInterval,
+          10,
+          false,
+          null
+        );
       }
       yield put(ConsecutiveBreachAction.create(sensor));
       yield put(DownloadAction.passiveDownloadForSensorSuccess(sensor.id));
@@ -139,7 +172,8 @@ function* tryDownloadForSensor({
       yield put(DownloadAction.passiveDownloadForSensorFail(sensor.id));
     }
   } catch (error) {
-    yield put(DownloadAction.passiveDownloadForSensorFail(error.message));
+    logger.error(`${sensorId} Error in tryDownloadForSensor: ${(error as Error)?.message}`);
+    yield put(DownloadAction.passiveDownloadForSensorFail((error as Error)?.message));
   }
 
   yield put(DownloadAction.downloadComplete(sensorId));

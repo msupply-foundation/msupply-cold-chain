@@ -14,6 +14,7 @@ import { PermissionSaga } from '~features/Permission';
 import { SyncSaga } from '~features/Sync';
 import { DevSaga } from '~features/Dev';
 import { HydrateSaga } from '~features/Hydrate';
+import { MonitorSaga } from '~features/Monitor';
 
 export function* RootSaga(): SagaIterator {
   yield fork(EntitiesSaga.root);
@@ -27,6 +28,7 @@ export function* RootSaga(): SagaIterator {
   yield fork(SyncSaga.root);
   yield fork(DevSaga.root);
   yield fork(HydrateSaga.root);
+  yield fork(MonitorSaga.root);
 }
 
 export const SagaMiddleware = createSagaMiddleware({

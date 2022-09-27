@@ -1,5 +1,4 @@
 import moment from 'moment';
-
 import { ENTITIES } from '~constants';
 import { DatabaseService } from '~services/Database';
 import { DevService } from '~services/DevService';
@@ -79,11 +78,10 @@ class DevManager {
 
   generateBreachTemperatureLogs = async (sensor: Sensor): Promise<Partial<TemperatureLog>[]> => {
     const { id: sensorId, logInterval } = sensor;
-    const [
-      { minimumTemperature, maximumTemperature, duration },
-    ] = (await this.databaseService.getAll(
-      ENTITIES.TEMPERATURE_BREACH_CONFIGURATION
-    )) as TemperatureBreachConfiguration[];
+    const [{ minimumTemperature, maximumTemperature, duration }] =
+      (await this.databaseService.getAll(
+        ENTITIES.TEMPERATURE_BREACH_CONFIGURATION
+      )) as TemperatureBreachConfiguration[];
 
     const breachLogCount = Math.ceil(duration / (logInterval * 1000)) * 100;
     const breachLogTimestamps = Array.from(Array(breachLogCount).keys()).reduce(

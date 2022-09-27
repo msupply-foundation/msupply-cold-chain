@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
+import { BleService, BleManager, DevBleManager, BtUtilService } from 'msupply-ble-service';
 
 import { ENVIRONMENT } from '~common/constants';
 import { DevContainer } from './DevContainer';
@@ -6,16 +7,12 @@ import { DevContainer } from './DevContainer';
 import {
   Database,
   DependencyLocator,
-  BleService,
   PermissionService,
   DatabaseService,
   ExportService,
   UtilService,
   FormatService,
-  BugsnagLoggerService,
-  DevLoggerService,
   DevService,
-  DevBleManager,
   DependencyLocatorContext,
   MigrationService,
 } from '~services';
@@ -37,22 +34,32 @@ import {
   SyncOutManager,
   DevManager,
 } from '~features';
-import { BleManager } from '~common/services/Bluetooth';
+import { FileLoggerService } from '~common/services/LoggerService';
+import { useOnMount } from '~hooks';
+import { MonitorAction } from '~features/Monitor/MonitorSlice';
+import { useDispatch } from 'react-redux';
 
 export const DependencyContainer: FC = ({ children }) => {
   const [ready, setReady] = useState(false);
+  const dispatch = useDispatch();
+
+  const startDependencyMonitor = () => {
+    setTimeout(() => {
+      dispatch(MonitorAction.start());
+    }, 50000);
+  };
 
   useEffect(() => {
     const utilService = new UtilService();
+    const btUtilService = new BtUtilService();
     const db = new Database();
     const dbService = new DatabaseService(db);
     const permissionService = new PermissionService();
-    const btService = new BleService(new BleManager(), utilService);
-    const devBtService = new BleService(new DevBleManager(), utilService);
+    const devBtService = new BleService(new DevBleManager());
     const formatService = new FormatService(utilService);
     const exportService = new ExportService();
-    const devLogger = new DevLoggerService();
-    const bugsnagLogger = new BugsnagLoggerService();
+    const fileLogger = new FileLoggerService(!!ENVIRONMENT.DEV_LOGGER);
+    const btService = new BleService(new BleManager(), fileLogger);
     const devService = new DevService();
     const migrationService = new MigrationService(dbService, utilService);
 
@@ -62,8 +69,9 @@ export const DependencyContainer: FC = ({ children }) => {
     DependencyLocator.register('database', dbService);
     DependencyLocator.register('formatService', formatService);
     DependencyLocator.register('utilService', utilService);
+    DependencyLocator.register('btUtilService', btUtilService);
     DependencyLocator.register('exportService', exportService);
-    DependencyLocator.register('loggerService', ENVIRONMENT.DEV_LOGGER ? devLogger : bugsnagLogger);
+    DependencyLocator.register('loggerService', fileLogger);
 
     const settingManager = new SettingManager(dbService);
     const breachConfigurationManager = new BreachConfigurationManager(dbService);
@@ -72,8 +80,8 @@ export const DependencyContainer: FC = ({ children }) => {
     const cumulativeBreachManager = new CumulativeBreachManager(dbService);
     const ackBreachManager = new AcknowledgeBreachManager(dbService);
     const logTableManager = new LogTableManager(dbService);
-    const downloadManager = new DownloadManager(dbService, utilService);
-    const sensorsManager = new SensorManager(dbService, utilService);
+    const downloadManager = new DownloadManager(dbService, utilService, fileLogger);
+    const sensorsManager = new SensorManager(dbService, utilService, btUtilService);
     const temperatureLogManager = new TemperatureLogManager(dbService, utilService);
     const reportManager = new ReportManager(
       dbService,
@@ -109,6 +117,8 @@ export const DependencyContainer: FC = ({ children }) => {
       setReady(true);
     })();
   }, []);
+
+  useOnMount([startDependencyMonitor]);
 
   return ready ? (
     <DependencyLocatorContext.Provider value={DependencyLocator}>
