@@ -5,6 +5,7 @@ export enum DEPENDENCY {
   DEVICE = 'device',
   EXPORT_SERVICE = 'exportService',
   FORMAT_SERVICE = 'formatService',
+  BTUTIL_SERVICE = 'btUtilService',
   UTIL_SERVICE = 'utilService',
   DATABASE_UTILS = 'databaseUtils',
   SENSOR_MANAGER = 'sensorManager',

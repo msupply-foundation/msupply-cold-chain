@@ -8,6 +8,7 @@ export enum SETTINGS_STACK {
   'TEMPERATURE_CUMULATIVE_DETAIL' = 'SETTINGS_STACK/TemperatureCumulativeDetail',
   'DEVELOPER' = 'SETTINGS_STACK/Developer',
   'SYNC' = 'SETTINGS_STACK/Sync',
+  'DEBUG' = 'SETTINGS_STACK/Debug',
 }
 
 export enum SENSOR_STACK {

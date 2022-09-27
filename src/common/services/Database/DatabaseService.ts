@@ -235,6 +235,11 @@ export class DatabaseService {
     return repository.find(queryObject);
   };
 
+  findOneOrFail = async (entityName: string, queryObject: any): Promise<any> => {
+    const repository = await this.database.getRepository(entityName);
+    return repository.findOneOrFail(queryObject);
+  };
+
   get = async (entityName: string, idOrQueryObject: string | any): Promise<any | any[]> => {
     const repository = await this.database.getRepository(entityName);
     return repository.findOne(idOrQueryObject);

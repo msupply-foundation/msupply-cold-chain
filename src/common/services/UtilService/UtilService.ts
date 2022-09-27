@@ -8,7 +8,7 @@ import { Seconds } from '~constants/Milliseconds';
 type NumberRange = [number, number];
 
 export class UtilService {
-  uuid = (): string => generateUUID.v1() as string;
+  uuid = (): string => generateUUID.v4() as string;
 
   now = (): UnixTimestamp => moment().unix();
 

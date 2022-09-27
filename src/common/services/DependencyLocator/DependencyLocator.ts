@@ -1,3 +1,4 @@
+import { BtUtilService } from 'msupply-ble-service';
 import {
   AcknowledgeBreachManager,
   CumulativeBreachManager,
@@ -18,13 +19,12 @@ import {
 
 import {
   Database,
-  BleService,
   DatabaseService,
   ExportService,
   FormatService,
   UtilService,
   PermissionService,
-  DevLoggerService,
+  FileLoggerService,
   MigrationService,
 } from '~services';
 
@@ -36,6 +36,7 @@ export type DependencyKey =
   | 'migrationService'
   | 'dependencyLocator'
   | 'bleService'
+  | 'btUtilService'
   | 'database'
   | 'permissionService'
   | 'loggerService'
@@ -60,12 +61,13 @@ export type DependencyKey =
 
 export type Dependency =
   | BleService
+  | BtUtilService
   | DatabaseService
   | ExportService
   | FormatService
   | UtilService
   | PermissionService
-  | DevLoggerService
+  | FileLoggerService
   | SensorManager
   | SettingManager
   | BreachConfigurationManager
@@ -84,9 +86,10 @@ export interface DependencyShape {
   migrationService?: MigrationService;
   dependencyLocator?: DependencyLocator;
   bleService?: BleService;
+  btUtilService?: BtUtilService;
   database?: Database;
   permissionService?: PermissionService;
-  loggerService?: DevLoggerService;
+  loggerService?: FileLoggerService;
   exportService?: ExportService;
   formatService?: FormatService;
   utilService?: UtilService;
@@ -126,6 +129,8 @@ export class DependencyLocator {
   register = (key: DependencyKey, dependency: Dependency): boolean => {
     if (key === 'bleService') {
       this.dependencies.bleService = dependency as BleService;
+    } else if (key === 'btUtilService') {
+      this.dependencies.btUtilService = dependency as BtUtilService;
     } else if (key === 'acknowledgeBreachManager') {
       this.dependencies.acknowledgeBreachManager = dependency as AcknowledgeBreachManager;
     } else if (key === 'breachConfigurationManager') {
@@ -149,7 +154,7 @@ export class DependencyLocator {
     } else if (key === 'logTableManager') {
       this.dependencies.logTableManager = dependency as LogTableManager;
     } else if (key === 'loggerService') {
-      this.dependencies.loggerService = dependency as DevLoggerService;
+      this.dependencies.loggerService = dependency as FileLoggerService;
     } else if (key === 'migrationService') {
       this.dependencies.migrationService = dependency as MigrationService;
     } else if (key === 'permissionService') {

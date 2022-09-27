@@ -50,12 +50,9 @@ public class MainApplication extends Application implements ReactApplication {
           List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
             new ModuleRegistryAdapter(mModuleRegistryProvider)
           );
-          
+
           packages.addAll(unimodules);
-          
-          // Adding Sussol built native package.
-          packages.add(new SussolBlePackage());
-          
+
           return packages;
         }
 

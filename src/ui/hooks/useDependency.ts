@@ -1,4 +1,5 @@
 import { useContext } from 'react';
+import { BtUtilService } from 'msupply-ble-service';
 import { Dependency, DependencyKey } from '~services/DependencyLocator/DependencyLocator';
 import {
   DatabaseService,
@@ -28,6 +29,11 @@ export const useFormatter = (): FormatService => {
 export const useUtils = (): UtilService => {
   const utils = useDependency('utilService');
   return utils as UtilService;
+};
+
+export const useBtUtils = (): BtUtilService => {
+  const btUtils = useDependency('btUtilService');
+  return btUtils as BtUtilService;
 };
 
 export const useDb = (): DatabaseService => {

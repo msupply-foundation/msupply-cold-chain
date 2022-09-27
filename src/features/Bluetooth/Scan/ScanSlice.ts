@@ -1,8 +1,8 @@
 import _ from 'lodash';
-import { Buffer } from 'buffer';
 import { eventChannel } from 'redux-saga';
 import { SagaIterator } from '@redux-saga/types';
 import { ActionReducerMapBuilder, createSlice } from '@reduxjs/toolkit';
+import { BleService, ScanCallback, BleError } from 'msupply-ble-service';
 import {
   take,
   getContext,
@@ -13,11 +13,9 @@ import {
   takeLeading,
   select,
 } from 'redux-saga/effects';
-import { BLUE_MAESTRO } from './../../../common/constants/Bluetooth';
 import { DEPENDENCY, REDUCER } from '../../../common/constants';
 import { RootState } from '../../../common/store/store';
 import { SensorSelector, SensorAction, SensorState } from '~features/Entities/Sensor/SensorSlice';
-import { BleService } from '../../../common/services/Bluetooth';
 
 interface ScanSlice {
   foundSensors: string[];
@@ -107,18 +105,14 @@ export function* stop(): SagaIterator {
   }
 }
 
-// TODO: Fix type
-export function callback(btService: BleService): any {
+export function callback(btService: BleService) {
   const throttledScan = _.throttle(btService.scanForSensors, 1000);
   return eventChannel(emitter => {
-    throttledScan((__, device) => {
-      // TODO: Make more generic.
-      if (device && device?.manufacturerData) {
-        const isBlueMaestroDevice =
-          Buffer.from(device.manufacturerData, 'base64').readInt16LE(0) ===
-          BLUE_MAESTRO.MANUFACTURER_ID;
-        if (isBlueMaestroDevice) emitter(device);
+    throttledScan((err: BleError | null, deviceDescriptor: string) => {
+      if (err) {
+        console.log(JSON.stringify(err));
       }
+      emitter(deviceDescriptor);
     });
     return () => {};
   });
@@ -134,13 +128,20 @@ function* start(): SagaIterator {
     const channel = yield call(callback, btService);
 
     while (true) {
-      const device = yield take(channel);
+      const deviceDescriptor = yield take(channel);
       const foundSensors = yield select(ScanSelector.foundSensors);
       const macs = yield select(SensorSelector.macs);
-      const alreadyFound = foundSensors.includes(device?.id) || macs.includes(device?.id);
+      /*  Legacy Blue Maestro devices which have already been paired should be "already found" */
+      const legacy = deviceDescriptor.split('|')[0].trim();
+
+      const alreadyFound =
+        foundSensors.includes(deviceDescriptor) ||
+        macs.includes(deviceDescriptor) ||
+        foundSensors.includes(legacy) ||
+        macs.includes(legacy);
 
       if (!alreadyFound) {
-        yield put(ScanAction.foundSensor(device?.id));
+        yield put(ScanAction.foundSensor(deviceDescriptor));
       }
     }
   } catch (e) {
