@@ -72,7 +72,7 @@
   "AVAILABLE_SENSORS": "Available sensors",
   "AUTO_APPLY_BREACH": "Temperature breach configurations",
   "AUTO_APPLY_BREACH_SUBTEXT": "Auto apply all active breach configurations to new sensors",
-  "DEFAULT_LOG_INTERVAL": "Logging interval",
+  "DEFAULT_LOG_INTERVAL": "Default interval",
   "DEFAULT_LOG_INTERVAL_SUBTEXT": "The default logging interval for all new sensors",
   "BLINKED_SENSOR_SUCCESS": "Sensor blink successful",
   "BLINKED_SENSOR_FAILED": "Sensor blink unsuccessful",
