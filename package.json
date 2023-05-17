@@ -25,10 +25,11 @@
     "start:emulator:nologging": "APP_ENV=emulator.nologging react-native start",
     "update-splash": "configure-splash-screen --status-bar-hidden -p \"android\" --image-resize-mode \"cover\" --background-color \"#282F46\" --image-path \"./assets/splash.png\"",
     "build": "cd ./android && ./gradlew assembleRelease",
+    "build:debug": "cd ./android && ./gradlew assembleDebug",
     "clean:build": "npm run clean:deep && npm run build"
   },
   "dependencies": {
-    "@bugsnag/react-native": "^7.9.4",
+    "@bugsnag/react-native": "^7.19.0",
     "@react-native-async-storage/async-storage": "^1.15.2",
     "@react-native-community/cli": "^5.0.1-alpha.2",
     "@react-native-community/datetimepicker": "^3.4.6",
@@ -77,7 +78,7 @@
     "path": "^0.12.7",
     "prop-types": "15.7.2",
     "react": "17.0.1",
-    "react-native": "0.64.0",
+    "react-native": "0.64.4",
     "react-native-ble-plx": "^2.0.2",
     "react-native-calendars": "^1.1257.0",
     "react-native-clean-project": "^3.6.4",
