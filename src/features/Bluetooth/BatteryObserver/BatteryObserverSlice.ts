@@ -18,6 +18,7 @@ import { SensorAction, SensorManager } from '~features/Entities';
 import { getDependency } from '~features/utils/saga';
 import { BleService } from 'msupply-ble-service';
 import { isSensorDownloading } from '../Download/DownloadSlice';
+import { RootState } from '~common/store';
 
 const INFO_RETRIES = 2;
 
@@ -34,6 +35,16 @@ export const BatteryObserverInitialState: BatteryObserverState = {
 interface BatteryUpdatePayload {
   sensorId: string;
 }
+
+export const isSensorUpdating =
+  (sensorId: string) =>
+  (state: RootState): boolean => {
+    try {
+      return state.bluetooth.batteryObserver.updatingById[sensorId] || false;
+    } catch {
+      return false;
+    }
+  };
 
 const reducers = {
   start: (draftState: BatteryObserverState) => {
