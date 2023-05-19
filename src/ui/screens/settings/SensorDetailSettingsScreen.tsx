@@ -47,7 +47,7 @@ export const SensorDetailSettingsScreen: FC<SensorDetailSettingsScreenProps> = (
   const dispatch = useDispatch();
   const { name, logInterval, macAddress, batteryLevel } = sensor ?? {};
   const { [macAddress]: isBlinking } = useSelector(BlinkSelector.isBlinking);
-
+  const getValue = logInterval;
   return (
     <SettingsList>
       <SettingsLoadingIndicatorRow
@@ -95,7 +95,12 @@ export const SensorDetailSettingsScreen: FC<SensorDetailSettingsScreenProps> = (
           metric={t('MINUTES')}
           onConfirm={({ value }: { value: number }) => {
             const newLogInterval = value * 60;
-            dispatch(ProgramAction.tryUpdateLogInterval(macAddress, newLogInterval));
+            //let use edit interval if its 5 min which is default value and 
+            if (getValue == 300){
+              if (getValue != newLogInterval) {
+                dispatch(ProgramAction.tryUpdateLogInterval(macAddress, newLogInterval));
+              }
+            }
           }}
           editDescription={t('EDIT_LOG_INTERVAL')}
         />

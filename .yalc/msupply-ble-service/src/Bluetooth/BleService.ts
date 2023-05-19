@@ -279,6 +279,7 @@ export class BleService {
     if (device?.deviceType === BT510) {
       await this.downloadLogs(macAddress);
     } else {
+      await this.downloadLogs(macAddress);
       await this.writeWithSingleResponse(
         device,
         BLUE_MAESTRO.COMMAND_CLEAR,
@@ -412,6 +413,11 @@ export class BleService {
     this.logger.debug(`${macAddress} Update log interval`);
     const device = await this.connectAndDiscoverServices(macAddress);
 
+    // Download logs before clearing logs either for BT510 or blue maestro
+    if (clearLogs) {
+      await this.downloadLogs(macAddress);
+    }
+    
     const command = device.deviceType.COMMAND_UPDATE_LOG_INTERVAL.replace(
       'LOG_INTERVAL',
       logInterval.toString()
@@ -423,12 +429,6 @@ export class BleService {
         !!info.match(/interval/i)
       );
     });
-    // Clear logs if we haven't just downloaded
-    // BlueMaestro automatically clears logs when log interval is set,
-    // But we have to download all the logs to clear them on BT510
-    if (clearLogs && device.deviceType === BT510) {
-      await this.downloadLogs(macAddress);
-    }
     if (result) return true;
     throw new Error(` command returned not OK result`);
   };

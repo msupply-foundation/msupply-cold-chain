@@ -207,7 +207,9 @@ class BleService {
 
       if ((device === null || device === void 0 ? void 0 : device.deviceType) === _constants.BT510) {
         await this.downloadLogs(macAddress);
-      } else {
+      } 
+      else {
+        await this.downloadLogs(macAddress);
         await this.writeWithSingleResponse(device, _constants.BLUE_MAESTRO.COMMAND_CLEAR, data => !!this.utils.stringFromBase64(data));
       }
     });
@@ -314,18 +316,16 @@ class BleService {
 
     _defineProperty(this, "updateLogInterval", async (macAddress, logInterval, clearLogs = true) => {
       const device = await this.connectAndDiscoverServices(macAddress);
+      //need to download the logs before deleting logs
+      if (clearLogs) {
+        await this.downloadLogs(macAddress);
+      }
+      // BlueMaestro automatically clears logs when log interval is set,
       const command = device.deviceType.COMMAND_UPDATE_LOG_INTERVAL.replace('LOG_INTERVAL', logInterval.toString());
       const result = await this.writeWithSingleResponse(device, command, data => {
         const info = this.utils.stringFromBase64(data);
         return device.deviceType === _constants.BT510 && JSON.parse(info).result === 'ok' || !!info.match(/interval/i);
-      }); // Clear logs if we haven't just downloaded
-      // BlueMaestro automatically clears logs when log interval is set,
-      // But we have to download all the logs to clear them on BT510
-
-      if (clearLogs && device.deviceType === _constants.BT510) {
-        await this.downloadLogs(macAddress);
-      }
-
+      }); 
       if (result) return true;
       throw new Error(` command returned not OK result`);
     });
