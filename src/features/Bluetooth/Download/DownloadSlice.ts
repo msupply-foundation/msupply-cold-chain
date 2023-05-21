@@ -159,7 +159,7 @@ function* tryDownloadForSensor({
       );
 
       yield call(downloadManager.saveLogs, sensorLogs);
-      if (numberOfLogsToSave) {
+      if (sensorLogs.length) {
         yield call(
           btService.updateLogIntervalWithRetries,
           macAddress,
