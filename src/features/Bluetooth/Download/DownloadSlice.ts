@@ -25,6 +25,7 @@ import {
 } from '~features';
 import { FileLoggerService } from '~common/services';
 import { RootState } from '~common/store';
+import { isSensorUpdating } from '../BatteryObserver/BatteryObserverSlice';
 
 const DOWNLOAD_RETRIES = 3;
 interface DownloadSliceState {
@@ -122,11 +123,14 @@ function* tryDownloadForSensor({
     const sensor = yield call(sensorManager.getSensorById, sensorId);
     const [canDownload] = yield call(sensorManager.getCanDownload, sensorId);
     const isDownloading = yield select(isSensorDownloading(sensorId));
+    const isUpdating = yield select(isSensorUpdating(sensorId));
+
+    const doDownload = canDownload && !isDownloading && !isUpdating;
 
     logger.debug(
-      `${sensorId} tryDownloadForSensor canDownload: ${canDownload} isDownloading: ${isDownloading}`
+      `${sensorId} tryDownloadForSensor canDownload: ${canDownload} isDownloading: ${isDownloading} isUpdating: ${isUpdating} doDownload: ${doDownload}`
     );
-    if (canDownload && !isDownloading) {
+    if (doDownload) {
       yield put(DownloadAction.downloadStart(sensorId));
 
       const { macAddress, logInterval, logDelay, programmedDate } = sensor;
@@ -155,7 +159,7 @@ function* tryDownloadForSensor({
       );
 
       yield call(downloadManager.saveLogs, sensorLogs);
-      if (numberOfLogsToSave) {
+      if (sensorLogs.length) {
         yield call(
           btService.updateLogIntervalWithRetries,
           macAddress,
