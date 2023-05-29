@@ -134,13 +134,7 @@ function* tryDownloadForSensor({
       yield put(DownloadAction.downloadStart(sensorId));
 
       const { macAddress, logInterval, logDelay, programmedDate } = sensor;
-      const logs = yield call(
-        btService.downloadLogsWithRetries,
-        macAddress,
-        DOWNLOAD_RETRIES,
-        null
-      );
-      logger.info(`${sensorId} logs downloaded: ${logs.length}`);
+
       const mostRecentLogTime = yield call(sensorManager.getMostRecentLogTime, sensorId);
 
       const numberOfLogsToSave = yield call(
@@ -148,8 +142,17 @@ function* tryDownloadForSensor({
         Math.max(mostRecentLogTime + logInterval, logDelay, programmedDate),
         logInterval
       );
-
+      if (!numberOfLogsToSave) return logger.debug(`${sensorId} No logs to save`);
       logger.debug(`${sensorId} ${numberOfLogsToSave} logs to save`);
+
+      const logs = yield call(
+        btService.downloadLogsWithRetries,
+        macAddress,
+        DOWNLOAD_RETRIES,
+        null
+      );
+      logger.info(`${sensorId} logs downloaded: ${logs.length}`);
+
       const sensorLogs = yield call(
         downloadManager.createLogs,
         logs,
