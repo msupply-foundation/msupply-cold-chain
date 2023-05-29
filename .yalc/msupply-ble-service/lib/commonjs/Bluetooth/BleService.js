@@ -38,7 +38,7 @@ const dummyLogger = {
     /*do nothing*/
   }
 };
-const RETRY_DELAY = 1000;
+const RETRY_DELAY = _constants.MILLISECONDS.ONE_SECOND;
 
 const sleep = delay => new Promise(resolve => setTimeout(resolve, delay));
 
@@ -80,9 +80,7 @@ class BleService {
       } else {
         this.logger.debug(`${deviceDescriptor} Connecting to other device`);
         const deviceIsConnected = await this.manager.isDeviceConnected(device.id);
-        this.logger.info('deviceIsConnected?', {
-          deviceIsConnected
-        });
+
         if (deviceIsConnected) {
           this.logger.debug(`${deviceDescriptor} Disconnecting`);
           await this.manager.cancelDeviceConnection(device.id);

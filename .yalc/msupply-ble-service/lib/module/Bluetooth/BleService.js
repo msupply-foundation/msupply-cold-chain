@@ -2,7 +2,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 import { BtUtilService } from '../BTUtilService';
 import { Buffer } from 'buffer';
-import { BLUE_MAESTRO, BT510 } from '../constants';
+import { BLUE_MAESTRO, BT510, MILLISECONDS } from '../constants';
 import { ScanMode, LogLevel } from './types';
 const dummyLogger = {
   trace: (_message, _details) => {
@@ -27,7 +27,7 @@ const dummyLogger = {
     /*do nothing*/
   }
 };
-const RETRY_DELAY = 1000;
+const RETRY_DELAY = MILLISECONDS.ONE_SECOND;
 
 const sleep = delay => new Promise(resolve => setTimeout(resolve, delay));
 
