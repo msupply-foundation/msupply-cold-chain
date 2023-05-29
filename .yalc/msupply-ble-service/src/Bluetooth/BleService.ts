@@ -408,8 +408,8 @@ export class BleService {
         return result;
       } catch (e) {
         this.logger.error(`${macAddress} Error downloading logs! ${e.message}`);
+        throw new Error(`downloadLogs ${e.message}`);
       }
-      return [] as SensorLog[];
     }
   };
 
