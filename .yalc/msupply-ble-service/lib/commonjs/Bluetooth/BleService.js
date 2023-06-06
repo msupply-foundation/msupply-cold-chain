@@ -38,7 +38,7 @@ const dummyLogger = {
     /*do nothing*/
   }
 };
-const RETRY_DELAY = 1000;
+const RETRY_DELAY = _constants.MILLISECONDS.ONE_SECOND;
 
 const sleep = delay => new Promise(resolve => setTimeout(resolve, delay));
 

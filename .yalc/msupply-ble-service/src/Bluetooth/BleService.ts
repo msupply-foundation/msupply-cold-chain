@@ -1,7 +1,7 @@
 import { BtUtilService } from '../BTUtilService';
 
 import { Buffer } from 'buffer';
-import { BLUE_MAESTRO, BT510 } from '../constants';
+import { BLUE_MAESTRO, BT510, MILLISECONDS } from '../constants';
 import { MacAddress } from '../types/common';
 import {
   Characteristic,
@@ -54,8 +54,10 @@ const dummyLogger: Logger = {
     /*do nothing*/
   },
 };
-const RETRY_DELAY = 1000;
+
+const RETRY_DELAY = MILLISECONDS.ONE_SECOND;
 const sleep = (delay: number) => new Promise(resolve => setTimeout(resolve, delay));
+
 export class BleService {
   manager: BluetoothManager;
   utils: BtUtilService;
