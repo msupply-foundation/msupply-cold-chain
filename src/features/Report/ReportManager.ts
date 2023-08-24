@@ -227,7 +227,6 @@ export class ReportManager {
   ): Promise<boolean> => {
     try {
       const path = await this.createAndWriteReport(sensor, username, comment, from, to);
-
       Mailer.mail(
         {
           subject: `Temperature log report for ${
@@ -236,11 +235,14 @@ export class ReportManager {
           body: comment,
           attachments: [{ path, type: 'csv' }],
         },
-        () => {}
+        error => {
+          throw error;
+        }
       );
 
       return true;
     } catch (e) {
+      console.error('emailReport failed with error:', e);
       return false;
     }
   };
