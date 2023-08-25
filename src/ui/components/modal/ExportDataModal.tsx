@@ -1,7 +1,7 @@
 import React, { useRef, useCallback, FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Input } from 'react-native-elements';
-import { useWindowDimensions, TextInput } from 'react-native';
+import { TextInput } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { t } from '~translations';
@@ -29,7 +29,6 @@ export const ExportDataModal: FC<ExportDataModalProps> = ({
   variant = 'export',
 }) => {
   const formatter = useFormatter();
-  const { width } = useWindowDimensions();
   const dispatch = useDispatch();
   const { from, to } = useSelector(DetailSelector.fromTo);
 
