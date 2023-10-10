@@ -33,8 +33,9 @@ export const SyncSettingsScreen: FC = () => {
         <SettingsTextInputRow
           label={t('SERVER')}
           subtext={t('SERVER_URL')}
-          onConfirm={({ inputValue }: { inputValue: string }) =>
-            dispatch(SettingAction.update('serverUrl', inputValue))
+          onConfirm={
+            ({ inputValue }: { inputValue: string }) =>
+              dispatch(SettingAction.update('serverUrl', inputValue.replace(/\/$/, ''))) // trim final / from the URL if present
           }
           value={serverUrl}
           editDescription={t('EDIT_SERVER_URL')}
