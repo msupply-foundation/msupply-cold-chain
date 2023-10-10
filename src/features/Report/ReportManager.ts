@@ -236,11 +236,14 @@ export class ReportManager {
           body: comment,
           attachments: [{ path, type: 'csv' }],
         },
-        () => {}
+        error => {
+          throw error;
+        }
       );
 
       return true;
     } catch (e) {
+      console.error('emailReport failed with error:', e);
       return false;
     }
   };

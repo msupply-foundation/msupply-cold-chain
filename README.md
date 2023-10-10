@@ -22,17 +22,36 @@ See [https://docs.msupply.foundation/en:cold_chain:start](https://docs.msupply.f
 - Install Android Studio and SDK tools: https://developer.android.com/studio.
 - Install SDKMAN for managing Java versions: https://sdkman.io/.
 
+The application is using java v1.8 you may need to target a specific java version in order to run the app locally.
+
 #### React Native
 
 - Install nvm for managing Node versions: https://github.com/nvm-sh/nvm.
 - Install yarn for managing Node packages: https://yarnpkg.com/lang/en/.
 - Install React Native: https://reactnative.dev/docs/environment-setup. Follow the steps listed under "Building Projects with Native Code" and set Target OS as "Android".
 
+The node version should be >= 12.8.4.
+
 ### Installing
 
 - Clone the repo: `git clone https://github.com/openmsupply/mobile.git`.
 - Setup local node environment as specified in `.nvmrc`: `nvm install && nvm use`.
 - Install/update app dependencies: `yarn install`.
+
+### Building
+
+Simply run `yarn build` to build the app. 
+If you have the following error:
+`A problem occurred starting process 'command 'node''`
+
+try editing `android/app/build.gradle` and adding the `nodeExecutableAndArgs` value, specific to your environment:
+
+```
+project.ext.react = [
+    nodeExecutableAndArgs: ["/usr/local/bin/node"]
+    ...other entries
+]
+```
 
 ## Contributors
 

@@ -10,12 +10,9 @@ type SettingStateShape = SettingMap;
 
 const initialState: SettingStateShape = {
   defaultLogInterval: 0,
-  authUrl: '',
+  serverUrl: '',
   authUsername: '',
   authPassword: '',
-  sensorUrl: '',
-  temperatureLogUrl: '',
-  temperatureBreachUrl: '',
   lastSync: 0,
   isPassiveSyncEnabled: false,
   isIntegrating: false,
@@ -73,6 +70,7 @@ const { actions: SettingAction, reducer: SettingReducer } = createSlice({
 const getSettings = (rootState: RootState): SettingStateShape => {
   const { entities } = rootState;
   const { setting } = entities;
+
   return setting;
 };
 
@@ -81,9 +79,9 @@ const getDefaultLogInterval = (rootState: RootState): number => {
   return defaultLogInterval;
 };
 
-const getAuthUrl = (rootState: RootState): string => {
-  const { authUrl } = getSettings(rootState);
-  return authUrl;
+const getServerUrl = (rootState: RootState): string => {
+  const { serverUrl } = getSettings(rootState);
+  return serverUrl;
 };
 
 const getAuthUsername = (rootState: RootState): string | null => {
@@ -96,30 +94,12 @@ const getAuthPassword = (rootState: RootState): string => {
   return authPassword;
 };
 
-const getSensorUrl = (rootState: RootState): string => {
-  const { sensorUrl } = getSettings(rootState);
-  return sensorUrl;
-};
-
-const getTemperatureLogUrl = (rootState: RootState): string => {
-  const { temperatureLogUrl } = getSettings(rootState);
-  return temperatureLogUrl;
-};
-
-const getTemperatureBreachUrl = (rootState: RootState): string => {
-  const { temperatureBreachUrl } = getSettings(rootState);
-  return temperatureBreachUrl;
-};
-
 const SettingSelector = {
   getSettings,
   getDefaultLogInterval,
-  getAuthUrl,
+  getServerUrl,
   getAuthUsername,
   getAuthPassword,
-  getSensorUrl,
-  getTemperatureLogUrl,
-  getTemperatureBreachUrl,
 };
 
 function* fetchAll(): SagaIterator {
