@@ -84,6 +84,7 @@ project.ext.react = [
     entryFile: "index.ts",
     enableHermes: true,  // clean and rebuild if changing
     extraPackagerArgs: ['--minify=false'],
+    // nodeExecutableAndArgs: ["/usr/local/bin/node"]
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
