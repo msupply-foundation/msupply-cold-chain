@@ -90,7 +90,7 @@
   "BETWEEN": "between",
   "SERVER": "Server",
   "SERVER_URL": "Server URL",
-  "EDIT_SERVER_URL": "Edit server URL",
+  "EDIT_SERVER_URL": "Edit server URL (Enter just the server URL and port, if necessary. e.g. https://demo.msupply.org:8080)",
   "CREDENTIALS": "Store credentials",
   "USERNAME": "Username",
   "EDIT_USERNAME": "Edit username",

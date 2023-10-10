@@ -27,10 +27,10 @@ import {
 import { FailurePayload, PrepareActionReturn } from '~common/types/common';
 
 export const ENDPOINT = {
-  LOGIN: 'login',
-  SENSOR: 'sensor',
-  TEMPERATURE_LOG: 'temperature-log',
-  TEMPERATURE_BREACH: 'temperature=-breach',
+  LOGIN: 'coldchain/v1/login',
+  SENSOR: 'coldchain/v1/sensor',
+  TEMPERATURE_LOG: 'coldchain/v1/temperature-log',
+  TEMPERATURE_BREACH: 'coldchain/v1/temperature-breach',
 };
 
 const initialState: SyncSliceStateShape = {

@@ -101,7 +101,10 @@ class SyncOutManager {
   };
 
   put = async (url: string, data: string): Promise<AxiosResponse<SyncResponse>> =>
-    this.axios.put<SyncResponse>(url, data, { withCredentials: true });
+    this.axios.put<SyncResponse>(url, data, {
+      withCredentials: true,
+      headers: { 'Content-Type': 'application/json' },
+    });
 
   public login = async (
     loginUrl: string,
@@ -110,6 +113,7 @@ class SyncOutManager {
   ): Promise<AxiosResponse<''>> =>
     this.axios.post(loginUrl, this.getAuthenticationBody(username, password), {
       withCredentials: true,
+      headers: { 'Content-Type': 'application/json' },
     });
 
   public syncSensors = async (
