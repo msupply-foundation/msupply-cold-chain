@@ -38,6 +38,21 @@ The node version should be >= 12.8.4.
 - Setup local node environment as specified in `.nvmrc`: `nvm install && nvm use`.
 - Install/update app dependencies: `yarn install`.
 
+### Building
+
+Simply run `yarn build` to build the app. 
+If you have the following error:
+`A problem occurred starting process 'command 'node''`
+
+try editing `android/app/build.gradle` and adding the `nodeExecutableAndArgs` value, specific to your environment:
+
+```
+project.ext.react = [
+    nodeExecutableAndArgs: ["/usr/local/bin/node"]
+    ...other entries
+]
+```
+
 ## Contributors
 
 We welcome contributions from external developers!
