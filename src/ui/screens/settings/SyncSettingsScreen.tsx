@@ -11,17 +11,12 @@ import {
 import { SettingAction, SettingSelector, SyncAction, SyncSelector } from '~features';
 import { t } from '~common/translations';
 import { useOnMount } from '~hooks';
+import { ENDPOINT } from '~features/Sync/SyncSlice';
 
 export const SyncSettingsScreen: FC = () => {
-  const {
-    authUrl,
-    authUsername,
-    authPassword,
-    sensorUrl,
-    temperatureLogUrl,
-    temperatureBreachUrl,
-    isIntegrating,
-  } = useSelector(SettingSelector.getSettings);
+  const { serverUrl, authUsername, authPassword, isIntegrating } = useSelector(
+    SettingSelector.getSettings
+  );
 
   const syncQueueLength = useSelector(SyncSelector.getSyncQueueCount);
 
@@ -36,43 +31,14 @@ export const SyncSettingsScreen: FC = () => {
     <SettingsList>
       <SettingsGroup title="Server configuration">
         <SettingsTextInputRow
-          label={t('LOGIN')}
-          subtext={t('LOGIN_URL')}
-          onConfirm={({ inputValue }: { inputValue: string }) =>
-            dispatch(SettingAction.update('authUrl', inputValue))
+          label={t('SERVER')}
+          subtext={t('SERVER_URL')}
+          onConfirm={
+            ({ inputValue }: { inputValue: string }) =>
+              dispatch(SettingAction.update('serverUrl', inputValue.replace(/\/$/, ''))) // trim final / from the URL if present
           }
-          value={authUrl}
-          editDescription={t('EDIT_LOGIN_URL')}
-          validation={Yup.string().url()}
-        />
-        <SettingsTextInputRow
-          label={t('SENSORS')}
-          subtext={t('SENSOR_URL')}
-          onConfirm={({ inputValue }: { inputValue: string }) =>
-            dispatch(SettingAction.update('sensorUrl', inputValue))
-          }
-          value={sensorUrl}
-          editDescription={t('EDIT_SENSOR_URL')}
-          validation={Yup.string().url()}
-        />
-        <SettingsTextInputRow
-          label={t('TEMPERATURES')}
-          subtext={t('TEMPERATURE_URL')}
-          onConfirm={({ inputValue }: { inputValue: string }) =>
-            dispatch(SettingAction.update('temperatureLogUrl', inputValue))
-          }
-          value={temperatureLogUrl}
-          editDescription={t('EDIT_TEMPERATURE_URL')}
-          validation={Yup.string().url()}
-        />
-        <SettingsTextInputRow
-          label={t('TEMPERATURE_BREACHES')}
-          subtext={t('TEMPERATURE_BREACHES_URL')}
-          onConfirm={({ inputValue }: { inputValue: string }) =>
-            dispatch(SettingAction.update('temperatureBreachUrl', inputValue))
-          }
-          value={temperatureBreachUrl}
-          editDescription={t('EDIT_TEMPERATURE_BREACHES_URL')}
+          value={serverUrl}
+          editDescription={t('EDIT_SERVER_URL')}
           validation={Yup.string().url()}
         />
       </SettingsGroup>
@@ -119,7 +85,13 @@ export const SyncSettingsScreen: FC = () => {
           label={t('TEST_CONNECTION')}
           subtext={t('TEST_CONNECTION_SUBTEXT')}
           onPress={() =>
-            dispatch(SyncAction.tryTestConnection(authUrl, authUsername, authPassword))
+            dispatch(
+              SyncAction.tryTestConnection(
+                `${serverUrl}/${ENDPOINT.LOGIN}`,
+                authUsername,
+                authPassword
+              )
+            )
           }
         />
         <SettingsGroup title="Info">
