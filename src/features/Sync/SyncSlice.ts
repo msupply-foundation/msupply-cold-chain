@@ -22,10 +22,16 @@ import {
   SyncSensorsActionPayload,
   SyncTemperatureLogsActionPayload,
   SyncTemperatureBreachesActionPayload,
-  FailurePayload,
   SyncSuccessPayload,
 } from './types';
-import { PrepareActionReturn } from '~common/types/common';
+import { FailurePayload, PrepareActionReturn } from '~common/types/common';
+
+export const ENDPOINT = {
+  LOGIN: 'login',
+  SENSOR: 'sensor',
+  TEMPERATURE_LOG: 'temperature-log',
+  TEMPERATURE_BREACH: 'temperature=-breach',
+};
 
 const initialState: SyncSliceStateShape = {
   isSyncing: false,
@@ -160,7 +166,7 @@ function* authenticate({
     yield call(syncOutManager.login, loginUrl, username, password);
     yield put(SyncAction.authenticateSuccess());
   } catch (e) {
-    yield put(SyncAction.authenticateFailure(e.message));
+    yield put(SyncAction.authenticateFailure((e as Error).message));
   }
 }
 
@@ -170,7 +176,7 @@ function* syncSensorsSuccess(): SagaIterator {
   try {
     yield put(SettingAction.update('lastSync', utils.now()));
   } catch (e) {
-    yield put(SyncAction.syncSensorsFailure(e.message));
+    yield put(SyncAction.syncSensorsFailure((e as Error).message));
   }
 }
 
@@ -192,7 +198,7 @@ function* syncSensors({
     } while (iter > 0);
     yield put(SyncAction.syncSensorsSuccess(totalRecordsToSend));
   } catch (e) {
-    yield put(SyncAction.syncSensorsFailure(e.message));
+    yield put(SyncAction.syncSensorsFailure((e as Error).message));
   }
 }
 
@@ -202,7 +208,7 @@ function* syncTemperatureLogsSuccess(): SagaIterator {
   try {
     yield put(SettingAction.update('lastSync', utils.now()));
   } catch (e) {
-    yield put(SyncAction.syncTemperatureLogsFailure(e.message));
+    yield put(SyncAction.syncTemperatureLogsFailure((e as Error).message));
   }
 }
 
@@ -224,7 +230,7 @@ function* syncTemperatureLogs({
     } while (iter > 0);
     yield put(SyncAction.syncTemperatureLogsSuccess(totalRecordsToSend));
   } catch (e) {
-    yield put(SyncAction.syncTemperatureLogsFailure(e.message));
+    yield put(SyncAction.syncTemperatureLogsFailure((e as Error).message));
   }
 }
 
@@ -234,7 +240,7 @@ function* syncTemperatureBreachesSuccess(): SagaIterator {
   try {
     yield put(SettingAction.update('lastSync', utils.now()));
   } catch (error) {
-    yield put(SyncAction.syncTemperatureBreachesFailure(error.message));
+    yield put(SyncAction.syncTemperatureBreachesFailure((error as Error).message));
   }
 }
 
@@ -256,32 +262,25 @@ function* syncTemperatureBreaches({
     } while (iter > 0);
     yield put(SyncAction.syncTemperatureBreachesSuccess(totalRecordsToSend));
   } catch (e) {
-    yield put(SyncAction.syncTemperatureBreachesFailure(e.message));
+    yield put(SyncAction.syncTemperatureBreachesFailure((e as Error).message));
   }
 }
 
 function* syncAll({
-  payload: {
-    authUrl,
-    sensorUrl,
-    temperatureLogUrl,
-    temperatureBreachUrl,
-    authUsername,
-    authPassword,
-  },
+  payload: { serverUrl, authUsername, authPassword },
 }: PayloadAction<SyncAllPayload>): SagaIterator {
   yield put(SyncAction.updateIsSyncing(true));
-  yield put(SyncAction.authenticate(authUrl, authUsername, authPassword));
+  yield put(SyncAction.authenticate(`${serverUrl}/${ENDPOINT.LOGIN}`, authUsername, authPassword));
   const authenticateResult: PayloadAction<null> = yield take([
     SyncAction.authenticateSuccess,
     SyncAction.authenticateFailure,
   ]);
   if (authenticateResult.type === SyncAction.authenticateSuccess.type) {
-    yield put(SyncAction.syncSensors(sensorUrl));
+    yield put(SyncAction.syncSensors(`${serverUrl}/${ENDPOINT.SENSOR}`));
     yield take([SyncAction.syncSensorsSuccess, SyncAction.syncSensorsFailure]);
-    yield put(SyncAction.syncTemperatureLogs(temperatureLogUrl));
+    yield put(SyncAction.syncTemperatureLogs(`${serverUrl}/${ENDPOINT.TEMPERATURE_LOG}`));
     yield take([SyncAction.syncTemperatureLogsSuccess, SyncAction.syncTemperatureLogsFailure]);
-    yield put(SyncAction.syncTemperatureBreaches(temperatureBreachUrl));
+    yield put(SyncAction.syncTemperatureBreaches(`${serverUrl}/${ENDPOINT.TEMPERATURE_BREACH}`));
     yield take([
       SyncAction.syncTemperatureBreachesSuccess,
       SyncAction.syncTemperatureBreachesFailure,
@@ -326,7 +325,7 @@ function* tryTestConnection({
     yield call(syncOutManager.login, loginUrl, username, password);
     yield put(SyncAction.testConnectionSuccess());
   } catch (e) {
-    yield put(SyncAction.testConnectionFailure(e.message));
+    yield put(SyncAction.testConnectionFailure((e as Error).message));
   }
 }
 
@@ -347,7 +346,7 @@ function* tryCountSyncQueue(): SagaIterator {
     const syncCount: number = yield call(syncQueue.length);
     yield put(SyncAction.countSyncQueueSuccess(syncCount));
   } catch (e) {
-    yield put(SyncAction.countSyncQueueFailure(e.message));
+    yield put(SyncAction.countSyncQueueFailure((e as Error).message));
   }
 }
 
