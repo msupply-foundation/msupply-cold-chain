@@ -9,12 +9,9 @@ interface Setting {
 }
 
 const SettingKeys = [
-  'authUrl',
+  'serverUrl',
   'authUsername',
   'authPassword',
-  'sensorUrl',
-  'temperatureLogUrl',
-  'temperatureBreachUrl',
   'lastSync',
   'isPassiveSyncEnabled',
   'isIntegrating',
@@ -24,12 +21,9 @@ const SettingKeys = [
 export type SettingKey = typeof SettingKeys[number];
 
 export enum SettingType {
-  authUrl = 'string',
+  serverUrl = 'string',
   authUsername = 'string',
   authPassword = 'string',
-  sensorUrl = 'string',
-  temperatureLogUrl = 'string',
-  temperatureBreachUrl = 'string',
   lastSync = 'number',
   defaultLogInterval = 'number',
   isPassiveSyncEnabled = 'bool',
@@ -37,12 +31,9 @@ export enum SettingType {
 }
 
 export interface SettingMap {
-  authUrl: string;
+  serverUrl: string;
   authUsername: string;
   authPassword: string;
-  sensorUrl: string;
-  temperatureLogUrl: string;
-  temperatureBreachUrl: string;
   lastSync: number;
   isPassiveSyncEnabled: boolean;
   isIntegrating: boolean;
@@ -99,13 +90,11 @@ export class SettingManager {
       this.getSetting(key as SettingKey).then(result => ({ key, value: result }))
     );
     const settings = await Promise.all(getSettingPromises);
+
     return settings.reduce((acc, value) => ({ ...acc, [value.key]: value.value }), {
-      authUrl: '',
+      serverUrl: '',
       authUsername: '',
       authPassword: '',
-      sensorUrl: '',
-      temperatureLogUrl: '',
-      temperatureBreachUrl: '',
       lastSync: 0,
       isPassiveSyncEnabled: false,
       isIntegrating: false,
@@ -119,25 +108,13 @@ export class SettingManager {
   };
 
   getSyncSettings = async (): Promise<SyncSettingMap> => {
-    const {
-      authUrl,
-      authUsername,
-      authPassword,
-      sensorUrl,
-      temperatureLogUrl,
-      temperatureBreachUrl,
-      lastSync,
-      isPassiveSyncEnabled,
-      isIntegrating,
-    } = await this.getSettings();
+    const { serverUrl, authUsername, authPassword, lastSync, isPassiveSyncEnabled, isIntegrating } =
+      await this.getSettings();
 
     return {
-      authUrl,
+      serverUrl,
       authUsername,
       authPassword,
-      sensorUrl,
-      temperatureLogUrl,
-      temperatureBreachUrl,
       lastSync,
       isPassiveSyncEnabled,
       isIntegrating,
