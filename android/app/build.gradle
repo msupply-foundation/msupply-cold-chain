@@ -83,7 +83,8 @@ import groovy.json.JsonSlurper
 project.ext.react = [
     entryFile: "index.ts",
     enableHermes: true,  // clean and rebuild if changing
-    extraPackagerArgs: ['--minify=false']
+    extraPackagerArgs: ['--minify=false'],
+    nodeExecutableAndArgs: ["/usr/local/bin/node"]
     
 ]
 

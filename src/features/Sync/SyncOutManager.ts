@@ -5,7 +5,6 @@ import { Sensor, TemperatureBreach } from '~common/services/Database/entities';
 
 import {
   SensorSyncOut,
-  Syncable,
   SyncOut,
   SyncResponse,
   TemperatureBreachSyncOut,
