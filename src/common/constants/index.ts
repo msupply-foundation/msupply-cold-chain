@@ -25,3 +25,4 @@ export { ENVIRONMENT } from './Environment';
 export { SETTINGS_STACK } from './Navigation';
 
 export const RESTART_INTERVAL_IN_SECONDS = 60 * 60 * 24;
+export { TIMEOUT } from './Timeout';
