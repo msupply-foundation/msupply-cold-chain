@@ -10,13 +10,14 @@ import {
 } from '~components/settings';
 import { SettingAction, SettingSelector, SyncAction, SyncSelector } from '~features';
 import { t } from '~common/translations';
-import { useOnMount } from '~hooks';
+import { useFormatter, useOnMount } from '~hooks';
 import { ENDPOINT } from '~features/Sync/SyncSlice';
 
+const SYNC_COUNT_UPDATE_INTERVAL = 1000;
+
 export const SyncSettingsScreen: FC = () => {
-  const { serverUrl, authUsername, authPassword, isIntegrating } = useSelector(
-    SettingSelector.getSettings
-  );
+  const { serverUrl, authUsername, authPassword, isIntegrating, lastSync, lastSyncStart } =
+    useSelector(SettingSelector.getSettings);
 
   const syncQueueLength = useSelector(SyncSelector.getSyncQueueCount);
   const isSyncing = useSelector(SyncSelector.getIsSyncing);
@@ -26,15 +27,16 @@ export const SyncSettingsScreen: FC = () => {
       return 'Disabled';
     }
     if (isSyncing) {
-      return 'Syncing in progress';
+      return `Syncing in progress. Started ${formatter.dateTime(lastSyncStart)}`;
     }
-    return 'Ready to sync';
+    return `Idle. Last successful sync finished ${formatter.dateTime(lastSync)}`;
   };
 
   const dispatch = useDispatch();
+  const formatter = useFormatter();
 
   useOnMount([
-    () => dispatch(SyncAction.tryCountSyncQueue()),
+    () => setInterval(() => dispatch(SyncAction.tryCountSyncQueue()), SYNC_COUNT_UPDATE_INTERVAL),
     () => dispatch(SettingAction.fetchAll()),
   ]);
 
@@ -111,7 +113,7 @@ export const SyncSettingsScreen: FC = () => {
             subtext={String(syncQueueLength)}
             isDisabled
           />
-          <SettingsItem label="Sync" subtext={syncStatus()} isDisabled />
+          <SettingsItem label="Status" subtext={syncStatus()} isDisabled />
         </SettingsGroup>
       </SettingsGroup>
     </SettingsList>

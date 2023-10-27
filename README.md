@@ -23,6 +23,11 @@ See [https://docs.msupply.foundation/en:cold_chain:start](https://docs.msupply.f
 - Install SDKMAN for managing Java versions: https://sdkman.io/.
 
 The application is using java v1.8 you may need to target a specific java version in order to run the app locally.
+e.g.
+
+```
+export JDK_HOME=~/.jenv/versions/oracle64-1.8.0.192 && JAVA_HOME=~/.jenv/versions/oracle64-1.8.0.192 && yarn start
+```
 
 #### React Native
 
