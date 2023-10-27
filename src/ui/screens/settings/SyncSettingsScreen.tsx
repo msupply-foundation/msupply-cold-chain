@@ -21,6 +21,16 @@ export const SyncSettingsScreen: FC = () => {
   const syncQueueLength = useSelector(SyncSelector.getSyncQueueCount);
   const isSyncing = useSelector(SyncSelector.getIsSyncing);
 
+  const syncStatus = () => {
+    if (!isIntegrating) {
+      return 'Disabled';
+    }
+    if (isSyncing) {
+      return 'Syncing in progress';
+    }
+    return 'Ready to sync';
+  };
+
   const dispatch = useDispatch();
 
   useOnMount([
@@ -98,14 +108,10 @@ export const SyncSettingsScreen: FC = () => {
         <SettingsGroup title="Info">
           <SettingsItem
             label="Number of records to send"
-            subtext={syncQueueLength > 0 ? String(syncQueueLength) : 'No records to send'}
+            subtext={String(syncQueueLength)}
             isDisabled
           />
-          <SettingsItem
-            label="Sync"
-            subtext={isSyncing ? 'Syncing...' : 'Waiting to Sync...'}
-            isDisabled
-          />
+          <SettingsItem label="Sync" subtext={syncStatus()} isDisabled />
         </SettingsGroup>
       </SettingsGroup>
     </SettingsList>
