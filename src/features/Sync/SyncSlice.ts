@@ -155,6 +155,10 @@ const SyncSelector = {
     const { syncQueueLength } = SyncSelector.getSliceState(state);
     return syncQueueLength;
   },
+  getIsSyncing: (state: RootState): boolean => {
+    const { isSyncing } = SyncSelector.getSliceState(state);
+    return isSyncing;
+  },
 };
 
 function* authenticate({
@@ -276,27 +280,37 @@ function* syncAll({
     SyncAction.authenticateFailure,
   ]);
   if (authenticateResult.type === SyncAction.authenticateSuccess.type) {
-    yield put(SyncAction.syncSensors(`${serverUrl}/${ENDPOINT.SENSOR}`));
-    yield take([SyncAction.syncSensorsSuccess, SyncAction.syncSensorsFailure]);
-    yield put(SyncAction.syncTemperatureLogs(`${serverUrl}/${ENDPOINT.TEMPERATURE_LOG}`));
-    yield take([SyncAction.syncTemperatureLogsSuccess, SyncAction.syncTemperatureLogsFailure]);
-    yield put(SyncAction.syncTemperatureBreaches(`${serverUrl}/${ENDPOINT.TEMPERATURE_BREACH}`));
-    yield take([
-      SyncAction.syncTemperatureBreachesSuccess,
-      SyncAction.syncTemperatureBreachesFailure,
-    ]);
+    try {
+      yield put(SyncAction.syncSensors(`${serverUrl}/${ENDPOINT.SENSOR}`));
+      yield take([SyncAction.syncSensorsSuccess, SyncAction.syncSensorsFailure]);
+      yield put(SyncAction.syncTemperatureLogs(`${serverUrl}/${ENDPOINT.TEMPERATURE_LOG}`));
+      yield take([SyncAction.syncTemperatureLogsSuccess, SyncAction.syncTemperatureLogsFailure]);
+      yield put(SyncAction.syncTemperatureBreaches(`${serverUrl}/${ENDPOINT.TEMPERATURE_BREACH}`));
+      yield take([
+        SyncAction.syncTemperatureBreachesSuccess,
+        SyncAction.syncTemperatureBreachesFailure,
+      ]);
+    } catch (e) {
+      console.error('syncAll error', e);
+    }
   } else {
+    console.warn('Authentication failed, Skipping sync.');
   }
   yield put(SyncAction.updateIsSyncing(false));
 }
 
 function* startSyncScheduler(): SagaIterator {
   while (true) {
-    const settingManager: SettingManager = yield call(getDependency, 'settingManager');
-    const syncSettings: SyncSettingMap = yield call(settingManager.getSyncSettings);
+    console.log('startSyncScheduler');
+    try {
+      const settingManager: SettingManager = yield call(getDependency, 'settingManager');
+      const syncSettings: SyncSettingMap = yield call(settingManager.getSyncSettings);
 
-    yield put(SyncAction.syncAll(syncSettings));
-    yield delay(MILLISECONDS.ONE_MINUTE);
+      yield put(SyncAction.syncAll(syncSettings));
+      yield delay(MILLISECONDS.ONE_MINUTE);
+    } catch (e) {
+      console.error('startSyncScheduler Error', e);
+    }
   }
 }
 
@@ -320,7 +334,7 @@ function* tryTestConnection({
   payload: { loginUrl, username, password },
 }: PayloadAction<AuthenticateActionPayload>): SagaIterator {
   const syncOutManager: SyncOutManager = yield call(getDependency, 'syncOutManager');
-
+  ToastAndroid.show('Testing Connection', ToastAndroid.SHORT);
   try {
     yield call(syncOutManager.login, loginUrl, username, password);
     yield put(SyncAction.testConnectionSuccess());
