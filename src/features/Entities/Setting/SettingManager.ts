@@ -13,6 +13,7 @@ const SettingKeys = [
   'authUsername',
   'authPassword',
   'lastSync',
+  'lastSyncStart',
   'isPassiveSyncEnabled',
   'isIntegrating',
   'defaultLogInterval',
@@ -25,6 +26,7 @@ export enum SettingType {
   authUsername = 'string',
   authPassword = 'string',
   lastSync = 'number',
+  lastSyncStart = 'number',
   defaultLogInterval = 'number',
   isPassiveSyncEnabled = 'bool',
   isIntegrating = 'bool',
@@ -35,6 +37,7 @@ export interface SettingMap {
   authUsername: string;
   authPassword: string;
   lastSync: number;
+  lastSyncStart: number;
   isPassiveSyncEnabled: boolean;
   isIntegrating: boolean;
   defaultLogInterval: number;
@@ -96,6 +99,7 @@ export class SettingManager {
       authUsername: '',
       authPassword: '',
       lastSync: 0,
+      lastSyncStart: 0,
       isPassiveSyncEnabled: false,
       isIntegrating: false,
       defaultLogInterval: 300,
@@ -108,14 +112,22 @@ export class SettingManager {
   };
 
   getSyncSettings = async (): Promise<SyncSettingMap> => {
-    const { serverUrl, authUsername, authPassword, lastSync, isPassiveSyncEnabled, isIntegrating } =
-      await this.getSettings();
+    const {
+      serverUrl,
+      authUsername,
+      authPassword,
+      lastSync,
+      lastSyncStart,
+      isPassiveSyncEnabled,
+      isIntegrating,
+    } = await this.getSettings();
 
     return {
       serverUrl,
       authUsername,
       authPassword,
       lastSync,
+      lastSyncStart,
       isPassiveSyncEnabled,
       isIntegrating,
     };

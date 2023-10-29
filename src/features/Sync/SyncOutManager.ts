@@ -10,6 +10,7 @@ import {
   TemperatureBreachSyncOut,
   TemperatureLogSyncOut,
 } from '~features/Sync/types';
+import { TIMEOUT } from '~constants';
 
 class SyncOutManager {
   axios: typeof Axios;
@@ -100,22 +101,35 @@ class SyncOutManager {
     });
   };
 
-  put = async (url: string, data: string): Promise<AxiosResponse<SyncResponse>> =>
-    this.axios.put<SyncResponse>(url, data, {
+  put = async (url: string, data: string): Promise<AxiosResponse<SyncResponse>> => {
+    const source = this.axios.CancelToken.source();
+    setTimeout(() => {
+      source.cancel('Connection timed out.');
+    }, TIMEOUT.HTTP_TIMEOUT);
+    return this.axios.put<SyncResponse>(url, data, {
+      cancelToken: source.token,
+      timeout: TIMEOUT.HTTP_TIMEOUT,
       withCredentials: true,
       headers: { 'Content-Type': 'application/json' },
     });
+  };
 
   public login = async (
     loginUrl: string,
     username: string,
     password: string
-  ): Promise<AxiosResponse<''>> =>
-    this.axios.post(loginUrl, this.getAuthenticationBody(username, password), {
+  ): Promise<AxiosResponse<''>> => {
+    const source = this.axios.CancelToken.source();
+    setTimeout(() => {
+      source.cancel('Login connection timed out.');
+    }, TIMEOUT.LOGIN_TIMEOUT);
+    return this.axios.post(loginUrl, this.getAuthenticationBody(username, password), {
+      cancelToken: source.token,
+      timeout: TIMEOUT.LOGIN_TIMEOUT,
       withCredentials: true,
       headers: { 'Content-Type': 'application/json' },
     });
-
+  };
   public syncSensors = async (
     sensorUrl: string,
     logs: Sensor[]

@@ -14,6 +14,7 @@ const initialState: SettingStateShape = {
   authUsername: '',
   authPassword: '',
   lastSync: 0,
+  lastSyncStart: 0,
   isPassiveSyncEnabled: false,
   isIntegrating: false,
 };

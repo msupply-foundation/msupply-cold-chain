@@ -94,7 +94,7 @@ export interface FetchAllSuccessActionPayload {
 
 export type SyncAllPayload = Omit<
   SyncSettingMap,
-  'lastSync' | 'isPassiveSyncEnabled' | 'isIntegrating'
+  'lastSync' | 'lastSyncStart' | 'isPassiveSyncEnabled' | 'isIntegrating'
 >;
 
 export interface SyncingErrorActionPayload {
