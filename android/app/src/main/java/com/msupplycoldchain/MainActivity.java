@@ -19,21 +19,17 @@ public class MainActivity extends ReactActivity {
    * Returns the name of the main component registered from JavaScript. This is used to schedule
    * rendering of the component.
    */
-
-  String packageName = "mSupplyColdChain";
-  PowerManager.WakeLock wakeLock;
-
   @Override
   protected String getMainComponentName() {
-    return packageName;
+    return "mSupplyColdChain";
   }
 
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-    this.wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, packageName + "::MyWakelockTag");
-    this.wakeLock.acquire();
+//    PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+//    this.wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, packageName + "::MyWakelockTag");
+//    this.wakeLock.acquire();
 
     super.onCreate(null);
     Bugsnag.start(this); 
@@ -42,14 +38,14 @@ public class MainActivity extends ReactActivity {
     SplashScreen.show(this, SplashScreenImageResizeMode.COVER, ReactRootView.class, false);
   }
 
-  @Override
-  protected void onDestroy() {
-    try {
-      this.wakeLock.release();
-    }
-    catch(Exception e) {
-
-    }
-    super.onDestroy();
-  }
+//  @Override
+//  protected void onDestroy() {
+//    try {
+//      this.wakeLock.release();
+//    }
+//    catch(Exception e) {
+//
+//    }
+//    super.onDestroy();
+//  }
 }
