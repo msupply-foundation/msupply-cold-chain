@@ -27,25 +27,9 @@ public class MainActivity extends ReactActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-//    PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-//    this.wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, packageName + "::MyWakelockTag");
-//    this.wakeLock.acquire();
-
     super.onCreate(null);
     Bugsnag.start(this); 
 
     // SplashScreen.show(...) has to be called after super.onCreate(...)
     SplashScreen.show(this, SplashScreenImageResizeMode.COVER, ReactRootView.class, false);
   }
-
-//  @Override
-//  protected void onDestroy() {
-//    try {
-//      this.wakeLock.release();
-//    }
-//    catch(Exception e) {
-//
-//    }
-//    super.onDestroy();
-//  }
-}
