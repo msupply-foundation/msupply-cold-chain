@@ -23,11 +23,10 @@ export const migration0_3_0 = {
 
     const newServerURL = oldAuthURL.replace('/coldchain/v1/login', '');
 
-    const result = await dbService.upsert(ENTITIES.SETTING, {
+    await dbService.upsert(ENTITIES.SETTING, {
       id: SYNC_SETTING.SERVER_URL,
       key: SYNC_SETTING.SERVER_URL,
       value: newServerURL,
     });
-    console.log('migration0_3_0 result', result);
   },
 };
