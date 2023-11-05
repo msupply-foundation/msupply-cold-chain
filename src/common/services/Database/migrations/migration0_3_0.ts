@@ -15,13 +15,23 @@ export const migration0_3_0 = {
     const oldAuthURL = await dbService.get(ENTITIES.SETTING, { key: 'authUrl' });
 
     // If there was no auth URL, we can't do anything!
-    if (!oldAuthURL) return;
+    if (!oldAuthURL?.value) return;
 
     // Auth Url had a format something like this:
     // http://server.msupply.foundation:8080/coldchain/v1/login',
     // We need to remove the /coldchain/v1/login part
 
-    const newServerURL = oldAuthURL.replace('/coldchain/v1/login', '');
+try {
+      const newServerURL = oldAuthURL.value.replace('/coldchain/v1/login', '');
+
+      await dbService.upsert(ENTITIES.SETTING, {
+        id: SYNC_SETTING.SERVER_URL,
+        key: SYNC_SETTING.SERVER_URL,
+        value: newServerURL,
+      });
+    } catch (e) {
+      console.warn(`Unable to migrate: ${(e as Error).message}`);
+    }
 
     await dbService.upsert(ENTITIES.SETTING, {
       id: SYNC_SETTING.SERVER_URL,
