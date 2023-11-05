@@ -21,7 +21,7 @@ export const migration0_3_0 = {
     // http://server.msupply.foundation:8080/coldchain/v1/login',
     // We need to remove the /coldchain/v1/login part
 
-try {
+    try {
       const newServerURL = oldAuthURL.value.replace('/coldchain/v1/login', '');
 
       await dbService.upsert(ENTITIES.SETTING, {
@@ -32,11 +32,5 @@ try {
     } catch (e) {
       console.warn(`Unable to migrate: ${(e as Error).message}`);
     }
-
-    await dbService.upsert(ENTITIES.SETTING, {
-      id: SYNC_SETTING.SERVER_URL,
-      key: SYNC_SETTING.SERVER_URL,
-      value: newServerURL,
-    });
   },
 };
