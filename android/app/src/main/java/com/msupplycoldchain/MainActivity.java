@@ -33,3 +33,4 @@ public class MainActivity extends ReactActivity {
     // SplashScreen.show(...) has to be called after super.onCreate(...)
     SplashScreen.show(this, SplashScreenImageResizeMode.COVER, ReactRootView.class, false);
   }
+}
