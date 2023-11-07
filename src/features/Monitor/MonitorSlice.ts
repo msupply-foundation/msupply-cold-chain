@@ -1,3 +1,4 @@
+import Bugsnag from '@bugsnag/react-native';
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice } from '@reduxjs/toolkit';
 import { BleService } from 'msupply-ble-service';
@@ -49,6 +50,7 @@ function* startDependencyMonitor(): SagaIterator {
     if (now - start >= RESTART_INTERVAL_IN_SECONDS) {
       const loggerService = yield call(DependencyLocator.get, DEPENDENCY.LOGGER_SERVICE);
       loggerService.info('Restarting bluetooth service');
+      Bugsnag.leaveBreadcrumb('Restarting bluetooth service');
       start = now;
       DependencyLocator.register('bleService', undefined);
       DependencyLocator.register('bleService', new BleService(new BleManager(), loggerService));
