@@ -25,6 +25,7 @@ import {
   SyncSuccessPayload,
 } from './types';
 import { FailurePayload, PrepareActionReturn } from '~common/types/common';
+import Bugsnag from '@bugsnag/react-native';
 
 export const ENDPOINT = {
   LOGIN: 'coldchain/v1/login',
@@ -302,10 +303,17 @@ function* syncAll({
 }
 
 function* startSyncScheduler(): SagaIterator {
+  let serverUrl = '';
   while (true) {
     try {
       const settingManager: SettingManager = yield call(getDependency, 'settingManager');
       const syncSettings: SyncSettingMap = yield call(settingManager.getSyncSettings);
+
+      if (serverUrl !== syncSettings.serverUrl) {
+        // Send the sync url to bugsnag so we have more context for where an error is occurring
+        Bugsnag.addMetadata('sync', 'serverUrl', syncSettings.serverUrl);
+        serverUrl = syncSettings.serverUrl;
+      }
 
       yield put(SyncAction.syncAll(syncSettings));
       yield delay(MILLISECONDS.ONE_MINUTE);

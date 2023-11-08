@@ -194,8 +194,10 @@ function* downloadTemperatures(): SagaIterator {
     const mapper = ({ id }: SensorState) => put(DownloadAction.tryPassiveDownloadForSensor(id));
     const actions = sensors.map(mapper);
     yield all(actions);
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
+  } catch (error) {
+    // This shouldn't happen as we are catching errors in tryDownloadForSensor
+    console.error(`Error in downloadTemperatures: ${(error as Error)?.message}`);
+  }
 }
 
 function* startPassiveDownloading(): SagaIterator {

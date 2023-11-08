@@ -66,3 +66,5 @@ android/gradle.properties
 
 # Bundle artifact
 *.jsbundle
+android/app/debug/
+android-release.bundle*
