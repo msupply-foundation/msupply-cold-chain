@@ -32,11 +32,6 @@ public class HttpClient extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setIsLocal(boolean isLocal) {
         this.isLocal = isLocal;
-//        if (isLocal){
-//            OkHttpClientProvider.setOkHttpClientFactory(new SelfSignedCertClientFactory());
-//        } else {
-//            OkHttpClientProvider.setOkHttpClientFactory(new HttpClientFactory());
-//        }
     }
 }
 
