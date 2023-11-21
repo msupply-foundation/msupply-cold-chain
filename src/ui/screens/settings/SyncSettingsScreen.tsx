@@ -13,7 +13,7 @@ import { t } from '~common/translations';
 import { useFormatter, useOnMount } from '~hooks';
 import { ENDPOINT } from '~features/Sync/SyncSlice';
 import { QRCodeScanner } from './QRCodeScanner';
-import { Button, IconButton } from '~components/buttons';
+import { IconButton } from '~components/buttons';
 import { ToastAndroid } from 'react-native';
 import { Icon } from '~presentation/icons';
 
