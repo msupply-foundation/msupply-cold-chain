@@ -1,19 +1,8 @@
 import { SagaIterator } from '@redux-saga/types';
-import {
-  actionChannel,
-  fork,
-  take,
-  delay,
-  call,
-  all,
-  put,
-  takeLeading,
-  race,
-  select,
-} from 'redux-saga/effects';
+import { actionChannel, fork, take, call, all, put, select, takeEvery } from 'redux-saga/effects';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SensorState } from '../../Entities/Sensor/SensorSlice';
-import { REDUCER, MILLISECONDS } from '~constants';
+import { MILLISECONDS, REDUCER } from '~constants';
 import { SensorAction, SensorManager } from '~features/Entities';
 import { getDependency } from '~features/utils/saga';
 import { BleService } from 'msupply-ble-service';
@@ -23,17 +12,20 @@ import { RootState } from '~common/store';
 const INFO_RETRIES = 2;
 
 interface BatteryObserverState {
+  nextUpdateTime: number;
   updatingById: Record<string, boolean>;
-  isWatching: boolean;
 }
 
 export const BatteryObserverInitialState: BatteryObserverState = {
+  nextUpdateTime: Date.now(),
   updatingById: {},
-  isWatching: false,
 };
 
 interface BatteryUpdatePayload {
   sensorId: string;
+}
+interface NextUpdateTimePayload {
+  nextUpdateTime: number;
 }
 
 export const isSensorUpdating =
@@ -47,12 +39,16 @@ export const isSensorUpdating =
   };
 
 const reducers = {
-  start: (draftState: BatteryObserverState) => {
-    draftState.isWatching = true;
+  setNextUpdateTime: {
+    prepare: (nextUpdateTime: number) => ({ payload: { nextUpdateTime } }),
+    reducer: (
+      draftState: BatteryObserverState,
+      { payload: { nextUpdateTime } }: PayloadAction<NextUpdateTimePayload>
+    ) => {
+      draftState.nextUpdateTime = nextUpdateTime;
+    },
   },
-  stop: (draftState: BatteryObserverState) => {
-    draftState.isWatching = false;
-  },
+  updateBatteryLevels: () => {},
   updateStart: {
     prepare: (sensorId: string) => ({ payload: { sensorId } }),
     reducer: (
@@ -136,7 +132,6 @@ function* tryBatteryUpdateForSensor({
 
 function* updateBatteryLevels(): SagaIterator {
   const sensorManager: SensorManager = yield call(getDependency, 'sensorManager');
-
   try {
     const sensors: SensorState[] = yield call(sensorManager.getAll);
     const mapper = ({ id }: SensorState) =>
@@ -147,18 +142,12 @@ function* updateBatteryLevels(): SagaIterator {
   } catch (error) {}
 }
 
-function* start(): SagaIterator {
-  while (true) {
-    yield call(updateBatteryLevels);
-    yield delay(MILLISECONDS.TEN_MINUTES);
-  }
-}
+function* tryUpdateBatteryLevels(): SagaIterator {
+  const { nextUpdateTime } = yield select((state: RootState) => state.bluetooth.batteryObserver);
+  if (nextUpdateTime > Date.now()) return;
 
-function* watchBatteryLevels(): SagaIterator {
-  yield race({
-    start: call(start),
-    stop: take(BatteryObserverAction.stop),
-  });
+  yield call(updateBatteryLevels);
+  yield put(BatteryObserverAction.setNextUpdateTime(Date.now() + MILLISECONDS.TEN_MINUTES));
 }
 function* queueBatteryUpdates(): SagaIterator {
   const channel = yield actionChannel(BatteryObserverAction.tryUpdateBatteryForSensor);
@@ -170,11 +159,11 @@ function* queueBatteryUpdates(): SagaIterator {
 }
 
 function* root(): SagaIterator {
-  yield takeLeading(BatteryObserverAction.start, watchBatteryLevels);
+  yield takeEvery(BatteryObserverAction.updateBatteryLevels, tryUpdateBatteryLevels);
   yield fork(queueBatteryUpdates);
 }
 
-const BatteryObserverSaga = { root, watchBatteryLevels, start, updateBatteryLevels };
+const BatteryObserverSaga = { root, tryUpdateBatteryLevels, updateBatteryLevels };
 
 export {
   BatteryObserverAction,

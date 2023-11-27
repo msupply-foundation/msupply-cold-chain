@@ -1,10 +1,20 @@
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { call, put, takeEvery, take, all, actionChannel, fork, select } from 'redux-saga/effects';
+import {
+  call,
+  put,
+  takeEvery,
+  take,
+  all,
+  actionChannel,
+  fork,
+  select,
+  delay,
+} from 'redux-saga/effects';
 import { getDependency } from '~features/utils/saga';
 import { SensorState } from '~features/Entities/Sensor/SensorSlice';
 import { BleService } from 'msupply-ble-service';
-import { REDUCER } from '~common/constants';
+import { MILLISECONDS, REDUCER } from '~common/constants';
 import {
   DownloadManager,
   SensorManager,
@@ -13,7 +23,7 @@ import {
 } from '~features';
 import { FileLoggerService } from '~common/services';
 import { RootState } from '~common/store';
-import { isSensorUpdating } from '../BatteryObserver/BatteryObserverSlice';
+import { BatteryObserverAction, isSensorUpdating } from '../BatteryObserver/BatteryObserverSlice';
 
 const DOWNLOAD_RETRIES = 3;
 interface DownloadSliceState {
@@ -202,6 +212,14 @@ function* startDownloading(): SagaIterator {
   if (isDownloading) return;
 
   yield call(downloadTemperatures);
+  yield delay(MILLISECONDS.ONE_SECOND * 10);
+  // Wait for all downloads to finish - the async nature of the downloads means that
+  // you cannot rely on the yield to meant that downloading has finished
+  // so check for the state to change
+  while (yield select(getIsDownloading)) {
+    yield delay(MILLISECONDS.ONE_SECOND * 10);
+  }
+  yield put(BatteryObserverAction.updateBatteryLevels());
 }
 
 function* queuePassiveDownloads(): SagaIterator {
