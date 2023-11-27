@@ -16,18 +16,20 @@ import com.facebook.react.HeadlessJsTaskService;
 
 public class SchedulerService extends Service {
 
-    private static final int SERVICE_NOTIFICATION_ID = 12345;
+    public static final int SERVICE_NOTIFICATION_ID = 12345;
     private static final String CHANNEL_ID = "COLDCHAIN";
+    private static final long SCHEDULER_INTERVAL = 60000;
 
     private Handler handler = new Handler();
     private Runnable runnableCode = new Runnable() {
+
         @Override
         public void run() {
             Context context = getApplicationContext();
             Intent myIntent = new Intent(context, SchedulerEventService.class);
             context.startService(myIntent);
             HeadlessJsTaskService.acquireWakeLockNow(context);
-            handler.postDelayed(this, 30000);
+            handler.postDelayed(this, SCHEDULER_INTERVAL);
         }
     };
     private void createNotificationChannel() {
@@ -59,21 +61,24 @@ public class SchedulerService extends Service {
         this.handler.removeCallbacks(this.runnableCode);
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        this.handler.post(this.runnableCode);
-        createNotificationChannel();
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Cold chain service") // getApplicationName
-                .setContentText("Running...")
+    public static Notification buildNotification(Context context, String text) {
+        Intent notificationIntent = new Intent(context, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        return new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setContentTitle("ColdChain service") // getApplicationName
+                .setContentText(text)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(contentIntent)
                 .setOngoing(true)
                 .build();
-        startForeground(SERVICE_NOTIFICATION_ID, notification);
-        return START_STICKY;
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        this.handler.post(this.runnableCode);
+        createNotificationChannel();
+        startForeground(SERVICE_NOTIFICATION_ID, buildNotification(this, "Starting..."));
+        return START_STICKY;
+    }
 }
