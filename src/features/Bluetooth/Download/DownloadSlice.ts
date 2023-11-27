@@ -114,8 +114,6 @@ const { actions: DownloadAction, reducer: DownloadReducer } = createSlice({
 function* tryDownloadForSensor({
   payload: { sensorId },
 }: PayloadAction<DownloadStartPayload>): SagaIterator {
-  console.log(`===> try download for sensor '${sensorId}`);
-
   const btService: BleService = yield call(getDependency, 'bleService');
   const sensorManager: SensorManager = yield call(getDependency, 'sensorManager');
   const downloadManager: DownloadManager = yield call(getDependency, 'downloadManager');
@@ -132,9 +130,7 @@ function* tryDownloadForSensor({
     logger.debug(
       `${sensorId} tryDownloadForSensor canDownload: ${canDownload} isDownloading: ${isDownloading} isUpdating: ${isUpdating} doDownload: ${doDownload}`
     );
-    console.log(
-      `===> ${sensorId} tryDownloadForSensor canDownload: ${canDownload} isDownloading: ${isDownloading} isUpdating: ${isUpdating} doDownload: ${doDownload}`
-    );
+
     if (doDownload) {
       yield put(DownloadAction.downloadStart(sensorId));
 

@@ -1,20 +1,25 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppRegistry, NativeModules } from 'react-native';
 import { useOnMount } from '~hooks';
-import { DownloadAction } from '~features';
+import { DownloadAction, SettingSelector, SyncAction } from '~features';
+import Bugsnag from '@bugsnag/react-native';
 
 export const useForegroundService = (): void => {
   const { Scheduler } = NativeModules;
   const dispatch = useDispatch();
   const [isRunningService, setIsRunningService] = useState(false);
+  const { serverUrl } = useSelector(SettingSelector.getSettings);
 
   const startService = async () => {
     if (isRunningService) return;
 
+    // Send the sync url to bugsnag so we have more context for where an error is occurring
+    Bugsnag.addMetadata('sync', 'serverUrl', serverUrl);
+
     const schedulerTask = async () => {
-      console.log('===> Receiving HeartBeat!');
       dispatch(DownloadAction.downloadTemperaturesStart());
+      dispatch(SyncAction.tryIntegrating());
     };
 
     try {

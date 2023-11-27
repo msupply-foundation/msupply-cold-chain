@@ -138,8 +138,7 @@ function* updateBatteryLevels(): SagaIterator {
       put(BatteryObserverAction.tryUpdateBatteryForSensor(id));
     const actions = sensors.map(mapper);
     yield all(actions);
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
+  } catch (_) {}
 }
 
 function* tryUpdateBatteryLevels(): SagaIterator {
