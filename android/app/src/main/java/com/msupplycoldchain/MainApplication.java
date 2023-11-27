@@ -39,6 +39,7 @@ public class MainApplication extends Application implements ReactApplication {
           );
 
           packages.addAll(unimodules);
+          packages.add(new SchedulerPackage());
 
           return packages;
         }

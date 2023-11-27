@@ -4113,6 +4113,11 @@
   dependencies:
     invariant "^2.2.4"
 
+"@voximplant/react-native-foreground-service@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@voximplant/react-native-foreground-service/-/react-native-foreground-service-3.0.2.tgz#14fca496808db5255799ce01553626cdb9aea03e"
+  integrity sha512-ZIyccOAXPqznA1PAVAYlKZ+GI7kXYCuYgH+gmAkhPouyJbkgrSXaCJJzQ+uBkPr4FBa/PuC/yjzK8vf6tJREQA==
+
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.9.0.tgz#bd850604b4042459a5a41cd7d338cbed695ed964"

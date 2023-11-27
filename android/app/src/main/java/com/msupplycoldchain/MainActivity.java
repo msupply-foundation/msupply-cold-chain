@@ -2,8 +2,6 @@ package com.msupplycoldchain;
 
 // Used for overriding onCreate
 import android.os.Bundle;
-import android.os.PowerManager;
-
 import com.bugsnag.android.Bugsnag;
 
 // Used to create the splash screen on start up.

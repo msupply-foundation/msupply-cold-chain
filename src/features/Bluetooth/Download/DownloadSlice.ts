@@ -32,12 +32,14 @@ interface DownloadSliceState {
   downloadingById: Record<string, boolean>;
   passiveDownloadEnabled: boolean;
   enabled: boolean;
+  isDownloading: boolean;
 }
 
 export const DownloadInitialState: DownloadSliceState = {
   downloadingById: {},
   passiveDownloadEnabled: false,
   enabled: false,
+  isDownloading: false,
 };
 
 interface DownloadStartPayload {
@@ -54,12 +56,26 @@ export const isSensorDownloading =
     }
   };
 
+const getIsDownloading = (state: RootState): boolean => {
+  try {
+    return state.bluetooth.download.isDownloading || false;
+  } catch {
+    return false;
+  }
+};
+
 const reducers = {
   passiveDownloadingStart: (draftState: DownloadSliceState) => {
     draftState.enabled = true;
   },
   passiveDownloadingStop: (draftState: DownloadSliceState) => {
     draftState.enabled = false;
+  },
+  downloadTemperaturesStart: (draftState: DownloadSliceState) => {
+    draftState.isDownloading = true;
+  },
+  downloadTemperaturesStop: (draftState: DownloadSliceState) => {
+    draftState.isDownloading = false;
   },
   downloadStart: {
     prepare: (sensorId: string) => ({ payload: { sensorId } }),
@@ -114,6 +130,8 @@ const { actions: DownloadAction, reducer: DownloadReducer } = createSlice({
 function* tryDownloadForSensor({
   payload: { sensorId },
 }: PayloadAction<DownloadStartPayload>): SagaIterator {
+  console.log(`===> try download for sensor '${sensorId}`);
+
   const btService: BleService = yield call(getDependency, 'bleService');
   const sensorManager: SensorManager = yield call(getDependency, 'sensorManager');
   const downloadManager: DownloadManager = yield call(getDependency, 'downloadManager');
@@ -129,6 +147,9 @@ function* tryDownloadForSensor({
 
     logger.debug(
       `${sensorId} tryDownloadForSensor canDownload: ${canDownload} isDownloading: ${isDownloading} isUpdating: ${isUpdating} doDownload: ${doDownload}`
+    );
+    console.log(
+      `===> ${sensorId} tryDownloadForSensor canDownload: ${canDownload} isDownloading: ${isDownloading} isUpdating: ${isUpdating} doDownload: ${doDownload}`
     );
     if (doDownload) {
       yield put(DownloadAction.downloadStart(sensorId));
@@ -197,6 +218,8 @@ function* downloadTemperatures(): SagaIterator {
   } catch (error) {
     // This shouldn't happen as we are catching errors in tryDownloadForSensor
     console.error(`Error in downloadTemperatures: ${(error as Error)?.message}`);
+  } finally {
+    yield put(DownloadAction.downloadTemperaturesStop());
   }
 }
 
@@ -205,6 +228,16 @@ function* startPassiveDownloading(): SagaIterator {
     yield call(downloadTemperatures);
     yield delay(MILLISECONDS.SIXTY_SECONDS);
   }
+}
+
+function* startDownloading(): SagaIterator {
+  const isDownloading = yield select(getIsDownloading);
+  if (isDownloading) {
+    console.log('===> already downloading!');
+    yield put(DownloadAction.downloadTemperaturesStop());
+    // return;
+  }
+  yield call(downloadTemperatures);
 }
 
 function* watchPassiveDownloading(): SagaIterator {
@@ -226,6 +259,7 @@ function* queuePassiveDownloads(): SagaIterator {
 function* root(): SagaIterator {
   yield takeEvery(DownloadAction.tryManualDownloadForSensor, tryDownloadForSensor);
   yield takeLeading(DownloadAction.passiveDownloadingStart, watchPassiveDownloading);
+  yield takeEvery(DownloadAction.downloadTemperaturesStart, startDownloading);
   yield fork(queuePassiveDownloads);
 }
 
