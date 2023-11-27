@@ -56,7 +56,6 @@
     "@types/react-redux": "^7.1.16",
     "@typescript-eslint/eslint-plugin": "^4.15.0",
     "@typescript-eslint/parser": "^4.15.0",
-    "@voximplant/react-native-foreground-service": "^3.0.2",
     "axios": "^0.21.1",
     "axios-mock-adapter": "^1.19.0",
     "buffer": "^5.6.0",
