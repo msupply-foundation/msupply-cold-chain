@@ -43,9 +43,13 @@ The node version should be >= 12.8.4.
 - Setup local node environment as specified in `.nvmrc`: `nvm install && nvm use`.
 - Install/update app dependencies: `yarn install`.
 
+### Running in an emulator
+
+Run `yarn start` to start the application in development mode.
+
 ### Building
 
-Simply run `yarn build` to build the app. 
+Simply run `yarn build` to build the app.
 If you have the following error:
 `A problem occurred starting process 'command 'node''`
 
