@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
+import com.facebook.react.HeadlessJsTaskService;
+
 public class BootUpReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -17,6 +19,6 @@ public class BootUpReceiver extends BroadcastReceiver {
             //log("Starting the service in < 26 Mode from a BroadcastReceiver")
             context.startService(new Intent(context, SchedulerService.class));
         }
-
+        HeadlessJsTaskService.acquireWakeLockNow(context);
     }
 }

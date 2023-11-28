@@ -1,29 +1,16 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppRegistry, NativeModules } from 'react-native';
-import { useFormatter, useOnMount } from '~hooks';
-import { DownloadAction, SettingSelector, SyncAction, SyncSelector } from '~features';
+import { useOnMount } from '~hooks';
+import { DownloadAction, SettingSelector, SyncAction } from '~features';
 import Bugsnag from '@bugsnag/react-native';
+import { MILLISECONDS } from '~constants';
 
 export const useForegroundService = (): void => {
   const { Scheduler } = NativeModules;
   const dispatch = useDispatch();
   const [isRunningService, setIsRunningService] = useState(false);
-  const formatter = useFormatter();
-  const { isIntegrating, lastSync, lastSyncStart, serverUrl } = useSelector(
-    SettingSelector.getSettings
-  );
-  const isSyncing = useSelector(SyncSelector.getIsSyncing);
-
-  const syncStatus = () => {
-    if (!isIntegrating) {
-      return 'Disabled';
-    }
-    if (isSyncing) {
-      return `Syncing in progress. Started ${formatter.dateTime(lastSyncStart)}`;
-    }
-    return `Idle. Last successful sync finished ${formatter.dateTime(lastSync)}`;
-  };
+  const { serverUrl } = useSelector(SettingSelector.getSettings);
 
   const startService = async () => {
     if (isRunningService) return;
@@ -32,10 +19,10 @@ export const useForegroundService = (): void => {
     Bugsnag.addMetadata('sync', 'serverUrl', serverUrl);
 
     const schedulerTask = async () => {
-      const status = `Running.. Integration ${syncStatus()}`;
-      Scheduler.updateStatus(status);
+      Scheduler.updateStatus('Downloading logs');
       dispatch(DownloadAction.downloadTemperaturesStart());
       dispatch(SyncAction.tryIntegrating());
+      setTimeout(() => Scheduler.updateStatus('Idle'), MILLISECONDS.TEN_SECONDS);
     };
 
     try {

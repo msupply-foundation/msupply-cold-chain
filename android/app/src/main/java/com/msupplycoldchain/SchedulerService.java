@@ -38,7 +38,7 @@ public class SchedulerService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_ID, importance);
-            channel.setDescription("CHANEL DESCRIPTION");
+            channel.setDescription("Cold Chain Notification Channel");
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
