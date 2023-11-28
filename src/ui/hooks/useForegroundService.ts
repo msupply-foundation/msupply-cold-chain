@@ -26,7 +26,9 @@ export const useForegroundService = (): void => {
     };
 
     try {
+      // this task is called by the SchedulerEventService on a regular interval
       AppRegistry.registerHeadlessTask('ColdchainScheduler', () => schedulerTask);
+      // start the foreground service
       await Scheduler.startService();
       setIsRunningService(true);
     } catch (e) {

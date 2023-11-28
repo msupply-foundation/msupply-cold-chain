@@ -9,7 +9,12 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.jstasks.HeadlessJsTaskConfig;
 
 public class SchedulerEventService extends HeadlessJsTaskService {
-    private static final long TASK_TIMEOUT_MS = 5000;
+    /*
+     * prevents the task from running too long and consuming resources
+     * the code spawned is async though, and is possible for a download
+     * or integration task which takes longer than the timeout
+     */
+    private static final long TASK_TIMEOUT_MS = 30000;
 
     @Nullable
     protected HeadlessJsTaskConfig getTaskConfig(Intent intent) {
