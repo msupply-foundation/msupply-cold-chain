@@ -105,7 +105,12 @@ const SensorStatusSelector = {
     const { [id]: status } = byId;
     const { currentTemperature } = status ?? {};
 
-    return String(currentTemperature);
+    if (isNaN(currentTemperature)) {
+      return String('Unknown');
+    }
+
+    // Round to 1 decimal places
+    return String(currentTemperature.toFixed(1));
   },
 };
 
@@ -195,6 +200,7 @@ function* root(): SagaIterator {
   yield takeEvery(SensorAction.createSuccess, getSensorStatus);
   yield takeEvery(AcknowledgeBreachAction.acknowledgeSuccess, getSensorStatus);
   yield takeLatest(HydrateAction.hydrate, getAllStatuses);
+  yield takeEvery(SensorAction.fetchAll, getAllStatuses);
 }
 
 const SensorStatusSaga = { root, getAllStatuses, getSensorStatus };

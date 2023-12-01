@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { VictoryLine, VictoryChart, VictoryAxis } from 'victory-native';
+import { VictoryLine, VictoryChart, VictoryAxis, VictoryLabel } from 'victory-native';
 import { FONT, STYLE, COLOUR, CHART, DEPENDENCY } from '~constants';
 import { ChartGradient } from './ChartGradient';
 import { Centered, Row } from '~layouts';
@@ -33,7 +33,9 @@ const style = {
     },
     axis: { stroke: COLOUR.TRANSPARENT },
   },
-  line: { data: { stroke: CHART.LINE_GRADIENT_ID } },
+  line: {
+    data: { stroke: CHART.LINE_GRADIENT_ID },
+  },
 };
 
 const round5 = (n: number) => {
@@ -45,21 +47,36 @@ interface ChartProps {
   width?: number;
   height?: number;
   isLoading: boolean;
+  startTime?: number;
+  endTime?: number;
 }
 
-export const Chart: FC<ChartProps> = ({ data = [], isLoading, width, height }) => {
+const DOMAIN_OFFSET = 5;
+
+export const Chart: FC<ChartProps> = ({
+  data = [],
+  startTime,
+  endTime,
+  isLoading,
+  width,
+  height,
+}) => {
   const formatter = useDependency(DEPENDENCY.FORMAT_SERVICE) as FormatService;
 
   const tickFormatter = formatter.getTickFormatter();
 
-  const minTemp = Math.min(...data.map(({ temperature }) => temperature));
-  const maxTemp = Math.max(...data.map(({ temperature }) => temperature));
+  const minTemp = Math.min(...data.map(({ temperature }) => temperature)) ?? 0;
+  const maxTemp = Math.max(...data.map(({ temperature }) => temperature)) ?? 0;
 
-  const domainMin = round5(minTemp) - 5;
-  const domainMax = round5(maxTemp) + 5;
+  const domainMin = round5(minTemp) - DOMAIN_OFFSET;
+  const domainMax = round5(maxTemp) + DOMAIN_OFFSET;
 
-  const minTime = Math.min(...data.map(({ timestamp }) => timestamp));
-  const maxTime = Math.max(...data.map(({ timestamp }) => timestamp));
+  const minTime = startTime ?? Math.min(...data.map(({ timestamp }) => timestamp));
+  const maxTime = endTime ?? Math.max(...data.map(({ timestamp }) => timestamp));
+
+  // currently a small bug with the x-axis placement when values are both +ve and -ve on the chart
+  // So manually setting  calculating the offset for now
+  const offsetY = domainMin > 0 ? undefined : 25;
 
   const Empty = () => (
     <Row alignItems="center" justifyContent="center" style={{ width: STYLE.WIDTH.NORMAL_CHART }}>
@@ -81,6 +98,7 @@ export const Chart: FC<ChartProps> = ({ data = [], isLoading, width, height }) =
         style={style.xAxis}
         tickFormat={tickFormatter}
         tickCount={5}
+        domainPadding={{ x: [offsetY ?? 0 + 5, 0] }}
       />
 
       {/* Y AXIS */}
@@ -94,6 +112,13 @@ export const Chart: FC<ChartProps> = ({ data = [], isLoading, width, height }) =
         interpolation={CHART.INTERPOLATION}
         style={style.line}
       />
+      {/* <VictoryLabel
+        text={`offsetY = ${offsetY}`}
+        x={width / 2}
+        y={height - 30}
+        textAnchor="middle"
+        style={{ fill: COLOUR.PRIMARY, fontSize: FONT.SIZE.S }}
+      /> */}
     </VictoryChart>
   );
 
@@ -102,12 +127,6 @@ export const Chart: FC<ChartProps> = ({ data = [], isLoading, width, height }) =
       <ActivityIndicator size="large" color={COLOUR.PRIMARY} />
     </Centered>
   );
-
-  // currently a small bug with the x-axis placement when values are both +ve and -ve on the chart
-  const dataValues = data.map(d => d.temperature);
-  const minValue = Math.min(...dataValues);
-  const maxValue = Math.max(...dataValues);
-  const offsetY = minValue < 0 && maxValue > 0 ? maxValue - minValue : 0;
 
   const EmptyOrLoading = isLoading ? LoadingIndicator : Empty;
   const ChartOrEmpty = data.length ? FullChart : EmptyOrLoading;
