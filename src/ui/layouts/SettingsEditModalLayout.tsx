@@ -34,7 +34,7 @@ export const SettingsEditModalLayout: FC<SettingsEditModalLayoutProps> = ({
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const onKeyboardDidShow = useCallback(e => {
-    setKeyboardHeight(e.endCoordinates.height);
+    // setKeyboardHeight(e.endCoordinates.height);
   }, []);
 
   const onKeyboardDidHide = useCallback(() => {

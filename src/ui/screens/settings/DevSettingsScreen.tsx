@@ -4,7 +4,8 @@ import { SettingsButtonRow, SettingsGroup } from '~components/settings';
 import { SettingsList } from '~layouts';
 import { useDependency } from '~hooks';
 import { DEPENDENCY } from '~constants';
-import { SensorManager, SensorSelector, DevAction, SyncAction } from '~features';
+import { SensorManager, SensorSelector, DevAction } from '~features';
+import { SettingsGenerateLogsInputRow } from '~components/settings/SettingsGenerateLogsInputRow';
 
 export const DevSettingsScreen: FC = () => {
   const dispatch = useDispatch();
@@ -23,14 +24,27 @@ export const DevSettingsScreen: FC = () => {
         />
         {availableSensors.map(sensorState => {
           return (
-            <SettingsButtonRow
+            <SettingsGenerateLogsInputRow
               key={sensorState?.id}
               label="Create sensor logs"
               subtext={`Add logs for ${sensorState?.name ?? sensorState.macAddress}`}
-              onPress={async () => {
+              maximumValue={999}
+              minimumValue={-999}
+              metric={'temperature'}
+              onConfirm={async ({
+                min,
+                max,
+                numLogs,
+              }: {
+                min: number;
+                max: number;
+                numLogs: number;
+              }) => {
                 const sensor = await sensorManager.getSensorByMac(sensorState.macAddress);
-                dispatch(DevAction.generateTemperatureBreach(sensor));
+                dispatch(DevAction.generateTemperatureLogs(sensor, min, max, numLogs));
               }}
+              editDescription={'Add logs'}
+              step={0}
             />
           );
         })}
