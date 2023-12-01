@@ -3,7 +3,7 @@ import { SagaIterator } from '@redux-saga/types';
 import { createSlice } from '@reduxjs/toolkit';
 import { BleService } from 'msupply-ble-service';
 import { BleManager } from 'react-native-ble-plx';
-import { call, delay, takeLeading } from 'redux-saga/effects';
+import { call, delay, put, takeLeading } from 'redux-saga/effects';
 import { DependencyLocator } from '~common/services';
 import {
   DEPENDENCY,
@@ -12,6 +12,7 @@ import {
   REDUCER,
   RESTART_INTERVAL_IN_SECONDS,
 } from '~constants';
+import { SensorAction } from '~features/Entities';
 
 interface MonitorState {
   isWatching: boolean;
@@ -39,25 +40,33 @@ const { actions: MonitorAction, reducer: MonitorReducer } = createSlice({
 const MonitorSelector = {};
 
 function* startDependencyMonitor(): SagaIterator {
-  if (ENVIRONMENT.MOCK_BLE) return;
-
   const utilService = yield call(DependencyLocator.get, DEPENDENCY.UTIL_SERVICE);
   let start = utilService.now();
 
   while (true) {
-    const now = utilService.now();
+    yield delay(MILLISECONDS.SIXTY_SECONDS);
 
-    if (now - start >= RESTART_INTERVAL_IN_SECONDS) {
-      const loggerService = yield call(DependencyLocator.get, DEPENDENCY.LOGGER_SERVICE);
-      loggerService.info('Restarting bluetooth service');
-      Bugsnag.leaveBreadcrumb('Restarting bluetooth service');
-      start = now;
-      DependencyLocator.register('bleService', undefined);
-      DependencyLocator.register('bleService', new BleService(new BleManager(), loggerService));
+    const now = utilService.now();
+    // TODO: don't restart if we are downloading
+    if (!ENVIRONMENT.MOCK_BLE) {
+      if (now - start >= RESTART_INTERVAL_IN_SECONDS) {
+        start = now;
+        restartBluetoothService();
+      }
     }
 
-    yield delay(MILLISECONDS.SIXTY_SECONDS);
+    // Refresh the sensors to display the latest data and time range every 60s
+    // yield put(SensorAction.fetchAll());
+    // Somehow this seems to remove the SensorDetailChart Buttons?
   }
+}
+
+function restartBluetoothService() {
+  const loggerService = DependencyLocator.get(DEPENDENCY.LOGGER_SERVICE);
+  loggerService.info('Restarting bluetooth service');
+  Bugsnag.leaveBreadcrumb('Restarting bluetooth service');
+  DependencyLocator.register('bleService', undefined);
+  DependencyLocator.register('bleService', new BleService(new BleManager(), loggerService));
 }
 
 function* root(): SagaIterator {

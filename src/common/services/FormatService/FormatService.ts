@@ -24,7 +24,15 @@ export class FormatService {
           `(D/M) ${FORMAT.DATE.HOUR_WITH_PERIOD}`
         );
       } else {
-        formatted = moment(tick * MILLISECONDS.ONE_SECOND).format(FORMAT.DATE.HOUR_WITH_PERIOD);
+        // if it's within the last hour, show minutes
+        const now = moment();
+        const then = moment(tick * MILLISECONDS.ONE_SECOND);
+        const diff = now.diff(then, 'hours');
+        if (diff < 1) {
+          formatted = moment(tick * MILLISECONDS.ONE_SECOND).format(FORMAT.DATE.HOUR_WITH_MINUTES);
+        } else {
+          formatted = moment(tick * MILLISECONDS.ONE_SECOND).format(FORMAT.DATE.HOUR_WITH_PERIOD);
+        }
       }
 
       return formatted;

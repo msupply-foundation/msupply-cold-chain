@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { VictoryLine, VictoryChart, VictoryAxis, VictoryLabel } from 'victory-native';
+import { VictoryLine, VictoryChart, VictoryAxis } from 'victory-native';
 import { FONT, STYLE, COLOUR, CHART, DEPENDENCY } from '~constants';
 import { ChartGradient } from './ChartGradient';
 import { Centered, Row } from '~layouts';
@@ -74,6 +74,16 @@ export const Chart: FC<ChartProps> = ({
   const minTime = startTime ?? Math.min(...data.map(({ timestamp }) => timestamp));
   const maxTime = endTime ?? Math.max(...data.map(({ timestamp }) => timestamp));
 
+  const tickDiff = (maxTime - minTime) / 4;
+
+  const tickValues = [
+    minTime + 500, // Offset to avoid the first tick being cut off
+    minTime + tickDiff,
+    minTime + tickDiff * 2,
+    minTime + tickDiff * 3,
+    maxTime, // Offset to avoid the last tick being cut off
+  ];
+
   // currently a small bug with the x-axis placement when values are both +ve and -ve on the chart
   // So manually setting  calculating the offset for now
   const offsetY = domainMin > 0 ? undefined : 25;
@@ -97,7 +107,8 @@ export const Chart: FC<ChartProps> = ({
         offsetY={offsetY}
         style={style.xAxis}
         tickFormat={tickFormatter}
-        tickCount={6}
+        tickValues={tickValues}
+        fixLabelOverlap={false}
         domainPadding={{ x: [offsetY ?? 0 + 5, 0] }}
       />
 
@@ -112,13 +123,6 @@ export const Chart: FC<ChartProps> = ({
         interpolation={CHART.INTERPOLATION}
         style={style.line}
       />
-      {/* <VictoryLabel
-        text={`startTime: ${startTime} endTime: ${endTime}, time: ${data[0]?.timestamp}}`}
-        x={width / 2}
-        y={10}
-        textAnchor="middle"
-        style={{ fill: COLOUR.PRIMARY, fontFamily: FONT.FAMILY.REGULAR, fontSize: FONT.SIZE.S }}
-      /> */}
     </VictoryChart>
   );
 
