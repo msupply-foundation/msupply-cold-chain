@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { VictoryLine, VictoryChart, VictoryAxis, VictoryLabel } from 'victory-native';
+import { VictoryLine, VictoryChart, VictoryAxis } from 'victory-native';
 import { FONT, STYLE, COLOUR, CHART, DEPENDENCY } from '~constants';
 import { ChartGradient } from './ChartGradient';
 import { Centered, Row } from '~layouts';
@@ -112,13 +112,6 @@ export const Chart: FC<ChartProps> = ({
         interpolation={CHART.INTERPOLATION}
         style={style.line}
       />
-      {/* <VictoryLabel
-        text={`offsetY = ${offsetY}`}
-        x={width / 2}
-        y={height - 30}
-        textAnchor="middle"
-        style={{ fill: COLOUR.PRIMARY, fontSize: FONT.SIZE.S }}
-      /> */}
     </VictoryChart>
   );
 
