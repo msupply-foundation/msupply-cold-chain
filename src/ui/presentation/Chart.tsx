@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { VictoryLine, VictoryChart, VictoryAxis } from 'victory-native';
+import { VictoryLine, VictoryChart, VictoryAxis, VictoryLabel } from 'victory-native';
 import { FONT, STYLE, COLOUR, CHART, DEPENDENCY } from '~constants';
 import { ChartGradient } from './ChartGradient';
 import { Centered, Row } from '~layouts';
@@ -23,7 +23,7 @@ const style = {
       fontFamily: FONT.FAMILY.REGULAR,
     },
     axis: { stroke: COLOUR.TRANSPARENT },
-    grid: { stroke: COLOUR.GREY_ONE },
+    grid: { stroke: COLOUR.OFF_WHITE },
   },
   xAxis: {
     tickLabels: {
@@ -97,7 +97,7 @@ export const Chart: FC<ChartProps> = ({
         offsetY={offsetY}
         style={style.xAxis}
         tickFormat={tickFormatter}
-        tickCount={5}
+        tickCount={6}
         domainPadding={{ x: [offsetY ?? 0 + 5, 0] }}
       />
 
@@ -112,6 +112,13 @@ export const Chart: FC<ChartProps> = ({
         interpolation={CHART.INTERPOLATION}
         style={style.line}
       />
+      {/* <VictoryLabel
+        text={`startTime: ${startTime} endTime: ${endTime}, time: ${data[0]?.timestamp}}`}
+        x={width / 2}
+        y={10}
+        textAnchor="middle"
+        style={{ fill: COLOUR.PRIMARY, fontFamily: FONT.FAMILY.REGULAR, fontSize: FONT.SIZE.S }}
+      /> */}
     </VictoryChart>
   );
 
