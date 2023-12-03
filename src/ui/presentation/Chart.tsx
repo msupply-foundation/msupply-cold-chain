@@ -79,7 +79,7 @@ export const Chart: FC<ChartProps> = ({
     minTime + tickDiff,
     minTime + tickDiff * 2,
     minTime + tickDiff * 3,
-    maxTime, // Offset to avoid the last tick being cut off
+    maxTime,
   ];
 
   // currently a small bug with the x-axis placement when values are both +ve and -ve on the chart

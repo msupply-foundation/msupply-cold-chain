@@ -54,10 +54,6 @@ function* startDependencyMonitor(): SagaIterator {
         restartBluetoothService();
       }
     }
-
-    // Refresh the sensors to display the latest data and time range every 60s
-    // yield put(SensorAction.fetchAll());
-    // Somehow this seems to remove the SensorDetailChart Buttons?
   }
 }
 
