@@ -108,6 +108,16 @@ export class DatabaseService {
       });
     }
 
+    const lastSyncStart = await this.get(ENTITIES.SETTING, {
+      key: 'lastSyncStart',
+    });
+    if (!lastSyncStart) {
+      await this.upsert(ENTITIES.SETTING, {
+        key: 'lastSyncStart',
+        value: '0',
+      });
+    }
+
     const defaultLogInterval = await this.get(ENTITIES.SETTING, {
       key: 'defaultLogInterval',
     });

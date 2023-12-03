@@ -21,10 +21,18 @@ export class FormatService {
       if (currentDay !== nextCurrentDay) {
         currentDay = moment(tick * MILLISECONDS.ONE_SECOND).day();
         formatted = moment(tick * MILLISECONDS.ONE_SECOND).format(
-          `(D/M) ${FORMAT.DATE.HOUR_WITH_PERIOD}`
+          `(D MMM) ${FORMAT.DATE.HOUR_WITH_PERIOD}`
         );
       } else {
-        formatted = moment(tick * MILLISECONDS.ONE_SECOND).format(FORMAT.DATE.HOUR_WITH_PERIOD);
+        // if it's within the last hour, show minutes
+        const now = moment();
+        const then = moment(tick * MILLISECONDS.ONE_SECOND);
+        const diff = now.diff(then, 'hours');
+        if (diff < 1) {
+          formatted = moment(tick * MILLISECONDS.ONE_SECOND).format(FORMAT.DATE.HOUR_WITH_MINUTES);
+        } else {
+          formatted = moment(tick * MILLISECONDS.ONE_SECOND).format(FORMAT.DATE.HOUR_WITH_PERIOD);
+        }
       }
 
       return formatted;
@@ -57,6 +65,10 @@ export class FormatService {
 
   fullDate = (date: number): string => {
     return moment.unix(date).format('DD-MM-YYYY-HH-mm-ss');
+  };
+
+  dateTime = (date: number): string => {
+    return moment.unix(date).format('DD/MM/YYYY HH:mm:ss');
   };
 
   temperature = (temperature: number): string => {

@@ -25,6 +25,7 @@ import {
   SyncSuccessPayload,
 } from './types';
 import { FailurePayload, PrepareActionReturn } from '~common/types/common';
+import Bugsnag from '@bugsnag/react-native';
 
 export const ENDPOINT = {
   LOGIN: 'coldchain/v1/login',
@@ -155,6 +156,10 @@ const SyncSelector = {
     const { syncQueueLength } = SyncSelector.getSliceState(state);
     return syncQueueLength;
   },
+  getIsSyncing: (state: RootState): boolean => {
+    const { isSyncing } = SyncSelector.getSliceState(state);
+    return isSyncing;
+  },
 };
 
 function* authenticate({
@@ -269,6 +274,8 @@ function* syncTemperatureBreaches({
 function* syncAll({
   payload: { serverUrl, authUsername, authPassword },
 }: PayloadAction<SyncAllPayload>): SagaIterator {
+  const utils: UtilService = yield call(getDependency, 'utilService');
+  yield put(SettingAction.update('lastSyncStart', utils.now()));
   yield put(SyncAction.updateIsSyncing(true));
   yield put(SyncAction.authenticate(`${serverUrl}/${ENDPOINT.LOGIN}`, authUsername, authPassword));
   const authenticateResult: PayloadAction<null> = yield take([
@@ -276,27 +283,43 @@ function* syncAll({
     SyncAction.authenticateFailure,
   ]);
   if (authenticateResult.type === SyncAction.authenticateSuccess.type) {
-    yield put(SyncAction.syncSensors(`${serverUrl}/${ENDPOINT.SENSOR}`));
-    yield take([SyncAction.syncSensorsSuccess, SyncAction.syncSensorsFailure]);
-    yield put(SyncAction.syncTemperatureLogs(`${serverUrl}/${ENDPOINT.TEMPERATURE_LOG}`));
-    yield take([SyncAction.syncTemperatureLogsSuccess, SyncAction.syncTemperatureLogsFailure]);
-    yield put(SyncAction.syncTemperatureBreaches(`${serverUrl}/${ENDPOINT.TEMPERATURE_BREACH}`));
-    yield take([
-      SyncAction.syncTemperatureBreachesSuccess,
-      SyncAction.syncTemperatureBreachesFailure,
-    ]);
+    try {
+      yield put(SyncAction.syncSensors(`${serverUrl}/${ENDPOINT.SENSOR}`));
+      yield take([SyncAction.syncSensorsSuccess, SyncAction.syncSensorsFailure]);
+      yield put(SyncAction.syncTemperatureLogs(`${serverUrl}/${ENDPOINT.TEMPERATURE_LOG}`));
+      yield take([SyncAction.syncTemperatureLogsSuccess, SyncAction.syncTemperatureLogsFailure]);
+      yield put(SyncAction.syncTemperatureBreaches(`${serverUrl}/${ENDPOINT.TEMPERATURE_BREACH}`));
+      yield take([
+        SyncAction.syncTemperatureBreachesSuccess,
+        SyncAction.syncTemperatureBreachesFailure,
+      ]);
+    } catch (e) {
+      console.error('syncAll error', e);
+    }
   } else {
+    console.warn('Authentication failed, Skipping sync.');
   }
   yield put(SyncAction.updateIsSyncing(false));
 }
 
 function* startSyncScheduler(): SagaIterator {
+  let serverUrl = '';
   while (true) {
-    const settingManager: SettingManager = yield call(getDependency, 'settingManager');
-    const syncSettings: SyncSettingMap = yield call(settingManager.getSyncSettings);
+    try {
+      const settingManager: SettingManager = yield call(getDependency, 'settingManager');
+      const syncSettings: SyncSettingMap = yield call(settingManager.getSyncSettings);
 
-    yield put(SyncAction.syncAll(syncSettings));
-    yield delay(MILLISECONDS.ONE_MINUTE);
+      if (serverUrl !== syncSettings.serverUrl) {
+        // Send the sync url to bugsnag so we have more context for where an error is occurring
+        Bugsnag.addMetadata('sync', 'serverUrl', syncSettings.serverUrl);
+        serverUrl = syncSettings.serverUrl;
+      }
+
+      yield put(SyncAction.syncAll(syncSettings));
+      yield delay(MILLISECONDS.ONE_MINUTE);
+    } catch (e) {
+      console.error('startSyncScheduler Error', e);
+    }
   }
 }
 
@@ -320,7 +343,7 @@ function* tryTestConnection({
   payload: { loginUrl, username, password },
 }: PayloadAction<AuthenticateActionPayload>): SagaIterator {
   const syncOutManager: SyncOutManager = yield call(getDependency, 'syncOutManager');
-
+  ToastAndroid.show('Testing Connection', ToastAndroid.SHORT);
   try {
     yield call(syncOutManager.login, loginUrl, username, password);
     yield put(SyncAction.testConnectionSuccess());

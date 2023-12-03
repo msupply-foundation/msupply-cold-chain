@@ -178,8 +178,8 @@ export class SensorManager {
       ...result[0],
       from: result[0].minChartTimestamp,
       to: result[0].mostRecentLogTimestamp,
-      possibleFrom: result[0].firstTimestamp,
-      possibleTo: result[0].mostRecentLogTimestamp,
+      possibleFrom: result[0]?.firstTimestamp,
+      possibleTo: result[0]?.mostRecentLogTimestamp,
     };
   };
 

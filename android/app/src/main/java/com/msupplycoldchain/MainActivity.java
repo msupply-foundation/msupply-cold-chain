@@ -2,6 +2,8 @@ package com.msupplycoldchain;
 
 // Used for overriding onCreate
 import android.os.Bundle;
+import android.os.PowerManager;
+
 import com.bugsnag.android.Bugsnag;
 
 // Used to create the splash screen on start up.
@@ -22,6 +24,7 @@ public class MainActivity extends ReactActivity {
     return "mSupplyColdChain";
   }
 
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(null);
@@ -30,6 +33,4 @@ public class MainActivity extends ReactActivity {
     // SplashScreen.show(...) has to be called after super.onCreate(...)
     SplashScreen.show(this, SplashScreenImageResizeMode.COVER, ReactRootView.class, false);
   }
-
-
 }

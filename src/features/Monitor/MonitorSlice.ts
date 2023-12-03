@@ -1,3 +1,4 @@
+import Bugsnag from '@bugsnag/react-native';
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice } from '@reduxjs/toolkit';
 import { BleService } from 'msupply-ble-service';
@@ -38,24 +39,29 @@ const { actions: MonitorAction, reducer: MonitorReducer } = createSlice({
 const MonitorSelector = {};
 
 function* startDependencyMonitor(): SagaIterator {
-  if (ENVIRONMENT.MOCK_BLE) return;
-
   const utilService = yield call(DependencyLocator.get, DEPENDENCY.UTIL_SERVICE);
   let start = utilService.now();
 
   while (true) {
-    const now = utilService.now();
-
-    if (now - start >= RESTART_INTERVAL_IN_SECONDS) {
-      const loggerService = yield call(DependencyLocator.get, DEPENDENCY.LOGGER_SERVICE);
-      loggerService.info('Restarting bluetooth service');
-      start = now;
-      DependencyLocator.register('bleService', undefined);
-      DependencyLocator.register('bleService', new BleService(new BleManager(), loggerService));
-    }
-
     yield delay(MILLISECONDS.SIXTY_SECONDS);
+
+    const now = utilService.now();
+    // TODO: don't restart if we are downloading
+    if (!ENVIRONMENT.MOCK_BLE) {
+      if (now - start >= RESTART_INTERVAL_IN_SECONDS) {
+        start = now;
+        restartBluetoothService();
+      }
+    }
   }
+}
+
+function restartBluetoothService() {
+  const loggerService = DependencyLocator.get(DEPENDENCY.LOGGER_SERVICE);
+  loggerService.info('Restarting bluetooth service');
+  Bugsnag.leaveBreadcrumb('Restarting bluetooth service');
+  DependencyLocator.register('bleService', undefined);
+  DependencyLocator.register('bleService', new BleService(new BleManager(), loggerService));
 }
 
 function* root(): SagaIterator {
