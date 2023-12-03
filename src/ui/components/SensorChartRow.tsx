@@ -27,7 +27,7 @@ export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, onPress
   const data = useSelector((state: RootState) => ChartSelector.listData(state, { id }));
   const name = useSelector((state: RootState) => SensorSelector.getName(state, { id }));
   const hasData = useSelector((state: RootState) => SensorStatusSelector.hasData(state, { id }));
-  const startTime = moment().subtract(1, 'day').valueOf() / 1000;
+  const startTime = moment().subtract(1, 'day').unix();
   const endTime = moment().valueOf() / 1000;
 
   return (
