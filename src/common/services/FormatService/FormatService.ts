@@ -21,7 +21,7 @@ export class FormatService {
       if (currentDay !== nextCurrentDay) {
         currentDay = moment(tick * MILLISECONDS.ONE_SECOND).day();
         formatted = moment(tick * MILLISECONDS.ONE_SECOND).format(
-          `(D/M) ${FORMAT.DATE.HOUR_WITH_PERIOD}`
+          `(D MMM) ${FORMAT.DATE.HOUR_WITH_PERIOD}`
         );
       } else {
         // if it's within the last hour, show minutes

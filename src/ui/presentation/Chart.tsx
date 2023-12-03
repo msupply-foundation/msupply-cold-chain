@@ -75,7 +75,7 @@ export const Chart: FC<ChartProps> = ({
   const tickDiff = (maxTime - minTime) / 4;
 
   const tickValues = [
-    minTime + 500, // Offset to avoid the first tick being cut off
+    minTime + 1000, // Offset to avoid the first tick being cut off
     minTime + tickDiff,
     minTime + tickDiff * 2,
     minTime + tickDiff * 3,
