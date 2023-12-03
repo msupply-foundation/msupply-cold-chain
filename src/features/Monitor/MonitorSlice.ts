@@ -3,7 +3,7 @@ import { SagaIterator } from '@redux-saga/types';
 import { createSlice } from '@reduxjs/toolkit';
 import { BleService } from 'msupply-ble-service';
 import { BleManager } from 'react-native-ble-plx';
-import { call, delay, put, takeLeading } from 'redux-saga/effects';
+import { call, delay, takeLeading } from 'redux-saga/effects';
 import { DependencyLocator } from '~common/services';
 import {
   DEPENDENCY,
@@ -12,7 +12,6 @@ import {
   REDUCER,
   RESTART_INTERVAL_IN_SECONDS,
 } from '~constants';
-import { SensorAction } from '~features/Entities';
 
 interface MonitorState {
   isWatching: boolean;
