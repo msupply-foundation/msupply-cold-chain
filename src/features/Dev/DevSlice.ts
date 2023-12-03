@@ -8,6 +8,7 @@ import { DEPENDENCY, REDUCER } from '../../common/constants';
 import { SensorAction } from '../Entities';
 import { ConsecutiveBreachAction } from '../Breach';
 import moment from 'moment';
+import { HydrateAction } from '~features/Hydrate';
 
 interface CreatePayload {
   sensor: Sensor;
@@ -134,7 +135,7 @@ function* generateTemperatureLogs({
 
     yield call(temperatureLogManager.addNewTemperatureLogs, temperatureLogs);
     // Refresh the sensor status.
-    yield put(SensorAction.fetchAll());
+    yield put(HydrateAction.hydrate());
   } catch (error) {
     // TODO: add error handling actions.
     console.error(error);

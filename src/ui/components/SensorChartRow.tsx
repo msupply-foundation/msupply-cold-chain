@@ -12,10 +12,11 @@ import moment from 'moment';
 
 interface SensorChartRowProps {
   id: string;
+  endTime: number;
   onPress: () => void;
 }
 
-export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, onPress }) => {
+export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, endTime, onPress }) => {
   const { width, height } = useWindowDimensions();
 
   const isLoadingChartData = useSelector((state: RootState) =>
@@ -28,11 +29,10 @@ export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, onPress
   const name = useSelector((state: RootState) => SensorSelector.getName(state, { id }));
   const hasData = useSelector((state: RootState) => SensorStatusSelector.hasData(state, { id }));
   const startTime = moment().subtract(1, 'day').unix();
-  const endTime = moment().valueOf() / 1000;
 
   return (
     <SensorRowLayout
-      {...(hasData && !isLoadingChartData ? { onPress } : {})}
+      {...(hasData ? { onPress } : {})}
       Chart={
         <Chart
           isLoading={isLoadingChartData}

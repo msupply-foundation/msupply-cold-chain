@@ -176,7 +176,6 @@ function* root(): SagaIterator {
   yield takeEvery(ChartAction.getListChartData, getListChartData);
   yield takeEvery(ChartAction.getDetailChartData, getDetailChartData);
   yield takeLatest(HydrateAction.hydrate, getAllListChartData);
-  yield takeLatest(SensorAction.fetchAll, getAllListChartData);
 }
 
 const ChartSaga = { root, getDetailChartData, getAllListChartData, getListChartData };

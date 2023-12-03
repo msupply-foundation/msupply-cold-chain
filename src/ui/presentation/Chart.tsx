@@ -30,16 +30,13 @@ const style = {
       stroke: COLOUR.PRIMARY,
       fontSize: FONT.SIZE.S,
       fontFamily: FONT.FAMILY.REGULAR,
+      minWidth: 175,
     },
     axis: { stroke: COLOUR.TRANSPARENT },
   },
   line: {
     data: { stroke: CHART.LINE_GRADIENT_ID },
   },
-};
-
-const round5 = (n: number) => {
-  return Math.ceil(n / 5) * 5;
 };
 
 interface ChartProps {
@@ -51,7 +48,7 @@ interface ChartProps {
   endTime?: number;
 }
 
-const DOMAIN_OFFSET = 5;
+const DOMAIN_OFFSET = 2;
 
 export const Chart: FC<ChartProps> = ({
   data = [],
@@ -65,11 +62,12 @@ export const Chart: FC<ChartProps> = ({
 
   const tickFormatter = formatter.getTickFormatter();
 
-  const minTemp = Math.min(...data.map(({ temperature }) => temperature)) ?? 0;
-  const maxTemp = Math.max(...data.map(({ temperature }) => temperature)) ?? 0;
+  const temperatures = data.map(({ temperature }) => temperature);
+  const minTemp = Math.min(...temperatures) ?? 0;
+  const maxTemp = Math.max(...temperatures) ?? 0;
 
-  const domainMin = round5(minTemp) - DOMAIN_OFFSET;
-  const domainMax = round5(maxTemp) + DOMAIN_OFFSET;
+  const domainMin = Math.floor(minTemp) - DOMAIN_OFFSET;
+  const domainMax = Math.ceil(maxTemp) + DOMAIN_OFFSET;
 
   const minTime = startTime ?? Math.min(...data.map(({ timestamp }) => timestamp));
   const maxTime = endTime ?? Math.max(...data.map(({ timestamp }) => timestamp));
@@ -113,7 +111,14 @@ export const Chart: FC<ChartProps> = ({
       />
 
       {/* Y AXIS */}
-      <VictoryAxis dependentAxis orientation="left" tickCount={5} style={style.yAxis} />
+      <VictoryAxis
+        dependentAxis
+        orientation="left"
+        tickCount={5}
+        style={style.yAxis}
+        crossAxis={false}
+        tickFormat={(tick: number) => tick.toFixed(0)}
+      />
 
       <ChartGradient />
       <VictoryLine

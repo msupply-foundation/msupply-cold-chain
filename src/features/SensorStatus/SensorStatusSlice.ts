@@ -200,7 +200,6 @@ function* root(): SagaIterator {
   yield takeEvery(SensorAction.createSuccess, getSensorStatus);
   yield takeEvery(AcknowledgeBreachAction.acknowledgeSuccess, getSensorStatus);
   yield takeLatest(HydrateAction.hydrate, getAllStatuses);
-  yield takeEvery(SensorAction.fetchAll, getAllStatuses);
 }
 
 const SensorStatusSaga = { root, getAllStatuses, getSensorStatus };

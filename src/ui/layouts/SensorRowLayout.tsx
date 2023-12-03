@@ -18,22 +18,20 @@ export const SensorRowLayout: FC<SensorRowLayoutProps> = ({
   SensorStatus,
   onPress,
   direction,
-}) => {
-  return (
-    <TouchableOpacity {...(onPress ? { onPress } : {})}>
-      <Row>
-        <Column flex={3} justifyContent="center">
-          {Chart}
-        </Column>
-        <Column flex={1} justifyContent="center" alignItems="flex-end">
-          {SensorStatus}
-        </Column>
-        <Column style={{ flexBasis: 50 }} justifyContent="center" alignItems="flex-end">
-          {!!onPress && (
-            <HalfCircleButton direction={direction} Icon={<Icon.Chevron direction={direction} />} />
-          )}
-        </Column>
-      </Row>
-    </TouchableOpacity>
-  );
-};
+}) => (
+  <TouchableOpacity {...(onPress ? { onPress } : {})}>
+    <Row>
+      <Column flex={3} justifyContent="center">
+        {Chart}
+      </Column>
+      <Column flex={1} justifyContent="center" alignItems="flex-end">
+        {SensorStatus}
+      </Column>
+      <Column style={{ flexBasis: 50 }} justifyContent="center" alignItems="flex-end">
+        {!!onPress && (
+          <HalfCircleButton direction={direction} Icon={<Icon.Chevron direction={direction} />} />
+        )}
+      </Column>
+    </Row>
+  </TouchableOpacity>
+);
