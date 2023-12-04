@@ -126,5 +126,6 @@
   "ENDED": "ended",
   "ACKNOWLEDGE": "ACKNOWLEDGE",
   "DEBUG_SETTINGS": "Debug settings",
-  "DEBUG_CONFIGURATION": "Manage settings such as debug logging"
+  "DEBUG_CONFIGURATION": "Manage settings such as debug logging",
+  "SCAN_RESULT": "Scan result: "
 }

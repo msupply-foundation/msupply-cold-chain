@@ -1,6 +1,6 @@
 {
   "name": "mSupplyColdChain",
-  "version": "0.5.5",
+  "version": "0.5.6-rc2",
   "description": "Cold chain temperature monitoring",
   "author": "mSupply Foundation",
   "main": "index.ts",
@@ -81,6 +81,7 @@
     "react-native": "0.64.4",
     "react-native-ble-plx": "^2.0.2",
     "react-native-calendars": "^1.1257.0",
+    "react-native-camera": "^4.2.1",
     "react-native-clean-project": "^3.6.4",
     "react-native-device-info": "^8.1.2",
     "react-native-dotenv": "^2.5.5",
@@ -96,6 +97,7 @@
     "react-native-modal": "^11.10.0",
     "react-native-permissions": "^2.2.2",
     "react-native-pin-view": "^3.0.1",
+    "react-native-qrcode-scanner": "^1.5.5",
     "react-native-restart": "0.0.17",
     "react-native-safe-area-context": "^3.2.0",
     "react-native-screens": "^3.1.1",

@@ -20,6 +20,7 @@ import { Storage } from './Storage';
 import { Download } from './Download';
 import { Email } from './Email';
 import { Unlock } from './Unlock';
+import { QRCode } from './QRCode';
 
 export { Chevron } from './Chevron';
 export { HotBreach } from './HotBreach';
@@ -43,6 +44,7 @@ export { Storage } from './Storage';
 export { Download } from './Download';
 export { Email } from './Email';
 export { Unlock } from './Unlock';
+export { QRCode } from './QRCode';
 
 export { ICON_SIZE, ICON_NAME } from './Icon';
 
@@ -69,4 +71,5 @@ export const Icon = {
   Download,
   Email,
   Unlock,
+  QRCode,
 };
