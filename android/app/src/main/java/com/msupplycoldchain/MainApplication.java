@@ -8,6 +8,7 @@ import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -58,6 +59,9 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    // allow `XmlHttpRequest`s to be made to servers using self-signed certificates
+    // if the server is hosted on a private IP address
+    OkHttpClientProvider.setOkHttpClientFactory(new SelfSignedCertClientFactory());
 
     // acquire a wakelock which will keeps the app running regardless of screen saving
     // and battery optimisation
