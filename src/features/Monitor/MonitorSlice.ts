@@ -5,7 +5,6 @@ import { BleService } from 'msupply-ble-service';
 import { BleManager } from 'react-native-ble-plx';
 import { call, delay, select, takeLeading } from 'redux-saga/effects';
 import { DependencyLocator } from '~common/services';
-import { Sensor } from '~common/services/Database';
 import {
   DEPENDENCY,
   ENVIRONMENT,
@@ -13,8 +12,7 @@ import {
   REDUCER,
   RESTART_INTERVAL_IN_SECONDS,
 } from '~constants';
-import { isSensorDownloading } from '~features/Bluetooth/Download/DownloadSlice';
-import { SensorManager } from '~features/Entities';
+import { getIsDownloading } from '~features/Bluetooth/Download/DownloadSlice';
 
 interface MonitorState {
   isWatching: boolean;
@@ -42,7 +40,6 @@ const { actions: MonitorAction, reducer: MonitorReducer } = createSlice({
 const MonitorSelector = {};
 
 function* startDependencyMonitor(): SagaIterator {
-  const sensorManager: SensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
   const utilService = yield call(DependencyLocator.get, DEPENDENCY.UTIL_SERVICE);
   let start = utilService.now();
 
@@ -56,15 +53,8 @@ function* startDependencyMonitor(): SagaIterator {
         start = now;
         try {
           // Don't restart if we are downloading
-          const sensors: Sensor[] = yield call(sensorManager.getAll);
-          let isDownloading = false;
-          for (const sensor of sensors) {
-            const downloading = yield select(isSensorDownloading(sensor.id));
-            if (downloading) {
-              isDownloading = true;
-              break;
-            }
-          }
+          const isDownloading = yield select(getIsDownloading);
+
           if (!isDownloading) {
             Bugsnag.leaveBreadcrumb('Restarting bluetooth service');
             restartBluetoothService();

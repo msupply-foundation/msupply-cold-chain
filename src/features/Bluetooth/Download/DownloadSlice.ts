@@ -48,7 +48,7 @@ export const isSensorDownloading =
     }
   };
 
-const getIsDownloading = (state: RootState): boolean => {
+export const getIsDownloading = (state: RootState): boolean => {
   try {
     return Object.values(state.bluetooth.download.downloadingById).some(
       isDownloading => isDownloading
