@@ -19,8 +19,8 @@ WITH ChartTimestamps AS (
     SELECT 
     sensorId,
     CASE
-        WHEN (MAX(timestamp) - MIN(timestamp) ) > ( 24 * 3 * 60 * 60 )
-        THEN MAX(timestamp) - (24 * 3 * 60 * 60) 
+        WHEN (MAX(timestamp) - MIN(timestamp) ) > ( 24 * 60 * 60 )
+        THEN MAX(timestamp) - (24 * 60 * 60) 
         ELSE MIN(timestamp)
     END fromTimestamp,
     MAX(timestamp) toTimestamp
@@ -30,7 +30,7 @@ WITH ChartTimestamps AS (
     GROUP BY Sensor.id
 ),
 GroupingIntervals AS (
-    SELECT sensorId, ROUND((toTimestamp - fromTimestamp) / 30) AS ChartInterval 
+    SELECT sensorId, ROUND((toTimestamp - fromTimestamp) / ${DEFAULT_DATAPOINTS_TO_PLOT}) AS ChartInterval 
     FROM ChartTimestamps
 ),
 FilteredLogs AS (
@@ -59,8 +59,8 @@ sensors_temperature_logs AS (
 chart_timestamps AS (
     SELECT
     CASE
-        WHEN (MAX(stl.timestamp) - MIN(stl.timestamp) ) > ( 24 * 3 * 60 * 60 )
-        THEN MAX(stl.timestamp) - (24 * 3 * 60 * 60) 
+        WHEN (MAX(stl.timestamp) - MIN(stl.timestamp) ) > ( 24 * 60 * 60 )
+        THEN MAX(stl.timestamp) - (24 * 60 * 60) 
         ELSE MIN(stl.timestamp) 
     END fromTimestamp,
     MAX(stl.timestamp) toTimestamp
@@ -112,7 +112,7 @@ timestamp asc
 
 const GET_CHART_TIMESTAMPS = `
 SELECT CASE
-WHEN ( Max(tl.timestamp) - Min(tl.timestamp) ) > ( 3 * 24 * 60 * 60 ) THEN max(tl.timestamp) - (24 * 3 * 60 * 60) ELSE Min(tl.timestamp) END AS "from",
+WHEN ( Max(tl.timestamp) - Min(tl.timestamp) ) > ( 3 * 24 * 60 * 60 ) THEN max(tl.timestamp) - (24 * 60 * 60) ELSE Min(tl.timestamp) END AS "from",
 Max(tl.timestamp) AS "to"
 FROM   sensor s
 JOIN temperaturelog tl
@@ -120,6 +120,8 @@ ON tl.sensorid = s.id
 WHERE s.id = ?
 GROUP  BY s.id  
 `;
+
+const DEFAULT_DATAPOINTS_TO_PLOT = 48;
 
 export class ChartManager {
   databaseService: DatabaseService;
@@ -132,7 +134,7 @@ export class ChartManager {
     from: number,
     to: number,
     sensorId: string,
-    maxPoints = 30
+    maxPoints = DEFAULT_DATAPOINTS_TO_PLOT
   ): Promise<ChartDataPoint[]> => {
     const query = buildChartDataQuery();
     return this.databaseService.query(query, [sensorId, from, to, maxPoints]);
@@ -143,7 +145,10 @@ export class ChartManager {
     return result;
   };
 
-  getListChartData = async (sensorId: string, maxPoints = 30): Promise<ChartDataPoint[]> => {
+  getListChartData = async (
+    sensorId: string,
+    maxPoints = DEFAULT_DATAPOINTS_TO_PLOT
+  ): Promise<ChartDataPoint[]> => {
     const query = buildListChartDataQuery();
     return this.databaseService.query(query, [sensorId, maxPoints]);
   };

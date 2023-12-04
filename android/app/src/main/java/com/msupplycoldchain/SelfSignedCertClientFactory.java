@@ -29,6 +29,25 @@ import okhttp3.Response;
 public class SelfSignedCertClientFactory implements OkHttpClientFactory {
     private static final String TAG = "OkHttpClientFactory";
     private boolean isPrivate = false;
+
+    Interceptor requestInterceptor = new Interceptor() {
+        @Override
+        public Response intercept(Interceptor.Chain chain) throws IOException {
+            Request request = chain.request();
+            // Test the host and see if this is a private IP i.e.
+            // - 127.0.0.1
+            // - 192.168.0.0 to 192.168.255.255
+            // - 10.0.0.0 to 10.255.255.255
+            // - 172.16.0.0 to 172.31.255.255
+            Pattern pattern = Pattern.compile("(^127\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$)|(^10\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$)|(^172\\.1[6-9]{1}[0-9]{0,1}\\.[0-9]{1,3}\\.[0-9]{1,3}$)|(^172\\.2[0-9]{1}[0-9]{0,1}\\.[0-9]{1,3}\\.[0-9]{1,3}$)|(^172\\.3[0-1]{1}[0-9]{0,1}\\.[0-9]{1,3}\\.[0-9]{1,3}$)|(^192\\.168\\.[0-9]{1,3}\\.[0-9]{1,3}$)", Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(request.url().host());
+            isPrivate = matcher.find();
+            // and proceed as normal with the request
+            Response response = chain.proceed(request);
+            return response;
+        }
+    };
+
     @Override
     public OkHttpClient createNewNetworkModuleClient() {
         X509TrustManager standardTrustManager;
@@ -65,35 +84,16 @@ public class SelfSignedCertClientFactory implements OkHttpClientFactory {
             // Create an ssl socket factory with our all-trusting manager
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
             OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                    .connectTimeout(0, TimeUnit.MILLISECONDS).readTimeout(0, TimeUnit.MILLISECONDS)
-                    .writeTimeout(0, TimeUnit.MILLISECONDS).cookieJar(new ReactCookieJarContainer());
-            builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
-            builder.addInterceptor(new Interceptor() {
-                @Override
-                public Response intercept(Chain chain) throws IOException {
-                    Request request = chain.request();
-                    // Test the host and see if this is a private IP i.e.
-                    // - 127.0.0.1
-                    // - 192.168.0.0 to 192.168.255.255
-                    // - 10.0.0.0 to 10.255.255.255
-                    // - 172.16.0.0 to 172.31.255.255
-                    Pattern pattern = Pattern.compile("(^127\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$)|(^10\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$)|(^172\\.1[6-9]{1}[0-9]{0,1}\\.[0-9]{1,3}\\.[0-9]{1,3}$)|(^172\\.2[0-9]{1}[0-9]{0,1}\\.[0-9]{1,3}\\.[0-9]{1,3}$)|(^172\\.3[0-1]{1}[0-9]{0,1}\\.[0-9]{1,3}\\.[0-9]{1,3}$)|(^192\\.168\\.[0-9]{1,3}\\.[0-9]{1,3}$)", Pattern.CASE_INSENSITIVE);
-                    Matcher matcher = pattern.matcher(request.url().host());
-                    isPrivate = matcher.find();
-                    // and proceed as normal with the request
-                    Response response = chain.proceed(request);
-                    return response;
-                }
-            });
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .cookieJar(new ReactCookieJarContainer())
+                .sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0])
+                .addInterceptor(requestInterceptor)
+                .hostnameVerifier((hostname, session) -> true);
 
-            builder.hostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
+            OkHttpClient okHttpClient = builder.build();
 
-             OkHttpClient okHttpClient = builder.build();
             return okHttpClient;
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -116,6 +116,6 @@ public class SelfSignedCertClientFactory implements OkHttpClientFactory {
                 return (X509TrustManager) tm;
             }
         }
-        throw new Exception("Couldn't initialize");
+        throw new Exception("Couldn't initialize TrustManager");
     }
 }

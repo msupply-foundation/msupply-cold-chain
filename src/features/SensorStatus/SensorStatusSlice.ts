@@ -105,7 +105,12 @@ const SensorStatusSelector = {
     const { [id]: status } = byId;
     const { currentTemperature } = status ?? {};
 
-    return String(currentTemperature);
+    if (isNaN(currentTemperature)) {
+      return String('Unknown');
+    }
+
+    // Round to 1 decimal places
+    return String(currentTemperature.toFixed(1));
   },
 };
 
