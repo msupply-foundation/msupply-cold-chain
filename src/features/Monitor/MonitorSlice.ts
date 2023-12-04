@@ -3,8 +3,9 @@ import { SagaIterator } from '@redux-saga/types';
 import { createSlice } from '@reduxjs/toolkit';
 import { BleService } from 'msupply-ble-service';
 import { BleManager } from 'react-native-ble-plx';
-import { call, delay, takeLeading } from 'redux-saga/effects';
+import { call, delay, select, takeLeading } from 'redux-saga/effects';
 import { DependencyLocator } from '~common/services';
+import { Sensor } from '~common/services/Database';
 import {
   DEPENDENCY,
   ENVIRONMENT,
@@ -12,6 +13,8 @@ import {
   REDUCER,
   RESTART_INTERVAL_IN_SECONDS,
 } from '~constants';
+import { isSensorDownloading } from '~features/Bluetooth/Download/DownloadSlice';
+import { SensorManager } from '~features/Entities';
 
 interface MonitorState {
   isWatching: boolean;
@@ -39,6 +42,7 @@ const { actions: MonitorAction, reducer: MonitorReducer } = createSlice({
 const MonitorSelector = {};
 
 function* startDependencyMonitor(): SagaIterator {
+  const sensorManager: SensorManager = yield call(DependencyLocator.get, DEPENDENCY.SENSOR_MANAGER);
   const utilService = yield call(DependencyLocator.get, DEPENDENCY.UTIL_SERVICE);
   let start = utilService.now();
 
@@ -46,11 +50,31 @@ function* startDependencyMonitor(): SagaIterator {
     yield delay(MILLISECONDS.SIXTY_SECONDS);
 
     const now = utilService.now();
-    // TODO: don't restart if we are downloading
+
     if (!ENVIRONMENT.MOCK_BLE) {
       if (now - start >= RESTART_INTERVAL_IN_SECONDS) {
         start = now;
-        restartBluetoothService();
+        try {
+          // Don't restart if we are downloading
+          const sensors: Sensor[] = yield call(sensorManager.getAll);
+          let isDownloading = false;
+          for (const sensor of sensors) {
+            const downloading = yield select(isSensorDownloading(sensor.id));
+            if (downloading) {
+              isDownloading = true;
+              break;
+            }
+          }
+          if (!isDownloading) {
+            Bugsnag.leaveBreadcrumb('Restarting bluetooth service');
+            restartBluetoothService();
+          } else {
+            Bugsnag.leaveBreadcrumb('Skipping bluetooth restart because we are downloading');
+          }
+        } catch (e) {
+          Bugsnag.notify(e);
+          console.log(e);
+        }
       }
     }
   }
@@ -59,7 +83,6 @@ function* startDependencyMonitor(): SagaIterator {
 function restartBluetoothService() {
   const loggerService = DependencyLocator.get(DEPENDENCY.LOGGER_SERVICE);
   loggerService.info('Restarting bluetooth service');
-  Bugsnag.leaveBreadcrumb('Restarting bluetooth service');
   DependencyLocator.register('bleService', undefined);
   DependencyLocator.register('bleService', new BleService(new BleManager(), loggerService));
 }
