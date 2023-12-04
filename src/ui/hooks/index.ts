@@ -12,3 +12,4 @@ export { useCallbackOnGainingFocus } from './useCallbackOnFocus';
 export { useHideTabBar } from './useHideTabBar';
 export { useLoadAfterInteractions } from './useLoadAfterInteractions';
 export { usePowerState } from './usePowerState';
+export { useForegroundService } from './useForegroundService';

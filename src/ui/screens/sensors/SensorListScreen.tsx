@@ -4,49 +4,24 @@ import { FlatList } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { MILLISECONDS, NAVIGATION } from '~constants';
-import { useOnMount } from '~hooks';
-import {
-  SensorSelector,
-  SensorAction,
-  BatteryObserverAction,
-  DownloadAction,
-  SyncAction,
-} from '~features';
-
+import { SensorAction, SensorSelector } from '~features';
+import { HydrateAction } from '~features/Hydrate';
 import { SensorChartRow } from '~components';
 import { AcknowledgeBreachModal } from '~components/modal/AcknowledgeBreachModal';
 import { Gradient } from '~layouts';
-import { HydrateAction } from '~features/Hydrate';
+import { useForegroundService, useOnMount } from '~hooks';
 import moment from 'moment';
 
 export const SensorListScreen: FC = () => {
   const navigation = useNavigation();
   const sensorIds = useSelector(SensorSelector.sensorIds);
-  const [endTime, setEndTime] = React.useState(moment().unix());
-
   const dispatch = useDispatch();
   const hydrate = () => dispatch(HydrateAction.hydrate());
+  const [endTime, setEndTime] = React.useState(moment().unix());
 
-  const startPassiveDownloading = () => {
-    setTimeout(() => {
-      dispatch(DownloadAction.passiveDownloadingStart());
-    }, 50000);
-  };
-
-  const startBatteryObserving = () => {
-    setTimeout(() => {
-      dispatch(BatteryObserverAction.start());
-    }, 50000);
-  };
-
-  const startIntegrating = () => {
-    setTimeout(() => {
-      dispatch(SyncAction.tryStartPassiveIntegration());
-    }, 50000);
-  };
+  useForegroundService();
 
   useLayoutEffect(() => {
-    dispatch(SensorAction.fetchAll());
     // set a timer to update the endTime every minute
     // this redraws the chart, so that the end time displayed
     // is within a minute of the current time
@@ -59,8 +34,6 @@ export const SensorListScreen: FC = () => {
     };
   }, [dispatch]);
 
-  useOnMount([hydrate, startPassiveDownloading, startBatteryObserving, startIntegrating]);
-
   const renderItem = useCallback(
     ({ item }: { item: string }) => {
       const sensorDetailScreen = NAVIGATION.SCREENS.SENSOR_STACK.SENSOR_DETAIL;
@@ -71,6 +44,11 @@ export const SensorListScreen: FC = () => {
     },
     [navigation, endTime]
   );
+  useLayoutEffect(() => {
+    dispatch(SensorAction.fetchAll());
+  }, [dispatch]);
+
+  useOnMount([hydrate]);
 
   return (
     <Gradient>

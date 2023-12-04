@@ -31,6 +31,7 @@ export enum ICON_NAME {
   EMAIL = 'envelope-o',
   LOCK = 'lock',
   UNLOCK = 'unlock',
+  QR = 'qrcode',
 
   // Power off icon is for PRO FA members. Using MaterialCommunityIcon variants.
   POWER_PLUG_ON = 'power-plug',
