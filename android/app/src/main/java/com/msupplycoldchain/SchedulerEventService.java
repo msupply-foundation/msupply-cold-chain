@@ -16,8 +16,8 @@ public class SchedulerEventService extends HeadlessJsTaskService {
      */
     private static final long TASK_TIMEOUT_MS = 30000;
 
-    @Nullable
-    protected HeadlessJsTaskConfig getTaskConfig(Intent intent) {
+    @Override
+    protected @Nullable HeadlessJsTaskConfig getTaskConfig(Intent intent) {
         Bundle extras = intent.getExtras();
         return new HeadlessJsTaskConfig(
             "ColdchainScheduler",
