@@ -3,7 +3,7 @@ import { SagaIterator } from '@redux-saga/types';
 import { createSlice } from '@reduxjs/toolkit';
 import { BleService } from 'msupply-ble-service';
 import { BleManager } from 'react-native-ble-plx';
-import { call, delay, takeLeading } from 'redux-saga/effects';
+import { call, delay, select, takeLeading } from 'redux-saga/effects';
 import { DependencyLocator } from '~common/services';
 import {
   DEPENDENCY,
@@ -12,6 +12,7 @@ import {
   REDUCER,
   RESTART_INTERVAL_IN_SECONDS,
 } from '~constants';
+import { getIsDownloading } from '~features/Bluetooth/Download/DownloadSlice';
 
 interface MonitorState {
   isWatching: boolean;
@@ -46,11 +47,24 @@ function* startDependencyMonitor(): SagaIterator {
     yield delay(MILLISECONDS.SIXTY_SECONDS);
 
     const now = utilService.now();
-    // TODO: don't restart if we are downloading
+
     if (!ENVIRONMENT.MOCK_BLE) {
       if (now - start >= RESTART_INTERVAL_IN_SECONDS) {
         start = now;
-        restartBluetoothService();
+        try {
+          // Don't restart if we are downloading
+          const isDownloading = yield select(getIsDownloading);
+
+          if (!isDownloading) {
+            Bugsnag.leaveBreadcrumb('Restarting bluetooth service');
+            restartBluetoothService();
+          } else {
+            Bugsnag.leaveBreadcrumb('Skipping bluetooth restart because we are downloading');
+          }
+        } catch (e) {
+          Bugsnag.notify(e);
+          console.log(e);
+        }
       }
     }
   }
@@ -59,7 +73,6 @@ function* startDependencyMonitor(): SagaIterator {
 function restartBluetoothService() {
   const loggerService = DependencyLocator.get(DEPENDENCY.LOGGER_SERVICE);
   loggerService.info('Restarting bluetooth service');
-  Bugsnag.leaveBreadcrumb('Restarting bluetooth service');
   DependencyLocator.register('bleService', undefined);
   DependencyLocator.register('bleService', new BleService(new BleManager(), loggerService));
 }
