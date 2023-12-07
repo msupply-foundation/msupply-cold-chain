@@ -144,9 +144,10 @@ class BatteryLevelSubject {
           });
         })
         .catch(e => {
+          clearInterval(this.intervalHandler);
           console.error('Error! get battery level failed:', e);
         });
-    }, MILLISECONDS.TEN_SECONDS);
+    }, MILLISECONDS.ONE_MINUTE);
   }
 
   stop() {
