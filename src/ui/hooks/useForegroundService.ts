@@ -4,7 +4,6 @@ import { AppRegistry, NativeModules } from 'react-native';
 import { useOnMount } from '~hooks';
 import { DownloadAction, SettingSelector, SyncAction } from '~features';
 import Bugsnag from '@bugsnag/react-native';
-import { MILLISECONDS } from '~constants';
 
 export const useForegroundService = (): void => {
   const { Scheduler } = NativeModules;
@@ -17,12 +16,11 @@ export const useForegroundService = (): void => {
 
     // Send the sync url to bugsnag so we have more context for where an error is occurring
     Bugsnag.addMetadata('sync', 'serverUrl', serverUrl);
+    Scheduler.updateStatus('Running...');
 
     const schedulerTask = async () => {
-      Scheduler.updateStatus('Downloading logs');
       dispatch(DownloadAction.downloadTemperaturesStart());
       dispatch(SyncAction.tryIntegrating());
-      setTimeout(() => Scheduler.updateStatus('Idle'), MILLISECONDS.TEN_SECONDS);
     };
 
     try {
