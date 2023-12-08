@@ -135,11 +135,15 @@ export class SensorManager {
     try {
       id = (await this.getSensorByMac(macAddress)).id;
     } catch (e) {
-      id = this.utils.uuid();
+      try {
+        id = this.utils.hashuid(macAddress);
+      } catch (e) {
+        console.error('===>Error creating hash', e);
+      }
     }
     // Just to make sure
     if (!id) {
-      id = this.utils.uuid();
+      id = this.utils.hashuid(macAddress);
     }
 
     const name = this.btUtils.deviceDescriptorToDevice(macAddress).id;
@@ -178,8 +182,8 @@ export class SensorManager {
       ...result[0],
       from: result[0].minChartTimestamp,
       to: result[0].mostRecentLogTimestamp,
-      possibleFrom: result[0].firstTimestamp,
-      possibleTo: result[0].mostRecentLogTimestamp,
+      possibleFrom: result[0]?.firstTimestamp,
+      possibleTo: result[0]?.mostRecentLogTimestamp,
     };
   };
 

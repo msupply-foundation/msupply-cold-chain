@@ -1,12 +1,12 @@
 import { ToastAndroid } from 'react-native';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SagaIterator } from '@redux-saga/types';
-import { call, delay, put, takeEvery, takeLeading, take, race } from 'redux-saga/effects';
+import { call, put, takeEvery, takeLeading, take, race } from 'redux-saga/effects';
 
 import { UtilService } from '~services/UtilService';
 import { TemperatureLog, TemperatureBreach, Sensor } from '~services/Database/entities';
 import { SettingAction, SettingManager, SyncSettingMap } from '~features/Entities/Setting';
-import { DEPENDENCY, MILLISECONDS, REDUCER } from '~constants';
+import { DEPENDENCY, REDUCER } from '~constants';
 import { RootState } from '~store/store';
 import { getDependency } from '~features/utils/saga';
 
@@ -26,7 +26,6 @@ import {
   UpdateSyncErrorActionPayload,
 } from './types';
 import { FailurePayload, PrepareActionReturn } from '~common/types/common';
-import Bugsnag from '@bugsnag/react-native';
 
 export const ENDPOINT = {
   LOGIN: 'coldchain/v1/login',
@@ -55,7 +54,7 @@ const reducers = {
     prepare: (errorMessage: string) => ({ payload: { errorMessage } }),
     reducer: () => {},
   },
-  tryStartPassiveIntegration: () => {},
+  tryIntegrating: () => {},
   tryTestConnection: {
     prepare: (
       loginUrl: string,
@@ -303,41 +302,21 @@ function* syncAll({
   yield put(SyncAction.updateIsSyncing(false));
 }
 
-function* startSyncScheduler(): SagaIterator {
-  let serverUrl = '';
-  while (true) {
-    try {
-      const settingManager: SettingManager = yield call(getDependency, 'settingManager');
-      const syncSettings: SyncSettingMap = yield call(settingManager.getSyncSettings);
+function* tryIntegrating(): SagaIterator {
+  const settingManager: SettingManager = yield call(getDependency, DEPENDENCY.SETTING_MANAGER);
+  const isIntegrating: boolean = yield call(settingManager.getBool, 'isIntegrating');
 
-      if (serverUrl !== syncSettings.serverUrl) {
-        // Send the sync url to bugsnag so we have more context for where an error is occurring
-        Bugsnag.addMetadata('sync', 'serverUrl', syncSettings.serverUrl);
-        serverUrl = syncSettings.serverUrl;
-      }
+  if (!isIntegrating) return;
 
-      yield put(SyncAction.syncAll(syncSettings));
-      yield delay(MILLISECONDS.ONE_MINUTE);
-    } catch (e) {
-      console.error('startSyncScheduler Error', e);
-    }
-  }
+  const syncSettings: SyncSettingMap = yield call(settingManager.getSyncSettings);
+  yield put(SyncAction.syncAll(syncSettings));
 }
 
 function* enablePassiveSync(): SagaIterator {
   yield race({
-    start: call(startSyncScheduler),
+    start: take(SyncAction.enablePassiveSync),
     stop: take(SyncAction.disablePassiveSync),
   });
-}
-
-function* tryStartPassiveIntegration(): SagaIterator {
-  const settingManager: SettingManager = yield call(getDependency, DEPENDENCY.SETTING_MANAGER);
-  const isIntegrating: boolean = yield call(settingManager.getBool, 'isIntegrating');
-
-  if (isIntegrating) {
-    yield put(SyncAction.enablePassiveSync());
-  }
 }
 
 function* tryTestConnection({
@@ -391,8 +370,8 @@ function* root(): SagaIterator {
   yield takeLeading(SyncAction.testConnectionSuccess, testConnectionSuccess);
   yield takeLeading(SyncAction.testConnectionFailure, testConnectionFailure);
 
-  yield takeLeading(SyncAction.tryStartPassiveIntegration, tryStartPassiveIntegration);
   yield takeLeading(SyncAction.enablePassiveSync, enablePassiveSync);
+  yield takeEvery(SyncAction.tryIntegrating, tryIntegrating);
 }
 
 const SyncSaga = {
@@ -409,9 +388,6 @@ const SyncSaga = {
   tryTestConnection,
   testConnectionFailure,
   testConnectionSuccess,
-  tryStartPassiveIntegration,
-  enablePassiveSync,
-  startSyncScheduler,
 };
 
 export { SyncAction, SyncReducer, SyncSaga, SyncSelector, initialState };

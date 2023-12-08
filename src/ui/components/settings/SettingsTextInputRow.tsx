@@ -7,6 +7,7 @@ import { Icon } from '~presentation/icons';
 import { SettingsTextEditModal } from './SettingsTextEditModal';
 import { SettingsItem } from './SettingsItem';
 interface SettingsTextInputRowProps {
+  ActionButton?: React.ReactNode;
   label: string;
   subtext?: string;
   onConfirm: ({ inputValue }: { inputValue: string }) => void;
@@ -24,6 +25,7 @@ export const SettingsTextInputRow: FC<SettingsTextInputRowProps> = ({
   editDescription,
   validation,
   secureTextEntry,
+  ActionButton,
 }) => {
   const [isModalOpen, toggleModal] = useToggle(false);
   const wrappedOnConfirm = useCombinedCallback(onConfirm, toggleModal);
@@ -38,6 +40,7 @@ export const SettingsTextInputRow: FC<SettingsTextInputRowProps> = ({
         LeftIcon={<Icon.Pencil />}
         RightComponent={
           <Row justifyContent="space-between" alignItems="center">
+            {ActionButton}
             <NormalText marginRight={30} color={COLOUR.GREY_ONE}>
               {secureTextEntry && value ? formatter.hide(value) : value ?? ''}
             </NormalText>

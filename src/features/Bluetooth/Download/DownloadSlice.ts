@@ -5,13 +5,11 @@ import {
   put,
   takeEvery,
   take,
-  race,
   all,
-  delay,
-  takeLeading,
   actionChannel,
   fork,
   select,
+  delay,
 } from 'redux-saga/effects';
 import { getDependency } from '~features/utils/saga';
 import { SensorState } from '~features/Entities/Sensor/SensorSlice';
@@ -25,19 +23,15 @@ import {
 } from '~features';
 import { FileLoggerService } from '~common/services';
 import { RootState } from '~common/store';
-import { isSensorUpdating } from '../BatteryObserver/BatteryObserverSlice';
+import { BatteryObserverAction, isSensorUpdating } from '../BatteryObserver/BatteryObserverSlice';
 
 const DOWNLOAD_RETRIES = 3;
 interface DownloadSliceState {
   downloadingById: Record<string, boolean>;
-  passiveDownloadEnabled: boolean;
-  enabled: boolean;
 }
 
 export const DownloadInitialState: DownloadSliceState = {
   downloadingById: {},
-  passiveDownloadEnabled: false,
-  enabled: false,
 };
 
 interface DownloadStartPayload {
@@ -54,13 +48,19 @@ export const isSensorDownloading =
     }
   };
 
+export const getIsDownloading = (state: RootState): boolean => {
+  try {
+    return Object.values(state.bluetooth.download.downloadingById).some(
+      isDownloading => isDownloading
+    );
+  } catch {
+    return false;
+  }
+};
+
 const reducers = {
-  passiveDownloadingStart: (draftState: DownloadSliceState) => {
-    draftState.enabled = true;
-  },
-  passiveDownloadingStop: (draftState: DownloadSliceState) => {
-    draftState.enabled = false;
-  },
+  downloadTemperaturesStart: () => {},
+  downloadTemperaturesStop: () => {},
   downloadStart: {
     prepare: (sensorId: string) => ({ payload: { sensorId } }),
     reducer: (
@@ -130,6 +130,7 @@ function* tryDownloadForSensor({
     logger.debug(
       `${sensorId} tryDownloadForSensor canDownload: ${canDownload} isDownloading: ${isDownloading} isUpdating: ${isUpdating} doDownload: ${doDownload}`
     );
+
     if (doDownload) {
       yield put(DownloadAction.downloadStart(sensorId));
 
@@ -197,21 +198,24 @@ function* downloadTemperatures(): SagaIterator {
   } catch (error) {
     // This shouldn't happen as we are catching errors in tryDownloadForSensor
     console.error(`Error in downloadTemperatures: ${(error as Error)?.message}`);
+  } finally {
+    yield put(DownloadAction.downloadTemperaturesStop());
   }
 }
 
-function* startPassiveDownloading(): SagaIterator {
-  while (true) {
-    yield call(downloadTemperatures);
-    yield delay(MILLISECONDS.SIXTY_SECONDS);
-  }
-}
+function* startDownloading(): SagaIterator {
+  const isDownloading = yield select(getIsDownloading);
+  if (isDownloading) return;
 
-function* watchPassiveDownloading(): SagaIterator {
-  yield race({
-    start: call(startPassiveDownloading),
-    stop: take(DownloadAction.passiveDownloadingStop),
-  });
+  yield call(downloadTemperatures);
+  yield delay(MILLISECONDS.ONE_SECOND * 10);
+  // Wait for all downloads to finish - the async nature of the downloads means that
+  // you cannot rely on the yield to meant that downloading has finished
+  // so check for the state to change
+  while (yield select(getIsDownloading)) {
+    yield delay(MILLISECONDS.ONE_SECOND * 10);
+  }
+  yield put(BatteryObserverAction.updateBatteryLevels());
 }
 
 function* queuePassiveDownloads(): SagaIterator {
@@ -225,14 +229,12 @@ function* queuePassiveDownloads(): SagaIterator {
 
 function* root(): SagaIterator {
   yield takeEvery(DownloadAction.tryManualDownloadForSensor, tryDownloadForSensor);
-  yield takeLeading(DownloadAction.passiveDownloadingStart, watchPassiveDownloading);
+  yield takeEvery(DownloadAction.downloadTemperaturesStart, startDownloading);
   yield fork(queuePassiveDownloads);
 }
 
 const DownloadSaga = {
   root,
-  watchPassiveDownloading,
-  startPassiveDownloading,
   downloadTemperatures,
   tryDownloadForSensor,
 };

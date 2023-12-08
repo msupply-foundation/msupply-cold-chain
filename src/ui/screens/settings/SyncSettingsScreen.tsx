@@ -12,6 +12,10 @@ import { SettingAction, SettingSelector, SyncAction, SyncSelector } from '~featu
 import { t } from '~common/translations';
 import { useFormatter, useOnMount } from '~hooks';
 import { ENDPOINT } from '~features/Sync/SyncSlice';
+import { QRCodeScanner } from './QRCodeScanner';
+import { IconButton } from '~components/buttons';
+import { ToastAndroid } from 'react-native';
+import { Icon } from '~presentation/icons';
 
 const SYNC_COUNT_UPDATE_INTERVAL = 1000;
 
@@ -21,6 +25,7 @@ export const SyncSettingsScreen: FC = () => {
 
   const syncQueueLength = useSelector(SyncSelector.getSyncQueueCount);
   const isSyncing = useSelector(SyncSelector.getIsSyncing);
+  const [isActive, setIsActive] = React.useState(false);
   const syncError = useSelector(SyncSelector.getSyncError);
 
   const syncStatus = () => {
@@ -39,6 +44,8 @@ export const SyncSettingsScreen: FC = () => {
 
   const dispatch = useDispatch();
   const formatter = useFormatter();
+  const saveServerUrl = ({ inputValue }: { inputValue: string }) =>
+    dispatch(SettingAction.update('serverUrl', inputValue.replace(/\/$/, ''))); // trim final / from the URL if present
 
   useOnMount([
     () => setInterval(() => dispatch(SyncAction.tryCountSyncQueue()), SYNC_COUNT_UPDATE_INTERVAL),
@@ -49,12 +56,10 @@ export const SyncSettingsScreen: FC = () => {
     <SettingsList>
       <SettingsGroup title="Server configuration">
         <SettingsTextInputRow
+          ActionButton={<IconButton Icon={<Icon.QRCode />} onPress={() => setIsActive(true)} />}
           label={t('SERVER')}
           subtext={t('SERVER_URL')}
-          onConfirm={
-            ({ inputValue }: { inputValue: string }) =>
-              dispatch(SettingAction.update('serverUrl', inputValue.replace(/\/$/, ''))) // trim final / from the URL if present
-          }
+          onConfirm={saveServerUrl}
           value={serverUrl}
           editDescription={t('EDIT_SERVER_URL')}
           validation={Yup.string().url()}
@@ -121,6 +126,23 @@ export const SyncSettingsScreen: FC = () => {
           <SettingsItem label="Status" subtext={syncStatus()} isDisabled />
         </SettingsGroup>
       </SettingsGroup>
+      <QRCodeScanner
+        isActive={isActive}
+        onResult={url => {
+          setIsActive(false);
+          try {
+            Yup.string().url().validateSync(url);
+            saveServerUrl({ inputValue: url });
+            ToastAndroid.show(`${t('SCAN_RESULT')} ${url}`, ToastAndroid.SHORT);
+          } catch (e) {
+            ToastAndroid.show(
+              `${t('SCAN_RESULT')} ${url}. Error! ${(e as Error).message}`,
+              ToastAndroid.LONG
+            );
+          }
+        }}
+        onClose={() => setIsActive(false)}
+      />
     </SettingsList>
   );
 };

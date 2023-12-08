@@ -8,13 +8,15 @@ import { Chart } from '~presentation';
 import { SensorStatus } from './SensorStatus';
 import { RootState } from '~store';
 import { CHART } from '~constants';
+import moment from 'moment';
 
 interface SensorChartRowProps {
   id: string;
+  endTime: number;
   onPress: () => void;
 }
 
-export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, onPress }) => {
+export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, endTime, onPress }) => {
   const { width, height } = useWindowDimensions();
 
   const isLoadingChartData = useSelector((state: RootState) =>
@@ -26,16 +28,19 @@ export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, onPress
   const data = useSelector((state: RootState) => ChartSelector.listData(state, { id }));
   const name = useSelector((state: RootState) => SensorSelector.getName(state, { id }));
   const hasData = useSelector((state: RootState) => SensorStatusSelector.hasData(state, { id }));
+  const startTime = moment().subtract(1, 'day').unix();
 
   return (
     <SensorRowLayout
-      {...(hasData && !isLoadingChartData ? { onPress } : {})}
+      {...(hasData ? { onPress } : {})}
       Chart={
         <Chart
           isLoading={isLoadingChartData}
           data={data}
           width={width * CHART.WIDTH_FACTOR}
           height={height * CHART.HEIGHT_FACTOR}
+          startTime={startTime}
+          endTime={endTime}
         />
       }
       SensorStatus={

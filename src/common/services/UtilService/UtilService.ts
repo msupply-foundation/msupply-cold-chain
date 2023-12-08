@@ -4,11 +4,17 @@ import generateUUID from 'react-native-uuid';
 import packageJson from '~/../../package.json';
 import { UnixTimestamp } from '~common/types/common';
 import { Seconds } from '~constants/Milliseconds';
+import { Md5 } from 'ts-md5';
 
 type NumberRange = [number, number];
 
 export class UtilService {
   uuid = (): string => generateUUID.v4() as string;
+  hashuid = (s: string): string => {
+    // use a hash algorithm to generate a unique id for the input string (mac address in our case)
+    const h = Md5.hashStr(s);
+    return h;
+  };
 
   now = (): UnixTimestamp => moment().unix();
 
