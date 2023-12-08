@@ -189,7 +189,7 @@ function* authenticate({
 }
 
 function* syncSensorsFailure(): SagaIterator {
-  yield put(SyncAction.updateSyncError('Failed to sync sensors.'));
+  yield put(SyncAction.updateSyncError('Failed to sync sensors'));
 }
 
 function* syncSensors({
@@ -215,7 +215,7 @@ function* syncSensors({
 }
 
 function* syncTemperatureLogsFailure(): SagaIterator {
-  yield put(SyncAction.updateSyncError('Failed to sync temperature logs.'));
+  yield put(SyncAction.updateSyncError('Failed to sync temperature logs'));
 }
 
 function* syncTemperatureLogs({
@@ -241,7 +241,7 @@ function* syncTemperatureLogs({
 }
 
 function* syncTemperatureBreachesFailure(): SagaIterator {
-  yield put(SyncAction.updateSyncError('Failed to sync temperature breaches.'));
+  yield put(SyncAction.updateSyncError('Failed to sync temperature breaches'));
 }
 
 function* syncTemperatureBreaches({
@@ -289,7 +289,7 @@ function* syncAll({
         SyncAction.syncTemperatureBreachesSuccess,
         SyncAction.syncTemperatureBreachesFailure,
       ]);
-      yield put(SettingAction.update('lastSync', utils.now())); // This is reported as last Successful Sync, so we only update it if there's no error
+      yield put(SettingAction.update('lastSync', utils.now()));
     } catch (e) {
       console.error('syncAll error', e);
       yield put(SyncAction.updateSyncError((e as Error).message));
@@ -297,7 +297,7 @@ function* syncAll({
     }
   } else {
     console.warn('Authentication failed, Skipping sync.');
-    yield put(SyncAction.updateSyncError('Authentication failed.'));
+    yield put(SyncAction.updateSyncError('Authentication failed'));
   }
   yield put(SyncAction.updateIsSyncing(false));
 }
