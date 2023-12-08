@@ -46,7 +46,7 @@ const Action = {
   }),
   batteryLevelUpdated: (batteryLevel: number): PowerStateAction => ({
     type: PowerStateActionTypes.BatteryLevelUpdate,
-    payload: { batteryLevel: Math.ceil(batteryLevel * 100) },
+    payload: { batteryLevel: Math.round(batteryLevel * 100) },
   }),
   lowPowerModeUpdated: (isLowPowerMode: boolean): PowerStateAction => ({
     type: PowerStateActionTypes.LowPowerModeUpdate,
@@ -113,7 +113,7 @@ type BatteryLevelListener = (batteryLevel: BatteryLevel) => void;
 class BatteryLevelSubject {
   listeners: Record<number, BatteryLevelListener>;
 
-  intervalHandler: NodeJS.Timeout;
+  intervalHandler: ReturnType<typeof setInterval>;
 
   currentId: number;
 
@@ -137,12 +137,17 @@ class BatteryLevelSubject {
 
   start() {
     this.intervalHandler = setInterval(() => {
-      ExpoBattery.getBatteryLevelAsync().then(batteryLevel => {
-        Object.values(this.listeners).forEach(listener => {
-          listener(batteryLevel);
+      ExpoBattery.getBatteryLevelAsync()
+        .then(batteryLevel => {
+          Object.values(this.listeners).forEach(listener => {
+            listener(batteryLevel);
+          });
+        })
+        .catch(e => {
+          clearInterval(this.intervalHandler);
+          console.error('Error! get battery level failed:', e);
         });
-      });
-    }, MILLISECONDS.TEN_SECONDS);
+    }, MILLISECONDS.ONE_MINUTE);
   }
 
   stop() {

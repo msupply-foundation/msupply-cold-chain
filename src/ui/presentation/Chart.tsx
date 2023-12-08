@@ -96,7 +96,7 @@ export const Chart: FC<ChartProps> = ({
     <VictoryChart
       width={width}
       height={height}
-      padding={{ top: 10, bottom: 30, left: 30, right: 30 }}
+      padding={{ top: 20, bottom: 30, left: 30, right: 30 }}
       domain={{ y: [domainMin, domainMax], x: [minTime, maxTime] }}
     >
       {/* X AXIS */}

@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { eventChannel } from 'redux-saga';
 import { SagaIterator } from '@redux-saga/types';
 import { ActionReducerMapBuilder, createSlice } from '@reduxjs/toolkit';
-import { BleService, ScanCallback, BleError } from 'msupply-ble-service';
+import { BleService, BleError } from 'msupply-ble-service';
 import {
   take,
   getContext,

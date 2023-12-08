@@ -62,7 +62,7 @@ function* startDependencyMonitor(): SagaIterator {
             Bugsnag.leaveBreadcrumb('Skipping bluetooth restart because we are downloading');
           }
         } catch (e) {
-          Bugsnag.notify(e);
+          Bugsnag.notify(e as Error);
           console.log(e);
         }
       }
