@@ -1,4 +1,6 @@
+import { MILLISECONDS } from './Milliseconds';
+
 export const TIMEOUT = {
-  LOGIN_TIMEOUT: 20000,
-  HTTP_TIMEOUT: 300000, // 10 minutes to sync
+  LOGIN_TIMEOUT: 20 * MILLISECONDS.ONE_SECOND,
+  HTTP_TIMEOUT: 5 * MILLISECONDS.ONE_MINUTE,
 };

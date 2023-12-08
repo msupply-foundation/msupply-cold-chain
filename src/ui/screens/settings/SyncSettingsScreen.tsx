@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 import { SettingsList } from '~layouts';
@@ -10,14 +11,15 @@ import {
 } from '~components/settings';
 import { SettingAction, SettingSelector, SyncAction, SyncSelector } from '~features';
 import { t } from '~common/translations';
-import { useFormatter, useOnMount } from '~hooks';
+import { useFormatter } from '~hooks';
 import { ENDPOINT } from '~features/Sync/SyncSlice';
 import { QRCodeScanner } from './QRCodeScanner';
 import { IconButton } from '~components/buttons';
 import { ToastAndroid } from 'react-native';
 import { Icon } from '~presentation/icons';
+import { MILLISECONDS } from '~constants';
 
-const SYNC_COUNT_UPDATE_INTERVAL = 1000;
+const SYNC_COUNT_UPDATE_INTERVAL = MILLISECONDS.ONE_SECOND;
 
 export const SyncSettingsScreen: FC = () => {
   const { serverUrl, authUsername, authPassword, isIntegrating, lastSync, lastSyncStart } =
@@ -47,10 +49,20 @@ export const SyncSettingsScreen: FC = () => {
   const saveServerUrl = ({ inputValue }: { inputValue: string }) =>
     dispatch(SettingAction.update('serverUrl', inputValue.replace(/\/$/, ''))); // trim final / from the URL if present
 
-  useOnMount([
-    () => setInterval(() => dispatch(SyncAction.tryCountSyncQueue()), SYNC_COUNT_UPDATE_INTERVAL),
-    () => dispatch(SettingAction.fetchAll()),
-  ]);
+  // using useFocusEffect to catch when this screen is navigated to/from
+  // useEffect won't call the cleanup func, as the component is not unmounted
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(SettingAction.fetchAll());
+      const intervalHandler = setInterval(() => {
+        dispatch(SyncAction.tryCountSyncQueue());
+      }, SYNC_COUNT_UPDATE_INTERVAL);
+
+      return () => clearInterval(intervalHandler);
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+  );
 
   return (
     <SettingsList>
