@@ -21,6 +21,7 @@ export const SyncSettingsScreen: FC = () => {
 
   const syncQueueLength = useSelector(SyncSelector.getSyncQueueCount);
   const isSyncing = useSelector(SyncSelector.getIsSyncing);
+  const syncError = useSelector(SyncSelector.getSyncError);
 
   const syncStatus = () => {
     if (!isIntegrating) {
@@ -29,6 +30,10 @@ export const SyncSettingsScreen: FC = () => {
     if (isSyncing) {
       return `Syncing in progress. Started ${formatter.dateTime(lastSyncStart)}`;
     }
+    if (syncError) {
+      return `Error ${syncError}. Last successful sync finished ${formatter.dateTime(lastSync)}`;
+    }
+
     return `Idle. Last successful sync finished ${formatter.dateTime(lastSync)}`;
   };
 
