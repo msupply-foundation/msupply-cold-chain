@@ -29,6 +29,7 @@ export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, endTime
   const name = useSelector((state: RootState) => SensorSelector.getName(state, { id }));
   const hasData = useSelector((state: RootState) => SensorStatusSelector.hasData(state, { id }));
   const startTime = moment().subtract(1, 'day').unix();
+  const widthFactor = width > height ? CHART.WIDTH_FACTOR_LANDSCAPE : CHART.WIDTH_FACTOR_PORTRAIT;
 
   return (
     <SensorRowLayout
@@ -37,7 +38,7 @@ export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, endTime
         <Chart
           isLoading={isLoadingChartData}
           data={data}
-          width={width * CHART.WIDTH_FACTOR}
+          width={width * widthFactor}
           height={height * CHART.HEIGHT_FACTOR}
           startTime={startTime}
           endTime={endTime}
