@@ -1,5 +1,4 @@
 import Axios, { AxiosResponse } from 'axios';
-import _ from 'lodash';
 import { TemperatureLog } from '~services/Database/entities';
 import { Sensor, TemperatureBreach } from '~common/services/Database/entities';
 
@@ -11,6 +10,7 @@ import {
   TemperatureLogSyncOut,
 } from '~features/Sync/types';
 import { TIMEOUT } from '~constants';
+import Bugsnag from '@bugsnag/react-native';
 
 class SyncOutManager {
   axios: typeof Axios;
@@ -105,6 +105,7 @@ class SyncOutManager {
     const source = this.axios.CancelToken.source();
     setTimeout(() => {
       source.cancel('Connection timed out.');
+      Bugsnag.notify(new Error(`Connection timed out. ${url}`));
     }, TIMEOUT.HTTP_TIMEOUT);
     return this.axios.put<SyncResponse>(url, data, {
       cancelToken: source.token,
@@ -139,19 +140,8 @@ class SyncOutManager {
   public syncTemperatureLogs = async (
     temperatureLogUrl: string,
     logs: TemperatureLog[]
-  ): Promise<AxiosResponse<SyncResponse>[]> => {
-    const numberOfChunks = Math.ceil(logs.length / 20);
-    const chunkSize = logs.length / numberOfChunks;
-    const chunked = _.chunk(logs, chunkSize);
-
-    const results: AxiosResponse<SyncResponse>[] = await Promise.all(
-      chunked.map(chunk =>
-        this.put(temperatureLogUrl, this.getSyncBody(this.mapTemperatureLogs(chunk)))
-      )
-    );
-
-    return results;
-  };
+  ): Promise<AxiosResponse<SyncResponse>> =>
+    this.put(temperatureLogUrl, this.getSyncBody(this.mapTemperatureLogs(logs)));
 
   public syncTemperatureBreaches = async (
     temperatureBreachUrl: string,

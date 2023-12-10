@@ -1,10 +1,9 @@
-import { ActivityIndicator } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { FC, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { t } from '~translations';
-import { COLOUR, SETTINGS_STACK } from '~constants';
+import { SETTINGS_STACK } from '~constants';
 import { BreachConfigurationSelector, BreachConfigurationAction } from '~features/Entities';
 import { SettingsList } from '~layouts';
 import { SettingsGroup, SettingsNavigationRow } from '~components/settings';

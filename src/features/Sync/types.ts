@@ -44,11 +44,16 @@ export type TemperatureBreachSyncOut = Pick<
 
 export interface SyncSliceStateShape {
   isSyncing: boolean;
+  syncError?: string;
   syncQueueLength: number;
 }
 
 export interface UpdateIsSyncingActionPayload {
   isSyncing: boolean;
+}
+
+export interface UpdateSyncErrorActionPayload {
+  syncError?: string;
 }
 
 export interface AuthenticateActionPayload {
