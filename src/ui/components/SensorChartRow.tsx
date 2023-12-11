@@ -3,12 +3,14 @@ import { useWindowDimensions } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { SensorStatusSelector, ChartSelector, SensorSelector } from '~features';
-import { SensorRowLayout } from '~layouts';
+import { Column, Row, SensorRowLayout } from '~layouts';
 import { Chart } from '~presentation';
 import { SensorStatus } from './SensorStatus';
 import { RootState } from '~store';
-import { CHART } from '~constants';
+import { CHART, COLOUR } from '~constants';
 import moment from 'moment';
+import { BoldText } from '~presentation/typography';
+import { SensorStatusBar } from './SensorStatusBar';
 
 interface SensorChartRowProps {
   id: string;
@@ -35,14 +37,25 @@ export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, endTime
     <SensorRowLayout
       {...(hasData ? { onPress } : {})}
       Chart={
-        <Chart
-          isLoading={isLoadingChartData}
-          data={data}
-          width={width * widthFactor}
-          height={height * CHART.HEIGHT_FACTOR}
-          startTime={startTime}
-          endTime={endTime}
-        />
+        <Column flex={1}>
+          <Row
+            justifyContent="flex-start"
+            flex={1}
+            style={{ paddingLeft: 30, paddingTop: 10, marginBottom: -10 }}
+          >
+            <BoldText colour={COLOUR.WHITE}>{name}</BoldText>
+            <Row style={{ marginLeft: 5 }} />
+            <SensorStatusBar id={id} />
+          </Row>
+          <Chart
+            isLoading={isLoadingChartData}
+            data={data}
+            width={width * widthFactor}
+            height={height * CHART.HEIGHT_FACTOR}
+            startTime={startTime}
+            endTime={endTime}
+          />
+        </Column>
       }
       SensorStatus={
         <SensorStatus name={name} isLoading={isLoadingStatus} hasData={hasData} id={id} />

@@ -1,10 +1,10 @@
 import React, { FC, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Animated, TouchableOpacity, ViewStyle } from 'react-native';
-import { MILLISECONDS, COLOUR, STYLE } from '../../common/constants';
+import { MILLISECONDS, COLOUR, STYLE, FONT } from '../../common/constants';
 import { SensorStatusSelector, AcknowledgeBreachAction } from '../../features';
 import { Row, Centered, LargeRectangle } from '../layouts';
-import { Header, LargeText } from '../presentation/typography';
+import { BoldText, Header, LargeText, MediumText } from '../presentation/typography';
 import { Icon, ICON_SIZE } from '../presentation/icons';
 import { RootState } from '../../common/store/store';
 
@@ -38,6 +38,38 @@ const getAnimations = (animationValues: Animated.Value[]) => {
 interface SensorTemperatureStatusProps {
   id: string;
 }
+
+const parseTemperature = (temperature: string) => {
+  const numericTemp = Number(temperature);
+  if (Number.isNaN(numericTemp)) return { major: temperature };
+
+  const major = Math.trunc(numericTemp);
+  const minor = Math.trunc((numericTemp - major) * 10);
+
+  return {
+    major: String(major),
+    minor: `.${minor}`,
+  };
+};
+
+const Temperature: FC<{ temperature: { major: string; minor?: string } }> = ({ temperature }) => {
+  if (!temperature.minor) {
+    return (
+      <Centered>
+        <Header>{temperature}</Header>
+      </Centered>
+    );
+  }
+
+  return (
+    <Row alignItems="flex-end" justifyContent="center">
+      <Header>{temperature.major}</Header>
+      <BoldText colour={COLOUR.PRIMARY} fontSize={FONT.SIZE.M} style={{ paddingBottom: 15 }}>
+        {temperature.minor}
+      </BoldText>
+    </Row>
+  );
+};
 
 export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> = ({ id }) => {
   const dispatch = useDispatch();
@@ -73,16 +105,21 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
 
   if (!hasData) return null;
 
+  const parsed = parseTemperature(temperature);
+
   return !isInDanger ? (
-    <Centered>
-      <Header>{temperature}</Header>
-    </Centered>
+    <Temperature temperature={parsed} />
   ) : (
     <TouchableOpacity onLongPress={startAcknowledging}>
       <LargeRectangle color={hasColdBreach ? COLOUR.PRIMARY : COLOUR.DANGER}>
         <Row>
-          <Row justifyContent="flex-end" flex={3}>
-            <LargeText color={COLOUR.WHITE}>{temperature}</LargeText>
+          <Row justifyContent="flex-end" flex={3} alignItems="flex-end">
+            <LargeText color={COLOUR.WHITE}>{parsed.major}</LargeText>
+            {parsed.minor && (
+              <MediumText color={COLOUR.WHITE} paddingBottom={5}>
+                {parsed.minor}
+              </MediumText>
+            )}
           </Row>
           <Row style={{ flex: 2 }}>
             {!!hasHotBreach && (
@@ -98,7 +135,13 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
             )}
 
             {!!isLowBattery && (
-              <Animated.View style={{ ...styles.icon, top: (STYLE.HEIGHT.LARGE_RECTANGLE - ICON_SIZE.MS) / 2, opacity: fadeAnim3 }}>
+              <Animated.View
+                style={{
+                  ...styles.icon,
+                  top: (STYLE.HEIGHT.LARGE_RECTANGLE - ICON_SIZE.MS) / 2,
+                  opacity: fadeAnim3,
+                }}
+              >
                 <Icon.LowBattery />
               </Animated.View>
             )}

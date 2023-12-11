@@ -4,7 +4,6 @@ import { COLOUR } from '~common/constants';
 import { SensorStatusLayout } from '~layouts/SensorStatusLayout';
 import { BoldText } from '~presentation/typography';
 import { SensorLastDownloadTime } from './SensorLastDownloadTime';
-import { SensorStatusBar } from './SensorStatusBar';
 import { SensorTemperatureStatus } from './SensorTemperatureStatus';
 
 interface SensorStatusProps {
@@ -21,8 +20,6 @@ export const SensorStatus: FC<SensorStatusProps> = ({ isLoading, hasData, id, na
     <ActivityIndicator size="large" color={COLOUR.PRIMARY} />
   ) : hasData ? (
     <SensorStatusLayout
-      SensorStatusBar={<SensorStatusBar id={id} />}
-      SensorName={SensorName}
       TemperatureStatus={<SensorTemperatureStatus id={id} />}
       CumulativeBreach={null}
       LastDownload={<SensorLastDownloadTime id={id} />}

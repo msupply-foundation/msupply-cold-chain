@@ -109,7 +109,6 @@ export const Chart: FC<ChartProps> = ({
         fixLabelOverlap={false}
         domainPadding={{ x: [offsetY ?? 0 + 5, 0] }}
       />
-
       {/* Y AXIS */}
       <VictoryAxis
         dependentAxis
@@ -119,7 +118,14 @@ export const Chart: FC<ChartProps> = ({
         crossAxis={false}
         tickFormat={(tick: number) => tick.toFixed(0)}
       />
-
+      <VictoryAxis
+        dependentAxis
+        orientation="right"
+        tickCount={5}
+        style={style.yAxis}
+        crossAxis={false}
+        tickFormat={(tick: number) => tick.toFixed(0)}
+      />
       <ChartGradient />
       <VictoryLine
         data={data}
