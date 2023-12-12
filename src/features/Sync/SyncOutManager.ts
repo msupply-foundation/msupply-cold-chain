@@ -10,7 +10,7 @@ import {
   TemperatureLogSyncOut,
 } from '~features/Sync/types';
 import { TIMEOUT } from '~constants';
-import Bugsnag from '@bugsnag/react-native';
+// import Bugsnag from '@bugsnag/react-native';
 
 class SyncOutManager {
   axios: typeof Axios;
@@ -105,7 +105,7 @@ class SyncOutManager {
     const source = this.axios.CancelToken.source();
     setTimeout(() => {
       source.cancel('Connection timed out.');
-      Bugsnag.notify(new Error(`Connection timed out. ${url}`));
+      // Bugsnag.notify(new Error(`Connection timed out. ${url}`));
     }, TIMEOUT.HTTP_TIMEOUT);
     return this.axios.put<SyncResponse>(url, data, {
       cancelToken: source.token,
