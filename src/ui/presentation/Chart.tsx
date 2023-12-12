@@ -87,7 +87,11 @@ export const Chart: FC<ChartProps> = ({
   const offsetY = domainMin > 0 ? undefined : 25;
 
   const Empty = () => (
-    <Row alignItems="center" justifyContent="center" style={{ width: STYLE.WIDTH.NORMAL_CHART }}>
+    <Row
+      alignItems="center"
+      justifyContent="center"
+      style={{ width: STYLE.WIDTH.NORMAL_CHART, height: STYLE.HEIGHT.NORMAL_CHART }}
+    >
       <MediumText>No data</MediumText>
     </Row>
   );
@@ -145,7 +149,6 @@ export const Chart: FC<ChartProps> = ({
 
   const EmptyOrLoading = isLoading ? LoadingIndicator : Empty;
   const ChartOrEmpty = data.length ? FullChart : EmptyOrLoading;
-  // const MaybeLoadingIndicator = isLoading ? LoadingIndicator : ChartOrEmpty;
 
   return (
     <View style={{ justifyContent: 'center', alignItems: 'center' }}>

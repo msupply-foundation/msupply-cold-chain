@@ -7,7 +7,7 @@ import { Column, Row, SensorRowLayout } from '~layouts';
 import { Chart } from '~presentation';
 import { SensorStatus } from './SensorStatus';
 import { RootState } from '~store';
-import { CHART, COLOUR } from '~constants';
+import { CHART, COLOUR, STYLE } from '~constants';
 import moment from 'moment';
 import { BoldText } from '~presentation/typography';
 import { SensorStatusBar } from './SensorStatusBar';
@@ -58,7 +58,9 @@ export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, endTime
         </Column>
       }
       SensorStatus={
-        <SensorStatus name={name} isLoading={isLoadingStatus} hasData={hasData} id={id} />
+        <Column justifyContent="center" flex={1} style={{ width: STYLE.WIDTH.LARGE_RECTANGLE }}>
+          <SensorStatus isLoading={isLoadingStatus} hasData={hasData} id={id} />
+        </Column>
       }
       direction="right"
     />

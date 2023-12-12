@@ -14,11 +14,11 @@ export const SensorStatusLayout: FC<SensorStatusLayoutProps> = ({
   LastDownload,
 }) => {
   return (
-    <Column flex={1} style={{ minWidth: 175 }}>
-      <Row justifyContent="flex-end" style={{ paddingRight: 20 }}>
+    <Column flex={1} alignItems="center" justifyContent="center">
+      <Row justifyContent="flex-end" style={{ paddingTop: 15 }}>
         {TemperatureStatus}
       </Row>
-      <Column flex={1} alignItems="flex-end" style={{ paddingRight: 25 }}>
+      <Column alignItems="flex-end">
         {LastDownload}
         {CumulativeBreach}
       </Column>
