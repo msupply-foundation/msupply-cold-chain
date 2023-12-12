@@ -23,7 +23,7 @@ const style = {
       fontFamily: FONT.FAMILY.REGULAR,
     },
     axis: { stroke: COLOUR.TRANSPARENT },
-    grid: { stroke: COLOUR.OFF_WHITE },
+    grid: { stroke: COLOUR.DIM_WHITE },
   },
   xAxis: {
     tickLabels: {

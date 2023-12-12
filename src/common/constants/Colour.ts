@@ -9,6 +9,7 @@ export enum COLOUR {
   DIVIDER_TWO = 'rgba(74, 144, 266, 0.05)',
   WHITE = '#FFFFFF',
   OFF_WHITE = 'rgba(255,255,255,0.4)',
+  DIM_WHITE = 'rgba(255,255,255,0.2)',
   BACKGROUND_ONE = 'rgba(255,255,255,0.1)',
   BACKGROUND_TWO = 'rgba(74,74,74,0.3)',
   BACKGROUND_THREE = 'rgba(74,74,74,0.2)',

@@ -40,6 +40,7 @@ export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, endTime
         <Column flex={1}>
           <Row
             justifyContent="flex-start"
+            alignItems="center"
             flex={1}
             style={{ paddingLeft: 30, paddingTop: 10, marginBottom: -10 }}
           >
@@ -58,7 +59,7 @@ export const SensorChartRow: FC<SensorChartRowProps> = React.memo(({ id, endTime
         </Column>
       }
       SensorStatus={
-        <Column justifyContent="center" flex={1} style={{ width: STYLE.WIDTH.LARGE_RECTANGLE }}>
+        <Column justifyContent="center" style={{ width: STYLE.WIDTH.LARGE_RECTANGLE }}>
           <SensorStatus isLoading={isLoadingStatus} hasData={hasData} id={id} />
         </Column>
       }

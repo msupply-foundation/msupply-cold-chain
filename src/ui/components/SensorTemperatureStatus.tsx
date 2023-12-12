@@ -43,8 +43,9 @@ const Temperature: FC<{
   colour?: string;
   flex?: number;
   justifyContent?: 'flex-end' | 'center';
+  minorStyle?: ViewStyle;
   temperature: string;
-}> = ({ colour = COLOUR.PRIMARY, flex, justifyContent = 'center', temperature }) => {
+}> = ({ colour = COLOUR.PRIMARY, flex, justifyContent = 'center', minorStyle, temperature }) => {
   const numericTemp = Number(temperature);
   if (Number.isNaN(numericTemp)) {
     return (
@@ -60,7 +61,7 @@ const Temperature: FC<{
   return (
     <Row alignItems="flex-end" justifyContent={justifyContent} flex={flex}>
       <Header color={colour}>{major}</Header>
-      <BoldText colour={colour} fontSize={FONT.SIZE.M} style={{ paddingBottom: 15 }}>
+      <BoldText colour={colour} fontSize={FONT.SIZE.M} style={minorStyle}>
         {`.${minor}`}
       </BoldText>
     </Row>
@@ -102,16 +103,17 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
   if (!hasData) return null;
 
   return !isInDanger ? (
-    <Temperature temperature={temperature} />
+    <Temperature temperature={temperature} minorStyle={{ paddingBottom: 15 }} />
   ) : (
     <TouchableOpacity onLongPress={startAcknowledging}>
       <LargeRectangle color={hasColdBreach ? COLOUR.PRIMARY : COLOUR.DANGER}>
-        <Row>
+        <Row style={{ paddingLeft: 15, paddingBottom: 15 }}>
           <Temperature
-            temperature={temperature}
-            justifyContent="flex-end"
-            flex={3}
             colour={COLOUR.WHITE}
+            flex={3}
+            justifyContent="flex-end"
+            minorStyle={{ paddingTop: 50 }}
+            temperature={temperature}
           />
           <Row style={{ flex: 2, marginTop: 20 }}>
             {!!hasHotBreach && (
