@@ -282,13 +282,13 @@ function* syncAll({
     try {
       yield put(SyncAction.syncSensors(`${serverUrl}/${ENDPOINT.SENSOR}`));
       yield take([SyncAction.syncSensorsSuccess, SyncAction.syncSensorsFailure]);
-      yield put(SyncAction.syncTemperatureLogs(`${serverUrl}/${ENDPOINT.TEMPERATURE_LOG}`));
-      yield take([SyncAction.syncTemperatureLogsSuccess, SyncAction.syncTemperatureLogsFailure]);
       yield put(SyncAction.syncTemperatureBreaches(`${serverUrl}/${ENDPOINT.TEMPERATURE_BREACH}`));
       yield take([
         SyncAction.syncTemperatureBreachesSuccess,
         SyncAction.syncTemperatureBreachesFailure,
       ]);
+      yield put(SyncAction.syncTemperatureLogs(`${serverUrl}/${ENDPOINT.TEMPERATURE_LOG}`));
+      yield take([SyncAction.syncTemperatureLogsSuccess, SyncAction.syncTemperatureLogsFailure]);
       yield put(SettingAction.update('lastSync', utils.now()));
     } catch (e) {
       console.error('syncAll error', e);
