@@ -180,8 +180,14 @@ function* authenticate({
   payload: { loginUrl, username, password },
 }: PayloadAction<AuthenticateActionPayload>): SagaIterator {
   const syncOutManager: SyncOutManager = yield call(getDependency, 'syncOutManager');
+  const syncQueueManager: SyncQueueManager = yield call(getDependency, 'syncQueueManager');
 
   try {
+    const totalRecordsToSend: number = yield call(syncQueueManager.length);
+    if (totalRecordsToSend === 0) {
+      yield put(SyncAction.authenticateSuccess());
+      return;
+    }
     yield call(syncOutManager.login, loginUrl, username, password);
     yield put(SyncAction.authenticateSuccess());
   } catch (e) {
@@ -202,6 +208,10 @@ function* syncSensors({
   try {
     const totalRecordsToSend: number = yield call(syncQueueManager.lengthSensors);
     let iter = totalRecordsToSend;
+    if (iter === 0) {
+      yield put(SyncAction.syncSensorsSuccess(0));
+      return;
+    }
 
     do {
       const syncLogs: Sensor[] = yield call(syncQueueManager.nextSensors);
@@ -228,6 +238,10 @@ function* syncTemperatureLogs({
   try {
     const totalRecordsToSend: number = yield call(syncQueueManager.lengthTemperatureLogs);
     let iter = totalRecordsToSend;
+    if (iter === 0) {
+      yield put(SyncAction.syncTemperatureLogsSuccess(0));
+      return;
+    }
 
     do {
       const syncLogs: TemperatureLog[] = yield call(syncQueueManager.nextTemperatureLogs);
@@ -254,6 +268,10 @@ function* syncTemperatureBreaches({
   try {
     const totalRecordsToSend: number = yield call(syncQueueManager.lengthTemperatureBreaches);
     let iter = totalRecordsToSend;
+    if (iter === 0) {
+      yield put(SyncAction.syncTemperatureBreachesSuccess(0));
+      return;
+    }
 
     do {
       const syncLogs: TemperatureBreach[] = yield call(syncQueueManager.nextTemperatureBreaches);
