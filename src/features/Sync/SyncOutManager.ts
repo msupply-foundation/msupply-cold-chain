@@ -102,6 +102,16 @@ class SyncOutManager {
   };
 
   put = async (url: string, data: string): Promise<AxiosResponse<SyncResponse>> => {
+    // Check if the data is empty, if so, return a successful response
+    if (data === '[]') {
+      return Promise.resolve({
+        data: { invalid: [], valid: [] },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {},
+      });
+    }
     const source = this.axios.CancelToken.source();
     setTimeout(() => {
       source.cancel('Connection timed out.');
