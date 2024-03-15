@@ -26,6 +26,7 @@ import {
   UpdateSyncErrorActionPayload,
 } from './types';
 import { FailurePayload, PrepareActionReturn } from '~common/types/common';
+import Bugsnag from '@bugsnag/react-native';
 
 export const ENDPOINT = {
   LOGIN: 'coldchain/v1/login',
