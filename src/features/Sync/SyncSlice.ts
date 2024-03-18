@@ -202,17 +202,13 @@ function* syncSensors({
   try {
     const totalRecordsToSend: number = yield call(syncQueueManager.lengthSensors);
     let iter = totalRecordsToSend;
-    if (iter === 0) {
-      yield put(SyncAction.syncSensorsSuccess(0));
-      return;
-    }
 
-    do {
+    while (iter > 0) {
       const syncLogs: Sensor[] = yield call(syncQueueManager.nextSensors);
       yield call(syncOutManager.syncSensors, sensorUrl, syncLogs);
       yield call(syncQueueManager.dropLogs, syncLogs);
       iter -= syncLogs.length;
-    } while (iter > 0);
+    }
     yield put(SyncAction.syncSensorsSuccess(totalRecordsToSend));
   } catch (e) {
     yield put(SyncAction.syncSensorsFailure((e as Error).message));
@@ -232,17 +228,13 @@ function* syncTemperatureLogs({
   try {
     const totalRecordsToSend: number = yield call(syncQueueManager.lengthTemperatureLogs);
     let iter = totalRecordsToSend;
-    if (iter === 0) {
-      yield put(SyncAction.syncTemperatureLogsSuccess(0));
-      return;
-    }
 
-    do {
+    while (iter > 0) {
       const syncLogs: TemperatureLog[] = yield call(syncQueueManager.nextTemperatureLogs);
       yield call(syncOutManager.syncTemperatureLogs, temperatureLogUrl, syncLogs);
       yield call(syncQueueManager.dropLogs, syncLogs);
       iter -= syncLogs.length;
-    } while (iter > 0);
+    }
     yield put(SyncAction.syncTemperatureLogsSuccess(totalRecordsToSend));
   } catch (e) {
     yield put(SyncAction.syncTemperatureLogsFailure((e as Error).message));
@@ -262,17 +254,13 @@ function* syncTemperatureBreaches({
   try {
     const totalRecordsToSend: number = yield call(syncQueueManager.lengthTemperatureBreaches);
     let iter = totalRecordsToSend;
-    if (iter === 0) {
-      yield put(SyncAction.syncTemperatureBreachesSuccess(0));
-      return;
-    }
 
-    do {
+    while (iter > 0) {
       const syncLogs: TemperatureBreach[] = yield call(syncQueueManager.nextTemperatureBreaches);
       yield call(syncOutManager.syncTemperatureBreaches, temperatureBreachUrl, syncLogs);
       yield call(syncQueueManager.dropLogs, syncLogs);
       iter -= syncLogs.length;
-    } while (iter > 0);
+    }
     yield put(SyncAction.syncTemperatureBreachesSuccess(totalRecordsToSend));
   } catch (e) {
     yield put(SyncAction.syncTemperatureBreachesFailure((e as Error).message));
