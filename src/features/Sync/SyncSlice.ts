@@ -308,7 +308,7 @@ function* tryIntegrating(): SagaIterator {
   const isIntegrating: boolean = yield call(settingManager.getBool, 'isIntegrating');
   const syncQueueManager: SyncQueueManager = yield call(getDependency, 'syncQueueManager');
 
-  if (!isIntegrating || !(yield call(syncQueueManager.length))) return;
+  if (!isIntegrating || (yield call(syncQueueManager.length)) === 0) return;
 
   const syncSettings: SyncSettingMap = yield call(settingManager.getSyncSettings);
   yield put(SyncAction.syncAll(syncSettings));
