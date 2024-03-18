@@ -180,14 +180,8 @@ function* authenticate({
   payload: { loginUrl, username, password },
 }: PayloadAction<AuthenticateActionPayload>): SagaIterator {
   const syncOutManager: SyncOutManager = yield call(getDependency, 'syncOutManager');
-  const syncQueueManager: SyncQueueManager = yield call(getDependency, 'syncQueueManager');
 
   try {
-    const totalRecordsToSend: number = yield call(syncQueueManager.length);
-    if (totalRecordsToSend === 0) {
-      yield put(SyncAction.authenticateSuccess());
-      return;
-    }
     yield call(syncOutManager.login, loginUrl, username, password);
     yield put(SyncAction.authenticateSuccess());
   } catch (e) {
@@ -324,8 +318,9 @@ function* syncAll({
 function* tryIntegrating(): SagaIterator {
   const settingManager: SettingManager = yield call(getDependency, DEPENDENCY.SETTING_MANAGER);
   const isIntegrating: boolean = yield call(settingManager.getBool, 'isIntegrating');
+  const syncQueueManager: SyncQueueManager = yield call(getDependency, 'syncQueueManager');
 
-  if (!isIntegrating) return;
+  if (!isIntegrating || !(yield call(syncQueueManager.length))) return;
 
   const syncSettings: SyncSettingMap = yield call(settingManager.getSyncSettings);
   yield put(SyncAction.syncAll(syncSettings));
