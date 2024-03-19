@@ -26,6 +26,7 @@ import {
   UpdateSyncErrorActionPayload,
 } from './types';
 import { FailurePayload, PrepareActionReturn } from '~common/types/common';
+import Bugsnag from '@bugsnag/react-native';
 
 export const ENDPOINT = {
   LOGIN: 'coldchain/v1/login',
@@ -202,12 +203,12 @@ function* syncSensors({
     const totalRecordsToSend: number = yield call(syncQueueManager.lengthSensors);
     let iter = totalRecordsToSend;
 
-    do {
+    while (iter > 0) {
       const syncLogs: Sensor[] = yield call(syncQueueManager.nextSensors);
       yield call(syncOutManager.syncSensors, sensorUrl, syncLogs);
       yield call(syncQueueManager.dropLogs, syncLogs);
       iter -= syncLogs.length;
-    } while (iter > 0);
+    }
     yield put(SyncAction.syncSensorsSuccess(totalRecordsToSend));
   } catch (e) {
     yield put(SyncAction.syncSensorsFailure((e as Error).message));
@@ -228,12 +229,12 @@ function* syncTemperatureLogs({
     const totalRecordsToSend: number = yield call(syncQueueManager.lengthTemperatureLogs);
     let iter = totalRecordsToSend;
 
-    do {
+    while (iter > 0) {
       const syncLogs: TemperatureLog[] = yield call(syncQueueManager.nextTemperatureLogs);
       yield call(syncOutManager.syncTemperatureLogs, temperatureLogUrl, syncLogs);
       yield call(syncQueueManager.dropLogs, syncLogs);
       iter -= syncLogs.length;
-    } while (iter > 0);
+    }
     yield put(SyncAction.syncTemperatureLogsSuccess(totalRecordsToSend));
   } catch (e) {
     yield put(SyncAction.syncTemperatureLogsFailure((e as Error).message));
@@ -254,12 +255,12 @@ function* syncTemperatureBreaches({
     const totalRecordsToSend: number = yield call(syncQueueManager.lengthTemperatureBreaches);
     let iter = totalRecordsToSend;
 
-    do {
+    while (iter > 0) {
       const syncLogs: TemperatureBreach[] = yield call(syncQueueManager.nextTemperatureBreaches);
       yield call(syncOutManager.syncTemperatureBreaches, temperatureBreachUrl, syncLogs);
       yield call(syncQueueManager.dropLogs, syncLogs);
       iter -= syncLogs.length;
-    } while (iter > 0);
+    }
     yield put(SyncAction.syncTemperatureBreachesSuccess(totalRecordsToSend));
   } catch (e) {
     yield put(SyncAction.syncTemperatureBreachesFailure((e as Error).message));
@@ -305,8 +306,9 @@ function* syncAll({
 function* tryIntegrating(): SagaIterator {
   const settingManager: SettingManager = yield call(getDependency, DEPENDENCY.SETTING_MANAGER);
   const isIntegrating: boolean = yield call(settingManager.getBool, 'isIntegrating');
+  const syncQueueManager: SyncQueueManager = yield call(getDependency, 'syncQueueManager');
 
-  if (!isIntegrating) return;
+  if (!isIntegrating || (yield call(syncQueueManager.length)) === 0) return;
 
   const syncSettings: SyncSettingMap = yield call(settingManager.getSyncSettings);
   yield put(SyncAction.syncAll(syncSettings));

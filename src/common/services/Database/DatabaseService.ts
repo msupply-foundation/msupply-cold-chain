@@ -163,7 +163,7 @@ export class DatabaseService {
       await queryRunner.commitTransaction();
     } catch (e) {
       await queryRunner.rollbackTransaction();
-      throw new Error(e);
+      throw new Error(e instanceof Error ? e.message : String(e));
     } finally {
       await queryRunner.release();
     }
