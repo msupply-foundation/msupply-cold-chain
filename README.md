@@ -22,11 +22,11 @@ See [https://docs.msupply.foundation/en:cold_chain:start](https://docs.msupply.f
 - Install Android Studio and SDK tools: https://developer.android.com/studio.
 - Install SDKMAN for managing Java versions: https://sdkman.io/.
 
-The application is using java v1.8 you may need to target a specific java version in order to run the app locally.
-e.g.
+The application is using java v11 you may need to target a specific java version in order to run the app locally.
+e.g. (with sdkman installed):
 
 ```
-export JDK_HOME=~/.jenv/versions/oracle64-1.8.0.192 && JAVA_HOME=~/.jenv/versions/oracle64-1.8.0.192 && yarn start
+ sdk use java 11.0.23-zulu
 ```
 
 #### React Native
@@ -45,7 +45,7 @@ The node version should be >= 12.8.4.
 
 ### Building
 
-Simply run `yarn build` to build the app. 
+Simply run `yarn build` to build the app.
 If you have the following error:
 `A problem occurred starting process 'command 'node''`
 

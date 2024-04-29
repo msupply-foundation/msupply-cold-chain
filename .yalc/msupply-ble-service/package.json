@@ -1,9 +1,10 @@
 {
   "name": "msupply-ble-service",
-  "version": "0.5.3",
+  "version": "0.5.1",
   "description": "Low level bluetooth library",
   "author": "Chester Wood <chetstone@malamode.io> (https://github.com/chetstone)",
   "license": "GPL-3.0-or-later",
+  "private": true,
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
@@ -86,5 +87,5 @@
   "dependencies": {
     "buffer": "^6.0.3"
   },
-  "yalcSig": "e0f2ac2763896db23b9eb3398b7fcecc"
+  "yalcSig": "57cb36a5493fb3a5be4b81d5224c77ec"
 }
