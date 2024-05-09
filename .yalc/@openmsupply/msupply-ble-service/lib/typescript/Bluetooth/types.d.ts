@@ -26,7 +26,7 @@ export interface ErrorRejector {
     (error: Error): void;
 }
 export interface MonitorCharacteristicCallback<ResolverResult> {
-    (result: Characteristic | null, resolver: Resolver<ResolverResult>, rejector: ErrorRejector, subscription: Subscription): void;
+    (result: Characteristic | null, resolver: Resolver<ResolverResult>, rejector: ErrorRejector, subscription: Subscription, error: BleError | null): void;
 }
 export interface MonitorCharacteristicParser<ParserInput, ParserResult> {
     (result: ParserInput): ParserResult;

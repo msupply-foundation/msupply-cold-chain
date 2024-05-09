@@ -5,6 +5,10 @@
       "signature": "57cb36a5493fb3a5be4b81d5224c77ec",
       "file": true,
       "replaced": "link:../msupply-ble-service"
+    },
+    "@openmsupply/msupply-ble-service": {
+      "signature": "4b8a288aa30f2b811289676652db5d3d",
+      "file": true
     }
   }
 }
