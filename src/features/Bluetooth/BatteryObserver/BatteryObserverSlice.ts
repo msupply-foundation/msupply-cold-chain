@@ -5,7 +5,7 @@ import { SensorState } from '../../Entities/Sensor/SensorSlice';
 import { MILLISECONDS, REDUCER } from '~constants';
 import { SensorAction, SensorManager } from '~features/Entities';
 import { getDependency } from '~features/utils/saga';
-import { BleService } from 'msupply-ble-service';
+import { BleService } from '@openmsupply/msupply-ble-service';
 import { isSensorDownloading } from '../Download/DownloadSlice';
 import { RootState } from '~common/store';
 

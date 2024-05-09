@@ -13,7 +13,7 @@ import {
 } from 'redux-saga/effects';
 import { getDependency } from '~features/utils/saga';
 import { SensorState } from '~features/Entities/Sensor/SensorSlice';
-import { BleService } from 'msupply-ble-service';
+import { BleService } from '@openmsupply/msupply-ble-service';
 import { MILLISECONDS, REDUCER } from '~common/constants';
 import {
   DownloadManager,

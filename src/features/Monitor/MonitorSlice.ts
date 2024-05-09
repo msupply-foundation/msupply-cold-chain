@@ -1,7 +1,7 @@
 import Bugsnag from '@bugsnag/react-native';
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice } from '@reduxjs/toolkit';
-import { BleService } from 'msupply-ble-service';
+import { BleService } from '@openmsupply/msupply-ble-service';
 import { BleManager } from 'react-native-ble-plx';
 import { call, delay, select, takeLeading } from 'redux-saga/effects';
 import { DependencyLocator } from '~common/services';

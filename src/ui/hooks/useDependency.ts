@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { BtUtilService } from 'msupply-ble-service';
+import { BtUtilService } from '@openmsupply/msupply-ble-service';
 import { Dependency, DependencyKey } from '~services/DependencyLocator/DependencyLocator';
 import {
   DatabaseService,
