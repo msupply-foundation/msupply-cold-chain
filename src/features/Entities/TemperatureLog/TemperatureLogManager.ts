@@ -14,10 +14,10 @@ export class TemperatureLogManager {
     this.utilService = utilService;
   }
 
-  insert = async (
+  upsert = async (
     temperatureLog: Partial<TemperatureLog>[]
   ): Promise<Partial<TemperatureLog>[]> => {
-    return this.databaseService.insert(ENTITIES.TEMPERATURE_LOG, temperatureLog);
+    return this.databaseService.upsert(ENTITIES.TEMPERATURE_LOG, temperatureLog);
   };
 
   addNewTemperatureLog = async (
@@ -29,7 +29,7 @@ export class TemperatureLogManager {
   addNewTemperatureLogs = async (
     temperatureLogs: Partial<TemperatureLog>[]
   ): Promise<Partial<TemperatureLog>[]> => {
-    return this.insert(
+    return this.upsert(
       temperatureLogs.map(temperatureLog => ({ id: this.utilService.uuid(), ...temperatureLog }))
     );
   };
