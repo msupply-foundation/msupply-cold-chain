@@ -63,7 +63,16 @@ public class SchedulerService extends Service {
 
     public static Notification buildNotification(Context context, String text) {
         Intent notificationIntent = new Intent(context, MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent contentIntent = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            contentIntent = PendingIntent.getActivity
+                (context, 0, notificationIntent, PendingIntent.FLAG_MUTABLE);
+        }
+        else
+        {
+            contentIntent = PendingIntent.getActivity
+                    (context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        }
 
         return new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setContentTitle("ColdChain service") // getApplicationName

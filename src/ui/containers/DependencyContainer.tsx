@@ -1,5 +1,10 @@
 import React, { FC, useEffect, useState } from 'react';
-import { BleService, BleManager, DevBleManager, BtUtilService } from 'msupply-ble-service';
+import {
+  BleService,
+  BleManager,
+  DevBleManager,
+  BtUtilService,
+} from '@openmsupply/msupply-ble-service';
 
 import { ENVIRONMENT } from '~common/constants';
 import { DevContainer } from './DevContainer';

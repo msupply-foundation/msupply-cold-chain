@@ -1,41 +1,45 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.msupplycoldchain">
-  <uses-permission android:name="android.permission.INTERNET"/>
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-  <uses-permission android:name="android.permission.BLUETOOTH"/>
-  <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-  <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED"/>
-  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
-  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-  <uses-permission android:name="android.permission.CAMERA" />
-  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.WAKE_LOCK" />
-  <uses-permission android:name="android.permission.VIBRATE" />
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
-  <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
-  <uses-feature android:name="android.hardware.camera" android:required="false" />
-
-  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:allowBackup="false" android:theme="@style/AppTheme" android:usesCleartextTraffic="true" android:requestLegacyExternalStorage="true">
-    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:theme="@style/Theme.App.SplashScreen">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-      </intent-filter>
-    </activity>
-    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
-    <activity android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity" android:exported="true"/>
-    <meta-data android:name="com.bugsnag.android.API_KEY" android:value="9083556ae736617ad9680a60a402824e"/>
-    <service android:name="com.voximplant.foregroundservice.VIForegroundService" />
-    <service android:name="com.msupplycoldchain.SchedulerService" android:enabled="true" android:exported="false" />
-    <service android:name="com.msupplycoldchain.SchedulerEventService" />
-    <receiver android:name="com.msupplycoldchain.BootUpReceiver" android:enabled="true" android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
-      <intent-filter>
-        <action android:name="android.intent.action.BOOT_COMPLETED" />
-        <category android:name="android.intent.category.DEFAULT" />
-      </intent-filter>
-    </receiver>
-  </application>
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<!-- Android >= 12 -->
+	<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+	<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+	<!-- Android < 12 -->
+	<uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+	<!-- common -->
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.CAMERA" />
+	<uses-permission android:name="android.permission.RECORD_AUDIO" />
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
+	<uses-permission android:name="android.permission.VIBRATE" />
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+	<uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
+	<uses-feature android:name="android.hardware.camera" android:required="false" />
+	<application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:allowBackup="false" android:theme="@style/AppTheme" android:usesCleartextTraffic="true" android:requestLegacyExternalStorage="true">
+		<activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+		<activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="true" />
+		<activity android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity" android:exported="true" />
+		<meta-data android:name="com.bugsnag.android.API_KEY" android:value="9083556ae736617ad9680a60a402824e" />
+		<service android:name="com.voximplant.foregroundservice.VIForegroundService" />
+		<service android:name="com.msupplycoldchain.SchedulerService" android:enabled="true" android:exported="true" />
+		<service android:name="com.msupplycoldchain.SchedulerEventService" />
+		<receiver android:name="com.msupplycoldchain.BootUpReceiver" android:enabled="true" android:permission="android.permission.RECEIVE_BOOT_COMPLETED" android:exported="false">
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</receiver>
+	</application>
 </manifest>

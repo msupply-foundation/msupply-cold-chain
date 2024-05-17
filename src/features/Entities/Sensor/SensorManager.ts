@@ -4,7 +4,7 @@ import { classToPlain } from 'class-transformer';
 import { ENTITIES } from '../../../common/constants';
 
 import { IsNull } from 'typeorm/browser';
-import { BtUtilService } from 'msupply-ble-service';
+import { BtUtilService } from '@openmsupply/msupply-ble-service';
 
 const SENSOR_STATE = `
 with breach as (
