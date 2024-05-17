@@ -60,7 +60,7 @@ export class DownloadManager {
 
     // Since we don't delete logs, we need to skip over logs that have already been saved.
     if (maxNumberToSave < logsToSave.length) {
-      this.logger?.info(`${sensor.id} maxNumberToSave is greater than logsToSave`);
+      this.logger?.info(`${sensor.id} maxNumberToSave is less than logsToSave`);
       const logsToSkip = logsToSave.length - maxNumberToSave;
       logsToSave.splice(0, logsToSkip);
     }
