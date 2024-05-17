@@ -54,6 +54,17 @@ export class DownloadManager {
     this.logger?.debug(
       `${sensor.id} Create logs. logsToSave: ${logsToSave.length}, sliceIndex: ${sliceIndex}, mostRecentLogTime: ${mostRecentLogTime}, now: ${now}`
     );
+
+    // The logs from the bluemaestro sensor don't have timestamps, we only have the time we downloaded them (aka now) and the log interval.
+    // We need to calculate the timestamp for each log, based on the log interval and the time we downloaded them.
+
+    // Since we don't delete logs, we need to skip over logs that have already been saved.
+    if (maxNumberToSave < logsToSave.length) {
+      this.logger?.info(`${sensor.id} maxNumberToSave is less than logsToSave`);
+      const logsToSkip = logsToSave.length - maxNumberToSave;
+      logsToSave.splice(0, logsToSkip);
+    }
+
     let initial = 0;
     if (!mostRecentLogTime) {
       const lookbackSeconds = (logsToSave.length - 1) * logInterval;

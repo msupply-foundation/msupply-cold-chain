@@ -16,7 +16,7 @@ export { ICON } from './Icon';
 export { FORMAT } from './Format';
 export { CHART } from './Chart';
 export { NAVIGATION } from './Navigation';
-export { BLUETOOTH, BLUE_MAESTRO } from '@openmsupply/msupply-ble-service';
+export { BLUE_MAESTRO } from '@openmsupply/msupply-ble-service';
 export { SETTING } from './Setting';
 export { SPECIAL_CHARACTER } from './SpecialCharacter';
 export { ENVIRONMENT } from './Environment';
