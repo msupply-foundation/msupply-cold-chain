@@ -58,11 +58,11 @@ const reducers = {
   tryIntegrating: () => {},
   tryTestConnection: {
     prepare: (
-      loginUrl: string,
+      serverUrl: string,
       username: string,
       password: string
     ): PrepareActionReturn<AuthenticateActionPayload> => ({
-      payload: { username, password, loginUrl },
+      payload: { username, password, serverUrl },
     }),
     reducer: () => {},
   },
@@ -90,8 +90,8 @@ const reducers = {
     },
   },
   authenticate: {
-    prepare: (loginUrl: string, username: string, password: string) => ({
-      payload: { loginUrl, username, password },
+    prepare: (serverUrl: string, username: string, password: string) => ({
+      payload: { serverUrl, username, password },
     }),
     reducer: () => {},
   },
@@ -177,11 +177,12 @@ const SyncSelector = {
 };
 
 function* authenticate({
-  payload: { loginUrl, username, password },
+  payload: { serverUrl, username, password },
 }: PayloadAction<AuthenticateActionPayload>): SagaIterator {
   const syncOutManager: SyncOutManager = yield call(getDependency, 'syncOutManager');
 
   try {
+    const loginUrl = `${serverUrl}/${ENDPOINT.LOGIN}`;
     yield call(syncOutManager.login, loginUrl, username, password);
     yield put(SyncAction.authenticateSuccess());
   } catch (e) {
@@ -322,12 +323,28 @@ function* enablePassiveSync(): SagaIterator {
 }
 
 function* tryTestConnection({
-  payload: { loginUrl, username, password },
+  payload: { serverUrl, username, password },
 }: PayloadAction<AuthenticateActionPayload>): SagaIterator {
   const syncOutManager: SyncOutManager = yield call(getDependency, 'syncOutManager');
   ToastAndroid.show('Testing Connection', ToastAndroid.SHORT);
   try {
-    yield call(syncOutManager.login, loginUrl, username, password);
+    const loginUrl = `${serverUrl}/${ENDPOINT.LOGIN}`;
+    const loginResponse = yield call(syncOutManager.login, loginUrl, username, password);
+    const { success } = loginResponse?.data ?? {};
+
+    if (success !== true) {
+      yield put(SyncAction.testConnectionFailure('Invalid response returned from login'));
+      return;
+    }
+
+    // login returned correctly, now test for a valid response from the sensor endpoint
+    const sensorUrl = `${serverUrl}/${ENDPOINT.SENSOR}`;
+    const sensorResponse = yield call(syncOutManager.syncSensors, sensorUrl, []);
+    const sensors = sensorResponse?.data;
+    if (!Array.isArray(sensors) || sensors.length !== 0) {
+      yield put(SyncAction.testConnectionFailure('Does not appear to be a cold chain server'));
+      return;
+    }
     yield put(SyncAction.testConnectionSuccess());
   } catch (e) {
     yield put(SyncAction.testConnectionFailure((e as Error).message));

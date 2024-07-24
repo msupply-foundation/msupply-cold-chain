@@ -57,7 +57,7 @@ export interface UpdateSyncErrorActionPayload {
 }
 
 export interface AuthenticateActionPayload {
-  loginUrl: string;
+  serverUrl: string;
   username: string;
   password: string;
 }
