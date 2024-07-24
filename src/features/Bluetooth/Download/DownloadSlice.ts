@@ -163,16 +163,6 @@ function* tryDownloadForSensor({
       );
 
       yield call(downloadManager.saveLogs, sensorLogs);
-      if (sensorLogs.length) {
-        yield call(
-          btService.updateLogIntervalWithRetries,
-          macAddress,
-          logInterval,
-          10,
-          false,
-          null
-        );
-      }
       yield put(ConsecutiveBreachAction.create(sensor));
       yield put(DownloadAction.passiveDownloadForSensorSuccess(sensor.id));
       yield put(CumulativeBreachAction.fetchListForSensor(sensorId));
