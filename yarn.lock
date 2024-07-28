@@ -2280,6 +2280,11 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
+"@openmsupply/msupply-ble-service@file:.yalc/@openmsupply/msupply-ble-service":
+  version "0.5.5"
+  dependencies:
+    buffer "^6.0.3"
+
 "@popperjs/core@^2.5.4", "@popperjs/core@^2.6.0":
   version "2.9.2"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.9.2.tgz#adea7b6953cbb34651766b0548468e743c6a2353"
