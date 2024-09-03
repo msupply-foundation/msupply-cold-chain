@@ -9,7 +9,7 @@ Support for additional sensor vendors is underway.
 
 - Track temperatures via bluetooth.
 
-See [https://docs.msupply.foundation/en:cold_chain:start](https://docs.msupply.foundation/en:cold_chain:start) for more details of these and many other features.
+See [our documentation](https://docs.msupply.foundation/coldchain/introduction/) for more details of these and many other features.
 
 ## Getting started
 
