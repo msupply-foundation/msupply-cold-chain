@@ -275,7 +275,7 @@ function* syncAll({
   yield put(SettingAction.update('lastSyncStart', utils.now()));
   yield put(SyncAction.updateIsSyncing(true));
   yield put(SyncAction.updateSyncError(''));
-  yield put(SyncAction.authenticate(`${serverUrl}/${ENDPOINT.LOGIN}`, authUsername, authPassword));
+  yield put(SyncAction.authenticate(serverUrl, authUsername, authPassword));
   const authenticateResult: PayloadAction<null> = yield take([
     SyncAction.authenticateSuccess,
     SyncAction.authenticateFailure,
