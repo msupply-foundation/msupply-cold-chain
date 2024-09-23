@@ -114,7 +114,7 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
             colour={COLOUR.WHITE}
             flex={3}
             justifyContent="flex-end"
-            minorStyle={{ marginBottom: -2 }}
+            minorStyle={{ marginBottom: -4 }}
             temperature={temperature}
           />
           <Row style={{ flex: 2, marginTop: 20 }}>
