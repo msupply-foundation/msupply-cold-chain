@@ -1,5 +1,5 @@
-import React, { FC, ReactNode, useCallback, useEffect, useState } from 'react';
-import { useWindowDimensions, View, Pressable, Keyboard, ViewStyle } from 'react-native';
+import React, { FC, ReactNode } from 'react';
+import { useWindowDimensions, View, Pressable, ViewStyle } from 'react-native';
 import { STYLE, COLOUR } from '../../common/constants';
 import { Divider } from '../presentation';
 import { Column } from './Column';
@@ -31,32 +31,10 @@ export const SettingsEditModalLayout: FC<SettingsEditModalLayoutProps> = ({
   onClose,
 }) => {
   const { width } = useWindowDimensions();
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-
-  const onKeyboardDidShow = useCallback(e => {
-    setKeyboardHeight(e.endCoordinates.height);
-  }, []);
-
-  const onKeyboardDidHide = useCallback(() => {
-    setKeyboardHeight(0);
-  }, []);
-
-  useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', onKeyboardDidShow);
-    Keyboard.addListener('keyboardDidHide', onKeyboardDidShow);
-    return () => {
-      Keyboard.removeListener('keyboardDidShow', onKeyboardDidShow);
-      Keyboard.removeListener('keyboardDidHide', onKeyboardDidHide);
-    };
-  }, [onKeyboardDidHide, onKeyboardDidShow]);
 
   const internalContentContainerStyle = { ...style.container, width: width * 0.95 };
   return (
-    <FullScreenModal
-      isOpen={isOpen}
-      onClose={onClose}
-      style={{ paddingBottom: keyboardHeight + 50 }}
-    >
+    <FullScreenModal isOpen={isOpen} onClose={onClose} style={{ paddingBottom: 50 }}>
       <Pressable onPress={null}>
         <Column style={internalContentContainerStyle}>
           <View style={{ paddingVertical: 20 }}>{Title}</View>
