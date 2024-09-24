@@ -1,10 +1,10 @@
 import React, { FC, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Animated, TouchableOpacity, ViewStyle } from 'react-native';
-import { MILLISECONDS, COLOUR, STYLE, FONT } from '../../common/constants';
+import { MILLISECONDS, COLOUR, STYLE, FONT, SPECIAL_CHARACTER } from '../../common/constants';
 import { SensorStatusSelector, AcknowledgeBreachAction } from '../../features';
 import { Row, Centered, LargeRectangle } from '../layouts';
-import { BoldText, Header } from '../presentation/typography';
+import { BoldText, Header, NormalText } from '../presentation/typography';
 import { Icon, ICON_SIZE } from '../presentation/icons';
 import { RootState } from '../../common/store/store';
 
@@ -47,6 +47,7 @@ const Temperature: FC<{
   temperature: string;
 }> = ({ colour = COLOUR.PRIMARY, flex, justifyContent = 'center', minorStyle, temperature }) => {
   const numericTemp = Number(temperature);
+
   if (Number.isNaN(numericTemp)) {
     return (
       <Centered>
@@ -59,11 +60,12 @@ const Temperature: FC<{
   const minor = Math.trunc((numericTemp - major) * 10);
 
   return (
-    <Row alignItems="flex-end" justifyContent={justifyContent} flex={flex}>
+    <Row alignItems="flex-end" justifyContent={justifyContent} flex={flex} style={{ height: 85 }}>
       <Header color={colour}>{major}</Header>
       <BoldText colour={colour} fontSize={FONT.SIZE.M} style={minorStyle}>
         {`.${minor}`}
       </BoldText>
+      <NormalText color={colour}>{SPECIAL_CHARACTER.DEGREE_CELSIUS}</NormalText>
     </Row>
   );
 };
@@ -103,7 +105,7 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
   if (!hasData) return null;
 
   return !isInDanger ? (
-    <Temperature temperature={temperature} minorStyle={{ paddingBottom: 15 }} />
+    <Temperature temperature={temperature} minorStyle={{ marginBottom: -5 }} />
   ) : (
     <TouchableOpacity onLongPress={startAcknowledging}>
       <LargeRectangle color={hasColdBreach ? COLOUR.PRIMARY : COLOUR.DANGER}>
@@ -112,7 +114,7 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
             colour={COLOUR.WHITE}
             flex={3}
             justifyContent="flex-end"
-            minorStyle={{ paddingTop: 50 }}
+            minorStyle={{ marginBottom: -4 }}
             temperature={temperature}
           />
           <Row style={{ flex: 2, marginTop: 20 }}>
