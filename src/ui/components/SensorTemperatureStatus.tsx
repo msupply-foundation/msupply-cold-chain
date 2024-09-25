@@ -117,7 +117,7 @@ export const SensorTemperatureStatusComponent: FC<SensorTemperatureStatusProps> 
             minorStyle={{ marginBottom: -4 }}
             temperature={temperature}
           />
-          <Row style={{ flex: 2, marginTop: 20 }}>
+          <Row style={{ flex: 1.75, marginTop: 20 }}>
             {!!hasHotBreach && (
               <Animated.View style={{ ...styles.icon, opacity: fadeAnim1 }}>
                 <Icon.HotBreach />
