@@ -58,15 +58,16 @@ const reducers = {
   tryIntegrating: () => {},
   tryTestConnection: {
     prepare: (
-      loginUrl: string,
+      serverUrl: string,
       username: string,
       password: string
     ): PrepareActionReturn<AuthenticateActionPayload> => ({
-      payload: { username, password, loginUrl },
+      payload: { username, password, serverUrl },
     }),
     reducer: () => {},
   },
-  testConnectionSuccess: () => {},
+  testConnectionSuccessV1: () => {},
+  testConnectionSuccessV2: () => {},
   testConnectionFailure: {
     prepare: (errorMessage: string) => ({ payload: { errorMessage } }),
     reducer: () => {},
@@ -90,8 +91,8 @@ const reducers = {
     },
   },
   authenticate: {
-    prepare: (loginUrl: string, username: string, password: string) => ({
-      payload: { loginUrl, username, password },
+    prepare: (serverUrl: string, username: string, password: string) => ({
+      payload: { serverUrl, username, password },
     }),
     reducer: () => {},
   },
@@ -177,11 +178,12 @@ const SyncSelector = {
 };
 
 function* authenticate({
-  payload: { loginUrl, username, password },
+  payload: { serverUrl, username, password },
 }: PayloadAction<AuthenticateActionPayload>): SagaIterator {
   const syncOutManager: SyncOutManager = yield call(getDependency, 'syncOutManager');
 
   try {
+    const loginUrl = `${serverUrl}/${ENDPOINT.LOGIN}`;
     yield call(syncOutManager.login, loginUrl, username, password);
     yield put(SyncAction.authenticateSuccess());
   } catch (e) {
@@ -274,7 +276,7 @@ function* syncAll({
   yield put(SettingAction.update('lastSyncStart', utils.now()));
   yield put(SyncAction.updateIsSyncing(true));
   yield put(SyncAction.updateSyncError(''));
-  yield put(SyncAction.authenticate(`${serverUrl}/${ENDPOINT.LOGIN}`, authUsername, authPassword));
+  yield put(SyncAction.authenticate(serverUrl, authUsername, authPassword));
   const authenticateResult: PayloadAction<null> = yield take([
     SyncAction.authenticateSuccess,
     SyncAction.authenticateFailure,
@@ -322,13 +324,37 @@ function* enablePassiveSync(): SagaIterator {
 }
 
 function* tryTestConnection({
-  payload: { loginUrl, username, password },
+  payload: { serverUrl, username, password },
 }: PayloadAction<AuthenticateActionPayload>): SagaIterator {
   const syncOutManager: SyncOutManager = yield call(getDependency, 'syncOutManager');
   ToastAndroid.show('Testing Connection', ToastAndroid.SHORT);
   try {
-    yield call(syncOutManager.login, loginUrl, username, password);
-    yield put(SyncAction.testConnectionSuccess());
+    const loginUrl = `${serverUrl}/${ENDPOINT.LOGIN}`;
+    const loginResponse = yield call(syncOutManager.login, loginUrl, username, password);
+    const { success } = loginResponse?.data ?? {};
+
+    if (success !== true) {
+      yield put(SyncAction.testConnectionFailure('Invalid response returned from login'));
+      return;
+    }
+
+    // login returned correctly, now test for a valid response from the sensor endpoint
+    const sensorUrl = `${serverUrl}/${ENDPOINT.SENSOR}`;
+    const sensorResponse = yield call(syncOutManager.syncSensors, sensorUrl, []);
+    const sensorsV1 = sensorResponse?.data?.valid;
+    const sensorsV2 = sensorResponse?.data;
+
+    if (Array.isArray(sensorsV1) && sensorsV1.length === 0) {
+      yield put(SyncAction.testConnectionSuccessV1());
+      return;
+    }
+
+    if (Array.isArray(sensorsV2) && sensorsV2.length === 0) {
+      yield put(SyncAction.testConnectionSuccessV2());
+      return;
+    }
+
+    yield put(SyncAction.testConnectionFailure('Does not appear to be a cold chain server'));
   } catch (e) {
     yield put(SyncAction.testConnectionFailure((e as Error).message));
   }
@@ -340,8 +366,12 @@ function* testConnectionFailure({
   ToastAndroid.show(`Connection could not be established: ${errorMessage}`, ToastAndroid.SHORT);
 }
 
-function* testConnectionSuccess(): SagaIterator {
-  ToastAndroid.show('Connection established!', ToastAndroid.SHORT);
+function* testConnectionSuccessV1(): SagaIterator {
+  ToastAndroid.show('Connection to mSupply established!', ToastAndroid.SHORT);
+}
+
+function* testConnectionSuccessV2(): SagaIterator {
+  ToastAndroid.show('Connection to Open mSupply established!', ToastAndroid.SHORT);
 }
 
 function* tryCountSyncQueue(): SagaIterator {
@@ -369,7 +399,8 @@ function* root(): SagaIterator {
   yield takeLeading(SyncAction.syncTemperatureBreachesFailure, syncTemperatureBreachesFailure);
 
   yield takeLeading(SyncAction.tryTestConnection, tryTestConnection);
-  yield takeLeading(SyncAction.testConnectionSuccess, testConnectionSuccess);
+  yield takeLeading(SyncAction.testConnectionSuccessV1, testConnectionSuccessV1);
+  yield takeLeading(SyncAction.testConnectionSuccessV2, testConnectionSuccessV2);
   yield takeLeading(SyncAction.testConnectionFailure, testConnectionFailure);
 
   yield takeLeading(SyncAction.enablePassiveSync, enablePassiveSync);
@@ -389,7 +420,8 @@ const SyncSaga = {
   syncTemperatureBreachesFailure,
   tryTestConnection,
   testConnectionFailure,
-  testConnectionSuccess,
+  testConnectionSuccessV1,
+  testConnectionSuccessV2,
 };
 
 export { SyncAction, SyncReducer, SyncSaga, SyncSelector, initialState };

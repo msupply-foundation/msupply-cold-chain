@@ -35,7 +35,7 @@ e.g. (with sdkman installed):
 - Install yarn for managing Node packages: https://yarnpkg.com/lang/en/.
 - Install React Native: https://reactnative.dev/docs/environment-setup. Follow the steps listed under "Building Projects with Native Code" and set Target OS as "Android".
 
-The node version should be >= 12.8.4.
+The node version should be >= 12.8.4 < 20
 
 ### Installing
 

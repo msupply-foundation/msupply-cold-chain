@@ -12,7 +12,6 @@ import {
 import { SettingAction, SettingSelector, SyncAction, SyncSelector } from '~features';
 import { t } from '~common/translations';
 import { useFormatter } from '~hooks';
-import { ENDPOINT } from '~features/Sync/SyncSlice';
 import { QRCodeScanner } from './QRCodeScanner';
 import { IconButton } from '~components/buttons';
 import { ToastAndroid } from 'react-native';
@@ -120,13 +119,7 @@ export const SyncSettingsScreen: FC = () => {
           label={t('TEST_CONNECTION')}
           subtext={t('TEST_CONNECTION_SUBTEXT')}
           onPress={() =>
-            dispatch(
-              SyncAction.tryTestConnection(
-                `${serverUrl}/${ENDPOINT.LOGIN}`,
-                authUsername,
-                authPassword
-              )
-            )
+            dispatch(SyncAction.tryTestConnection(serverUrl, authUsername, authPassword))
           }
         />
         <SettingsGroup title="Info">

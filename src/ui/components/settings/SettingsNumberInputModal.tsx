@@ -56,7 +56,7 @@ export const SettingsNumberInputModal: FC<SettingsNumberInputModalProps> = ({
                 fontFamily: FONT.FAMILY.REGULAR,
                 color: COLOUR.SECONDARY,
               }}
-              value={String(value)}
+              defaultValue={String(value)}
               keyboardType="numeric"
               onChangeText={(newInput: string) => {
                 const asNumber = Number(newInput);
