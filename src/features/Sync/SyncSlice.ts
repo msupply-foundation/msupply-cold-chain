@@ -66,7 +66,8 @@ const reducers = {
     }),
     reducer: () => {},
   },
-  testConnectionSuccess: () => {},
+  testConnectionSuccessV1: () => {},
+  testConnectionSuccessV2: () => {},
   testConnectionFailure: {
     prepare: (errorMessage: string) => ({ payload: { errorMessage } }),
     reducer: () => {},
@@ -340,12 +341,20 @@ function* tryTestConnection({
     // login returned correctly, now test for a valid response from the sensor endpoint
     const sensorUrl = `${serverUrl}/${ENDPOINT.SENSOR}`;
     const sensorResponse = yield call(syncOutManager.syncSensors, sensorUrl, []);
-    const sensors = sensorResponse?.data;
-    if (!Array.isArray(sensors) || sensors.length !== 0) {
-      yield put(SyncAction.testConnectionFailure('Does not appear to be a cold chain server'));
+    const sensorsV1 = sensorResponse?.data?.valid;
+    const sensorsV2 = sensorResponse?.data;
+
+    if (Array.isArray(sensorsV1) && sensorsV1.length === 0) {
+      yield put(SyncAction.testConnectionSuccessV1());
       return;
     }
-    yield put(SyncAction.testConnectionSuccess());
+
+    if (Array.isArray(sensorsV2) && sensorsV2.length === 0) {
+      yield put(SyncAction.testConnectionSuccessV2());
+      return;
+    }
+
+    yield put(SyncAction.testConnectionFailure('Does not appear to be a cold chain server'));
   } catch (e) {
     yield put(SyncAction.testConnectionFailure((e as Error).message));
   }
@@ -357,8 +366,12 @@ function* testConnectionFailure({
   ToastAndroid.show(`Connection could not be established: ${errorMessage}`, ToastAndroid.SHORT);
 }
 
-function* testConnectionSuccess(): SagaIterator {
-  ToastAndroid.show('Connection established!', ToastAndroid.SHORT);
+function* testConnectionSuccessV1(): SagaIterator {
+  ToastAndroid.show('Connection to mSupply established!', ToastAndroid.SHORT);
+}
+
+function* testConnectionSuccessV2(): SagaIterator {
+  ToastAndroid.show('Connection to Open mSupply established!', ToastAndroid.SHORT);
 }
 
 function* tryCountSyncQueue(): SagaIterator {
@@ -386,7 +399,8 @@ function* root(): SagaIterator {
   yield takeLeading(SyncAction.syncTemperatureBreachesFailure, syncTemperatureBreachesFailure);
 
   yield takeLeading(SyncAction.tryTestConnection, tryTestConnection);
-  yield takeLeading(SyncAction.testConnectionSuccess, testConnectionSuccess);
+  yield takeLeading(SyncAction.testConnectionSuccessV1, testConnectionSuccessV1);
+  yield takeLeading(SyncAction.testConnectionSuccessV2, testConnectionSuccessV2);
   yield takeLeading(SyncAction.testConnectionFailure, testConnectionFailure);
 
   yield takeLeading(SyncAction.enablePassiveSync, enablePassiveSync);
@@ -406,7 +420,8 @@ const SyncSaga = {
   syncTemperatureBreachesFailure,
   tryTestConnection,
   testConnectionFailure,
-  testConnectionSuccess,
+  testConnectionSuccessV1,
+  testConnectionSuccessV2,
 };
 
 export { SyncAction, SyncReducer, SyncSaga, SyncSelector, initialState };
