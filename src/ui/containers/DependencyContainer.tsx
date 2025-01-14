@@ -43,6 +43,7 @@ import { FileLoggerService } from '~common/services/LoggerService';
 import { useOnMount } from '~hooks';
 import { MonitorAction } from '~features/Monitor/MonitorSlice';
 import { useDispatch } from 'react-redux';
+import { logLevelFromString } from '~common/services/UtilService';
 
 export const DependencyContainer: FC = ({ children }) => {
   const [ready, setReady] = useState(false);
@@ -122,6 +123,22 @@ export const DependencyContainer: FC = ({ children }) => {
       setReady(true);
     })();
   }, []);
+
+  useEffect(() => {
+    // Enable logging if debugLogEnabled is true
+    if (!ready) return;
+
+    const loggerService = DependencyLocator.get('loggerService') as FileLoggerService;
+    const settingsService = DependencyLocator.get('settingManager') as SettingManager;
+
+    settingsService.getSettings().then(settings => {
+      if (settings.debugLogEnabled) {
+        console.log('Enabling debug logging');
+        loggerService.enabled = true;
+        loggerService.setLogLevel(logLevelFromString(settings.logLevel));
+      }
+    });
+  }, [ready]);
 
   useOnMount([startDependencyMonitor]);
 

@@ -1,12 +1,12 @@
 import { SagaIterator } from '@redux-saga/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ToastAndroid } from 'react-native';
-import { call, getContext, put, retry, takeEvery, takeLeading } from 'redux-saga/effects';
+import { call, put, retry, takeEvery, takeLeading } from 'redux-saga/effects';
 
 import { SettingManager } from '~features/Entities/Setting/SettingManager';
 import { BleService, InfoLog } from '@openmsupply/msupply-ble-service';
 import { RootState } from '~store/store';
-import { DEPENDENCY, REDUCER } from '~constants';
+import { REDUCER } from '~constants';
 import { getDependency } from '~features/utils/saga';
 import { UtilService } from '~common/services';
 import { SensorManager } from '~features/Entities';
@@ -131,7 +131,9 @@ export function* tryProgramNewSensor({
     );
     ToastAndroid.show(`Connected and setup ${macAddress}`, ToastAndroid.SHORT);
   } catch (e) {
-    yield put(ProgramAction.programNewSensorFail(macAddress, e?.toString()));
+    yield put(
+      ProgramAction.programNewSensorFail(macAddress, e?.toString() ?? 'FAILED TO PROGRAM SENSOR')
+    );
     ToastAndroid.show(`Could not connect with ${macAddress}`, ToastAndroid.SHORT);
   }
 }

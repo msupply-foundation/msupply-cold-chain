@@ -17,6 +17,8 @@ const SettingKeys = [
   'isPassiveSyncEnabled',
   'isIntegrating',
   'defaultLogInterval',
+  'debugLogEnabled',
+  'logLevel',
 ] as const;
 
 export type SettingKey = typeof SettingKeys[number];
@@ -30,6 +32,8 @@ export enum SettingType {
   defaultLogInterval = 'number',
   isPassiveSyncEnabled = 'bool',
   isIntegrating = 'bool',
+  logLevel = 'string',
+  debugLogEnabled = 'bool',
 }
 
 export interface SettingMap {
@@ -41,9 +45,14 @@ export interface SettingMap {
   isPassiveSyncEnabled: boolean;
   isIntegrating: boolean;
   defaultLogInterval: number;
+  logLevel: string;
+  debugLogEnabled: boolean;
 }
 
-export type SyncSettingMap = Omit<SettingMap, 'defaultLogInterval'>;
+export type SyncSettingMap = Omit<
+  SettingMap,
+  'defaultLogInterval' | 'logLevel' | 'debugLogEnabled'
+>;
 
 export class SettingManager {
   dbService: DatabaseService;
@@ -103,6 +112,8 @@ export class SettingManager {
       isPassiveSyncEnabled: false,
       isIntegrating: false,
       defaultLogInterval: 300,
+      logLevel: 'info',
+      debugLogEnabled: false,
     });
   };
 
