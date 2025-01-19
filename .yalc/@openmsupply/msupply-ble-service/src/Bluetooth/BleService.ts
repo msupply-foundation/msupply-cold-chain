@@ -305,12 +305,14 @@ export class BleService {
     const monitorCallback: MonitorCharacteristicParser<string[], SensorLog[] | DataLog> = (
       data: string[]
     ) => {
+      // Log raw data (we should be able to test the rest with this raw data)
       this.logger.info(`${macAddress} Write and monitor found some data! ${data.length}`);
       this.logger.debug(`${macAddress} ${data.join('; ')}`);
       if (device.deviceType === BLUE_MAESTRO) {
         const buffer = Buffer.concat(
           data.slice(1).map(datum => this.utils.bufferFromBase64(datum))
         );
+        
         const ind = buffer.findIndex(
           (_, i) =>
             (i % 2 === 0 && buffer.readInt16BE(i) === BLUE_MAESTRO.DELIMITER_A) ||
