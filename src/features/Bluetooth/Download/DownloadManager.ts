@@ -92,6 +92,7 @@ export class DownloadManager {
   };
 
   saveLogs = async (logsToSave: Partial<TemperatureLog>[]): Promise<TemperatureLog[]> => {
+    // Log what we are saving
     this.logger?.debug(`saving ${logsToSave.length} logs`);
 
     return this.databaseService.insert(ENTITIES.TEMPERATURE_LOG, logsToSave);
