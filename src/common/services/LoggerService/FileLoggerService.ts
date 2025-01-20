@@ -9,7 +9,12 @@ export class FileLoggerService {
 
   constructor(isDevelopment?: boolean) {
     const { captureConsole, logLevel } = this;
-    FileLogger.configure({ captureConsole, logLevel });
+    FileLogger.configure({
+      captureConsole,
+      logLevel,
+      maximumFileSize: 1024 * 1024 * 5,
+      maximumNumberOfFiles: 10,
+    });
     this.isDevelopment = isDevelopment ?? false;
 
     // FileLogger.getLogFilePaths().then((path: string) =>
