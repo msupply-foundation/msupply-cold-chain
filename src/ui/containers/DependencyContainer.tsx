@@ -121,24 +121,19 @@ export const DependencyContainer: FC = ({ children }) => {
       await db.getConnection();
       await dbService.init();
       setReady(true);
+
+      // Enable logging if debugLogEnabled is true
+      const loggerService = DependencyLocator.get('loggerService') as FileLoggerService;
+
+      settingManager.getSettings().then(settings => {
+        if (settings.debugLogEnabled) {
+          console.log('Enabling debug logging');
+          loggerService.enabled = true;
+          loggerService.setLogLevel(logLevelFromString(settings.logLevel));
+        }
+      });
     })();
   }, []);
-
-  useEffect(() => {
-    // Enable logging if debugLogEnabled is true
-    if (!ready) return;
-
-    const loggerService = DependencyLocator.get('loggerService') as FileLoggerService;
-    const settingsService = DependencyLocator.get('settingManager') as SettingManager;
-
-    settingsService.getSettings().then(settings => {
-      if (settings.debugLogEnabled) {
-        console.log('Enabling debug logging');
-        loggerService.enabled = true;
-        loggerService.setLogLevel(logLevelFromString(settings.logLevel));
-      }
-    });
-  }, [ready]);
 
   useOnMount([startDependencyMonitor]);
 
