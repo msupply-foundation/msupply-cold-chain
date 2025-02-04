@@ -17,6 +17,8 @@ const initialState: SettingStateShape = {
   lastSyncStart: 0,
   isPassiveSyncEnabled: false,
   isIntegrating: false,
+  logLevel: 'info',
+  debugLogEnabled: false,
 };
 
 interface SettingUpdatePayload {
@@ -30,6 +32,7 @@ interface SettingUpdateAction {
 
 const reducers = {
   fetchAll: () => {},
+  initialiseLogging: () => {},
   fetchAllSuccess: {
     prepare: (settings: SettingMap) => ({ payload: { settings } }),
     reducer: (
@@ -95,12 +98,18 @@ const getAuthPassword = (rootState: RootState): string => {
   return authPassword;
 };
 
+const getLogLevel = (rootState: RootState): string => {
+  const { logLevel } = getSettings(rootState);
+  return logLevel;
+};
+
 const SettingSelector = {
   getSettings,
   getDefaultLogInterval,
   getServerUrl,
   getAuthUsername,
   getAuthPassword,
+  getLogLevel,
 };
 
 function* fetchAll(): SagaIterator {

@@ -1,28 +1,15 @@
 import React, { FC, useEffect, useState } from 'react';
-import { LogLevel } from 'react-native-ble-plx';
 import { LogLevel as FileLogLevel } from 'react-native-file-logger';
 import { SettingsButtonRow, SettingsGroup, SettingsSwitchRow } from '~components/settings';
+import { useDispatch } from 'react-redux';
 import { SettingsList } from '~layouts';
 import { useDependency } from '~hooks';
 import { DEPENDENCY } from '~constants';
 import { FileLoggerService } from '~common/services';
 import { SettingsSelectRow } from '~components/settings/SettingsSelectRow';
+import { SettingAction } from '../../../features/Entities';
 import { ENVIRONMENT } from '~common/constants';
-
-const fromValue = (value?: string) => {
-  switch (value) {
-    case 'debug':
-      return LogLevel.Debug;
-    case 'info':
-      return LogLevel.Info;
-    case 'warn':
-      return LogLevel.Warning;
-    case 'error':
-      return LogLevel.Error;
-    default:
-      return LogLevel.Info;
-  }
-};
+import { logLevelFromString } from '~common/services/UtilService';
 
 const toValue = (level: FileLogLevel) => {
   switch (level) {
@@ -43,6 +30,7 @@ export const DebugSettingsScreen: FC = () => {
   ) as FileLoggerService;
 
   const [enabled, setEnabled] = useState(loggerService.enabled);
+  const dispatch = useDispatch();
   const [captureConsole, setCaptureConsole] = useState(loggerService.captureConsole);
   const [logLevel, setLogLevel] = useState(toValue(loggerService.logLevel));
   const options = [
@@ -57,7 +45,7 @@ export const DebugSettingsScreen: FC = () => {
   }, [loggerService, enabled]);
 
   useEffect(() => {
-    loggerService.setLogLevel(fromValue(logLevel));
+    loggerService.setLogLevel(logLevelFromString(logLevel));
   }, [loggerService, logLevel]);
 
   useEffect(() => {
@@ -71,7 +59,10 @@ export const DebugSettingsScreen: FC = () => {
           label="Enable"
           subtext="Enable logging of events to a log file. Logs are rotated at least daily, with a maximum of 5 logs."
           isOn={enabled}
-          onPress={() => setEnabled(!enabled)}
+          onPress={() => {
+            dispatch(SettingAction.update('debugLogEnabled', !enabled));
+            setEnabled(!enabled);
+          }}
           isDisabled={!!ENVIRONMENT.DEV_LOGGER}
         />
       </SettingsGroup>
@@ -80,7 +71,10 @@ export const DebugSettingsScreen: FC = () => {
           <SettingsSelectRow
             label="Logging Level"
             options={options}
-            onChange={setLogLevel}
+            onChange={(value, _index) => {
+              dispatch(SettingAction.update('logLevel', value));
+              setLogLevel(value);
+            }}
             value={logLevel}
           />
           <SettingsSwitchRow

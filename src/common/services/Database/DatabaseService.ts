@@ -129,6 +129,17 @@ export class DatabaseService {
       });
     }
 
+    const debugLogEnabled = await this.get(ENTITIES.SETTING, {
+      key: 'debugLogEnabled',
+    });
+
+    if (!debugLogEnabled) {
+      await this.upsert(ENTITIES.SETTING, {
+        key: 'debugLogEnabled',
+        value: false,
+      });
+    }
+
     await this.rawQuery('PRAGMA journal_mode=wal');
     await this.rawQuery('PRAGMA synchronous=OFF');
     await this.rawQuery('PRAGMA temp_store=memory');

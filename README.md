@@ -29,6 +29,10 @@ e.g. (with sdkman installed):
  sdk use java 11.0.23-zulu
 ```
 
+Or
+
+`sdk env` to use the java version specified in the `.sdkmanrc` file.
+
 #### React Native
 
 - Install nvm for managing Node versions: https://github.com/nvm-sh/nvm.
