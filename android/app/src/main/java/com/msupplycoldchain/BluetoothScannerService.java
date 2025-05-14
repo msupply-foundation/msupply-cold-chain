@@ -13,6 +13,7 @@ import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 
@@ -37,7 +38,7 @@ public class BluetoothScannerService extends Service {
     private final Runnable repeatableScan = new Runnable() {
         @Override
         public void run() {
-            // TODO: Send an event to react-native to register all sensors
+            BluetoothScanEventService.sendEvent(getBaseContext(), "SENSORS_REQUEST");
 
             // Send a stop command when the period is over
             handler.postDelayed(new Runnable() {
@@ -65,7 +66,7 @@ public class BluetoothScannerService extends Service {
                 public void onScanResult(int callbackType, ScanResult result) {
                     super.onScanResult(callbackType, result);
 
-                    // TODO: Send an event to react-native with results
+                    BluetoothScanEventService.sendEvent(getBaseContext(), result.getDevice().getAddress(), "ADVERT_RECEIVE", result.getScanRecord().getBytes());
                 }
             };
 

@@ -62,8 +62,9 @@ public class BluetoothGattConnection {
         @Override
         // TODO: This is deprecated in later API versions
         public void onCharacteristicChanged(BluetoothGatt gattDevice, BluetoothGattCharacteristic characteristic) {
-            // characteristic.getValue();
-            // TODO: Send event to react-native
+            super.onCharacteristicChanged(gattDevice, characteristic);
+
+            BluetoothScanEventService.sendEvent(context, gattDevice.getDevice().getAddress(), "LOGALL_RECEIVE", characteristic.getValue());
         }
 
         @Override
