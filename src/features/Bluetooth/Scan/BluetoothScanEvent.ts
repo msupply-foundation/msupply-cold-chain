@@ -1,6 +1,9 @@
 import DependencyLocator from '~services/DependencyLocator/DependencyLocator';
+import { Sensor } from '~services/Database';
 import { BLUE_MAESTRO } from '~services/Bluetooth';
 import { SensorLog } from '~services/Bluetooth/types';
+
+import { AppRegistry, NativeModules } from 'react-native';
 
 type ScanEvent = {
   event: string;
@@ -17,7 +20,11 @@ module.exports = async (eventData: ScanEvent) => {
   // Do stuff here when we add actual data
   switch (event) {
     case 'SENSORS_REQUEST':
-      // TODO: Pull sensors from database, send them through to java module
+      const { BluetoothScannerModule } = NativeModules;
+      const sensors: Sensor[] = await sensorManager.getAll();
+      for (const sensor of sensors) {
+        BluetoothScannerModule.registerSensor(sensor.macAddress);
+      }
       break;
     case 'ADVERT_RECEIVE':
       // TODO: Parse advert data, save to database
