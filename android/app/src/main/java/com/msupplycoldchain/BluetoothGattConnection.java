@@ -29,7 +29,7 @@ public class BluetoothGattConnection {
     private Context context;
     BluetoothGattCharacteristic writeCommandCharacteristic = null;
     BluetoothGattCharacteristic readCommandCharacteristic = null;
-    private ArrayList<String> characteristicsData = new ArrayList<String>;
+    private ArrayList<String> characteristicsData = new ArrayList<String>();
     public BluetoothGattConnection(Context context, String deviceAddress) {
         this.deviceAddress = deviceAddress;
         this.context = context;
