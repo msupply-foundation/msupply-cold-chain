@@ -1,6 +1,5 @@
 package com.msupplycoldchain;
 
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +8,8 @@ import androidx.annotation.Nullable;
 import com.facebook.react.HeadlessJsTaskService;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.jstasks.HeadlessJsTaskConfig;
+
+import java.util.ArrayList;
 
 public class BluetoothScanEventService extends HeadlessJsTaskService {
     private static final long TASK_TIMEOUT = 30 * 1000;
@@ -22,19 +23,32 @@ public class BluetoothScanEventService extends HeadlessJsTaskService {
                 true);
     }
 
-    static void sendEvent(Context context, String eventType) {
-        sendEvent(context, null, eventType, null);
-    }
-    static void sendEvent(Context context, String deviceAddress, String eventType, byte[] data) {
-        Intent reactServiceIntent = new Intent(context, BluetoothScanEventService.class);
+    static Bundle createBaseBundle(String eventType) {
         Bundle bundle = new Bundle();
         bundle.putString("event", eventType);
-        if (deviceAddress != null) {
-            bundle.putString("deviceAddress", deviceAddress);
-        }
-        if (data != null) {
-            bundle.putByteArray("data", data);
-        }
+        return bundle;
+    }
+    static Bundle createDeviceBundle(String deviceAddress, String eventType) {
+        Bundle bundle = createBaseBundle(eventType);
+        bundle.putString("deviceAddress", deviceAddress);
+        return bundle;
+    }
+    static void generateAndSendIntent(Context context, Bundle bundle) {
+        Intent reactServiceIntent = new Intent(context, BluetoothScanEventService.class);
+        reactServiceIntent.putExtras(bundle);
         context.startService(reactServiceIntent);
+    }
+    static void sendSensorRequest(Context context) {
+        generateAndSendIntent(context, createBaseBundle("SENSORS_REQUEST"));
+    }
+    static void sendAdvertisementPacket(Context context, String deviceAddress, byte[] data) {
+        Bundle bundle = createDeviceBundle(deviceAddress, "ADVERT_RECEIVE");
+        bundle.putByteArray("data", data);
+        generateAndSendIntent(context, bundle);
+    }
+    static void sendLogAllResults(Context context, String deviceAddress, ArrayList<String> data) {
+        Bundle bundle = createDeviceBundle(deviceAddress, "LOGALL_RECEIVE");
+        bundle.putStringArrayList("data", data);
+        generateAndSendIntent(context, bundle);
     }
 }

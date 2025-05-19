@@ -38,7 +38,7 @@ public class BluetoothScannerService extends Service {
     private final Runnable repeatableScan = new Runnable() {
         @Override
         public void run() {
-            BluetoothScanEventService.sendEvent(getBaseContext(), "SENSORS_REQUEST");
+            BluetoothScanEventService.sendSensorRequest(getBaseContext());
 
             // Send a stop command when the period is over
             handler.postDelayed(new Runnable() {
@@ -66,7 +66,7 @@ public class BluetoothScannerService extends Service {
                 public void onScanResult(int callbackType, ScanResult result) {
                     super.onScanResult(callbackType, result);
 
-                    BluetoothScanEventService.sendEvent(getBaseContext(), result.getDevice().getAddress(), "ADVERT_RECEIVE", result.getScanRecord().getBytes());
+                    BluetoothScanEventService.sendAdvertisementPacket(getBaseContext(), result.getDevice().getAddress(), result.getScanRecord().getBytes());
                 }
             };
 

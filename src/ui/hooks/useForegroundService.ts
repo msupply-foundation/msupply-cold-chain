@@ -1,14 +1,13 @@
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AppRegistry, NativeModules } from 'react-native';
 import { useOnMount } from '~hooks';
-import { DownloadAction, SettingSelector, SyncAction } from '~features';
+import { SettingSelector } from '~features';
 import Bugsnag from '@bugsnag/react-native';
 import { MILLISECONDS } from '~constants';
 
 export const useForegroundService = (): void => {
   const { Scheduler } = NativeModules;
-  const dispatch = useDispatch();
   const [isRunningService, setIsRunningService] = useState(false);
   const { serverUrl } = useSelector(SettingSelector.getSettings);
 
@@ -19,14 +18,11 @@ export const useForegroundService = (): void => {
     Bugsnag.addMetadata('sync', 'serverUrl', serverUrl);
     setTimeout(() => Scheduler.updateStatus('Running...'), MILLISECONDS.THIRTY_SECONDS);
 
-    const schedulerTask = async () => {
-      dispatch(DownloadAction.downloadTemperaturesStart());
-      dispatch(SyncAction.tryIntegrating());
-    };
-
     try {
       // this task is called by the SchedulerEventService on a regular interval
-      AppRegistry.registerHeadlessTask('ColdchainScheduler', () => schedulerTask);
+      AppRegistry.registerHeadlessTask('BluetoothScanEvent', () =>
+        require('../../features/Bluetooth/Scan/BluetoothScanEvent')
+      );
       // start the foreground service
       await Scheduler.startService();
       setIsRunningService(true);

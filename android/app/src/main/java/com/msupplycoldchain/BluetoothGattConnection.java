@@ -13,6 +13,8 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class BluetoothGattConnection {
@@ -27,7 +29,7 @@ public class BluetoothGattConnection {
     private Context context;
     BluetoothGattCharacteristic writeCommandCharacteristic = null;
     BluetoothGattCharacteristic readCommandCharacteristic = null;
-
+    private ArrayList<String> characteristicsData = new ArrayList<String>;
     public BluetoothGattConnection(Context context, String deviceAddress) {
         this.deviceAddress = deviceAddress;
         this.context = context;
@@ -56,6 +58,8 @@ public class BluetoothGattConnection {
                 } else {
                     writeLogAllRequest(gattDevice);
                 }
+            } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                BluetoothScanEventService.sendLogAllResults(context, gattDevice.getDevice().getAddress(),  characteristicsData);
             }
         }
 
@@ -63,8 +67,7 @@ public class BluetoothGattConnection {
         // TODO: This is deprecated in later API versions
         public void onCharacteristicChanged(BluetoothGatt gattDevice, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gattDevice, characteristic);
-
-            BluetoothScanEventService.sendEvent(context, gattDevice.getDevice().getAddress(), "LOGALL_RECEIVE", characteristic.getValue());
+            characteristicsData.add(new String(characteristic.getValue(), StandardCharsets.UTF_8));
         }
 
         @Override
