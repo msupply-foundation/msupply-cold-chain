@@ -1,7 +1,7 @@
 import DependencyLocator from '~services/DependencyLocator/DependencyLocator';
 import { Sensor } from '~services/Database';
-import { BLUE_MAESTRO } from '~services/Bluetooth';
-import { SensorLog } from '~services/Bluetooth/types';
+import { BLUE_MAESTRO } from '~constants';
+import { SensorLog } from '@openmsupply/msupply-ble-service';
 
 import { NativeModules } from 'react-native';
 
