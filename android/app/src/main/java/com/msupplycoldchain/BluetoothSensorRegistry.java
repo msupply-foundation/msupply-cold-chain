@@ -1,6 +1,7 @@
 package com.msupplycoldchain;
 
 import android.bluetooth.le.ScanFilter;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -10,7 +11,7 @@ public class BluetoothSensorRegistry {
     private static volatile BluetoothSensorRegistry instance;
     private static Object mutex = new Object();
 
-    private final ArrayList<BluetoothSensor> registeredSensors = new ArrayList<>();
+    private ArrayList<BluetoothSensor> registeredSensors = new ArrayList<>();
 
     private BluetoothSensorRegistry() {}
 
@@ -28,10 +29,10 @@ public class BluetoothSensorRegistry {
     }
 
     // TODO: Return some actual statuses from these
-    public void registerSensor(String sensorAddress) {
-        if (findSensorEntry(sensorAddress) != -1) {
+    public void registerSensor(String sensorName, String sensorAddress) {
+        if (findSensorEntry(sensorAddress) == -1) {
             // TODO: Validate address format
-            registeredSensors.add(new BluetoothSensor(sensorAddress));
+            registeredSensors.add(new BluetoothSensor(sensorName, sensorAddress));
         }
     }
 
@@ -66,9 +67,15 @@ public class BluetoothSensorRegistry {
         for (BluetoothSensor sensor: registeredSensors) {
             // Create filter
             filterList.add(new ScanFilter.Builder()
-                    .setDeviceAddress(sensor.deviceAddress)
+                    // NOTE: In sqlite the "macAddress" field of the sensor actually includes the sensor type.
+                    // The "name" field is the properly formatted macAddress we need to use here
+                    .setDeviceAddress(sensor.deviceName)
                     .build());
         }
         return filterList;
+    }
+
+    public ArrayList<BluetoothSensor> getRegisteredSensors() {
+        return registeredSensors;
     }
 }

@@ -10,12 +10,12 @@ type SensorRequest = {
 };
 type AdvertReceiveEvent = {
   event: 'ADVERT_RECEIVE';
-  deviceAddress: string;
-  data: Int8Array;
+  deviceName: string;
+  data: string;
 };
 type LogAllEvent = {
   event: 'LOGALL_RECEIVE';
-  deviceAddress: string;
+  deviceName: string;
   data: string[];
 };
 
@@ -30,20 +30,24 @@ module.exports = async (eventData: ScanEvent) => {
   const downloadManager = DependencyLocator.get('downloadManager');
   const sensorManager = DependencyLocator.get('sensorManager');
 
+  logger.info(`Received bluetooth event: ${eventData.event}`);
+
   if (eventData.event === 'SENSORS_REQUEST') {
     const { BluetoothScannerModule } = NativeModules;
     const sensors: Sensor[] = await sensorManager.getAll();
     for (const currSensor of sensors) {
-      BluetoothScannerModule.registerSensor(currSensor.macAddress);
+      BluetoothScannerModule.registerSensor(currSensor.name, currSensor.macAddress);
     }
   } else if (eventData.event === 'ADVERT_RECEIVE') {
-    const { deviceAddress, data } = eventData;
-    const sensor = sensorManager.getSensorByMac(deviceAddress);
+    const { deviceName, data } = eventData;
+    const sensor = await sensorManager.getSensorByName(deviceName);
+
+    const buffer = utils.bufferFromBase64(data);
 
     // Get currentTemperature entry from advertisement packet
     const temperature =
-      // eslint-disable-next-line no-bitwise
-      (((data[ADVERT_CURR_TEMP_OFFSET] & 0xff) << 8) | (data[ADVERT_CURR_TEMP_OFFSET + 1] & 0xff)) /
+      (((buffer[ADVERT_CURR_TEMP_OFFSET] & 0xff) << 8) | // eslint-disable-line no-bitwise
+        (buffer[ADVERT_CURR_TEMP_OFFSET + 1] & 0xff)) / // eslint-disable-line no-bitwise
       10.0;
 
     const mostRecentLogTime = sensorManager.getMostRecentLogTime(sensor.id);
@@ -52,25 +56,29 @@ module.exports = async (eventData: ScanEvent) => {
     if (currentTime - mostRecentLogTime > LOGALL_FETCH_PERIOD) {
       const { BluetoothScannerModule } = NativeModules;
       BluetoothScannerModule.setLogRequested(sensor.id);
+    } else {
+      // Don't attempt to save the advert log if we're going to logall anyway
+      // it messes witht the calculation for how many logs to save
+      downloadManager.saveLogs(
+        downloadManager.createLogs(
+          [
+            {
+              id: sensor.id,
+              temperature: temperature,
+            },
+          ],
+          sensor,
+          1, // Save one log
+          await sensorManager.getMostRecentLogTime(sensor.id)
+        )
+      );
     }
-
-    downloadManager.createLogs(
-      [
-        {
-          id: sensor.id,
-          temperature: temperature,
-        },
-      ],
-      sensor,
-      1, // Save one log
-      sensorManager.getMostRecentLogTime(sensor.id)
-    );
   } else if (eventData.event === 'LOGALL_RECEIVE') {
-    const { deviceAddress, data } = eventData;
-    const sensor = sensorManager.getSensorByMac(deviceAddress);
+    const { deviceName, data } = eventData;
+    const sensor = await sensorManager.getSensorByName(deviceName);
 
-    logger.info(`${deviceAddress} Write and monitor found some data! ${data.length}`);
-    logger.debug(`${deviceAddress} ${data.join('; ')}`);
+    logger.info(`${deviceName} Write and monitor found some data! ${data.length}`);
+    logger.debug(`${deviceName} ${data.join('; ')}`);
     const buffer = Buffer.concat(data.slice(1).map(datum => utils.bufferFromBase64(datum)));
     const ind = buffer.findIndex(
       (_, i) =>
@@ -93,16 +101,18 @@ module.exports = async (eventData: ScanEvent) => {
     );
 
     const { id: sensorId, logInterval, logDelay, programmedDate } = sensor;
-    const mostRecentLogTime = sensorManager.getMostRecentLogTime(sensorId);
+    const mostRecentLogTime = await sensorManager.getMostRecentLogTime(sensorId);
     const numberOfLogsToSave = downloadManager.calculateNumberOfLogsToSave(
       Math.max(mostRecentLogTime + logInterval, logDelay, programmedDate),
       logInterval
     );
-    downloadManager.createLogs(
-      parsedLogs,
-      sensor,
-      Math.min(numberOfLogsToSave, parsedLogs?.length),
-      mostRecentLogTime
+    downloadManager.saveLogs(
+      downloadManager.createLogs(
+        parsedLogs,
+        sensor,
+        Math.min(numberOfLogsToSave, parsedLogs?.length),
+        mostRecentLogTime
+      )
     );
   }
 };

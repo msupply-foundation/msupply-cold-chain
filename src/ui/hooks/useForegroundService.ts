@@ -4,10 +4,10 @@ import { AppRegistry, NativeModules } from 'react-native';
 import { useOnMount } from '~hooks';
 import { SettingSelector } from '~features';
 import Bugsnag from '@bugsnag/react-native';
-import { MILLISECONDS } from '~constants';
+// import { MILLISECONDS } from '~constants';
 
 export const useForegroundService = (): void => {
-  const { Scheduler } = NativeModules;
+  const { BluetoothScannerModule } = NativeModules;
   const [isRunningService, setIsRunningService] = useState(false);
   const { serverUrl } = useSelector(SettingSelector.getSettings);
 
@@ -16,7 +16,7 @@ export const useForegroundService = (): void => {
 
     // Send the sync url to bugsnag so we have more context for where an error is occurring
     Bugsnag.addMetadata('sync', 'serverUrl', serverUrl);
-    setTimeout(() => Scheduler.updateStatus('Running...'), MILLISECONDS.THIRTY_SECONDS);
+    // setTimeout(() => Scheduler.updateStatus('Running...'), MILLISECONDS.THIRTY_SECONDS);
 
     try {
       // this task is called by the SchedulerEventService on a regular interval
@@ -24,7 +24,8 @@ export const useForegroundService = (): void => {
         require('../../features/Bluetooth/Scan/BluetoothScanEvent')
       );
       // start the foreground service
-      await Scheduler.startService();
+      await BluetoothScannerModule.startService();
+      console.log('Starting scanner service');
       setIsRunningService(true);
     } catch (e) {
       console.error(`Error starting scheduler service: ${(e as Error).message}`);

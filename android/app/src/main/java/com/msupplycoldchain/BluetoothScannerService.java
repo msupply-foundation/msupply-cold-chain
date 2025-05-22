@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
@@ -13,13 +14,16 @@ import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Base64;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class BluetoothScannerService extends Service {
     public static final int SERVICE_NOTIFICATION_ID = 23456;
@@ -53,12 +57,24 @@ public class BluetoothScannerService extends Service {
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                     .build();
 
-            scanner.startScan(filterList, settings, scannerCallback);
+            // If we scan with an empty filter list we get all devices
+            if (!filterList.isEmpty()) {
+                scanner.startScan(filterList, settings, scannerCallback);
+            }
 
             // Scan again after interval
             handler.postDelayed(this, ADVERT_SCAN_INTERVAL);
-        }
 
+            // Fetch logAll results for any sensors which require them
+            ArrayList<BluetoothSensor> sensorList = BluetoothSensorRegistry.getInstance().getRegisteredSensors();
+            for (int i = 0; i < sensorList.size(); ++i) {
+                BluetoothSensor sensor = sensorList.get(i);
+                if (sensor.logsRequested) {
+                    BluetoothGattConnection gatt = new BluetoothGattConnection(getBaseContext(), sensor.deviceAddress);
+                    gatt.FetchLogs();
+                }
+            }
+        }
     };
 
     private final ScanCallback scannerCallback =
@@ -66,7 +82,11 @@ public class BluetoothScannerService extends Service {
                 public void onScanResult(int callbackType, ScanResult result) {
                     super.onScanResult(callbackType, result);
 
-                    BluetoothScanEventService.sendAdvertisementPacket(getBaseContext(), result.getDevice().getAddress(), result.getScanRecord().getBytes());
+                    BluetoothScanEventService.sendAdvertisementPacket(
+                            getBaseContext(),
+                            result.getDevice().getAddress(),
+                            Base64.encodeToString(result.getScanRecord().getBytes(), Base64.DEFAULT)
+                    );
                 }
             };
 
@@ -83,15 +103,32 @@ public class BluetoothScannerService extends Service {
     }
     public static Notification buildNotification(Context context, String text) {
         Intent notificationIntent = new Intent(context, MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent contentIntent = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            contentIntent = PendingIntent.getActivity
+                    (context, 0, notificationIntent, PendingIntent.FLAG_MUTABLE);
+        }
+        else
+        {
+            contentIntent = PendingIntent.getActivity
+                    (context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        }
 
         return new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setContentTitle("ColdChain service")
+                .setContentTitle("ColdChain service") // getApplicationName
                 .setContentText(text)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(contentIntent)
                 .setOngoing(true)
                 .build();
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        scanner = getSystemService(BluetoothManager.class)
+                .getAdapter()
+                .getBluetoothLeScanner();
     }
 
     @Override

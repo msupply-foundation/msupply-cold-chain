@@ -3,6 +3,7 @@ package com.msupplycoldchain;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 
 import com.facebook.react.HeadlessJsTaskService;
@@ -30,7 +31,9 @@ public class BluetoothScanEventService extends HeadlessJsTaskService {
     }
     static Bundle createDeviceBundle(String deviceAddress, String eventType) {
         Bundle bundle = createBaseBundle(eventType);
-        bundle.putString("deviceAddress", deviceAddress);
+        // NOTE: The formatted macAddress is stored in the "name" field in sqlite
+        // so we're calling it name when we pass to react
+        bundle.putString("deviceName", deviceAddress);
         return bundle;
     }
     static void generateAndSendIntent(Context context, Bundle bundle) {
@@ -41,9 +44,9 @@ public class BluetoothScanEventService extends HeadlessJsTaskService {
     static void sendSensorRequest(Context context) {
         generateAndSendIntent(context, createBaseBundle("SENSORS_REQUEST"));
     }
-    static void sendAdvertisementPacket(Context context, String deviceAddress, byte[] data) {
+    static void sendAdvertisementPacket(Context context, String deviceAddress, String data) {
         Bundle bundle = createDeviceBundle(deviceAddress, "ADVERT_RECEIVE");
-        bundle.putByteArray("data", data);
+        bundle.putString("data", data);
         generateAndSendIntent(context, bundle);
     }
     static void sendLogAllResults(Context context, String deviceAddress, ArrayList<String> data) {

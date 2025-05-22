@@ -108,6 +108,10 @@ export class SensorManager {
     return await this.databaseService.findOneOrFail(ENTITIES.SENSOR, { macAddress });
   };
 
+  getSensorByName = async (name: string): Promise<Sensor> => {
+    return await this.databaseService.findOneOrFail(ENTITIES.SENSOR, { name });
+  };
+
   getMostRecentLogTime = async (id: string): Promise<number> => {
     const result = await this.databaseService.query(MOST_RECENT_TIMESTAMP, [id]);
 

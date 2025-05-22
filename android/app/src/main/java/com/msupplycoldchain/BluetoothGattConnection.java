@@ -15,6 +15,7 @@ import android.content.Context;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import android.util.Base64;
 import java.util.UUID;
 
 public class BluetoothGattConnection {
@@ -67,7 +68,7 @@ public class BluetoothGattConnection {
         // TODO: This is deprecated in later API versions
         public void onCharacteristicChanged(BluetoothGatt gattDevice, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gattDevice, characteristic);
-            characteristicsData.add(new String(characteristic.getValue(), StandardCharsets.UTF_8));
+            characteristicsData.add(Base64.encodeToString(characteristic.getValue(), Base64.DEFAULT));
         }
 
         @Override
