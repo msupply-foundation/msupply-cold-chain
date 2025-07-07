@@ -2,6 +2,9 @@ import DependencyLocator from '~services/DependencyLocator/DependencyLocator';
 import { Sensor } from '~services/Database';
 import { BLUE_MAESTRO } from '~constants';
 import { SensorLog } from '@openmsupply/msupply-ble-service';
+import { store } from '~common/store';
+import { SensorStatusAction } from '~features/SensorStatus';
+import { ConsecutiveBreachAction, CumulativeBreachAction } from '~features';
 
 import { NativeModules } from 'react-native';
 
@@ -31,6 +34,7 @@ module.exports = async (eventData: ScanEvent) => {
   const sensorManager = DependencyLocator.get('sensorManager');
 
   logger.info(`Received bluetooth event: ${eventData.event}`);
+  console.log(`Received bluetooth event: ${eventData.event}`);
 
   if (eventData.event === 'SENSORS_REQUEST') {
     const { BluetoothScannerModule } = NativeModules;
@@ -59,7 +63,7 @@ module.exports = async (eventData: ScanEvent) => {
     } else {
       // Don't attempt to save the advert log if we're going to logall anyway
       // it messes witht the calculation for how many logs to save
-      downloadManager.saveLogs(
+      await downloadManager.saveLogs(
         downloadManager.createLogs(
           [
             {
@@ -72,6 +76,10 @@ module.exports = async (eventData: ScanEvent) => {
           await sensorManager.getMostRecentLogTime(sensor.id)
         )
       );
+
+      // Dispatch Redux action to update UI
+      store.dispatch(SensorStatusAction.fetch(sensor.id));
+      store.dispatch(ConsecutiveBreachAction.create(sensor));
     }
   } else if (eventData.event === 'LOGALL_RECEIVE') {
     const { deviceName, data } = eventData;
@@ -106,7 +114,7 @@ module.exports = async (eventData: ScanEvent) => {
       Math.max(mostRecentLogTime + logInterval, logDelay, programmedDate),
       logInterval
     );
-    downloadManager.saveLogs(
+    await downloadManager.saveLogs(
       downloadManager.createLogs(
         parsedLogs,
         sensor,
@@ -114,5 +122,10 @@ module.exports = async (eventData: ScanEvent) => {
         mostRecentLogTime
       )
     );
+
+    // Dispatch Redux actions to update UI after processing LOGALL data
+    store.dispatch(SensorStatusAction.fetch(sensor.id));
+    store.dispatch(ConsecutiveBreachAction.create(sensor));
+    store.dispatch(CumulativeBreachAction.fetchListForSensor(sensor.id));
   }
 };
