@@ -62,7 +62,7 @@ module.exports = async (eventData: ScanEvent) => {
       BluetoothScannerModule.setLogRequested(sensor.id);
     } else {
       // Don't attempt to save the advert log if we're going to logall anyway
-      // it messes witht the calculation for how many logs to save
+      // it messes with the calculation for how many logs to save
       await downloadManager.saveLogs(
         downloadManager.createLogs(
           [
