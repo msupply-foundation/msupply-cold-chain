@@ -163,6 +163,11 @@ function* tryDownloadForSensor({
       );
 
       yield call(downloadManager.saveLogs, sensorLogs);
+
+      // Clear the logs from the sensor (we've just downloaded them, so it should be safe to clear and make sure we have less to download next time)
+      if (sensorLogs.length) {
+        yield call(btService.clearLogs, macAddress);
+      }
       yield put(ConsecutiveBreachAction.create(sensor));
       yield put(DownloadAction.passiveDownloadForSensorSuccess(sensor.id));
       yield put(CumulativeBreachAction.fetchListForSensor(sensorId));

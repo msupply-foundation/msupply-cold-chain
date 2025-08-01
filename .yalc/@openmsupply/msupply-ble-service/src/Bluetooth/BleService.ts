@@ -423,6 +423,28 @@ export class BleService {
     this.logger.debug(`${macAddress} Update log interval`);
     const device = await this.connectAndDiscoverServices(macAddress);
 
+    // BlueMaestro automatically clears logs when log interval is set but might not be reliable.
+    // We'll use the clearLogs command to ensure logs are cleared.
+    if (clearLogs && device.deviceType === BLUE_MAESTRO) {
+      this.logger.debug(`${macAddress} Clearing logs before updating log interval`);
+          
+      const clearResult = await this.writeWithSingleResponse(device, device.deviceType.COMMAND_CLEAR, data => {
+        const info = this.utils.stringFromBase64(data);
+        this.logger.debug(`${macAddress} Clear logs response: ${info}`);
+        return true; // Best effort! If there's an error hopefully we'll see in the debug logs.
+      });
+    }
+
+    // we have to download all the logs to clear them on BT510
+    if (clearLogs && device.deviceType === BT510) {
+      this.logger.debug(`${macAddress} Clearing logs before updating log interval`);
+      await this.downloadLogs(macAddress);
+    }
+
+
+    // Now we can update the log interval.
+    this.logger.debug(`${macAddress} Updating log interval to ${logInterval}`);
+
     const command = device.deviceType.COMMAND_UPDATE_LOG_INTERVAL.replace(
       'LOG_INTERVAL',
       logInterval.toString()
@@ -434,12 +456,9 @@ export class BleService {
         !!info.match(/interval/i)
       );
     });
-    // Clear logs if we haven't just downloaded
-    // BlueMaestro automatically clears logs when log interval is set,
-    // But we have to download all the logs to clear them on BT510
-    if (clearLogs && device.deviceType === BT510) {
-      await this.downloadLogs(macAddress);
-    }
+
+
+
     if (result) return true;
     throw new Error(` command returned not OK result`);
   };
