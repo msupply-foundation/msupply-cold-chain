@@ -14,7 +14,8 @@ public class SchedulerPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         return Arrays.<NativeModule>asList(
-                new SchedulerModule(reactContext)
+                new SchedulerModule(reactContext),
+                new BluetoothScannerModule(reactContext)
         );
     }
 

@@ -34,6 +34,8 @@
 		<service android:name="com.voximplant.foregroundservice.VIForegroundService" />
 		<service android:name="com.msupplycoldchain.SchedulerService" android:enabled="true" android:exported="true" />
 		<service android:name="com.msupplycoldchain.SchedulerEventService" />
+		<service android:name="com.msupplycoldchain.BluetoothScannerService" android:enabled="true" android:exported="true" />
+		<service android:name="com.msupplycoldchain.BluetoothScanEventService" />
 		<receiver android:name="com.msupplycoldchain.BootUpReceiver" android:enabled="true" android:permission="android.permission.RECEIVE_BOOT_COMPLETED" android:exported="false">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
